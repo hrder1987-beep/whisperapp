@@ -10,7 +10,7 @@ import { RankingList } from "@/components/chuchot/RankingList"
 import { ShuChat } from "@/components/chuchot/ShuChat"
 import { Question, Answer } from "@/lib/types"
 import { Button } from "@/components/ui/button"
-import { Bell, Search, User as UserIcon, Settings, Info, X } from "lucide-react"
+import { Bell, Search, User as UserIcon, Settings, Info, X, ArrowLeft } from "lucide-react"
 import { 
   Dialog, 
   DialogContent, 
@@ -22,6 +22,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
 import { generateAiReply } from "@/ai/flows/generate-ai-reply-flow"
+import { cn } from "@/lib/utils"
 
 export default function HomePage() {
   const [questions, setQuestions] = useState<Question[]>([])
@@ -33,6 +34,8 @@ export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [activeTab, setActiveTab] = useState<"all" | "popular" | "waiting">("all")
   const { toast } = useToast()
+
+  const isSearching = searchQuery.trim().length > 0
 
   useEffect(() => {
     const initialQuestions: Question[] = [
@@ -190,13 +193,12 @@ export default function HomePage() {
           title: "검색 결과 필터링",
           description: `'${searchQuery}' 키워드로 검색된 결과입니다.`,
         })
-      } else {
-        toast({
-          title: "검색어 입력",
-          description: "검색어를 입력하시면 실시간으로 필터링됩니다.",
-        })
       }
     }
+  }
+
+  const handleClearSearch = () => {
+    setSearchQuery("")
   }
 
   return (
@@ -216,7 +218,7 @@ export default function HomePage() {
             />
             {searchQuery && (
               <button 
-                onClick={() => setSearchQuery("")}
+                onClick={handleClearSearch}
                 className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-white/10 rounded-full transition-colors"
               >
                 <X className="w-4 h-4 text-white/50" />
@@ -247,15 +249,40 @@ export default function HomePage() {
 
       <div className="max-w-6xl mx-auto px-4 py-8 md:py-12">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-          <main className="lg:col-span-8 space-y-10">
-            <MainBanner />
+          <main className={cn(
+            "space-y-10 transition-all duration-500",
+            isSearching ? "lg:col-span-12 max-w-4xl mx-auto w-full" : "lg:col-span-8"
+          )}>
+            {!isSearching && <MainBanner />}
             
             <div className="space-y-10">
-              <SubmissionForm 
-                type="question"
-                placeholder="교육 설계, L&D 전략, 사내 세미나 등 HRD 관련 고민을 속삭여보세요."
-                onSubmit={handleAddQuestion}
-              />
+              {!isSearching && (
+                <SubmissionForm 
+                  type="question"
+                  placeholder="교육 설계, L&D 전략, 사내 세미나 등 HRD 관련 고민을 속삭여보세요."
+                  onSubmit={handleAddQuestion}
+                />
+              )}
+
+              {isSearching && (
+                <div className="flex items-center justify-between px-2 mb-2 animate-in fade-in slide-in-from-left-4 duration-500">
+                  <div className="flex items-center gap-4">
+                    <button 
+                      onClick={handleClearSearch}
+                      className="p-2 hover:bg-primary/5 rounded-full text-primary/40 hover:text-primary transition-colors"
+                    >
+                      <ArrowLeft className="w-6 h-6" />
+                    </button>
+                    <div>
+                      <h2 className="text-2xl font-black text-primary">' {searchQuery} ' 검색 결과</h2>
+                      <p className="text-sm font-bold text-primary/30">{filteredQuestions.length}개의 속삭임을 찾았습니다.</p>
+                    </div>
+                  </div>
+                  <Button variant="ghost" onClick={handleClearSearch} className="text-primary/40 font-black hover:text-accent transition-colors">
+                    검색 초기화
+                  </Button>
+                </div>
+              )}
 
               <QuestionFeed 
                 questions={filteredQuestions} 
@@ -269,36 +296,38 @@ export default function HomePage() {
             </div>
           </main>
 
-          <aside className="lg:col-span-4 space-y-8 hidden lg:block">
-            <RankingList questions={topQuestions} onSelectQuestion={handleSelectQuestion} />
-            
-            <ShuChat />
+          {!isSearching && (
+            <aside className="lg:col-span-4 space-y-8 hidden lg:block animate-in fade-in slide-in-from-right-4 duration-700">
+              <RankingList questions={topQuestions} onSelectQuestion={handleSelectQuestion} />
+              
+              <ShuChat />
 
-            <div className="bg-white rounded-[2rem] p-8 border border-primary/5 shadow-xl">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 rounded-xl bg-accent/10">
-                  <Info className="w-5 h-5 text-accent" />
+              <div className="bg-white rounded-[2rem] p-8 border border-primary/5 shadow-xl">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="p-2 rounded-xl bg-accent/10">
+                    <Info className="w-5 h-5 text-accent" />
+                  </div>
+                  <h3 className="text-lg font-black text-primary">HRD 현직자 플랫폼 가이드</h3>
                 </div>
-                <h3 className="text-lg font-black text-primary">HRD 현직자 플랫폼 가이드</h3>
+                <div className="space-y-6">
+                   <div className="group space-y-2">
+                      <p className="text-[15px] font-black text-primary group-hover:text-accent transition-colors flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-accent"></span>
+                        철저한 비식별 익명 보장
+                      </p>
+                      <p className="text-[13px] text-primary/50 leading-relaxed font-medium pl-3.5">모든 활동은 암호화되어 보호되며, 교육 담당자들의 솔직한 소통을 지원합니다.</p>
+                   </div>
+                   <div className="group space-y-2">
+                      <p className="text-[15px] font-black text-primary group-hover:text-accent transition-colors flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-accent"></span>
+                        전문 HRD 카테고리
+                      </p>
+                      <p className="text-[13px] text-primary/50 leading-relaxed font-medium pl-3.5">교육 설계, 성과 평가, 리더십 육성 등 HRD 핵심 직무 인사이트를 제공합니다.</p>
+                   </div>
+                </div>
               </div>
-              <div className="space-y-6">
-                 <div className="group space-y-2">
-                    <p className="text-[15px] font-black text-primary group-hover:text-accent transition-colors flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-accent"></span>
-                      철저한 비식별 익명 보장
-                    </p>
-                    <p className="text-[13px] text-primary/50 leading-relaxed font-medium pl-3.5">모든 활동은 암호화되어 보호되며, 교육 담당자들의 솔직한 소통을 지원합니다.</p>
-                 </div>
-                 <div className="group space-y-2">
-                    <p className="text-[15px] font-black text-primary group-hover:text-accent transition-colors flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-accent"></span>
-                      전문 HRD 카테고리
-                    </p>
-                    <p className="text-[13px] text-primary/50 leading-relaxed font-medium pl-3.5">교육 설계, 성과 평가, 리더십 육성 등 HRD 핵심 직무 인사이트를 제공합니다.</p>
-                 </div>
-              </div>
-            </div>
-          </aside>
+            </aside>
+          )}
         </div>
       </div>
 
