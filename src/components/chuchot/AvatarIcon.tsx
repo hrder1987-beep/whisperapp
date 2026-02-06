@@ -11,8 +11,7 @@ import {
   Turtle, 
   Bug, 
   Antenna,
-  Component,
-  Ghost
+  Sparkles
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -27,6 +26,7 @@ const icons = [
   { id: "turtle", Icon: Turtle, color: "text-emerald-600" },
   { id: "bug", Icon: Bug, color: "text-red-500" },
   { id: "ant", Icon: Antenna, color: "text-slate-600" },
+  { id: "sparkles", Icon: Sparkles, color: "text-accent" },
 ]
 
 interface AvatarIconProps {
@@ -42,7 +42,10 @@ export function AvatarIcon({ seed, avatarId, className }: AvatarIconProps) {
       return icons.find(i => i.id === avatarId) || icons[0]
     }
     if (seed) {
-      const index = seed.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0) % icons.length
+      // '슈'라는 이름이 포함되면 반짝이 아이콘 고정
+      if (seed.includes("슈")) return icons.find(i => i.id === "sparkles") || icons[0]
+      
+      const index = seed.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0) % (icons.length - 1)
       return icons[index]
     }
     return icons[0]

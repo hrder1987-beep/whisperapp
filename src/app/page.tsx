@@ -21,6 +21,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
 import Image from "next/image"
+import { generateAiReply } from "@/ai/flows/generate-ai-reply-flow"
 
 export default function HomePage() {
   const [questions, setQuestions] = useState<Question[]>([])
@@ -96,6 +97,24 @@ export default function HomePage() {
       createdAt: Date.now(),
     }
     setQuestions([newQuestion, ...questions])
+
+    // AI '슈'의 자동 답글 생성
+    generateAiReply({ title, text }).then((res) => {
+      const aiAnswer: Answer = {
+        id: `ai-${Date.now()}`,
+        questionId: newQuestion.id,
+        text: res.replyText,
+        nickname: "슈 (AI)",
+        createdAt: Date.now(),
+        avatarId: "sparkles",
+      }
+      setAnswers(prev => [aiAnswer, ...prev])
+      setQuestions(prev => prev.map(q => 
+        q.id === newQuestion.id ? { ...q, answerCount: q.answerCount + 1 } : q
+      ))
+    }).catch(err => {
+      console.error("AI 답변 생성 실패:", err)
+    })
   }
 
   const handleAddAnswer = (nickname: string, title: string, text: string) => {
