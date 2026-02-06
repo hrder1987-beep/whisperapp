@@ -8,6 +8,7 @@ export interface Question {
   createdAt: number;
   imageUrl?: string;
   avatarId?: string;
+  category?: string;
 }
 
 export interface Answer {

@@ -2,7 +2,7 @@
 
 import { Question } from "@/lib/types"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
-import { MessageCircle, Eye, Clock, Bookmark, Share2, MoreHorizontal } from "lucide-react"
+import { MessageCircle, Eye, Clock, Bookmark, Hash } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 import { ko } from "date-fns/locale"
 import { Button } from "@/components/ui/button"
@@ -22,15 +22,15 @@ export function QuestionFeed({ questions, onSelectQuestion }: QuestionFeedProps)
     <div className="space-y-6">
       <div className="flex items-center justify-between mb-4 px-1">
         <div className="flex gap-6">
-          <button className="text-[17px] font-black text-primary border-b-[3px] border-accent pb-2 transition-all">최신순</button>
-          <button className="text-[17px] font-bold text-primary/30 hover:text-primary pb-2 transition-all">인기순</button>
+          <button className="text-[17px] font-black text-primary border-b-[3px] border-accent pb-2 transition-all">전체</button>
+          <button className="text-[17px] font-bold text-primary/30 hover:text-primary pb-2 transition-all">인기</button>
           <button className="text-[17px] font-bold text-primary/30 hover:text-primary pb-2 transition-all">답변대기</button>
         </div>
       </div>
       
       {sortedQuestions.length === 0 ? (
         <Card className="bg-white border-dashed border-primary/10 p-24 text-center rounded-[2.5rem]">
-          <p className="text-primary/30 font-bold text-lg">아직 등록된 속삭임이 없습니다.<br/>첫 번째 HR 인사이트를 공유해보세요.</p>
+          <p className="text-primary/30 font-bold text-lg">아직 등록된 속삭임이 없습니다.</p>
         </Card>
       ) : (
         sortedQuestions.map((q) => (
@@ -54,17 +54,11 @@ export function QuestionFeed({ questions, onSelectQuestion }: QuestionFeedProps)
                     </span>
                   </div>
                 </div>
-                <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Button variant="ghost" size="icon" className="h-9 w-9 text-primary/20 hover:text-accent hover:bg-accent/5">
-                    <Bookmark className="w-5 h-5" />
-                  </Button>
-                  <Button variant="ghost" size="icon" className="h-9 w-9 text-primary/20 hover:text-primary hover:bg-primary/5">
-                    <Share2 className="w-5 h-5" />
-                  </Button>
-                  <Button variant="ghost" size="icon" className="h-9 w-9 text-primary/20 hover:text-primary hover:bg-primary/5">
-                    <MoreHorizontal className="w-5 h-5" />
-                  </Button>
-                </div>
+                {q.category && (
+                  <Badge className="bg-accent/10 text-accent font-black border-none px-3 py-1 rounded-full text-[11px]">
+                    #{q.category}
+                  </Badge>
+                )}
               </div>
 
               <div className="space-y-4">
@@ -83,7 +77,6 @@ export function QuestionFeed({ questions, onSelectQuestion }: QuestionFeedProps)
                       fill 
                       className="object-cover transition-transform duration-1000 group-hover:scale-110"
                     />
-                    <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors"></div>
                   </div>
                 )}
               </div>
@@ -92,21 +85,17 @@ export function QuestionFeed({ questions, onSelectQuestion }: QuestionFeedProps)
             <CardFooter className="px-7 md:px-9 py-6 border-t border-primary/5 flex items-center justify-between bg-primary/[0.01]">
               <div className="flex gap-8">
                 <div className="flex items-center gap-2.5 text-sm font-black text-primary/40 group-hover:text-accent transition-colors">
-                  <div className="p-2 rounded-full bg-primary/5 group-hover:bg-accent/10">
-                    <MessageCircle className="w-5 h-5" />
-                  </div>
+                  <MessageCircle className="w-5 h-5" />
                   답변 {q.answerCount}
                 </div>
                 <div className="flex items-center gap-2.5 text-sm font-black text-primary/40">
-                  <div className="p-2 rounded-full bg-primary/5">
-                    <Eye className="w-5 h-5" />
-                  </div>
+                  <Eye className="w-5 h-5" />
                   조회 {q.viewCount}
                 </div>
               </div>
-              <div className="text-xs font-bold text-accent/60 uppercase tracking-widest hidden sm:block">
-                Insider Insight
-              </div>
+              <Button variant="ghost" size="icon" className="text-primary/20 hover:text-accent">
+                <Bookmark className="w-5 h-5" />
+              </Button>
             </CardFooter>
           </Card>
         ))

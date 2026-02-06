@@ -9,7 +9,7 @@ import { AnswerFeed } from "@/components/chuchot/AnswerFeed"
 import { RankingList } from "@/components/chuchot/RankingList"
 import { Question, Answer } from "@/lib/types"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, Bell, Search, User as UserIcon, Settings, Info } from "lucide-react"
+import { ChevronLeft, Bell, Search, User as UserIcon, Settings, Info, Eye, MessageCircle } from "lucide-react"
 import { 
   Dialog, 
   DialogContent, 
@@ -21,7 +21,6 @@ import {
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
 import Image from "next/image"
-import { Badge } from "@/components/ui/badge"
 
 export default function HomePage() {
   const [questions, setQuestions] = useState<Question[]>([])
@@ -38,11 +37,12 @@ export default function HomePage() {
       {
         id: "1",
         title: "2024년 하반기 IT 기업 연봉 인상률 트렌드",
-        text: "다른 기업들은 올해 인상률을 어느 정도로 잡고 계신가요? 3~5% 내외가 대세인지, 아니면 동결 기조인지 궁금합니다. 저희는 현재 조직문화 개편과 맞물려 고민이 많네요.",
+        text: "다른 기업들은 올해 인상률을 어느 정도로 잡고 계신가요? 3~5% 내외가 대세인지, 아니면 동결 기조인지 궁금합니다.",
         nickname: "인사팀장A",
         viewCount: 1240,
         answerCount: 8,
         createdAt: Date.now() - 3600000 * 2,
+        category: "평가/보상",
         imageUrl: "https://images.unsplash.com/photo-1454165833767-1316b0215b3f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxocmFkbWluJTIwb2ZmaWNlfGVufDB8fHx8MTc3MDI4MTYxN3ww&ixlib=rb-4.1.0&q=80&w=1080"
       },
       {
@@ -52,6 +52,7 @@ export default function HomePage() {
         nickname: "교육담당자",
         viewCount: 890,
         answerCount: 12,
+        category: "교육/L&D",
         createdAt: Date.now() - 3600000 * 5,
       },
       {
@@ -61,6 +62,7 @@ export default function HomePage() {
         nickname: "총무관리자",
         viewCount: 2100,
         answerCount: 5,
+        category: "총무/GA",
         createdAt: Date.now() - 3600000 * 0.5,
         imageUrl: "https://images.unsplash.com/photo-1552664730-d307ca884978?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxtZWV0aW5nfGVufDB8fHx8MTc3MDM1NDM3N3ww&ixlib=rb-4.1.0&q=80&w=1080"
       }
@@ -72,7 +74,8 @@ export default function HomePage() {
     return questions.filter(q => 
       q.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       q.text.toLowerCase().includes(searchQuery.toLowerCase()) || 
-      q.nickname.toLowerCase().includes(searchQuery.toLowerCase())
+      q.nickname.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      q.category?.toLowerCase().includes(searchQuery.toLowerCase())
     )
   }, [questions, searchQuery])
 
@@ -80,13 +83,14 @@ export default function HomePage() {
     return [...questions].sort((a, b) => b.viewCount - a.viewCount).slice(0, 5)
   }, [questions])
 
-  const handleAddQuestion = (nickname: string, title: string, text: string, imageUrl?: string) => {
+  const handleAddQuestion = (nickname: string, title: string, text: string, imageUrl?: string, category?: string) => {
     const newQuestion: Question = {
       id: Math.random().toString(36).substr(2, 9),
       title,
       text,
       nickname,
       imageUrl,
+      category,
       viewCount: 0,
       answerCount: 0,
       createdAt: Date.now(),
@@ -94,7 +98,7 @@ export default function HomePage() {
     setQuestions([newQuestion, ...questions])
   }
 
-  const handleAddAnswer = (nickname: string, text: string) => {
+  const handleAddAnswer = (nickname: string, title: string, text: string) => {
     if (!selectedQuestionId) return
     const newAnswer: Answer = {
       id: Math.random().toString(36).substr(2, 9),
@@ -147,7 +151,7 @@ export default function HomePage() {
           <div className="hidden md:flex flex-1 max-w-xl relative group">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50 group-focus-within:text-accent transition-colors" />
             <Input 
-              placeholder="HR 트렌드, 연봉 정보, 조직문화 등 키워드를 검색하세요..." 
+              placeholder="HR 트렌드, 직무 카테고리 등 검색..." 
               className="pl-11 bg-white/10 border-none focus-visible:ring-accent/50 h-11 rounded-full text-sm text-white placeholder:text-white/40"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -200,8 +204,10 @@ export default function HomePage() {
                       </p>
                     </div>
                   </div>
-                  {isAdminMode && (
-                    <Button variant="destructive" size="sm" onClick={() => handleDeleteQuestion(selectedQuestion.id)}>삭제</Button>
+                  {selectedQuestion.category && (
+                    <div className="px-4 py-1.5 rounded-full bg-accent text-primary font-black text-[12px]">
+                      #{selectedQuestion.category}
+                    </div>
                   )}
                 </div>
                 
@@ -234,7 +240,7 @@ export default function HomePage() {
             <SubmissionForm 
               type="answer"
               placeholder="동료 HR 담당자들에게 따뜻한 조언이나 지식을 공유해주세요."
-              onSubmit={(nick, title, text) => handleAddAnswer(nick, text)}
+              onSubmit={handleAddAnswer}
             />
 
             <AnswerFeed answers={questionAnswers} />
@@ -283,23 +289,7 @@ export default function HomePage() {
                       </p>
                       <p className="text-[13px] text-primary/50 leading-relaxed font-medium pl-3.5">인사, 교육, 평가, 복리후생 등 각 분야 전문가들의 실질적인 인사이트를 제공합니다.</p>
                    </div>
-                   <div className="group space-y-2">
-                      <p className="text-[15px] font-black text-primary group-hover:text-accent transition-colors flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-accent"></span>
-                        상호 존중 커뮤니티
-                      </p>
-                      <p className="text-[13px] text-primary/50 leading-relaxed font-medium pl-3.5">전문가다운 매너와 상호 존중을 바탕으로 건강한 비즈니스 커뮤니티를 지향합니다.</p>
-                   </div>
                 </div>
-              </div>
-
-              <div className="px-6 text-[11px] text-primary/30 leading-relaxed font-bold">
-                <div className="flex flex-wrap gap-x-4 gap-y-1 mb-4">
-                  <span className="hover:text-accent cursor-pointer transition-colors">이용약관</span>
-                  <span className="hover:text-accent cursor-pointer transition-colors">개인정보처리방침</span>
-                  <span className="hover:text-accent cursor-pointer transition-colors">가이드라인</span>
-                </div>
-                <p>© {new Date().getFullYear()} CHUCHOT HR. Premium Professional Networking.</p>
               </div>
             </aside>
           </div>
