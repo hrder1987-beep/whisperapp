@@ -9,7 +9,7 @@ import { AnswerFeed } from "@/components/chuchot/AnswerFeed"
 import { RankingList } from "@/components/chuchot/RankingList"
 import { Question, Answer } from "@/lib/types"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, Bell, Search, User as UserIcon, Settings } from "lucide-react"
+import { ChevronLeft, Bell, Search, User as UserIcon, Settings, Info } from "lucide-react"
 import { 
   Dialog, 
   DialogContent, 
@@ -21,6 +21,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
 import Image from "next/image"
+import { Badge } from "@/components/ui/badge"
 
 export default function HomePage() {
   const [questions, setQuestions] = useState<Question[]>([])
@@ -33,12 +34,11 @@ export default function HomePage() {
   const { toast } = useToast()
 
   useEffect(() => {
-    // HR 중심의 예시 데이터로 업데이트
     const initialQuestions: Question[] = [
       {
         id: "1",
-        title: "2024년 하반기 연봉 인상률 트렌드가 궁금합니다.",
-        text: "다른 IT 기업들은 올해 연봉 인상률 어느 정도로 잡고 계신가요? 3~5% 내외가 대세인지, 아니면 동결 기조인지 궁금합니다. 저희는 현재 조직문화 개편과 맞물려 고민이 많네요.",
+        title: "2024년 하반기 IT 기업 연봉 인상률 트렌드",
+        text: "다른 기업들은 올해 인상률을 어느 정도로 잡고 계신가요? 3~5% 내외가 대세인지, 아니면 동결 기조인지 궁금합니다. 저희는 현재 조직문화 개편과 맞물려 고민이 많네요.",
         nickname: "인사팀장A",
         viewCount: 1240,
         answerCount: 8,
@@ -47,8 +47,8 @@ export default function HomePage() {
       },
       {
         id: "2",
-        title: "신입 사원 온보딩 프로그램 아이디어 공유해요.",
-        text: "단순 교육 말고, 회사에 정말 '스며들 수 있게' 하는 좋은 장치가 있을까요? 웰컴 키트 외에 추천할 만한 프로그램이 있다면 속삭여주세요.",
+        title: "신입 사원 온보딩 프로그램 추천 부탁드려요.",
+        text: "단순 교육 말고, 회사에 정말 '스며들 수 있게' 하는 좋은 장치가 있을까요? 웰컴 키트 외에 추천할 만한 프로그램이 있다면 공유 부탁드립니다.",
         nickname: "교육담당자",
         viewCount: 890,
         answerCount: 12,
@@ -56,8 +56,8 @@ export default function HomePage() {
       },
       {
         id: "3",
-        title: "주 4일제 도입 검토 중인데, 리스크가 무엇일까요?",
-        text: "총무 및 근태 관리 측면에서 주 4일제(또는 격주 4일제) 도입 시 가장 큰 허들이 무엇이었나요? 경험 있으신 담당자분들의 조언 부탁드립니다.",
+        title: "주 4일제 도입 시 근태 관리 리스크",
+        text: "총무 및 근태 관리 측면에서 주 4일제 도입 시 가장 큰 허들이 무엇이었나요? 경험 있으신 담당자분들의 조언이 절실합니다.",
         nickname: "총무관리자",
         viewCount: 2100,
         answerCount: 5,
@@ -140,14 +140,14 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-[#F8F9FA]">
-      <header className="sticky top-0 z-50 w-full premium-gradient border-b border-white/10 shadow-lg">
+      <header className="sticky top-0 z-50 w-full premium-gradient border-b border-white/10 shadow-xl">
         <div className="max-w-6xl mx-auto px-4 h-20 flex items-center justify-between gap-4">
           <Logo className="flex-shrink-0" isLight />
           
           <div className="hidden md:flex flex-1 max-w-xl relative group">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50 group-focus-within:text-accent transition-colors" />
             <Input 
-              placeholder="HR 인사이트, 연봉 트렌드, 조직문화를 검색해보세요..." 
+              placeholder="HR 트렌드, 연봉 정보, 조직문화 등 키워드를 검색하세요..." 
               className="pl-11 bg-white/10 border-none focus-visible:ring-accent/50 h-11 rounded-full text-sm text-white placeholder:text-white/40"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -155,18 +155,18 @@ export default function HomePage() {
           </div>
 
           <div className="flex items-center gap-1 md:gap-3">
-            <Button variant="ghost" size="icon" className="text-white/70 hover:text-accent hover:bg-white/5">
+            <Button variant="ghost" size="icon" className="text-white/70 hover:text-accent hover:bg-white/5 rounded-full">
               <Bell className="w-5 h-5" />
             </Button>
-            <Button variant="ghost" size="icon" className="text-white/70 hover:text-accent hover:bg-white/5">
+            <Button variant="ghost" size="icon" className="text-white/70 hover:text-accent hover:bg-white/5 rounded-full">
               <UserIcon className="w-5 h-5" />
             </Button>
             {isAdminMode ? (
-              <Button variant="outline" size="sm" onClick={() => setIsAdminMode(false)} className="h-8 border-accent/30 text-accent text-[10px] hover:bg-accent/10">
+              <Button variant="outline" size="sm" onClick={() => setIsAdminMode(false)} className="h-8 border-accent/30 text-accent text-[10px] font-black hover:bg-accent/10">
                 ADMIN EXIT
               </Button>
             ) : (
-              <Button variant="ghost" size="icon" onClick={() => setShowAdminDialog(true)} className="text-white/70 hover:text-accent hover:bg-white/5">
+              <Button variant="ghost" size="icon" onClick={() => setShowAdminDialog(true)} className="text-white/70 hover:text-accent hover:bg-white/5 rounded-full">
                 <Settings className="w-5 h-5" />
               </Button>
             )}
@@ -174,28 +174,28 @@ export default function HomePage() {
         </div>
       </header>
 
-      <div className="max-w-6xl mx-auto px-4 py-6 md:py-8">
+      <div className="max-w-6xl mx-auto px-4 py-8 md:py-12">
         {selectedQuestionId && selectedQuestion ? (
-          <div className="max-w-3xl mx-auto animate-in fade-in slide-in-from-right-4 duration-500">
+          <div className="max-w-3xl mx-auto animate-in fade-in slide-in-from-right-8 duration-700">
             <Button 
               variant="ghost" 
-              className="mb-6 text-muted-foreground hover:text-primary group pl-0 hover:bg-transparent"
+              className="mb-8 text-primary font-bold hover:text-accent group pl-0 hover:bg-transparent"
               onClick={() => setSelectedQuestionId(null)}
             >
-              <ChevronLeft className="w-4 h-4 mr-1 group-hover:-translate-x-1 transition-transform" />
-              피드로 돌아가기
+              <ChevronLeft className="w-5 h-5 mr-1 group-hover:-translate-x-1 transition-transform" />
+              전체 피드로 돌아가기
             </Button>
 
-            <article className="bg-white border border-primary/10 rounded-2xl overflow-hidden mb-6 shadow-sm">
-              <div className="p-6 md:p-8">
-                <div className="flex justify-between items-start mb-6">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold text-primary border border-primary/10">
+            <article className="bg-white border border-primary/5 rounded-[2rem] overflow-hidden mb-8 shadow-2xl">
+              <div className="p-8 md:p-12">
+                <div className="flex justify-between items-start mb-8">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-2xl bg-primary/5 flex items-center justify-center text-sm font-black text-primary border border-primary/10 shadow-inner">
                       {selectedQuestion.nickname.substring(0, 1)}
                     </div>
                     <div>
-                      <h3 className="font-bold text-foreground">@{selectedQuestion.nickname}</h3>
-                      <p className="text-[11px] text-muted-foreground">
+                      <h3 className="font-black text-primary text-lg">@{selectedQuestion.nickname}</h3>
+                      <p className="text-[12px] font-bold text-primary/30">
                         {new Date(selectedQuestion.createdAt).toLocaleString()}
                       </p>
                     </div>
@@ -205,16 +205,16 @@ export default function HomePage() {
                   )}
                 </div>
                 
-                <h1 className="text-2xl md:text-3xl font-bold text-foreground leading-tight mb-6">
+                <h1 className="text-3xl md:text-4xl font-black text-primary leading-tight mb-8 tracking-tighter">
                   {selectedQuestion.title}
                 </h1>
 
-                <p className="text-base md:text-lg text-foreground/90 leading-relaxed mb-8 break-words whitespace-pre-wrap">
+                <p className="text-lg md:text-xl text-primary/80 leading-[1.8] mb-10 break-words whitespace-pre-wrap font-medium">
                   {selectedQuestion.text}
                 </p>
 
                 {selectedQuestion.imageUrl && (
-                  <div className="relative w-full aspect-video rounded-xl overflow-hidden border border-primary/10 bg-primary/5 mb-8">
+                  <div className="relative w-full aspect-[16/9] rounded-[2rem] overflow-hidden border border-primary/5 bg-primary/5 mb-10 shadow-lg">
                     <Image 
                       src={selectedQuestion.imageUrl} 
                       alt="HR 관련 이미지" 
@@ -224,70 +224,82 @@ export default function HomePage() {
                   </div>
                 )}
                 
-                <div className="flex gap-4 pt-6 border-t border-primary/5 text-xs text-muted-foreground">
-                  <span>조회 {selectedQuestion.viewCount}</span>
-                  <span>답변 {selectedQuestion.answerCount}</span>
+                <div className="flex gap-6 pt-8 border-t border-primary/5 text-[13px] font-black text-primary/30">
+                  <span className="flex items-center gap-2"><Eye className="w-4 h-4"/> 조회 {selectedQuestion.viewCount}</span>
+                  <span className="flex items-center gap-2"><MessageCircle className="w-4 h-4"/> 답변 {selectedQuestion.answerCount}</span>
                 </div>
               </div>
             </article>
 
             <SubmissionForm 
               type="answer"
-              placeholder="동료 HR 담당자들에게 따뜻한 조언이나 의견을 남겨주세요."
+              placeholder="동료 HR 담당자들에게 따뜻한 조언이나 지식을 공유해주세요."
               onSubmit={(nick, title, text) => handleAddAnswer(nick, text)}
             />
 
             <AnswerFeed answers={questionAnswers} />
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            <main className="lg:col-span-8 space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+            <main className="lg:col-span-8 space-y-10">
               <MainBanner />
               
-              <div className="space-y-6">
+              <div className="space-y-10">
                 <SubmissionForm 
                   type="question"
-                  placeholder="인사, 교육, 총무, 조직문화 고민을 자유롭게 속삭여보세요."
+                  placeholder="인사, 교육, 총무 등 HR 관련 고민이나 정보를 자유롭게 속삭여보세요."
                   onSubmit={handleAddQuestion}
                 />
 
-                <div className="relative">
-                  <QuestionFeed 
-                    questions={filteredQuestions} 
-                    onSelectQuestion={handleSelectQuestion} 
-                  />
-                </div>
+                <QuestionFeed 
+                  questions={filteredQuestions} 
+                  onSelectQuestion={handleSelectQuestion} 
+                />
               </div>
             </main>
 
-            <aside className="lg:col-span-4 space-y-6 hidden lg:block">
+            <aside className="lg:col-span-4 space-y-8 hidden lg:block">
               <RankingList questions={topQuestions} onSelectQuestion={handleSelectQuestion} />
               
-              <div className="bg-white rounded-2xl p-6 border border-primary/10 shadow-sm">
-                <h3 className="text-sm font-bold text-primary mb-4">HR 전용 서비스 가이드</h3>
-                <div className="space-y-4">
-                   <div className="space-y-1">
-                      <p className="text-[13px] font-semibold text-foreground/90">철저한 익명 보장</p>
-                      <p className="text-[12px] text-muted-foreground leading-snug">현직 담당자들의 민감한 고민을 위해 모든 활동은 비식별화되어 보호됩니다.</p>
+              <div className="bg-white rounded-[2rem] p-8 border border-primary/5 shadow-xl">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="p-2 rounded-xl bg-accent/10">
+                    <Info className="w-5 h-5 text-accent" />
+                  </div>
+                  <h3 className="text-lg font-black text-primary">HR 전문가 플랫폼 가이드</h3>
+                </div>
+                <div className="space-y-6">
+                   <div className="group space-y-2">
+                      <p className="text-[15px] font-black text-primary group-hover:text-accent transition-colors flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-accent"></span>
+                        철저한 비식별 익명 보장
+                      </p>
+                      <p className="text-[13px] text-primary/50 leading-relaxed font-medium pl-3.5">모든 활동은 암호화되어 보호되며, 현직 담당자들의 안전한 소통을 최우선으로 합니다.</p>
                    </div>
-                   <div className="space-y-1">
-                      <p className="text-[13px] font-semibold text-foreground/90">카테고리별 전문 지식</p>
-                      <p className="text-[12px] text-muted-foreground leading-snug">채용부터 평가, 복리후생까지 각 분야 전문가의 인사이트를 만나보세요.</p>
+                   <div className="group space-y-2">
+                      <p className="text-[15px] font-black text-primary group-hover:text-accent transition-colors flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-accent"></span>
+                        전문 직무 카테고리
+                      </p>
+                      <p className="text-[13px] text-primary/50 leading-relaxed font-medium pl-3.5">인사, 교육, 평가, 복리후생 등 각 분야 전문가들의 실질적인 인사이트를 제공합니다.</p>
                    </div>
-                   <div className="space-y-1">
-                      <p className="text-[13px] font-semibold text-foreground/90">클린 비즈니스 커뮤니티</p>
-                      <p className="text-[12px] text-muted-foreground leading-snug">전문가다운 상호 존중을 바탕으로 실질적인 해결책을 공유합니다.</p>
+                   <div className="group space-y-2">
+                      <p className="text-[15px] font-black text-primary group-hover:text-accent transition-colors flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-accent"></span>
+                        상호 존중 커뮤니티
+                      </p>
+                      <p className="text-[13px] text-primary/50 leading-relaxed font-medium pl-3.5">전문가다운 매너와 상호 존중을 바탕으로 건강한 비즈니스 커뮤니티를 지향합니다.</p>
                    </div>
                 </div>
               </div>
 
-              <div className="px-2 text-[11px] text-muted-foreground/60 leading-relaxed text-center">
-                <div className="flex flex-wrap justify-center gap-x-3 gap-y-1 mb-3">
-                  <span className="hover:text-primary cursor-pointer transition-colors">이용약관</span>
-                  <span className="hover:text-primary cursor-pointer transition-colors">개인정보처리방침</span>
-                  <span className="hover:text-primary cursor-pointer transition-colors">커뮤니티 가이드라인</span>
+              <div className="px-6 text-[11px] text-primary/30 leading-relaxed font-bold">
+                <div className="flex flex-wrap gap-x-4 gap-y-1 mb-4">
+                  <span className="hover:text-accent cursor-pointer transition-colors">이용약관</span>
+                  <span className="hover:text-accent cursor-pointer transition-colors">개인정보처리방침</span>
+                  <span className="hover:text-accent cursor-pointer transition-colors">가이드라인</span>
                 </div>
-                <p>© {new Date().getFullYear()} Chuchot HR. Premium Networking.</p>
+                <p>© {new Date().getFullYear()} CHUCHOT HR. Premium Professional Networking.</p>
               </div>
             </aside>
           </div>
@@ -295,26 +307,26 @@ export default function HomePage() {
       </div>
 
       <Dialog open={showAdminDialog} onOpenChange={setShowAdminDialog}>
-        <DialogContent className="bg-white border-primary/20 text-foreground">
+        <DialogContent className="bg-white border-primary/20 rounded-[2rem] p-8">
           <DialogHeader>
-            <DialogTitle className="text-primary">관리자 인증</DialogTitle>
-            <DialogDescription className="text-muted-foreground">
-              커뮤니티 운영 모드 활성화를 위해 인증 키를 입력하세요.
+            <DialogTitle className="text-2xl font-black text-primary">관리자 인증</DialogTitle>
+            <DialogDescription className="text-primary/40 font-bold">
+              안전한 커뮤니티 운영을 위해 인증 키를 입력해 주세요.
             </DialogDescription>
           </DialogHeader>
-          <div className="py-4">
+          <div className="py-6">
             <Input 
               type="password" 
               placeholder="ADMIN ACCESS KEY" 
               value={adminPassword}
               onChange={(e) => setAdminPassword(e.target.value)}
-              className="bg-primary/5 border-primary/10 placeholder:text-primary/40"
+              className="bg-primary/5 border-none h-12 rounded-xl text-center font-black placeholder:text-primary/20 focus-visible:ring-accent/50"
               onKeyDown={(e) => e.key === 'Enter' && handleAdminAuth()}
             />
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowAdminDialog(false)} className="border-primary/10">취소</Button>
-            <Button onClick={handleAdminAuth}>인증</Button>
+          <DialogFooter className="flex gap-2">
+            <Button variant="ghost" onClick={() => setShowAdminDialog(false)} className="font-bold">취소</Button>
+            <Button onClick={handleAdminAuth} className="bg-primary text-accent font-black px-8">인증 완료</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
