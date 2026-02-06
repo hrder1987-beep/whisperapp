@@ -3,8 +3,8 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 
 export const metadata: Metadata = {
-  title: 'Chuchot - Whisper Anonymously',
-  description: 'A real-time anonymous question and answer platform.',
+  title: 'Chuchot (슈쇼) - 익명으로 속삭이세요',
+  description: '실시간으로 소통하는 익명 질문 및 답변 플랫폼입니다.',
 };
 
 export default function RootLayout({
@@ -13,7 +13,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="ko" className="dark">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />

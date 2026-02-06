@@ -20,7 +20,7 @@ export function BestQuestionsBanner({ questions }: BestQuestionsBannerProps) {
     <div className="w-full mb-12">
       <div className="flex items-center gap-2 mb-4 text-primary font-semibold text-lg">
         <TrendingUp className="w-5 h-5" />
-        <h2>Best Whispers</h2>
+        <h2>오늘의 인기 속삭임</h2>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {topQuestions.map((q, idx) => (
@@ -28,7 +28,7 @@ export function BestQuestionsBanner({ questions }: BestQuestionsBannerProps) {
             <CardContent className="p-6">
               <div className="flex justify-between items-start mb-4">
                 <Badge variant="outline" className="text-primary border-primary/30">
-                  #{idx + 1} Best
+                  TOP {idx + 1}
                 </Badge>
                 <div className="flex items-center gap-1 text-xs text-muted-foreground">
                   <Eye className="w-3 h-3" />

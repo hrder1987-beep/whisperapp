@@ -3,6 +3,7 @@
 import { Answer } from "@/lib/types"
 import { Card, CardContent } from "@/components/ui/card"
 import { formatDistanceToNow } from "date-fns"
+import { ko } from "date-fns/locale"
 import { Clock } from "lucide-react"
 
 interface AnswerFeedProps {
@@ -15,11 +16,11 @@ export function AnswerFeed({ answers }: AnswerFeedProps) {
   return (
     <div className="mt-8 space-y-4">
       <h3 className="text-lg font-semibold text-primary mb-4 flex items-center gap-2">
-        Replies ({answers.length})
+        답글 ({answers.length})
       </h3>
       
       {sortedAnswers.length === 0 ? (
-        <p className="text-muted-foreground text-center py-8">Be the first to reply to this whisper.</p>
+        <p className="text-muted-foreground text-center py-8">이 속삭임에 첫 번째 답글을 남겨보세요.</p>
       ) : (
         sortedAnswers.map((a) => (
           <Card key={a.id} className="glass-morphism border-white/5 bg-white/5">
@@ -28,7 +29,7 @@ export function AnswerFeed({ answers }: AnswerFeedProps) {
                 <span className="text-primary font-medium italic">@{a.nickname}</span>
                 <span className="text-muted-foreground flex items-center gap-1">
                   <Clock className="w-3 h-3" />
-                  {formatDistanceToNow(a.createdAt)} ago
+                  {formatDistanceToNow(a.createdAt, { addSuffix: true, locale: ko })}
                 </span>
               </div>
               <p className="text-base text-foreground/90 leading-relaxed">

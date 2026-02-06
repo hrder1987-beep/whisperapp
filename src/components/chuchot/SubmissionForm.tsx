@@ -24,8 +24,8 @@ export function SubmissionForm({ placeholder, onSubmit, type }: SubmissionFormPr
     e.preventDefault()
     if (!nickname.trim() || !text.trim()) {
       toast({
-        title: "Missing fields",
-        description: "Please provide a nickname and your message.",
+        title: "입력 오류",
+        description: "닉네임과 내용을 모두 입력해주세요.",
         variant: "destructive"
       })
       return
@@ -39,8 +39,8 @@ export function SubmissionForm({ placeholder, onSubmit, type }: SubmissionFormPr
       setText("")
       setIsSubmitting(false)
       toast({
-        title: "Whisper sent",
-        description: `Your ${type} has been published anonymously.`
+        title: "속삭임 전송 완료",
+        description: `당신의 ${type === 'question' ? '질문이' : '답변이'} 익명으로 게시되었습니다.`
       })
     }, 600)
   }
@@ -53,7 +53,7 @@ export function SubmissionForm({ placeholder, onSubmit, type }: SubmissionFormPr
           <div className="relative group">
             <User className="absolute left-3 top-3 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
             <Input
-              placeholder="Nickname (e.g. SecretGuest)"
+              placeholder="닉네임 (예: 비밀손님)"
               value={nickname}
               onChange={(e) => setNickname(e.target.value)}
               className="pl-10 bg-white/5 border-white/10 focus-visible:ring-primary focus-visible:border-primary placeholder:text-muted-foreground/50"
@@ -68,17 +68,17 @@ export function SubmissionForm({ placeholder, onSubmit, type }: SubmissionFormPr
             maxLength={300}
           />
           <div className="flex justify-between items-center">
-            <span className="text-xs text-muted-foreground">{text.length}/300 characters</span>
+            <span className="text-xs text-muted-foreground">{text.length}/300 자</span>
             <Button 
               type="submit" 
               disabled={isSubmitting}
               className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-8"
             >
               {isSubmitting ? (
-                "Sending..."
+                "전송 중..."
               ) : (
                 <span className="flex items-center gap-2">
-                  Whisper <SendHorizontal className="w-4 h-4" />
+                  속삭이기 <SendHorizontal className="w-4 h-4" />
                 </span>
               )}
             </Button>
