@@ -15,7 +15,7 @@ interface SubmissionFormProps {
   type: "question" | "answer"
 }
 
-export function SubmissionForm({ placeholder, onSubmit, type }: SubmissionFormProps) {
+export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
   const [nickname, setNickname] = useState("")
   const [title, setTitle] = useState("")
   const [text, setText] = useState("")
@@ -86,47 +86,55 @@ export function SubmissionForm({ placeholder, onSubmit, type }: SubmissionFormPr
   }
 
   return (
-    <Card className="bg-white border-primary/10 mb-8 overflow-hidden shadow-md hover:border-accent/20 transition-all rounded-2xl">
-      <div className="h-2 bg-accent w-full" />
-      <CardContent className="p-6 md:p-8">
+    <Card className="bg-white border-none mb-8 overflow-hidden shadow-xl rounded-[1.5rem] relative">
+      <div className="h-2 bg-accent w-full absolute top-0 left-0" />
+      <CardContent className="p-6 md:p-8 pt-10">
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="flex gap-5">
-             <div className="w-12 h-12 rounded-2xl bg-primary text-accent flex-shrink-0 flex items-center justify-center shadow-lg transform rotate-3 hover:rotate-0 transition-transform">
-               <User className="w-7 h-7" />
+          <div className="flex gap-4 md:gap-6">
+             <div className="w-12 h-12 rounded-2xl bg-primary text-accent flex-shrink-0 flex items-center justify-center shadow-lg self-start">
+               <User className="w-6 h-6" />
              </div>
-             <div className="flex-1 space-y-5">
+             <div className="flex-1 space-y-4">
                 <div className="flex items-center gap-3">
                   <Input
                     placeholder="익명 닉네임"
                     value={nickname}
                     onChange={(e) => setNickname(e.target.value)}
-                    className="bg-primary/5 border-none h-10 w-fit min-w-[150px] focus-visible:ring-accent/30 text-sm font-bold text-primary placeholder:text-primary/50 rounded-xl px-4"
+                    className="bg-muted border-none h-11 w-44 focus-visible:ring-accent/30 text-sm font-bold text-primary placeholder:text-primary/30 rounded-xl px-4"
                     maxLength={20}
                   />
-                  <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
-                  <span className="text-[10px] text-accent font-bold uppercase tracking-[0.2em]">Private Space</span>
+                  <div className="flex items-center gap-1.5 ml-1">
+                    <div className="w-1.5 h-1.5 rounded-full bg-accent" />
+                    <span className="text-[10px] text-accent font-black uppercase tracking-[0.15em]">Private Space</span>
+                  </div>
                 </div>
                 
                 {type === "question" && (
-                  <Input
-                    placeholder="전하고 싶은 핵심 제목을 적어주세요"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    className="bg-transparent border-none p-0 h-auto focus-visible:ring-0 text-xl md:text-2xl font-black text-primary placeholder:text-primary/30 border-b-2 border-primary/5 pb-4 rounded-none focus:border-accent transition-all"
-                  />
+                  <div className="flex items-center gap-3 group">
+                    <span className="text-primary/40 font-black text-sm whitespace-nowrap">제목 :</span>
+                    <Input
+                      placeholder="제목을 입력하세요"
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      className="bg-transparent border-none p-0 h-auto focus-visible:ring-0 text-lg md:text-xl font-black text-primary placeholder:text-primary/20 transition-all"
+                    />
+                  </div>
                 )}
 
-                <Textarea
-                  placeholder={placeholder}
-                  value={text}
-                  onChange={(e) => setText(e.target.value)}
-                  className="min-h-[160px] bg-transparent border-none p-0 focus-visible:ring-0 resize-y text-base md:text-lg leading-relaxed text-foreground placeholder:text-primary/30"
-                />
+                <div className="flex gap-3 pt-2">
+                  <span className="text-primary/40 font-black text-sm whitespace-nowrap mt-1">내용 :</span>
+                  <Textarea
+                    placeholder="내용을 입력하세요"
+                    value={text}
+                    onChange={(e) => setText(e.target.value)}
+                    className="min-h-[140px] bg-transparent border-none p-0 focus-visible:ring-0 resize-y text-base md:text-lg leading-relaxed text-foreground placeholder:text-primary/20"
+                  />
+                </div>
              </div>
           </div>
 
           {imageUrl && (
-            <div className="relative w-full max-w-lg aspect-video rounded-2xl overflow-hidden border-2 border-accent/20 shadow-xl mt-4 ml-0 md:ml-16 group">
+            <div className="relative w-full max-w-md aspect-video rounded-2xl overflow-hidden border-2 border-accent/20 shadow-lg mt-2 ml-0 md:ml-16 group">
               <Image 
                 src={imageUrl} 
                 alt="미리보기" 
@@ -138,17 +146,17 @@ export function SubmissionForm({ placeholder, onSubmit, type }: SubmissionFormPr
                     type="button"
                     variant="destructive"
                     size="icon"
-                    className="rounded-full h-10 w-10 shadow-2xl transform scale-90 group-hover:scale-100 transition-transform"
+                    className="rounded-full h-8 w-8"
                     onClick={handleRemoveImage}
                   >
-                    <X className="h-5 w-5" />
+                    <X className="h-4 w-4" />
                   </Button>
               </div>
             </div>
           )}
 
           <div className="flex justify-between items-center pt-6 border-t border-primary/5">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
               {type === "question" && (
                 <>
                   <input
@@ -162,10 +170,10 @@ export function SubmissionForm({ placeholder, onSubmit, type }: SubmissionFormPr
                     type="button"
                     variant="ghost"
                     size="sm"
-                    className="text-primary/60 hover:text-accent hover:bg-accent/10 h-10 px-4 rounded-xl transition-all font-bold"
+                    className="text-primary/60 hover:text-accent hover:bg-accent/5 h-10 px-4 rounded-xl transition-all font-bold"
                     onClick={() => fileInputRef.current?.click()}
                   >
-                    <ImageIcon className="w-5 h-5 mr-2" />
+                    <ImageIcon className="w-4 h-4 mr-2" />
                     사진
                   </Button>
                 </>
@@ -174,9 +182,9 @@ export function SubmissionForm({ placeholder, onSubmit, type }: SubmissionFormPr
                 type="button"
                 variant="ghost"
                 size="sm"
-                className="text-primary/60 hover:text-accent hover:bg-accent/10 h-10 px-4 rounded-xl transition-all font-bold"
+                className="text-primary/60 hover:text-accent hover:bg-accent/5 h-10 px-4 rounded-xl transition-all font-bold"
               >
-                <Smile className="w-5 h-5 mr-2" />
+                <Smile className="w-4 h-4 mr-2" />
                 감정
               </Button>
             </div>
@@ -184,12 +192,12 @@ export function SubmissionForm({ placeholder, onSubmit, type }: SubmissionFormPr
             <Button 
               type="submit" 
               disabled={isSubmitting || !text.trim()}
-              className="bg-primary hover:bg-primary/90 text-accent font-black h-12 px-10 rounded-2xl transition-all shadow-xl active:scale-95 disabled:opacity-50 flex items-center gap-2"
+              className="bg-[#89A894] hover:bg-[#789683] text-white font-black h-12 px-8 rounded-2xl transition-all shadow-md active:scale-95 disabled:opacity-50 flex items-center gap-2 border-none"
             >
               {isSubmitting ? "전송 중..." : (
                 <>
                   게시하기
-                  <Send className="w-4 h-4" />
+                  <Send className="w-4 h-4 ml-1" />
                 </>
               )}
             </Button>

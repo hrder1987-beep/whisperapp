@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
@@ -34,11 +33,12 @@ export default function HomePage() {
   const { toast } = useToast()
 
   useEffect(() => {
+    // 예시 데이터에서 불필요한 설명을 줄이고 깔끔하게 정리
     const initialQuestions: Question[] = [
       {
         id: "1",
         title: "진정한 행복의 비결은 무엇일까요?",
-        text: "요즘 부쩍 고민이 많아지네요. 여러분이 생각하는 행복의 조건은 무엇인가요? 돈, 명예, 아니면 사소한 일상일까요?",
+        text: "여러분이 생각하는 행복의 조건은 무엇인가요? 돈, 명예, 아니면 사소한 일상일까요?",
         nickname: "행복찾기",
         viewCount: 124,
         answerCount: 2,
@@ -48,7 +48,7 @@ export default function HomePage() {
       {
         id: "2",
         title: "과거의 나에게 해주고 싶은 말",
-        text: "과거의 자신에게 딱 한 마디만 속삭일 수 있다면 무엇을 말해주고 싶나요? 저는 '조금 더 용기 내봐'라고 말해주고 싶어요.",
+        text: "과거의 자신에게 딱 한 마디만 속삭일 수 있다면 무엇을 말해주고 싶나요?",
         nickname: "시간여행자",
         viewCount: 89,
         answerCount: 1,
@@ -57,22 +57,13 @@ export default function HomePage() {
       {
         id: "3",
         title: "디자인 컬러 조합 추천 부탁드려요",
-        text: "딥 그린과 골드 조합은 왜 이렇게 고급스럽고 매력적일까요? 브랜드 디자인 공부 중인데 이 색조합이 가장 마음에 들어요. 다른 추천 조합도 있을까요?",
+        text: "딥 그린과 골드 조합 외에 고급스러운 추천 조합이 있을까요?",
         nickname: "디자이너",
         viewCount: 210,
         answerCount: 0,
         createdAt: Date.now() - 3600000 * 0.5,
         imageUrl: "https://images.unsplash.com/photo-1758179761324-63b474fe55a0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxwZWFjZWZ1bCUyMGZvcmVzdHxlbnwwfHx8fDE3NzAzNTQzNzd8MA&ixlib=rb-4.1.0&q=80&w=1080"
-      },
-      ...Array.from({ length: 7 }).map((_, i) => ({
-        id: `dummy-${i}`,
-        title: `제목: 익명의 속삭임 ${i + 4}호`,
-        text: `${i + 4}번째로 올라온 익명의 속삭임입니다. 리멤버 스타일로 개편된 UI가 마음에 드셨으면 좋겠네요. 더 많은 이야기를 들려주세요.`,
-        nickname: `익명${i + 4}`,
-        viewCount: Math.floor(Math.random() * 200),
-        answerCount: Math.floor(Math.random() * 10),
-        createdAt: Date.now() - 3600000 * (i + 10),
-      }))
+      }
     ]
     setQuestions(initialQuestions)
   }, [])
@@ -148,7 +139,7 @@ export default function HomePage() {
   const questionAnswers = answers.filter(a => a.questionId === selectedQuestionId)
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[#F8F9FA]">
       <header className="sticky top-0 z-50 w-full premium-gradient border-b border-white/10 shadow-lg">
         <div className="max-w-6xl mx-auto px-4 h-20 flex items-center justify-between gap-4">
           <Logo className="flex-shrink-0" isLight />
@@ -229,7 +220,6 @@ export default function HomePage() {
                       alt="상세 이미지" 
                       fill 
                       className="object-cover"
-                      data-ai-hint="post detail"
                     />
                   </div>
                 )}
