@@ -112,21 +112,28 @@ export function Header({
               </Button>
             </div>
           ) : (
-            <Link href="/auth">
-              <Button size="sm" className="bg-accent text-primary font-black hover:bg-accent/90 rounded-xl px-5">
-                로그인 / 가입
-              </Button>
-            </Link>
+            <div className="flex items-center gap-2">
+              <Link href="/auth?mode=login">
+                <Button variant="ghost" size="sm" className="text-white hover:text-accent font-black transition-colors">
+                  로그인
+                </Button>
+              </Link>
+              <Link href="/auth?mode=signup">
+                <Button size="sm" className="bg-accent text-primary font-black hover:bg-accent/90 rounded-xl px-5 transition-all shadow-lg hover:scale-105 active:scale-95">
+                  회원가입
+                </Button>
+              </Link>
+            </div>
           )}
 
           {!isAdminMode && onOpenAdminAuth && (
-             <Button variant="ghost" size="icon" onClick={onOpenAdminAuth} className="text-white/30 hover:text-accent">
+             <Button variant="ghost" size="icon" onClick={onOpenAdminAuth} className="text-white/30 hover:text-accent ml-2">
                 <Settings className="w-4 h-4" />
              </Button>
           )}
           
           {isAdminMode && onExitAdmin && (
-            <Button variant="outline" size="sm" onClick={onExitAdmin} className="h-8 border-accent/30 text-accent text-[10px] font-black hover:bg-accent/10">
+            <Button variant="outline" size="sm" onClick={onExitAdmin} className="h-8 border-accent/30 text-accent text-[10px] font-black hover:bg-accent/10 ml-2">
               ADMIN EXIT
             </Button>
           )}
