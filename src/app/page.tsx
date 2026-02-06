@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
@@ -10,7 +11,7 @@ import { ShuChat } from "@/components/chuchot/ShuChat"
 import { AdminCMS } from "@/components/chuchot/AdminCMS"
 import { Question, Answer } from "@/lib/types"
 import { Button } from "@/components/ui/button"
-import { Bell, Search, User as UserIcon, Settings, Info, X, ArrowLeft, LayoutDashboard } from "lucide-react"
+import { Bell, Search, User as UserIcon, Settings, Info, X, ArrowLeft, LayoutDashboard, ChevronRight } from "lucide-react"
 import { 
   Dialog, 
   DialogContent, 
@@ -81,7 +82,6 @@ export default function HomePage() {
 
     if (activeTab === "popular") result.sort((a, b) => b.viewCount - a.viewCount)
     else if (activeTab === "waiting") result = result.filter(q => q.answerCount === 0)
-    // "all" is already sorted by desc createdAt from firestore query
 
     return result
   }, [questions, searchQuery, activeTab])
@@ -204,40 +204,65 @@ export default function HomePage() {
               "space-y-10 transition-all duration-500",
               isSearching ? "lg:col-span-12 max-w-4xl mx-auto w-full" : "lg:col-span-8"
             )}>
-              {!isSearching && <MainBanner banners={cmsBanners} />}
-              
-              <div className="space-y-10">
-                {!isSearching && (
-                  <SubmissionForm 
-                    type="question"
-                    placeholder="교육 설계, L&D 전략, 사내 세미나 등 HRD 관련 고민을 속삭여보세요."
-                    onSubmit={handleAddQuestion}
-                  />
-                )}
-
-                {isSearching && (
-                  <div className="flex items-center justify-between px-2 mb-2">
-                    <div className="flex items-center gap-4">
-                      <button onClick={() => setSearchQuery("")} className="p-2 hover:bg-primary/5 rounded-full text-primary/40"><ArrowLeft className="w-6 h-6" /></button>
-                      <div>
-                        <h2 className="text-2xl font-black text-primary">' {searchQuery} ' 검색 결과</h2>
-                        <p className="text-sm font-bold text-primary/30">{filteredQuestions.length}개의 속삭임</p>
-                      </div>
+              {/* Search Result View (Inspired by Offpiste) */}
+              {isSearching ? (
+                <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+                  <div className="flex flex-col gap-6 mb-12">
+                    <button 
+                      onClick={() => setSearchQuery("")} 
+                      className="flex items-center gap-2 text-primary/40 hover:text-accent font-bold text-sm transition-colors w-fit"
+                    >
+                      <ArrowLeft className="w-4 h-4" />
+                      홈으로 돌아가기
+                    </button>
+                    
+                    <div className="space-y-2">
+                      <h2 className="text-4xl md:text-5xl font-black text-primary tracking-tight">
+                        "<span className="text-accent">{searchQuery}</span>" 검색 결과
+                      </h2>
+                      <p className="text-lg font-bold text-primary/30">
+                        {filteredQuestions.length}개의 지식 속삭임을 찾았습니다.
+                      </p>
                     </div>
+                    
+                    <div className="h-1 w-20 bg-accent rounded-full mt-2"></div>
                   </div>
-                )}
 
-                <QuestionFeed 
-                  questions={filteredQuestions} 
-                  onSelectQuestion={() => {}}
-                  selectedId={null}
-                  answers={answers}
-                  onAddAnswer={() => {}}
-                  activeTab={activeTab}
-                  onTabChange={setActiveTab}
-                  isAdminMode={isAdminMode}
-                />
-              </div>
+                  <QuestionFeed 
+                    questions={filteredQuestions} 
+                    onSelectQuestion={() => {}}
+                    selectedId={null}
+                    answers={answers}
+                    onAddAnswer={() => {}}
+                    activeTab={activeTab}
+                    onTabChange={setActiveTab}
+                    isAdminMode={isAdminMode}
+                  />
+                </div>
+              ) : (
+                <>
+                  <MainBanner banners={cmsBanners} />
+                  
+                  <div className="space-y-10">
+                    <SubmissionForm 
+                      type="question"
+                      placeholder="교육 설계, L&D 전략, 사내 세미나 등 HRD 관련 고민을 속삭여보세요."
+                      onSubmit={handleAddQuestion}
+                    />
+
+                    <QuestionFeed 
+                      questions={filteredQuestions} 
+                      onSelectQuestion={() => {}}
+                      selectedId={null}
+                      answers={answers}
+                      onAddAnswer={() => {}}
+                      activeTab={activeTab}
+                      onTabChange={setActiveTab}
+                      isAdminMode={isAdminMode}
+                    />
+                  </div>
+                </>
+              )}
             </main>
 
             {!isSearching && (
