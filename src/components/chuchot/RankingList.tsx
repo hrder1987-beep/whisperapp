@@ -11,7 +11,7 @@ interface RankingListProps {
 
 export function RankingList({ questions, onSelectQuestion }: RankingListProps) {
   return (
-    <div className="bg-card rounded-xl p-5 border border-white/5 shadow-sm overflow-hidden">
+    <div className="bg-white rounded-xl p-5 border border-primary/10 shadow-sm overflow-hidden">
       <div className="flex items-center justify-between mb-5">
         <h3 className="text-[15px] font-bold text-foreground flex items-center gap-2">
           실시간 인기 속삭임
@@ -48,7 +48,7 @@ export function RankingList({ questions, onSelectQuestion }: RankingListProps) {
         ))}
       </div>
       
-      <button className="w-full mt-6 pt-4 border-t border-white/5 text-[12px] font-bold text-muted-foreground hover:text-primary transition-colors text-center">
+      <button className="w-full mt-6 pt-4 border-t border-primary/5 text-[12px] font-bold text-muted-foreground hover:text-primary transition-colors text-center">
         인기글 더보기
       </button>
     </div>

@@ -9,7 +9,7 @@ import { AnswerFeed } from "@/components/chuchot/AnswerFeed"
 import { RankingList } from "@/components/chuchot/RankingList"
 import { Question, Answer } from "@/lib/types"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, ShieldCheck, Settings, Search, Bell, User as UserIcon } from "lucide-react"
+import { ChevronLeft, Bell, Search, User as UserIcon, Settings } from "lucide-react"
 import { 
   Dialog, 
   DialogContent, 
@@ -66,7 +66,7 @@ export default function HomePage() {
       ...Array.from({ length: 7 }).map((_, i) => ({
         id: `dummy-${i}`,
         title: `제목: 익명의 속삭임 ${i + 4}호`,
-        text: `${i + 4}번째로 올라온 익명의 속삭임입니다. 리멤버 스타일로 개편된 UI가 마음에 드셨으면 좋겠네요. 더 많은 이야기를 들려주세요. 본문 내용이 길어질 경우 어떻게 보일지 테스트 중입니다.`,
+        text: `${i + 4}번째로 올라온 익명의 속삭임입니다. 리멤버 스타일로 개편된 UI가 마음에 드셨으면 좋겠네요. 더 많은 이야기를 들려주세요.`,
         nickname: `익명${i + 4}`,
         viewCount: Math.floor(Math.random() * 200),
         answerCount: Math.floor(Math.random() * 10),
@@ -147,8 +147,8 @@ export default function HomePage() {
   const questionAnswers = answers.filter(a => a.questionId === selectedQuestionId)
 
   return (
-    <div className="min-h-screen">
-      <header className="sticky top-0 z-50 w-full border-b border-black/5 bg-white/80 backdrop-blur-md">
+    <div className="min-h-screen bg-[#F8F9FA]">
+      <header className="sticky top-0 z-50 w-full border-b border-primary/10 bg-white/90 backdrop-blur-md">
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
           <Logo className="flex-shrink-0" />
           
@@ -156,17 +156,17 @@ export default function HomePage() {
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
             <Input 
               placeholder="관심 있는 내용을 검색해보세요..." 
-              className="pl-11 bg-black/[0.03] border-none focus-visible:ring-primary h-10 rounded-full text-sm"
+              className="pl-11 bg-primary/5 border-none focus-visible:ring-primary h-10 rounded-full text-sm"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
 
           <div className="flex items-center gap-1 md:gap-3">
-            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary hover:bg-black/[0.03]">
+            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary hover:bg-primary/5">
               <Bell className="w-5 h-5" />
             </Button>
-            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary hover:bg-black/[0.03]">
+            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary hover:bg-primary/5">
               <UserIcon className="w-5 h-5" />
             </Button>
             {isAdminMode ? (
@@ -174,7 +174,7 @@ export default function HomePage() {
                 관리 종료
               </Button>
             ) : (
-              <Button variant="ghost" size="icon" onClick={() => setShowAdminDialog(true)} className="text-muted-foreground hover:bg-black/[0.03]">
+              <Button variant="ghost" size="icon" onClick={() => setShowAdminDialog(true)} className="text-muted-foreground hover:bg-primary/5">
                 <Settings className="w-5 h-5" />
               </Button>
             )}
@@ -194,7 +194,7 @@ export default function HomePage() {
               목록으로
             </Button>
 
-            <article className="bg-card border border-black/5 rounded-xl overflow-hidden mb-6 shadow-sm">
+            <article className="bg-white border border-primary/10 rounded-xl overflow-hidden mb-6 shadow-sm">
               <div className="p-6 md:p-8">
                 <div className="flex justify-between items-start mb-6">
                   <div className="flex items-center gap-3">
@@ -222,7 +222,7 @@ export default function HomePage() {
                 </p>
 
                 {selectedQuestion.imageUrl && (
-                  <div className="relative w-full aspect-video rounded-xl overflow-hidden border border-black/5 bg-black/[0.02] mb-8">
+                  <div className="relative w-full aspect-video rounded-xl overflow-hidden border border-primary/10 bg-primary/5 mb-8">
                     <Image 
                       src={selectedQuestion.imageUrl} 
                       alt="상세 이미지" 
@@ -233,7 +233,7 @@ export default function HomePage() {
                   </div>
                 )}
                 
-                <div className="flex gap-4 pt-6 border-t border-black/5 text-xs text-muted-foreground">
+                <div className="flex gap-4 pt-6 border-t border-primary/5 text-xs text-muted-foreground">
                   <span>조회 {selectedQuestion.viewCount}</span>
                   <span>댓글 {selectedQuestion.answerCount}</span>
                 </div>
@@ -272,7 +272,7 @@ export default function HomePage() {
             <aside className="lg:col-span-4 space-y-6 hidden lg:block">
               <RankingList questions={topQuestions} onSelectQuestion={handleSelectQuestion} />
               
-              <div className="bg-card rounded-xl p-6 border border-black/5 shadow-sm">
+              <div className="bg-white rounded-xl p-6 border border-primary/10 shadow-sm">
                 <h3 className="text-sm font-bold text-primary mb-4">슈쇼 서비스 가이드</h3>
                 <div className="space-y-4">
                    <div className="space-y-1">
@@ -305,7 +305,7 @@ export default function HomePage() {
       </div>
 
       <Dialog open={showAdminDialog} onOpenChange={setShowAdminDialog}>
-        <DialogContent className="bg-white border-primary/30 text-foreground">
+        <DialogContent className="bg-white border-primary/20 text-foreground">
           <DialogHeader>
             <DialogTitle className="text-primary">관리자 인증</DialogTitle>
             <DialogDescription className="text-muted-foreground">
@@ -318,12 +318,12 @@ export default function HomePage() {
               placeholder="키 입력..." 
               value={adminPassword}
               onChange={(e) => setAdminPassword(e.target.value)}
-              className="bg-black/[0.02] border-black/5"
+              className="bg-primary/5 border-primary/10"
               onKeyDown={(e) => e.key === 'Enter' && handleAdminAuth()}
             />
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowAdminDialog(false)} className="border-black/5">취소</Button>
+            <Button variant="outline" onClick={() => setShowAdminDialog(false)} className="border-primary/10">취소</Button>
             <Button onClick={handleAdminAuth}>인증하기</Button>
           </DialogFooter>
         </DialogContent>

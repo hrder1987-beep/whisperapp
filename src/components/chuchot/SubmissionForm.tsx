@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
-import { SendHorizontal, ImageIcon, X, Smile } from "lucide-react"
+import { ImageIcon, X, Smile } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import Image from "next/image"
 
@@ -86,7 +86,7 @@ export function SubmissionForm({ placeholder, onSubmit, type }: SubmissionFormPr
   }
 
   return (
-    <Card className="bg-white border-black/5 mb-6 overflow-hidden shadow-sm">
+    <Card className="bg-white border-primary/10 mb-6 overflow-hidden shadow-sm">
       <CardContent className="p-4 md:p-5">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="flex gap-3">
@@ -107,7 +107,7 @@ export function SubmissionForm({ placeholder, onSubmit, type }: SubmissionFormPr
                     placeholder="제목을 입력하세요"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    className="bg-transparent border-none p-0 h-auto focus-visible:ring-0 text-lg font-bold placeholder:text-muted-foreground/30 border-b border-black/[0.03] pb-2 rounded-none"
+                    className="bg-transparent border-none p-0 h-auto focus-visible:ring-0 text-lg font-bold placeholder:text-muted-foreground/30 border-b border-primary/5 pb-2 rounded-none"
                   />
                 )}
 
@@ -121,7 +121,7 @@ export function SubmissionForm({ placeholder, onSubmit, type }: SubmissionFormPr
           </div>
 
           {imageUrl && (
-            <div className="relative w-full max-w-sm aspect-video rounded-lg overflow-hidden border border-black/5 group mt-2 ml-13">
+            <div className="relative w-full max-w-sm aspect-video rounded-lg overflow-hidden border border-primary/10 group mt-2 ml-13">
               <Image 
                 src={imageUrl} 
                 alt="미리보기" 
@@ -140,7 +140,7 @@ export function SubmissionForm({ placeholder, onSubmit, type }: SubmissionFormPr
             </div>
           )}
 
-          <div className="flex justify-between items-center pt-3 border-t border-black/[0.03]">
+          <div className="flex justify-between items-center pt-3 border-t border-primary/5">
             <div className="flex items-center gap-1">
               {type === "question" && (
                 <>
@@ -155,7 +155,7 @@ export function SubmissionForm({ placeholder, onSubmit, type }: SubmissionFormPr
                     type="button"
                     variant="ghost"
                     size="sm"
-                    className="text-muted-foreground hover:text-primary hover:bg-black/[0.03] h-9 px-2"
+                    className="text-muted-foreground hover:text-primary hover:bg-primary/5 h-9 px-2"
                     onClick={() => fileInputRef.current?.click()}
                   >
                     <ImageIcon className="w-5 h-5 mr-1.5" />
@@ -167,7 +167,7 @@ export function SubmissionForm({ placeholder, onSubmit, type }: SubmissionFormPr
                 type="button"
                 variant="ghost"
                 size="sm"
-                className="text-muted-foreground hover:text-primary hover:bg-black/[0.03] h-9 px-2"
+                className="text-muted-foreground hover:text-primary hover:bg-primary/5 h-9 px-2"
               >
                 <Smile className="w-5 h-5 mr-1.5" />
                 이모지
