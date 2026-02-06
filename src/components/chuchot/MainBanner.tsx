@@ -10,17 +10,17 @@ export function MainBanner() {
   const banners = [
     {
       id: 1,
-      title: "HR 전문가들의 품격 있는 속삭임",
+      title: "HR 현직자들의 품격 있는 속삭임",
       description: "채용, 교육, 조직문화까지. 현직 담당자들과 익명으로 인사이트를 공유하세요.",
       image: "https://images.unsplash.com/photo-1454165833767-1316b0215b3f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxocmFkbWluJTIwb2ZmaWNlfGVufDB8fHx8MTc3MDI4MTYxN3ww&ixlib=rb-4.1.0&q=80&w=1080",
-      badge: "EXPERT ONLY"
+      badge: "현직자 인증"
     },
     {
       id: 2,
       title: "가장 실질적인 인사 솔루션",
       description: "막막했던 평가 제도부터 사내 이벤트 아이디어까지, 동료 HRer들에게 물어보세요.",
       image: "https://images.unsplash.com/photo-1552664730-d307ca884978?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxtZWV0aW5nfGVufDB8fHx8MTc3MDM1NDM3N3ww&ixlib=rb-4.1.0&q=80&w=1080",
-      badge: "NETWORKING"
+      badge: "네트워킹"
     }
   ]
 

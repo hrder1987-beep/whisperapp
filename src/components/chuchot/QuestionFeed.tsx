@@ -46,7 +46,7 @@ export function QuestionFeed({ questions, onSelectQuestion }: QuestionFeedProps)
                   <div className="flex flex-col gap-0.5">
                     <div className="flex items-center gap-2">
                       <span className="text-[15px] font-black text-primary">@{q.nickname}</span>
-                      <Badge variant="secondary" className="bg-primary/5 text-[10px] text-primary/60 font-bold border-none px-2 py-0">HR 전문가</Badge>
+                      <Badge variant="secondary" className="bg-primary/5 text-[10px] text-primary/60 font-bold border-none px-2 py-0">HR 현직자</Badge>
                     </div>
                     <span className="text-[12px] font-medium text-primary/40 flex items-center gap-1.5">
                       <Clock className="w-3.5 h-3.5" />

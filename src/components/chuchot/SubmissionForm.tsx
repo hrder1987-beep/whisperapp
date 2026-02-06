@@ -116,7 +116,7 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
       <CardContent className="p-6 md:p-8">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="flex items-start gap-4">
-            <AvatarIcon seed={nickname || "hr-expert"} className="w-12 h-12 shadow-md border-2 border-primary/5 flex-shrink-0" />
+            <AvatarIcon seed={nickname || "hr-practitioner"} className="w-12 h-12 shadow-md border-2 border-primary/5 flex-shrink-0" />
             <div className="flex-1 space-y-4">
               <div className="flex items-center gap-3">
                 <Input
@@ -219,7 +219,7 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
               )}
               <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-accent/10 text-[11px] font-black text-accent border border-accent/10">
                 <Smile className="w-3.5 h-3.5" />
-                HR EXPERT
+                HR 현직자
               </div>
             </div>
             

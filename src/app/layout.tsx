@@ -3,8 +3,8 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 
 export const metadata: Metadata = {
-  title: 'Chuchot (슈쇼) HR - 인사 담당자들의 비밀스러운 속삭임',
-  description: '채용, 평가, 조직문화, 교육까지. HR 전문가들을 위한 실시간 익명 소통 플랫폼입니다.',
+  title: 'Chuchot (슈쇼) HR - 현직 인사 담당자들의 비밀스러운 속삭임',
+  description: '채용, 평가, 조직문화, 교육까지. HR 현직자들을 위한 실시간 익명 소통 플랫폼입니다.',
 };
 
 export default function RootLayout({

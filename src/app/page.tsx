@@ -239,7 +239,7 @@ export default function HomePage() {
 
             <SubmissionForm 
               type="answer"
-              placeholder="동료 HR 담당자들에게 따뜻한 조언이나 지식을 공유해주세요."
+              placeholder="동료 HR 현직자들에게 따뜻한 조언이나 지식을 공유해주세요."
               onSubmit={handleAddAnswer}
             />
 
@@ -272,7 +272,7 @@ export default function HomePage() {
                   <div className="p-2 rounded-xl bg-accent/10">
                     <Info className="w-5 h-5 text-accent" />
                   </div>
-                  <h3 className="text-lg font-black text-primary">HR 전문가 플랫폼 가이드</h3>
+                  <h3 className="text-lg font-black text-primary">HR 현직자 플랫폼 가이드</h3>
                 </div>
                 <div className="space-y-6">
                    <div className="group space-y-2">
@@ -287,7 +287,7 @@ export default function HomePage() {
                         <span className="w-1.5 h-1.5 rounded-full bg-accent"></span>
                         전문 직무 카테고리
                       </p>
-                      <p className="text-[13px] text-primary/50 leading-relaxed font-medium pl-3.5">인사, 교육, 평가, 복리후생 등 각 분야 전문가들의 실질적인 인사이트를 제공합니다.</p>
+                      <p className="text-[13px] text-primary/50 leading-relaxed font-medium pl-3.5">인사, 교육, 평가, 복리후생 등 각 분야 현직자들의 실질적인 인사이트를 제공합니다.</p>
                    </div>
                 </div>
               </div>
