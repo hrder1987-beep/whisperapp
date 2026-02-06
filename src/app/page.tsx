@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
@@ -85,7 +86,6 @@ export default function HomePage() {
   }, [questions, searchQuery])
 
   const topQuestions = useMemo(() => {
-    // 실시간 인기 속삭임을 5개로 제한하여 박스 크기를 줄임
     return [...questions].sort((a, b) => b.viewCount - a.viewCount).slice(0, 5)
   }, [questions])
 
@@ -149,33 +149,33 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-50 w-full border-b border-primary/10 bg-white/95 backdrop-blur-md">
-        <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
-          <Logo className="flex-shrink-0" />
+      <header className="sticky top-0 z-50 w-full premium-gradient border-b border-white/10 shadow-lg">
+        <div className="max-w-6xl mx-auto px-4 h-20 flex items-center justify-between gap-4">
+          <Logo className="flex-shrink-0" isLight />
           
           <div className="hidden md:flex flex-1 max-w-xl relative group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50 group-focus-within:text-accent transition-colors" />
             <Input 
               placeholder="관심 있는 내용을 검색해보세요..." 
-              className="pl-11 bg-primary/5 border-none focus-visible:ring-primary h-10 rounded-full text-sm placeholder:text-primary/50"
+              className="pl-11 bg-white/10 border-none focus-visible:ring-accent/50 h-11 rounded-full text-sm text-white placeholder:text-white/40"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
 
           <div className="flex items-center gap-1 md:gap-3">
-            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary hover:bg-primary/5">
+            <Button variant="ghost" size="icon" className="text-white/70 hover:text-accent hover:bg-white/5">
               <Bell className="w-5 h-5" />
             </Button>
-            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary hover:bg-primary/5">
+            <Button variant="ghost" size="icon" className="text-white/70 hover:text-accent hover:bg-white/5">
               <UserIcon className="w-5 h-5" />
             </Button>
             {isAdminMode ? (
-              <Button variant="outline" size="sm" onClick={() => setIsAdminMode(false)} className="h-8 border-primary/30 text-primary text-[10px]">
+              <Button variant="outline" size="sm" onClick={() => setIsAdminMode(false)} className="h-8 border-accent/30 text-accent text-[10px] hover:bg-accent/10">
                 관리 종료
               </Button>
             ) : (
-              <Button variant="ghost" size="icon" onClick={() => setShowAdminDialog(true)} className="text-muted-foreground hover:bg-primary/5">
+              <Button variant="ghost" size="icon" onClick={() => setShowAdminDialog(true)} className="text-white/70 hover:text-accent hover:bg-white/5">
                 <Settings className="w-5 h-5" />
               </Button>
             )}
