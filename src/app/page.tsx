@@ -147,8 +147,8 @@ export default function HomePage() {
   const questionAnswers = answers.filter(a => a.questionId === selectedQuestionId)
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA]">
-      <header className="sticky top-0 z-50 w-full border-b border-primary/10 bg-white/90 backdrop-blur-md">
+    <div className="min-h-screen bg-background">
+      <header className="sticky top-0 z-50 w-full border-b border-primary/10 bg-white/95 backdrop-blur-md">
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
           <Logo className="flex-shrink-0" />
           
@@ -184,7 +184,7 @@ export default function HomePage() {
 
       <div className="max-w-6xl mx-auto px-4 py-6 md:py-8">
         {selectedQuestionId && selectedQuestion ? (
-          <div className="max-w-3xl mx-auto animate-in slide-in-from-right-4 duration-500">
+          <div className="max-w-3xl mx-auto animate-in fade-in slide-in-from-right-4 duration-500">
             <Button 
               variant="ghost" 
               className="mb-6 text-muted-foreground hover:text-primary group pl-0 hover:bg-transparent"
@@ -194,7 +194,7 @@ export default function HomePage() {
               목록으로
             </Button>
 
-            <article className="bg-white border border-primary/10 rounded-xl overflow-hidden mb-6 shadow-sm">
+            <article className="bg-white border border-primary/10 rounded-2xl overflow-hidden mb-6 shadow-sm">
               <div className="p-6 md:p-8">
                 <div className="flex justify-between items-start mb-6">
                   <div className="flex items-center gap-3">
@@ -272,7 +272,7 @@ export default function HomePage() {
             <aside className="lg:col-span-4 space-y-6 hidden lg:block">
               <RankingList questions={topQuestions} onSelectQuestion={handleSelectQuestion} />
               
-              <div className="bg-white rounded-xl p-6 border border-primary/10 shadow-sm">
+              <div className="bg-white rounded-2xl p-6 border border-primary/10 shadow-sm">
                 <h3 className="text-sm font-bold text-primary mb-4">슈쇼 서비스 가이드</h3>
                 <div className="space-y-4">
                    <div className="space-y-1">
@@ -290,12 +290,12 @@ export default function HomePage() {
                 </div>
               </div>
 
-              <div className="px-2 text-[11px] text-muted-foreground/60 leading-relaxed">
-                <div className="flex flex-wrap gap-x-3 gap-y-1 mb-3">
-                  <span className="hover:text-primary cursor-pointer">이용약관</span>
-                  <span className="hover:text-primary cursor-pointer">개인정보처리방침</span>
-                  <span className="hover:text-primary cursor-pointer">운영정책</span>
-                  <span className="hover:text-primary cursor-pointer">고객센터</span>
+              <div className="px-2 text-[11px] text-muted-foreground/60 leading-relaxed text-center">
+                <div className="flex flex-wrap justify-center gap-x-3 gap-y-1 mb-3">
+                  <span className="hover:text-primary cursor-pointer transition-colors">이용약관</span>
+                  <span className="hover:text-primary cursor-pointer transition-colors">개인정보처리방침</span>
+                  <span className="hover:text-primary cursor-pointer transition-colors">운영정책</span>
+                  <span className="hover:text-primary cursor-pointer transition-colors">고객센터</span>
                 </div>
                 <p>© {new Date().getFullYear()} Chuchot. Powered by Anonymous Whispers.</p>
               </div>
