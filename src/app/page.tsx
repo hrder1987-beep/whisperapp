@@ -2,7 +2,7 @@
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
-import { Logo } from "@/components/chuchot/Logo"
+import { Header } from "@/components/chuchot/Header"
 import { MainBanner, BannerData } from "@/components/chuchot/MainBanner"
 import { SubmissionForm } from "@/components/chuchot/SubmissionForm"
 import { QuestionFeed } from "@/components/chuchot/QuestionFeed"
@@ -11,21 +11,19 @@ import { ShuChat } from "@/components/chuchot/ShuChat"
 import { AdminCMS } from "@/components/chuchot/AdminCMS"
 import { Question, Answer } from "@/lib/types"
 import { Button } from "@/components/ui/button"
-import { Bell, Search, User as UserIcon, Settings, Info, X, ArrowLeft, LayoutDashboard, ChevronRight } from "lucide-react"
+import { Info, ArrowLeft } from "lucide-react"
 import { 
   Dialog, 
   DialogContent, 
   DialogHeader, 
   DialogTitle, 
-  DialogDescription,
   DialogFooter
 } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
 import { generateAiReply } from "@/ai/flows/generate-ai-reply-flow"
 import { cn } from "@/lib/utils"
 import { useFirestore, useCollection, useDoc, useMemoFirebase } from "@/firebase"
-import { collection, query, orderBy, doc, addDoc, serverTimestamp } from "firebase/firestore"
+import { collection, query, orderBy, doc, addDoc } from "firebase/firestore"
 
 export default function HomePage() {
   const [isAdminMode, setIsAdminMode] = useState(false)
@@ -46,7 +44,6 @@ export default function HomePage() {
   const { data: questionsData } = useCollection<Question>(questionsQuery)
   const questions = useMemo(() => questionsData || [], [questionsData])
 
-  // Answers would typically be fetched per question in the feed, but for global state:
   const [answers, setAnswers] = useState<Answer[]>([])
 
   const configDocRef = useMemoFirebase(() => {
@@ -131,71 +128,18 @@ export default function HomePage() {
     setAdminPassword("")
   }
 
-  const handleLogoClick = () => {
-    setIsCMSActive(false)
-    setSearchQuery("")
-    setActiveTab("all")
-  }
-
   return (
     <div className="min-h-screen bg-[#F8F9FA]">
-      <header className="sticky top-0 z-50 w-full premium-gradient border-b border-white/10 shadow-xl">
-        <div className="max-w-6xl mx-auto px-4 h-20 flex items-center justify-between gap-4">
-          <Logo className="flex-shrink-0" isLight onClick={handleLogoClick} />
-          
-          <div className="hidden md:flex flex-1 max-w-xl relative group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50 group-focus-within:text-accent transition-colors" />
-            <Input 
-              placeholder="HRD 트렌드, 과정 설계 사례, L&D 도구 검색..." 
-              className="pl-11 pr-10 bg-white/10 border-none focus-visible:ring-accent/50 h-11 rounded-full text-sm text-white placeholder:text-white/40"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  toast({ title: "검색 결과 필터링", description: `'${searchQuery}' 키워드로 검색된 결과입니다.` })
-                }
-              }}
-            />
-            {searchQuery && (
-              <button onClick={() => setSearchQuery("")} className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-white/5 rounded-full">
-                <X className="w-4 h-4 text-white/50" />
-              </button>
-            )}
-          </div>
+      <Header 
+        onSearch={setSearchQuery} 
+        isAdminMode={isAdminMode} 
+        isCMSActive={isCMSActive}
+        onToggleCMS={() => setIsCMSActive(!isCMSActive)}
+        onExitAdmin={() => { setIsAdminMode(false); setIsCMSActive(false); }}
+        onOpenAdminAuth={() => setShowAdminDialog(true)}
+      />
 
-          <div className="flex items-center gap-1 md:gap-3">
-            {isAdminMode && (
-              <Button 
-                variant={isCMSActive ? "default" : "outline"} 
-                size="sm" 
-                onClick={() => setIsCMSActive(!isCMSActive)}
-                className={cn(
-                  "h-9 rounded-xl font-black text-[11px] gap-2",
-                  isCMSActive ? "bg-accent text-primary" : "border-white/20 text-white"
-                )}
-              >
-                <LayoutDashboard className="w-3.5 h-3.5" />
-                CMS EDIT
-              </Button>
-            )}
-            <Button variant="ghost" size="icon" className="text-white/70 hover:text-accent hover:bg-white/5 rounded-full">
-              <Bell className="w-5 h-5" />
-            </Button>
-            {isAdminMode && (
-              <Button variant="outline" size="sm" onClick={() => { setIsAdminMode(false); setIsCMSActive(false); }} className="h-8 border-accent/30 text-accent text-[10px] font-black hover:bg-accent/10">
-                ADMIN EXIT
-              </Button>
-            )}
-            {!isAdminMode && (
-              <Button variant="ghost" size="icon" onClick={() => setShowAdminDialog(true)} className="text-white/70 hover:text-accent hover:bg-white/5 rounded-full">
-                <Settings className="w-5 h-5" />
-              </Button>
-            )}
-          </div>
-        </div>
-      </header>
-
-      <div className="max-w-6xl mx-auto px-4 py-8 md:py-12">
+      <div className="max-w-7xl mx-auto px-4 py-8 md:py-12">
         {isCMSActive && isAdminMode ? (
           <AdminCMS initialBanners={cmsBanners} onUpdate={() => {}} />
         ) : (
@@ -204,7 +148,6 @@ export default function HomePage() {
               "space-y-10 transition-all duration-500",
               isSearching ? "lg:col-span-12 max-w-4xl mx-auto w-full" : "lg:col-span-8"
             )}>
-              {/* Search Result View (Inspired by Offpiste) */}
               {isSearching ? (
                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
                   <div className="flex flex-col gap-6 mb-12">

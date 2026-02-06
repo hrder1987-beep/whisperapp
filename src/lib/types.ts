@@ -1,3 +1,4 @@
+
 export interface Question {
   id: string;
   title: string;
@@ -18,4 +19,27 @@ export interface Answer {
   nickname: string;
   createdAt: number;
   avatarId?: string;
+}
+
+export interface TrainingProgram {
+  id: string;
+  title: string;
+  description: string;
+  instructorName: string;
+  category: string;
+  startDate: string;
+  endDate: string;
+  imageUrl?: string;
+  userId: string;
+  createdAt: number;
+}
+
+export interface Instructor {
+  id: string;
+  name: string;
+  specialty: string;
+  bio: string;
+  profilePictureUrl: string;
+  userId: string;
+  createdAt: number;
 }
