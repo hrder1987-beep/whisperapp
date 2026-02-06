@@ -1,4 +1,3 @@
-
 "use client"
 
 import { Question } from "@/lib/types"
@@ -57,13 +56,16 @@ export function QuestionFeed({ questions, onSelectQuestion }: QuestionFeedProps)
                 </Button>
               </div>
 
-              <div className="space-y-4">
-                <p className="text-[15px] md:text-base leading-relaxed text-foreground/90 whitespace-pre-wrap break-words line-clamp-4">
+              <div className="space-y-3">
+                <h3 className="text-lg font-bold text-foreground group-hover:text-primary transition-colors">
+                  {q.title}
+                </h3>
+                <p className="text-[14px] md:text-[15px] leading-relaxed text-muted-foreground whitespace-pre-wrap break-words line-clamp-3">
                   {q.text}
                 </p>
                 
                 {q.imageUrl && (
-                  <div className="relative w-full aspect-video rounded-lg overflow-hidden border border-white/5 bg-black/20">
+                  <div className="relative w-full aspect-video max-h-72 rounded-lg overflow-hidden border border-white/5 bg-black/20 mt-3">
                     <Image 
                       src={q.imageUrl} 
                       alt="속삭임 이미지" 

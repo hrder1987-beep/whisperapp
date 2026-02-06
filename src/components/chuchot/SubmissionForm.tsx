@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useRef } from "react"
@@ -12,12 +11,13 @@ import Image from "next/image"
 
 interface SubmissionFormProps {
   placeholder: string
-  onSubmit: (nickname: string, text: string, imageUrl?: string) => void
+  onSubmit: (nickname: string, title: string, text: string, imageUrl?: string) => void
   type: "question" | "answer"
 }
 
 export function SubmissionForm({ placeholder, onSubmit, type }: SubmissionFormProps) {
   const [nickname, setNickname] = useState("")
+  const [title, setTitle] = useState("")
   const [text, setText] = useState("")
   const [imageUrl, setImageUrl] = useState<string | undefined>(undefined)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -53,20 +53,27 @@ export function SubmissionForm({ placeholder, onSubmit, type }: SubmissionFormPr
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!nickname.trim() || !text.trim()) {
-      toast({
-        title: "입력 오류",
-        description: "닉네임과 내용을 모두 입력해주세요.",
-        variant: "destructive"
-      })
+    
+    if (!nickname.trim()) {
+      toast({ title: "입력 오류", description: "닉네임을 입력해주세요.", variant: "destructive" })
+      return
+    }
+    
+    if (type === "question" && !title.trim()) {
+      toast({ title: "입력 오류", description: "제목을 입력해주세요.", variant: "destructive" })
+      return
+    }
+
+    if (!text.trim()) {
+      toast({ title: "입력 오류", description: "내용을 입력해주세요.", variant: "destructive" })
       return
     }
 
     setIsSubmitting(true)
-    // 인공적인 지연을 주어 제출 느낌을 줌
     setTimeout(() => {
-      onSubmit(nickname, text, imageUrl)
+      onSubmit(nickname, title, text, imageUrl)
       setNickname("")
+      setTitle("")
       setText("")
       setImageUrl(undefined)
       if (fileInputRef.current) fileInputRef.current.value = ""
@@ -88,17 +95,27 @@ export function SubmissionForm({ placeholder, onSubmit, type }: SubmissionFormPr
              </div>
              <div className="flex-1 space-y-3">
                 <Input
-                  placeholder="닉네임을 입력하세요"
+                  placeholder="닉네임 (최대 20자)"
                   value={nickname}
                   onChange={(e) => setNickname(e.target.value)}
                   className="bg-transparent border-none p-0 h-auto focus-visible:ring-0 text-sm font-bold placeholder:text-muted-foreground/50"
                   maxLength={20}
                 />
+                
+                {type === "question" && (
+                  <Input
+                    placeholder="제목을 입력하세요"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    className="bg-transparent border-none p-0 h-auto focus-visible:ring-0 text-lg font-bold placeholder:text-muted-foreground/40 border-b border-white/5 pb-2 rounded-none"
+                  />
+                )}
+
                 <Textarea
                   placeholder={placeholder}
                   value={text}
                   onChange={(e) => setText(e.target.value)}
-                  className="min-h-[80px] bg-transparent border-none p-0 focus-visible:ring-0 resize-none placeholder:text-muted-foreground/40 text-[15px]"
+                  className="min-h-[100px] bg-transparent border-none p-0 focus-visible:ring-0 resize-none placeholder:text-muted-foreground/40 text-[15px]"
                 />
              </div>
           </div>

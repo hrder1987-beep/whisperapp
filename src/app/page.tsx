@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
@@ -37,7 +36,8 @@ export default function HomePage() {
     const initialQuestions: Question[] = [
       {
         id: "1",
-        text: "진정한 행복의 비결은 무엇이라고 생각하시나요? 요즘 부쩍 고민이 많아지네요.",
+        title: "진정한 행복의 비결은 무엇일까요?",
+        text: "요즘 부쩍 고민이 많아지네요. 여러분이 생각하는 행복의 조건은 무엇인가요? 돈, 명예, 아니면 사소한 일상일까요?",
         nickname: "행복찾기",
         viewCount: 124,
         answerCount: 2,
@@ -46,6 +46,7 @@ export default function HomePage() {
       },
       {
         id: "2",
+        title: "과거의 나에게 해주고 싶은 말",
         text: "과거의 자신에게 딱 한 마디만 속삭일 수 있다면 무엇을 말해주고 싶나요? 저는 '조금 더 용기 내봐'라고 말해주고 싶어요.",
         nickname: "시간여행자",
         viewCount: 89,
@@ -54,7 +55,8 @@ export default function HomePage() {
       },
       {
         id: "3",
-        text: "딥 그린과 골드 조합은 왜 이렇게 고급스럽고 매력적일까요? 브랜드 디자인 공부 중인데 이 색조합이 가장 마음에 들어요.",
+        title: "디자인 컬러 조합 추천 부탁드려요",
+        text: "딥 그린과 골드 조합은 왜 이렇게 고급스럽고 매력적일까요? 브랜드 디자인 공부 중인데 이 색조합이 가장 마음에 들어요. 다른 추천 조합도 있을까요?",
         nickname: "디자이너",
         viewCount: 210,
         answerCount: 0,
@@ -63,7 +65,8 @@ export default function HomePage() {
       },
       ...Array.from({ length: 7 }).map((_, i) => ({
         id: `dummy-${i}`,
-        text: `${i + 4}번째로 올라온 익명의 속삭임입니다. 리멤버 스타일로 개편된 UI가 마음에 드셨으면 좋겠네요. 더 많은 이야기를 들려주세요.`,
+        title: `제목: 익명의 속삭임 ${i + 4}호`,
+        text: `${i + 4}번째로 올라온 익명의 속삭임입니다. 리멤버 스타일로 개편된 UI가 마음에 드셨으면 좋겠네요. 더 많은 이야기를 들려주세요. 본문 내용이 길어질 경우 어떻게 보일지 테스트 중입니다.`,
         nickname: `익명${i + 4}`,
         viewCount: Math.floor(Math.random() * 200),
         answerCount: Math.floor(Math.random() * 10),
@@ -75,6 +78,7 @@ export default function HomePage() {
 
   const filteredQuestions = useMemo(() => {
     return questions.filter(q => 
+      q.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       q.text.toLowerCase().includes(searchQuery.toLowerCase()) || 
       q.nickname.toLowerCase().includes(searchQuery.toLowerCase())
     )
@@ -84,9 +88,10 @@ export default function HomePage() {
     return [...questions].sort((a, b) => b.viewCount - a.viewCount).slice(0, 10)
   }, [questions])
 
-  const handleAddQuestion = (nickname: string, text: string, imageUrl?: string) => {
+  const handleAddQuestion = (nickname: string, title: string, text: string, imageUrl?: string) => {
     const newQuestion: Question = {
       id: Math.random().toString(36).substr(2, 9),
+      title,
       text,
       nickname,
       imageUrl,
@@ -143,7 +148,6 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Sticky Header */}
       <header className="sticky top-0 z-50 w-full border-b border-white/5 bg-background/80 backdrop-blur-md">
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
           <Logo className="flex-shrink-0" />
@@ -209,9 +213,13 @@ export default function HomePage() {
                   )}
                 </div>
                 
-                <h1 className="text-xl md:text-2xl font-bold text-foreground leading-relaxed mb-8 break-words whitespace-pre-wrap">
-                  {selectedQuestion.text}
+                <h1 className="text-2xl md:text-3xl font-bold text-foreground leading-tight mb-6">
+                  {selectedQuestion.title}
                 </h1>
+
+                <p className="text-base md:text-lg text-foreground/90 leading-relaxed mb-8 break-words whitespace-pre-wrap">
+                  {selectedQuestion.text}
+                </p>
 
                 {selectedQuestion.imageUrl && (
                   <div className="relative w-full aspect-video rounded-xl overflow-hidden border border-white/5 bg-black/20 mb-8">
@@ -235,21 +243,20 @@ export default function HomePage() {
             <SubmissionForm 
               type="answer"
               placeholder="답글을 남겨주세요..."
-              onSubmit={handleAddAnswer}
+              onSubmit={(nick, title, text) => handleAddAnswer(nick, text)}
             />
 
             <AnswerFeed answers={questionAnswers} />
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            {/* Main Content Area */}
             <main className="lg:col-span-8 space-y-6">
               <MainBanner />
               
               <div className="space-y-6">
                 <SubmissionForm 
                   type="question"
-                  placeholder="당신의 커리어, 고민, 일상을 자유롭게 속삭여보세요."
+                  placeholder="고민이나 일상을 자유롭게 속삭여보세요."
                   onSubmit={handleAddQuestion}
                 />
 
@@ -262,7 +269,6 @@ export default function HomePage() {
               </div>
             </main>
 
-            {/* Sidebar Area */}
             <aside className="lg:col-span-4 space-y-6 hidden lg:block">
               <RankingList questions={topQuestions} onSelectQuestion={handleSelectQuestion} />
               
@@ -298,7 +304,6 @@ export default function HomePage() {
         )}
       </div>
 
-      {/* Admin Auth Dialog */}
       <Dialog open={showAdminDialog} onOpenChange={setShowAdminDialog}>
         <DialogContent className="glass-morphism border-primary/30 text-foreground">
           <DialogHeader>

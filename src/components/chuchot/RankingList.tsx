@@ -1,4 +1,3 @@
-
 "use client"
 
 import { Question } from "@/lib/types"
@@ -34,14 +33,14 @@ export function RankingList({ questions, onSelectQuestion }: RankingListProps) {
               {idx + 1}
             </span>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium line-clamp-2 leading-snug group-hover:text-primary transition-colors mb-1.5">
-                {q.text}
+              <p className="text-sm font-bold line-clamp-1 leading-snug group-hover:text-primary transition-colors mb-1">
+                {q.title}
               </p>
               <div className="flex items-center gap-2">
-                <span className="text-[11px] text-muted-foreground/60">@{q.nickname}</span>
+                <span className="text-[10px] text-muted-foreground/60">@{q.nickname}</span>
                 <span className="w-0.5 h-0.5 rounded-full bg-muted-foreground/40"></span>
-                <span className="flex items-center gap-1 text-[11px] text-muted-foreground/60">
-                  <MessageCircle className="w-3 h-3" /> {q.answerCount}
+                <span className="flex items-center gap-1 text-[10px] text-muted-foreground/60">
+                  <MessageCircle className="w-2.5 h-2.5" /> {q.answerCount}
                 </span>
               </div>
             </div>
