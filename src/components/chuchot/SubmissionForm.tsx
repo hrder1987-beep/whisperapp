@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useRef } from "react"
@@ -123,7 +124,7 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
                   placeholder="익명 닉네임 (예: 교육담당)"
                   value={nickname}
                   onChange={(e) => setNickname(e.target.value)}
-                  className="h-10 w-40 bg-primary/[0.03] border-none focus-visible:ring-accent/50 text-sm font-black placeholder:text-primary/30 rounded-xl px-4"
+                  className="h-10 w-64 bg-primary/[0.03] border-none focus-visible:ring-accent/50 text-sm font-black placeholder:text-primary/30 rounded-xl px-4"
                   maxLength={20}
                 />
               </div>
