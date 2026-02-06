@@ -3,120 +3,132 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * FIRESTORE SECURITY RULES DOCUMENTATION
+     * CHUCHOT PLATFORM SECURITY RULES
      *
-     * Core Philosophy:
-     * This ruleset implements an "Anonymous Open Access" model for user-generated content and a 
-     * "Database-Based Access Control" (DBAC) model for administrative functions. The platform 
-     * (Chuchot) prioritizes frictionless, anonymous interaction for questions and answers.
+     * CORE PHILOSOPHY:
+     * This ruleset implements a decentralized ownership model for an educational platform. 
+     * It allows authenticated users to manage their own profiles, training programs, 
+     * instructor information, and community Q&A, while keeping all content publicly 
+     * readable to encourage platform growth.
      *
-     * Data Structure:
-     * - /questions/{questionId}: Publicly accessible root collection for user queries.
-     * - /questions/{questionId}/answers/{answerId}: Subcollection for responses.
-     * - /roles_admin/{userId}: Administrative registry mapping UIDs to admin status.
-     * - /admin_configuration/{configId}: Centralized UI/UX and theme settings.
+     * DATA STRUCTURE:
+     * - /users/{userId}: Private user profile data.
+     * - /instructors/{instructorId}: Profiles for educators, mapped by User UID.
+     * - /trainingPrograms/{id}: Catalog of programs, linked via instructorId.
+     * - /questions/{id}: Community forum for user inquiries.
+     * - /questions/{id}/answers/{id}: Threaded responses to questions.
      *
-     * Key Security Decisions:
-     * 1. Public Content: Questions and Answers are globally readable and writable to support 
-     *    anonymous usage without requiring Auth-UID-based ownership.
-     * 2. Admin Privileges: Administrative rights are determined by the presence of a document 
-     *    in the 'roles_admin' collection. This allows for simple 'isAdmin()' checks across the app.
-     * 3. UI/UX Protection: The 'admin_configuration' collection is restricted to admin-only 
-     *    access to prevent unauthorized tampering with banners, themes, or site-wide text.
+     * KEY SECURITY DECISIONS:
+     * 1. Public Visibility: All educational content (Programs, Instructors) and Q&A 
+     *    are publicly listable to all visitors.
+     * 2. Strict Ownership: Write operations (create, update, delete) are strictly 
+     *    gated by the user's Auth UID.
+     * 3. Relational Integrity: During creation, rules enforce that the internal 
+     *    ownership field (e.g., instructorId, userId) matches the authenticated user's UID.
+     * 4. Identity Consistency: For documents under /users/{userId} and /instructors/{userId}, 
+     *    the document ID itself must match the user's UID.
      *
-     * Denormalization for Authorization:
-     * - Relational integrity is enforced by ensuring subcollection documents (Answers) 
-     *   correctly reference their parent document IDs (questionId) during creation.
+     * DENORMALIZATION FOR AUTHORIZATION:
+     * To ensure high performance and avoid costly get() calls, these rules rely on 
+     * 'userId' and 'instructorId' fields stored directly on programs, questions, 
+     * and answers for instant authorization.
      */
 
-    // --- GLOBAL HELPER FUNCTIONS ---
+    // --- HELPER FUNCTIONS ---
 
-    /**
-     * @description Checks if the user is authenticated with Firebase Auth.
-     */
+    /** Checks if a user is authenticated. */
     function isSignedIn() {
       return request.auth != null;
     }
 
-    /**
-     * @description Checks if the current user has a record in the roles_admin collection.
-     */
-    function isAdmin() {
-      return isSignedIn() && exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
-    }
-
-    /**
-     * @description Checks if the authenticated user's UID matches the provided userId.
-     */
+    /** Checks if the current user's UID matches the provided ID. */
     function isOwner(userId) {
       return isSignedIn() && request.auth.uid == userId;
     }
 
-    /**
-     * @description Verifies that the document exists before performing a state-changing operation.
+    /** 
+     * Checks ownership of an existing document. 
+     * Verifies document exists and UID matches the owner field. 
      */
-    function documentExists() {
-      return resource != null;
+    function isExistingOwner(ownerId) {
+      return resource != null && isOwner(ownerId);
+    }
+
+    /** Checks if a field remains unchanged during an update. */
+    function isUnchanged(fieldName) {
+      return request.resource.data[fieldName] == resource.data[fieldName];
     }
 
     // --- COLLECTION RULES ---
 
     /**
-     * @description Public collection for questions. Supports anonymous submission and public listing.
+     * @description Rules for the UserProfile entity. Only the account owner can manage their profile.
+     * @path /users/{userId}
+     * @allow (create) if auth.uid == "user_123" and userId == "user_123"
+     * @deny (list) if user is not "user_123"
+     * @principle Path-based ownership and self-creation enforcement.
+     */
+    match /users/{userId} {
+      allow get, list: if isOwner(userId);
+      allow create: if isOwner(userId) && request.resource.data.id == userId;
+      allow update: if isExistingOwner(userId) && isUnchanged('id');
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Rules for Instructor profiles. Publicly readable; only the instructor can edit.
+     * @path /instructors/{instructorId}
+     * @allow (get, list) if true
+     * @deny (update) if auth.uid does not match instructorId
+     * @principle Public access with ID-linked ownership for writes.
+     */
+    match /instructors/{instructorId} {
+      allow get, list: if true;
+      allow create: if isOwner(instructorId) && request.resource.data.id == instructorId;
+      allow update: if isExistingOwner(instructorId) && isUnchanged('id');
+      allow delete: if isExistingOwner(instructorId);
+    }
+
+    /**
+     * @description Rules for TrainingPrograms. Publicly visible; editable only by the listed instructor.
+     * @path /trainingPrograms/{programId}
+     * @allow (create) if auth.uid == request.resource.data.instructorId
+     * @deny (delete) if auth.uid does not match the program's instructorId
+     * @principle Field-based ownership for public-read collections.
+     */
+    match /trainingPrograms/{programId} {
+      allow get, list: if true;
+      allow create: if isSignedIn() && request.resource.data.instructorId == request.auth.uid;
+      allow update: if isExistingOwner(resource.data.instructorId) && isUnchanged('instructorId');
+      allow delete: if isExistingOwner(resource.data.instructorId);
+    }
+
+    /**
+     * @description Rules for User Questions. Users can post and manage their own questions.
      * @path /questions/{questionId}
-     * @allow (get, list, create) if true (Anonymous access)
-     * @deny (update, delete) if false (Placeholder for future moderation logic)
-     * @principle Implements public read/write access for anonymous submissions as per IR.
+     * @allow (create) if auth.uid == request.resource.data.userId
+     * @deny (update) if trying to change the userId field
+     * @principle Owner-only writes with public readability.
      */
     match /questions/{questionId} {
       allow get, list: if true;
-      allow create: if true;
-      // Prototyping Mode: Allowing updates/deletes for the purpose of the 'viewCount' increment and moderation.
-      allow update: if documentExists();
-      allow delete: if documentExists();
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow update: if isExistingOwner(resource.data.userId) && isUnchanged('userId');
+      allow delete: if isExistingOwner(resource.data.userId);
 
       /**
-       * @description Subcollection for answers. Maintains a relationship to the parent question.
+       * @description Rules for Answers. Subcollection of questions.
        * @path /questions/{questionId}/answers/{answerId}
-       * @allow (create) if questionId matches internal questionId field.
-       * @deny (read) if true (Anonymous access)
-       * @principle Ensures relational integrity by validating parent-child links on create.
+       * @allow (create) if auth.uid == request.resource.data.userId
+       * @deny (delete) if user is not the author of the answer
+       * @principle Subcollection protection using internal ownership fields.
        */
       match /answers/{answerId} {
         allow get, list: if true;
-        allow create: if request.resource.data.questionId == questionId;
-        allow update, delete: if documentExists();
+        allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+        allow update: if isExistingOwner(resource.data.userId) && isUnchanged('userId');
+        allow delete: if isExistingOwner(resource.data.userId);
       }
-    }
-
-    /**
-     * @description Registry of administrative users.
-     * @path /roles_admin/{userId}
-     * @allow (get) if isOwner(userId) (Check own status)
-     * @deny (create, update, delete) if false (Managed via console/admin SDK)
-     * @principle Restricted access to authorization source-of-truth.
-     */
-    match /roles_admin/{userId} {
-      allow get: if isOwner(userId) || isAdmin();
-      allow list: if isAdmin();
-      allow create, update, delete: if false; 
-    }
-
-    /**
-     * @description Site-wide configuration for UI text, banners, and themes.
-     * @path /admin_configuration/{configId}
-     * @allow (get) if true (Public needed for rendering UI)
-     * @allow (update) if isAdmin() (Only admins can edit site behavior)
-     * @deny (create, delete) if !isAdmin()
-     * @principle Restricts structural site changes to verified administrative accounts.
-     */
-    match /admin_configuration/{configId} {
-      // Note: IR says "Only accessible to admin", but UI text is usually public read to render the app.
-      // We allow get/list to allow the app to function, but restrict writes.
-      allow get, list: if true;
-      allow create: if isAdmin();
-      allow update: if isAdmin() && documentExists();
-      allow delete: if isAdmin() && documentExists();
     }
   }
 }

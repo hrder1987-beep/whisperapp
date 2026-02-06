@@ -1,5 +1,110 @@
 {
   "entities": {
+    "UserProfile": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "UserProfile",
+      "type": "object",
+      "description": "Represents a user profile in the Chuchot platform.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the UserProfile entity."
+        },
+        "username": {
+          "type": "string",
+          "description": "The username of the user."
+        },
+        "email": {
+          "type": "string",
+          "description": "The email address of the user.",
+          "format": "email"
+        },
+        "registrationDate": {
+          "type": "string",
+          "description": "The date and time when the user registered.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "username",
+        "email",
+        "registrationDate"
+      ]
+    },
+    "TrainingProgram": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "TrainingProgram",
+      "type": "object",
+      "description": "Represents a training program offered on the Chuchot platform.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the TrainingProgram entity."
+        },
+        "title": {
+          "type": "string",
+          "description": "The title of the training program."
+        },
+        "description": {
+          "type": "string",
+          "description": "A detailed description of the training program."
+        },
+        "instructorId": {
+          "type": "string",
+          "description": "Reference to Instructor. (Relationship: Instructor 1:N TrainingProgram)"
+        },
+        "startDate": {
+          "type": "string",
+          "description": "The start date of the training program.",
+          "format": "date-time"
+        },
+        "endDate": {
+          "type": "string",
+          "description": "The end date of the training program.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "description",
+        "instructorId",
+        "startDate",
+        "endDate"
+      ]
+    },
+    "Instructor": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Instructor",
+      "type": "object",
+      "description": "Represents an instructor who conducts training programs.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Instructor entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the instructor."
+        },
+        "bio": {
+          "type": "string",
+          "description": "A short biography of the instructor."
+        },
+        "profilePictureUrl": {
+          "type": "string",
+          "description": "URL to the instructor's profile picture.",
+          "format": "uri"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "bio",
+        "profilePictureUrl"
+      ]
+    },
     "Question": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Question",
@@ -10,29 +115,34 @@
           "type": "string",
           "description": "Unique identifier for the Question entity."
         },
-        "nickname": {
+        "title": {
           "type": "string",
-          "description": "The nickname of the user who asked the question."
+          "description": "The title of the question."
         },
         "content": {
           "type": "string",
-          "description": "The text content of the question."
+          "description": "The content of the question."
         },
-        "createdAt": {
+        "userId": {
           "type": "string",
-          "description": "The timestamp when the question was created.",
+          "description": "Reference to UserProfile. (Relationship: UserProfile 1:N Question)"
+        },
+        "submissionDate": {
+          "type": "string",
+          "description": "The date and time when the question was submitted.",
           "format": "date-time"
         },
         "viewCount": {
           "type": "number",
-          "description": "The number of times the question has been viewed."
+          "description": "The number of views for the question."
         }
       },
       "required": [
         "id",
-        "nickname",
+        "title",
         "content",
-        "createdAt",
+        "userId",
+        "submissionDate",
         "viewCount"
       ]
     },
@@ -46,66 +156,30 @@
           "type": "string",
           "description": "Unique identifier for the Answer entity."
         },
-        "questionId": {
-          "type": "string",
-          "description": "Reference to the Question this answer belongs to. (Relationship: Question 1:N Answer)"
-        },
-        "nickname": {
-          "type": "string",
-          "description": "The nickname of the user who provided the answer."
-        },
         "content": {
           "type": "string",
-          "description": "The text content of the answer."
+          "description": "The content of the answer."
         },
-        "createdAt": {
+        "questionId": {
           "type": "string",
-          "description": "The timestamp when the answer was created.",
+          "description": "Reference to Question. (Relationship: Question 1:N Answer)"
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to UserProfile. (Relationship: UserProfile 1:N Answer)"
+        },
+        "submissionDate": {
+          "type": "string",
+          "description": "The date and time when the answer was submitted.",
           "format": "date-time"
         }
       },
       "required": [
         "id",
-        "questionId",
-        "nickname",
         "content",
-        "createdAt"
-      ]
-    },
-    "AdminConfiguration": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "AdminConfiguration",
-      "type": "object",
-      "description": "Represents the admin configurable settings for the application's UI/UX.",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the AdminConfiguration entity."
-        },
-        "uiText": {
-          "type": "string",
-          "description": "JSON containing all text elements of the UI."
-        },
-        "bannerSettings": {
-          "type": "string",
-          "description": "JSON containing configurations for banners."
-        },
-        "themeSettings": {
-          "type": "string",
-          "description": "JSON containing configurations for the theme (colors, fonts, etc.)."
-        },
-        "lastUpdated": {
-          "type": "string",
-          "description": "Timestamp of the last configuration update.",
-          "format": "date-time"
-        }
-      },
-      "required": [
-        "id",
-        "uiText",
-        "bannerSettings",
-        "themeSettings",
-        "lastUpdated"
+        "questionId",
+        "userId",
+        "submissionDate"
       ]
     }
   },
@@ -118,17 +192,65 @@
   "firestore": {
     "structure": [
       {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "UserProfile",
+          "schema": {
+            "$ref": "#/backend/entities/UserProfile"
+          },
+          "description": "Stores user profile information. Path-based ownership ensures only the user can access their own profile.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/trainingPrograms/{trainingProgramId}",
+        "definition": {
+          "entityName": "TrainingProgram",
+          "schema": {
+            "$ref": "#/backend/entities/TrainingProgram"
+          },
+          "description": "Stores information about training programs. Instructor ID is used to manage ownership.",
+          "params": [
+            {
+              "name": "trainingProgramId",
+              "description": "The unique identifier of the training program."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/instructors/{instructorId}",
+        "definition": {
+          "entityName": "Instructor",
+          "schema": {
+            "$ref": "#/backend/entities/Instructor"
+          },
+          "description": "Stores instructor information.",
+          "params": [
+            {
+              "name": "instructorId",
+              "description": "The unique identifier of the instructor."
+            }
+          ]
+        }
+      },
+      {
         "path": "/questions/{questionId}",
         "definition": {
           "entityName": "Question",
           "schema": {
             "$ref": "#/backend/entities/Question"
           },
-          "description": "Collection of questions submitted by users.  All documents are publicly readable and writable (anonymous submissions).",
+          "description": "Stores user questions.",
           "params": [
             {
               "name": "questionId",
-              "description": "The unique identifier for each question."
+              "description": "The unique identifier of the question."
             }
           ]
         }
@@ -140,52 +262,20 @@
           "schema": {
             "$ref": "#/backend/entities/Answer"
           },
-          "description": "Subcollection of answers for each question.  All documents are publicly readable and writable (anonymous submissions).",
+          "description": "Stores answers to questions.",
           "params": [
             {
               "name": "questionId",
-              "description": "The unique identifier for the parent question."
+              "description": "The unique identifier of the question."
             },
             {
               "name": "answerId",
-              "description": "The unique identifier for each answer."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/roles_admin/{userId}",
-        "definition": {
-          "entityName": "AdminRole",
-          "schema": {
-            "$ref": "#/backend/entities/Question"
-          },
-          "description": "Collection to store admin user IDs. Existence of a document for a user ID grants admin privileges.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The Firebase Auth UID of the admin user."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/admin_configuration/{configId}",
-        "definition": {
-          "entityName": "AdminConfiguration",
-          "schema": {
-            "$ref": "#/backend/entities/AdminConfiguration"
-          },
-          "description": "Collection to store admin configuration settings. Only accessible to admin users.",
-          "params": [
-            {
-              "name": "configId",
-              "description": "The unique identifier for the configuration."
+              "description": "The unique identifier of the answer."
             }
           ]
         }
       }
     ],
-    "reasoning": "This Firestore data structure is designed to support Chuchot, an anonymous question and answer platform, focusing on scalability, security, and maintainability. The core principle is Authorization Independence, achieved through denormalization and structural segregation. The structure accommodates anonymous users, real-time feeds, admin configuration, and the 'Best Questions' banner feature. The design emphasizes simplicity for both data access and security rule creation.\n\n**Authorization Independence & QAPs:**\n\n*   **Questions and Answers:**  Authorization is simplified by making all data publicly accessible. Since the platform is designed for anonymous question/answer submissions, there is no need to restrict read or write access based on user identity for these collections.  `list` operations are inherently secure as there are no user-based restrictions. This approach directly addresses QAPs by ensuring that security rules do not act as filters.\n*   **Admin Configuration:**  Admin access is controlled via the `roles_admin` collection.  Existence in this collection grants full administrative privileges, which aligns with DBAC principles. Admin configuration data, stored in the `admin_configuration` collection, is accessible only to admins, thus securing the platform's customizable elements.\n\n**Structural Segregation:**\n\n*   `questions` and `answers` are stored in separate top-level collections, segregating data types and simplifying queries and rules.\n*   `admin_configuration` is separated from user-generated content, isolating administrative settings.\n\n**Access Modeling:**\n\n*   Public data (questions, answers) is globally accessible.\n*   Administrative access is managed using the `roles_admin` collection, employing an existence-based check for authorization.\n\n**Additional Considerations:**\n\n*   Timestamps (`createdAt`, `lastUpdated`) are included for audit trails and potential future features (e.g., sorting, filtering).\n*   The structure supports the platform's core features, including real-time feeds, best questions banner (achieved through `viewCount` in `questions`), and admin configuration for UI/UX modifications."
+    "reasoning": "The Firestore structure is designed to support the Chuchot platform's features, including user profiles, training programs, instructors, and a question/answer system. It prioritizes authorization independence and supports secure list operations (QAPs). User profiles are stored in a path-based structure (`/users/{userId}`) for private data. Training programs and instructors are managed under a dedicated collection (`/trainingPrograms` and `/instructors`). Questions and Answers, which are anonymous, are stored under the `/questions` collection, and answers as a subcollection of questions (`/questions/{questionId}/answers`).\n\nAuthorization Independence is achieved by storing UserProfile under `/users/{userId}`, enforcing path-based ownership, so rules can easily rely on `request.auth.uid`. Training programs are created by instructors, however, the instructorId is enough to query and list training programs. The security rule will rely on `request.auth.uid` matching the instructorId on create/update requests.\n\nThe structure supports QAPs (Rules are not Filters) by segregating data based on ownership and access needs. Path-based ownership for user profiles ensures that only the authenticated user can access their profile data. The membership map model is not used here, as there is no collaborative data requirements."
   }
 }
