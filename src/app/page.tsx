@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
@@ -132,11 +131,17 @@ export default function HomePage() {
     setAdminPassword("")
   }
 
+  const handleLogoClick = () => {
+    setIsCMSActive(false)
+    setSearchQuery("")
+    setActiveTab("all")
+  }
+
   return (
     <div className="min-h-screen bg-[#F8F9FA]">
       <header className="sticky top-0 z-50 w-full premium-gradient border-b border-white/10 shadow-xl">
         <div className="max-w-6xl mx-auto px-4 h-20 flex items-center justify-between gap-4">
-          <Logo className="flex-shrink-0" isLight onClick={() => setIsCMSActive(false)} />
+          <Logo className="flex-shrink-0" isLight onClick={handleLogoClick} />
           
           <div className="hidden md:flex flex-1 max-w-xl relative group">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50 group-focus-within:text-accent transition-colors" />

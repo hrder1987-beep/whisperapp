@@ -1,15 +1,18 @@
-
 import { MessageSquareText } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface LogoProps {
   className?: string
   isLight?: boolean
+  onClick?: () => void
 }
 
-export function Logo({ className = "", isLight = false }: LogoProps) {
+export function Logo({ className = "", isLight = false, onClick }: LogoProps) {
   return (
-    <div className={cn("flex items-center gap-2 group cursor-pointer", className)}>
+    <div 
+      className={cn("flex items-center gap-2 group cursor-pointer", className)}
+      onClick={onClick}
+    >
       <div className="relative">
         <div className={cn(
           "absolute inset-0 blur-lg rounded-full animate-pulse transition-all duration-500",
