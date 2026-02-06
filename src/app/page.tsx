@@ -37,35 +37,35 @@ export default function HomePage() {
     const initialQuestions: Question[] = [
       {
         id: "1",
-        title: "2024년 하반기 IT 기업 연봉 인상률 트렌드",
-        text: "다른 기업들은 올해 인상률을 어느 정도로 잡고 계신가요? 3~5% 내외가 대세인지, 아니면 동결 기조인지 궁금합니다.",
-        nickname: "인사팀장A",
-        viewCount: 1240,
-        answerCount: 8,
+        title: "2025년 기업 교육 트렌드: AI 리터러시 교육 설계",
+        text: "내년도 교육 계획 수립 중인데, 전사 AI 리터러시 교육을 어떻게 설계하고 계신가요? 기술 교육 위주인지, 실제 업무 활용 사례 중심인지 궁금합니다.",
+        nickname: "교육기획자K",
+        viewCount: 1540,
+        answerCount: 12,
         createdAt: Date.now() - 3600000 * 2,
-        category: "평가/보상",
-        imageUrl: "https://images.unsplash.com/photo-1454165833767-1316b0215b3f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxocmFkbWluJTIwb2ZmaWNlfGVufDB8fHx8MTc3MDI4MTYxN3ww&ixlib=rb-4.1.0&q=80&w=1080"
+        category: "L&D 전략",
+        imageUrl: "https://images.unsplash.com/photo-1552664730-d307ca884978?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxtZWV0aW5nfGVufDB8fHx8MTc3MDM1NDM3N3ww&ixlib=rb-4.1.0&q=80&w=1080"
       },
       {
         id: "2",
-        title: "신입 사원 온보딩 프로그램 추천 부탁드려요.",
-        text: "단순 교육 말고, 회사에 정말 '스며들 수 있게' 하는 좋은 장치가 있을까요? 웰컴 키트 외에 추천할 만한 프로그램이 있다면 공유 부탁드립니다.",
-        nickname: "교육담당자",
-        viewCount: 890,
-        answerCount: 12,
-        category: "교육/L&D",
+        title: "팀장급 리더십 교육 효과 측정(ROI) 사례",
+        text: "리더십 교육은 만족도 조사 외에 실제 행동 변화를 측정하기가 너무 어렵네요. 다면 평가나 현업 적용도 체크리스트 외에 좋은 방법이 있을까요?",
+        nickname: "성과개발담당",
+        viewCount: 920,
+        answerCount: 8,
+        category: "평가/ROI",
         createdAt: Date.now() - 3600000 * 5,
       },
       {
         id: "3",
-        title: "주 4일제 도입 시 근태 관리 리스크",
-        text: "총무 및 근태 관리 측면에서 주 4일제 도입 시 가장 큰 허들이 무엇이었나요? 경험 있으신 담당자분들의 조언이 절실합니다.",
-        nickname: "총무관리자",
+        title: "MZ세대 타겟 온보딩 프로그램 아이디어 공유",
+        text: "신규 입사자 이탈을 막기 위한 '임팩트 있는' 온보딩 프로그램을 기획 중입니다. 게이미피케이션 요소를 도입해보신 분 계신가요?",
+        nickname: "조직문화L",
         viewCount: 2100,
-        answerCount: 5,
-        category: "총무/GA",
+        answerCount: 15,
+        category: "온보딩",
         createdAt: Date.now() - 3600000 * 0.5,
-        imageUrl: "https://images.unsplash.com/photo-1552664730-d307ca884978?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxtZWV0aW5nfGVufDB8fHx8MTc3MDM1NDM3N3ww&ixlib=rb-4.1.0&q=80&w=1080"
+        imageUrl: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxNXx8ZWR1Y2F0aW9ufGVufDB8fHx8MTc3MDI4MTYxN3ww&ixlib=rb-4.1.0&q=80&w=1080"
       }
     ]
     setQuestions(initialQuestions)
@@ -170,7 +170,7 @@ export default function HomePage() {
           <div className="hidden md:flex flex-1 max-w-xl relative group">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50 group-focus-within:text-accent transition-colors" />
             <Input 
-              placeholder="HR 트렌드, 직무 카테고리 등 검색..." 
+              placeholder="교육 트렌드, 과정 설계 사례, L&D 도구 검색..." 
               className="pl-11 bg-white/10 border-none focus-visible:ring-accent/50 h-11 rounded-full text-sm text-white placeholder:text-white/40"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -242,7 +242,7 @@ export default function HomePage() {
                   <div className="relative w-full aspect-[16/9] rounded-[2rem] overflow-hidden border border-primary/5 bg-primary/5 mb-10 shadow-lg">
                     <Image 
                       src={selectedQuestion.imageUrl} 
-                      alt="HR 관련 이미지" 
+                      alt="HRD 관련 이미지" 
                       fill 
                       className="object-cover"
                     />
@@ -258,7 +258,7 @@ export default function HomePage() {
 
             <SubmissionForm 
               type="answer"
-              placeholder="동료 HR 현직자들에게 따뜻한 조언이나 지식을 공유해주세요."
+              placeholder="동료 HRD 현직자들에게 따뜻한 조언이나 교육 노하우를 공유해주세요."
               onSubmit={handleAddAnswer}
             />
 
@@ -272,7 +272,7 @@ export default function HomePage() {
               <div className="space-y-10">
                 <SubmissionForm 
                   type="question"
-                  placeholder="인사, 교육, 총무 등 HR 관련 고민이나 정보를 자유롭게 속삭여보세요."
+                  placeholder="교육 기획, L&D 전략, 사내 세미나 등 HRD 관련 고민을 속삭여보세요."
                   onSubmit={handleAddQuestion}
                 />
 
@@ -291,7 +291,7 @@ export default function HomePage() {
                   <div className="p-2 rounded-xl bg-accent/10">
                     <Info className="w-5 h-5 text-accent" />
                   </div>
-                  <h3 className="text-lg font-black text-primary">HR 현직자 플랫폼 가이드</h3>
+                  <h3 className="text-lg font-black text-primary">HRD 현직자 플랫폼 가이드</h3>
                 </div>
                 <div className="space-y-6">
                    <div className="group space-y-2">
@@ -299,14 +299,14 @@ export default function HomePage() {
                         <span className="w-1.5 h-1.5 rounded-full bg-accent"></span>
                         철저한 비식별 익명 보장
                       </p>
-                      <p className="text-[13px] text-primary/50 leading-relaxed font-medium pl-3.5">모든 활동은 암호화되어 보호되며, 현직 담당자들의 안전한 소통을 최우선으로 합니다.</p>
+                      <p className="text-[13px] text-primary/50 leading-relaxed font-medium pl-3.5">모든 활동은 암호화되어 보호되며, 교육 담당자들의 솔직한 소통을 지원합니다.</p>
                    </div>
                    <div className="group space-y-2">
                       <p className="text-[15px] font-black text-primary group-hover:text-accent transition-colors flex items-center gap-2">
                         <span className="w-1.5 h-1.5 rounded-full bg-accent"></span>
-                        전문 직무 카테고리
+                        전문 L&D 카테고리
                       </p>
-                      <p className="text-[13px] text-primary/50 leading-relaxed font-medium pl-3.5">인사, 교육, 평가, 복리후생 등 각 분야 현직자들의 실질적인 인사이트를 제공합니다.</p>
+                      <p className="text-[13px] text-primary/50 leading-relaxed font-medium pl-3.5">교육 설계, 성과 평가, 리더십 육성 등 HRD 핵심 직무 인사이트를 제공합니다.</p>
                    </div>
                 </div>
               </div>

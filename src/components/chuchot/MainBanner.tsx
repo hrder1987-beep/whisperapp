@@ -3,23 +3,23 @@
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
 import { Badge } from "@/components/ui/badge"
 import Image from "next/image"
-import { Sparkles, ArrowRight } from "lucide-react"
+import { Sparkles } from "lucide-react"
 
 export function MainBanner() {
   const banners = [
     {
       id: 1,
-      title: "HR 현직자들의\n품격 있는 속삭임",
-      description: "채용, 교육, 조직문화까지.\n현직 담당자들과 익명으로 인사이트를 공유하세요.",
-      image: "https://images.unsplash.com/photo-1454165833767-1316b0215b3f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxocmFkbWluJTIwb2ZmaWNlfGVufDB8fHx8MTc3MDI4MTYxN3ww&ixlib=rb-4.1.0&q=80&w=1080",
-      badge: "실시간 트렌드"
+      title: "HRD 현직자들의\n성장을 위한 속삭임",
+      description: "과정 설계부터 L&D 전략까지.\n대한민국 HRD 담당자들의 익명 지식 공유 플랫폼.",
+      image: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxocmQlMjB0cmFpbmluZ3xlbnwwfHx8fDE3NzAyODE2MTd8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      badge: "L&D 트렌드"
     },
     {
       id: 2,
-      title: "가장 실질적인\n인사 솔루션의 시작",
-      description: "막막했던 평가 제도부터 사내 이벤트 아이디어까지,\n동료 HRer들에게 직접 물어보고 답을 얻으세요.",
-      image: "https://images.unsplash.com/photo-1552664730-d307ca884978?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxtZWV0aW5nfGVufDB8fHx8MTc3MDM1NDM3N3ww&ixlib=rb-4.1.0&q=80&w=1080",
-      badge: "지식 공유"
+      title: "더 나은 학습 경험,\n품격 있는 커뮤니티",
+      description: "막막했던 교육 효과 측정부터 사내 이벤트 아이디어까지,\n동료 HRD 담당자들에게 직접 물어보세요.",
+      image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxjb3Jwb3JhdGUlMjBlZHVjYXRpb258ZW58MHx8fHwxNzcwMzU0Mzc3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      badge: "인사이트 공유"
     }
   ]
 
@@ -36,7 +36,7 @@ export function MainBanner() {
                   fill 
                   className="object-cover opacity-20 mix-blend-overlay transition-transform duration-1000 group-hover/carousel:scale-105"
                   priority
-                  data-ai-hint="hr professional office"
+                  data-ai-hint="hrd training office"
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary/80 to-transparent"></div>
                 <div className="absolute inset-0 flex flex-col justify-center px-8 md:px-24 max-w-4xl">

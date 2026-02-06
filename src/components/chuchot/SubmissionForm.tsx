@@ -19,8 +19,8 @@ interface SubmissionFormProps {
   type: "question" | "answer"
 }
 
-const HR_CATEGORIES = [
-  "인사전략", "채용", "교육/L&D", "조직문화", "평가/보상", "급여/복리후생", "노무", "총무/GA"
+const HRD_CATEGORIES = [
+  "L&D 전략", "과정 설계", "리더십 개발", "조직문화", "온보딩", "디지털 러닝", "평가/ROI", "역량 모델링"
 ]
 
 export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
@@ -64,13 +64,13 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
     e.preventDefault()
     
     if (!nickname.trim()) {
-      toast({ title: "입력 오류", description: "직무 관련 닉네임을 입력해주세요.", variant: "destructive" })
+      toast({ title: "입력 오류", description: "HRD 관련 닉네임을 입력해주세요.", variant: "destructive" })
       return
     }
     
     if (type === "question") {
       if (!title.trim()) {
-        toast({ title: "입력 오류", description: "주제 제목을 입력해주세요.", variant: "destructive" })
+        toast({ title: "입력 오류", description: "교육 주제 제목을 입력해주세요.", variant: "destructive" })
         return
       }
       if (!selectedCategory) {
@@ -105,7 +105,7 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
       setIsSubmitting(false)
       toast({
         title: "속삭임 게시 완료",
-        description: "HR 커뮤니티에 소중한 인사이트가 등록되었습니다."
+        description: "HRD 커뮤니티에 소중한 인사이트가 등록되었습니다."
       })
     }, 400)
   }
@@ -116,11 +116,11 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
       <CardContent className="p-6 md:p-8">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="flex items-start gap-4">
-            <AvatarIcon seed={nickname || "hr-practitioner"} className="w-12 h-12 shadow-md border-2 border-primary/5 flex-shrink-0" />
+            <AvatarIcon seed={nickname || "hrd-practitioner"} className="w-12 h-12 shadow-md border-2 border-primary/5 flex-shrink-0" />
             <div className="flex-1 space-y-4">
               <div className="flex items-center gap-3">
                 <Input
-                  placeholder="익명 닉네임 (예: 인사팀장)"
+                  placeholder="익명 닉네임 (예: 교육담당)"
                   value={nickname}
                   onChange={(e) => setNickname(e.target.value)}
                   className="h-10 w-40 bg-primary/[0.03] border-none focus-visible:ring-accent/50 text-sm font-black placeholder:text-primary/30 rounded-xl px-4"
@@ -132,7 +132,7 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
                 {type === "question" && (
                   <div className="space-y-4">
                     <Input
-                      placeholder="공유하고 싶은 HR 주제 제목을 입력하세요."
+                      placeholder="공유하고 싶은 교육 주제 제목을 입력하세요."
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
                       className="bg-transparent border-none p-0 h-auto focus-visible:ring-0 text-xl font-black text-primary placeholder:text-primary/10 tracking-tight"
@@ -140,10 +140,10 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
                     
                     <div className="space-y-2">
                       <p className="text-[12px] font-black text-accent flex items-center gap-1">
-                        <Hash className="w-3 h-3" /> 직무 카테고리 선택
+                        <Hash className="w-3 h-3" /> 교육 카테고리 선택
                       </p>
                       <div className="flex flex-wrap gap-2">
-                        {HR_CATEGORIES.map((cat) => (
+                        {HRD_CATEGORIES.map((cat) => (
                           <button
                             key={cat}
                             type="button"
@@ -164,7 +164,7 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
                 )}
                 
                 <Textarea
-                  placeholder={type === "question" ? "채용, 교육, 평가 등 고민이나 정보를 자유롭게 속삭여보세요." : "동료 담당자에게 따뜻한 조언이나 지식을 공유해보세요."}
+                  placeholder={type === "question" ? "교육 설계, L&D 전략, 온보딩 등 고민을 자유롭게 속삭여보세요." : "동료 담당자에게 따뜻한 조언이나 교육 노하우를 공유해보세요."}
                   value={text}
                   onChange={(e) => setText(e.target.value)}
                   className="min-h-[120px] bg-transparent border-none p-0 focus-visible:ring-0 resize-none text-base leading-relaxed text-primary/80 placeholder:text-primary/10 font-medium"
@@ -219,7 +219,7 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
               )}
               <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-accent/10 text-[11px] font-black text-accent border border-accent/10">
                 <Smile className="w-3.5 h-3.5" />
-                HR 현직자
+                HRD 현직자
               </div>
             </div>
             
