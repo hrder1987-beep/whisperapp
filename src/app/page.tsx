@@ -33,36 +33,36 @@ export default function HomePage() {
   const { toast } = useToast()
 
   useEffect(() => {
-    // 예시 데이터에서 불필요한 설명을 줄이고 깔끔하게 정리
+    // HR 중심의 예시 데이터로 업데이트
     const initialQuestions: Question[] = [
       {
         id: "1",
-        title: "진정한 행복의 비결은 무엇일까요?",
-        text: "여러분이 생각하는 행복의 조건은 무엇인가요? 돈, 명예, 아니면 사소한 일상일까요?",
-        nickname: "행복찾기",
-        viewCount: 124,
-        answerCount: 2,
+        title: "2024년 하반기 연봉 인상률 트렌드가 궁금합니다.",
+        text: "다른 IT 기업들은 올해 연봉 인상률 어느 정도로 잡고 계신가요? 3~5% 내외가 대세인지, 아니면 동결 기조인지 궁금합니다. 저희는 현재 조직문화 개편과 맞물려 고민이 많네요.",
+        nickname: "인사팀장A",
+        viewCount: 1240,
+        answerCount: 8,
         createdAt: Date.now() - 3600000 * 2,
-        imageUrl: "https://images.unsplash.com/photo-1477840539360-4a1d23071046?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxuaWdodCUyMHNreXxlbnwwfHx8fDE3NzAyODE2MTd8MA&ixlib=rb-4.1.0&q=80&w=1080"
+        imageUrl: "https://images.unsplash.com/photo-1454165833767-1316b0215b3f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxocmFkbWluJTIwb2ZmaWNlfGVufDB8fHx8MTc3MDI4MTYxN3ww&ixlib=rb-4.1.0&q=80&w=1080"
       },
       {
         id: "2",
-        title: "과거의 나에게 해주고 싶은 말",
-        text: "과거의 자신에게 딱 한 마디만 속삭일 수 있다면 무엇을 말해주고 싶나요?",
-        nickname: "시간여행자",
-        viewCount: 89,
-        answerCount: 1,
+        title: "신입 사원 온보딩 프로그램 아이디어 공유해요.",
+        text: "단순 교육 말고, 회사에 정말 '스며들 수 있게' 하는 좋은 장치가 있을까요? 웰컴 키트 외에 추천할 만한 프로그램이 있다면 속삭여주세요.",
+        nickname: "교육담당자",
+        viewCount: 890,
+        answerCount: 12,
         createdAt: Date.now() - 3600000 * 5,
       },
       {
         id: "3",
-        title: "디자인 컬러 조합 추천 부탁드려요",
-        text: "딥 그린과 골드 조합 외에 고급스러운 추천 조합이 있을까요?",
-        nickname: "디자이너",
-        viewCount: 210,
-        answerCount: 0,
+        title: "주 4일제 도입 검토 중인데, 리스크가 무엇일까요?",
+        text: "총무 및 근태 관리 측면에서 주 4일제(또는 격주 4일제) 도입 시 가장 큰 허들이 무엇이었나요? 경험 있으신 담당자분들의 조언 부탁드립니다.",
+        nickname: "총무관리자",
+        viewCount: 2100,
+        answerCount: 5,
         createdAt: Date.now() - 3600000 * 0.5,
-        imageUrl: "https://images.unsplash.com/photo-1758179761324-63b474fe55a0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxwZWFjZWZ1bCUyMGZvcmVzdHxlbnwwfHx8fDE3NzAzNTQzNzd8MA&ixlib=rb-4.1.0&q=80&w=1080"
+        imageUrl: "https://images.unsplash.com/photo-1552664730-d307ca884978?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxtZWV0aW5nfGVufDB8fHx8MTc3MDM1NDM3N3ww&ixlib=rb-4.1.0&q=80&w=1080"
       }
     ]
     setQuestions(initialQuestions)
@@ -121,9 +121,9 @@ export default function HomePage() {
     if (adminPassword === "admin123") {
       setIsAdminMode(true)
       setShowAdminDialog(false)
-      toast({ title: "관리자 모드 활성화", description: "유지관리 권한을 획득했습니다." })
+      toast({ title: "관리자 권한 획득", description: "커뮤니티 가이드라인 관리가 가능합니다." })
     } else {
-      toast({ title: "접근 거부", description: "비밀번호가 일치하지 않습니다.", variant: "destructive" })
+      toast({ title: "인증 실패", description: "관리자 암호가 올바르지 않습니다.", variant: "destructive" })
     }
     setAdminPassword("")
   }
@@ -132,7 +132,7 @@ export default function HomePage() {
     setQuestions(questions.filter(q => q.id !== id))
     setAnswers(answers.filter(a => a.questionId !== id))
     if (selectedQuestionId === id) setSelectedQuestionId(null)
-    toast({ title: "속삭임 삭제됨", description: "요청하신 관리 작업이 완료되었습니다." })
+    toast({ title: "속삭임 삭제", description: "운영 정책에 따라 게시물이 삭제되었습니다." })
   }
 
   const selectedQuestion = questions.find(q => q.id === selectedQuestionId)
@@ -147,7 +147,7 @@ export default function HomePage() {
           <div className="hidden md:flex flex-1 max-w-xl relative group">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50 group-focus-within:text-accent transition-colors" />
             <Input 
-              placeholder="관심 있는 내용을 검색해보세요..." 
+              placeholder="HR 인사이트, 연봉 트렌드, 조직문화를 검색해보세요..." 
               className="pl-11 bg-white/10 border-none focus-visible:ring-accent/50 h-11 rounded-full text-sm text-white placeholder:text-white/40"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -163,7 +163,7 @@ export default function HomePage() {
             </Button>
             {isAdminMode ? (
               <Button variant="outline" size="sm" onClick={() => setIsAdminMode(false)} className="h-8 border-accent/30 text-accent text-[10px] hover:bg-accent/10">
-                관리 종료
+                ADMIN EXIT
               </Button>
             ) : (
               <Button variant="ghost" size="icon" onClick={() => setShowAdminDialog(true)} className="text-white/70 hover:text-accent hover:bg-white/5">
@@ -183,7 +183,7 @@ export default function HomePage() {
               onClick={() => setSelectedQuestionId(null)}
             >
               <ChevronLeft className="w-4 h-4 mr-1 group-hover:-translate-x-1 transition-transform" />
-              목록으로
+              피드로 돌아가기
             </Button>
 
             <article className="bg-white border border-primary/10 rounded-2xl overflow-hidden mb-6 shadow-sm">
@@ -217,7 +217,7 @@ export default function HomePage() {
                   <div className="relative w-full aspect-video rounded-xl overflow-hidden border border-primary/10 bg-primary/5 mb-8">
                     <Image 
                       src={selectedQuestion.imageUrl} 
-                      alt="상세 이미지" 
+                      alt="HR 관련 이미지" 
                       fill 
                       className="object-cover"
                     />
@@ -226,14 +226,14 @@ export default function HomePage() {
                 
                 <div className="flex gap-4 pt-6 border-t border-primary/5 text-xs text-muted-foreground">
                   <span>조회 {selectedQuestion.viewCount}</span>
-                  <span>댓글 {selectedQuestion.answerCount}</span>
+                  <span>답변 {selectedQuestion.answerCount}</span>
                 </div>
               </div>
             </article>
 
             <SubmissionForm 
               type="answer"
-              placeholder="답글을 남겨주세요..."
+              placeholder="동료 HR 담당자들에게 따뜻한 조언이나 의견을 남겨주세요."
               onSubmit={(nick, title, text) => handleAddAnswer(nick, text)}
             />
 
@@ -247,7 +247,7 @@ export default function HomePage() {
               <div className="space-y-6">
                 <SubmissionForm 
                   type="question"
-                  placeholder="고민이나 일상을 자유롭게 속삭여보세요."
+                  placeholder="인사, 교육, 총무, 조직문화 고민을 자유롭게 속삭여보세요."
                   onSubmit={handleAddQuestion}
                 />
 
@@ -264,19 +264,19 @@ export default function HomePage() {
               <RankingList questions={topQuestions} onSelectQuestion={handleSelectQuestion} />
               
               <div className="bg-white rounded-2xl p-6 border border-primary/10 shadow-sm">
-                <h3 className="text-sm font-bold text-primary mb-4">슈쇼 서비스 가이드</h3>
+                <h3 className="text-sm font-bold text-primary mb-4">HR 전용 서비스 가이드</h3>
                 <div className="space-y-4">
                    <div className="space-y-1">
-                      <p className="text-[13px] font-semibold text-foreground/90">완벽한 익명성</p>
-                      <p className="text-[12px] text-muted-foreground leading-snug">모든 활동은 익명으로 처리되며, 작성자의 정보는 안전하게 보호됩니다.</p>
+                      <p className="text-[13px] font-semibold text-foreground/90">철저한 익명 보장</p>
+                      <p className="text-[12px] text-muted-foreground leading-snug">현직 담당자들의 민감한 고민을 위해 모든 활동은 비식별화되어 보호됩니다.</p>
                    </div>
                    <div className="space-y-1">
-                      <p className="text-[13px] font-semibold text-foreground/90">이미지 첨부 지원</p>
-                      <p className="text-[12px] text-muted-foreground leading-snug">텍스트만으로 부족할 땐 이미지를 함께 올려 공감을 얻어보세요.</p>
+                      <p className="text-[13px] font-semibold text-foreground/90">카테고리별 전문 지식</p>
+                      <p className="text-[12px] text-muted-foreground leading-snug">채용부터 평가, 복리후생까지 각 분야 전문가의 인사이트를 만나보세요.</p>
                    </div>
                    <div className="space-y-1">
-                      <p className="text-[13px] font-semibold text-foreground/90">클린 커뮤니티</p>
-                      <p className="text-[12px] text-muted-foreground leading-snug">비방이나 혐오 표현은 지양하고 따뜻한 속삭임을 나누어주세요.</p>
+                      <p className="text-[13px] font-semibold text-foreground/90">클린 비즈니스 커뮤니티</p>
+                      <p className="text-[12px] text-muted-foreground leading-snug">전문가다운 상호 존중을 바탕으로 실질적인 해결책을 공유합니다.</p>
                    </div>
                 </div>
               </div>
@@ -285,10 +285,9 @@ export default function HomePage() {
                 <div className="flex flex-wrap justify-center gap-x-3 gap-y-1 mb-3">
                   <span className="hover:text-primary cursor-pointer transition-colors">이용약관</span>
                   <span className="hover:text-primary cursor-pointer transition-colors">개인정보처리방침</span>
-                  <span className="hover:text-primary cursor-pointer transition-colors">운영정책</span>
-                  <span className="hover:text-primary cursor-pointer transition-colors">고객센터</span>
+                  <span className="hover:text-primary cursor-pointer transition-colors">커뮤니티 가이드라인</span>
                 </div>
-                <p>© {new Date().getFullYear()} Chuchot. Powered by Anonymous Whispers.</p>
+                <p>© {new Date().getFullYear()} Chuchot HR. Premium Networking.</p>
               </div>
             </aside>
           </div>
@@ -300,13 +299,13 @@ export default function HomePage() {
           <DialogHeader>
             <DialogTitle className="text-primary">관리자 인증</DialogTitle>
             <DialogDescription className="text-muted-foreground">
-              유지관리 모드를 활성화하기 위해 관리자 키를 입력하세요.
+              커뮤니티 운영 모드 활성화를 위해 인증 키를 입력하세요.
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
             <Input 
               type="password" 
-              placeholder="키 입력..." 
+              placeholder="ADMIN ACCESS KEY" 
               value={adminPassword}
               onChange={(e) => setAdminPassword(e.target.value)}
               className="bg-primary/5 border-primary/10 placeholder:text-primary/40"
@@ -315,7 +314,7 @@ export default function HomePage() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowAdminDialog(false)} className="border-primary/10">취소</Button>
-            <Button onClick={handleAdminAuth}>인증하기</Button>
+            <Button onClick={handleAdminAuth}>인증</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -3,8 +3,8 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 
 export const metadata: Metadata = {
-  title: 'Chuchot (슈쇼) - 익명으로 속삭이세요',
-  description: '실시간으로 소통하는 익명 질문 및 답변 플랫폼입니다.',
+  title: 'Chuchot (슈쇼) HR - 인사 담당자들의 비밀스러운 속삭임',
+  description: '채용, 평가, 조직문화, 교육까지. HR 전문가들을 위한 실시간 익명 소통 플랫폼입니다.',
 };
 
 export default function RootLayout({
@@ -21,7 +21,7 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased selection:bg-primary selection:text-primary-foreground bg-[#F8F9FA]">
         <div className="relative min-h-screen overflow-x-hidden">
-          {/* Subtle background texture for light mode */}
+          {/* Subtle background texture */}
           <div className="fixed inset-0 pointer-events-none opacity-30">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,hsl(var(--primary)/0.05)_0%,transparent_70%)] blur-3xl transform -translate-y-1/2"></div>
           </div>
