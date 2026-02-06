@@ -85,7 +85,8 @@ export default function HomePage() {
   }, [questions, searchQuery])
 
   const topQuestions = useMemo(() => {
-    return [...questions].sort((a, b) => b.viewCount - a.viewCount).slice(0, 10)
+    // 실시간 인기 속삭임을 5개로 제한하여 박스 크기를 줄임
+    return [...questions].sort((a, b) => b.viewCount - a.viewCount).slice(0, 5)
   }, [questions])
 
   const handleAddQuestion = (nickname: string, title: string, text: string, imageUrl?: string) => {
@@ -156,7 +157,7 @@ export default function HomePage() {
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
             <Input 
               placeholder="관심 있는 내용을 검색해보세요..." 
-              className="pl-11 bg-primary/5 border-none focus-visible:ring-primary h-10 rounded-full text-sm"
+              className="pl-11 bg-primary/5 border-none focus-visible:ring-primary h-10 rounded-full text-sm placeholder:text-primary/50"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -318,7 +319,7 @@ export default function HomePage() {
               placeholder="키 입력..." 
               value={adminPassword}
               onChange={(e) => setAdminPassword(e.target.value)}
-              className="bg-primary/5 border-primary/10"
+              className="bg-primary/5 border-primary/10 placeholder:text-primary/40"
               onKeyDown={(e) => e.key === 'Enter' && handleAdminAuth()}
             />
           </div>
