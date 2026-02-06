@@ -48,6 +48,15 @@
   animation: whisper 3s ease-in-out infinite;
 }
 
+.avatar-animation {
+  animation: float 4s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  50% { transform: translateY(-4px) rotate(5deg); }
+}
+
 @keyframes whisper {
   0%, 100% { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 2px hsl(var(--accent))); }
   50% { opacity: 0.8; transform: scale(0.98); filter: drop-shadow(0 0 8px hsl(var(--accent))); }

@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { formatDistanceToNow } from "date-fns"
 import { ko } from "date-fns/locale"
 import { Clock } from "lucide-react"
+import { AvatarIcon } from "./AvatarIcon"
 
 interface AnswerFeedProps {
   answers: Answer[]
@@ -25,14 +26,17 @@ export function AnswerFeed({ answers }: AnswerFeedProps) {
         sortedAnswers.map((a) => (
           <Card key={a.id} className="bg-card border-black/5 shadow-sm">
             <CardContent className="p-4">
-              <div className="flex justify-between items-center mb-2 text-xs">
-                <span className="text-primary font-medium italic">@{a.nickname}</span>
-                <span className="text-muted-foreground flex items-center gap-1">
+              <div className="flex justify-between items-center mb-3">
+                <div className="flex items-center gap-2">
+                  <AvatarIcon seed={a.nickname} className="w-7 h-7" />
+                  <span className="text-primary font-bold text-sm">@{a.nickname}</span>
+                </div>
+                <span className="text-muted-foreground flex items-center gap-1 text-[10px]">
                   <Clock className="w-3 h-3" />
                   {formatDistanceToNow(a.createdAt, { addSuffix: true, locale: ko })}
                 </span>
               </div>
-              <p className="text-base text-foreground/90 leading-relaxed">
+              <p className="text-base text-foreground/90 leading-relaxed pl-9">
                 {a.text}
               </p>
             </CardContent>

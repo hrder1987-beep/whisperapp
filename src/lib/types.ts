@@ -7,6 +7,7 @@ export interface Question {
   answerCount: number;
   createdAt: number;
   imageUrl?: string;
+  avatarId?: string;
 }
 
 export interface Answer {
@@ -15,4 +16,5 @@ export interface Answer {
   text: string;
   nickname: string;
   createdAt: number;
+  avatarId?: string;
 }

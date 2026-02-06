@@ -7,6 +7,7 @@ import { formatDistanceToNow } from "date-fns"
 import { ko } from "date-fns/locale"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
+import { AvatarIcon } from "./AvatarIcon"
 
 interface QuestionFeedProps {
   questions: Question[]
@@ -40,9 +41,7 @@ export function QuestionFeed({ questions, onSelectQuestion }: QuestionFeedProps)
             <CardContent className="p-6 md:p-8">
               <div className="flex justify-between items-start mb-6">
                 <div className="flex items-center gap-4">
-                  <div className="w-11 h-11 rounded-2xl bg-primary/5 flex items-center justify-center text-xs font-black text-accent border border-accent/20">
-                    {q.nickname.substring(0, 1).toUpperCase()}
-                  </div>
+                  <AvatarIcon seed={q.nickname} />
                   <div className="flex flex-col">
                     <span className="text-sm font-black text-primary">@{q.nickname}</span>
                     <span className="text-[11px] font-bold text-primary/40 flex items-center gap-1.5">
