@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
+import Image from "next/image"
 
 export default function HomePage() {
   const [questions, setQuestions] = useState<Question[]>([])
@@ -29,7 +30,6 @@ export default function HomePage() {
   const [adminPassword, setAdminPassword] = useState("")
   const { toast } = useToast()
 
-  // Initial mock data
   useEffect(() => {
     const initialQuestions: Question[] = [
       {
@@ -39,6 +39,7 @@ export default function HomePage() {
         viewCount: 124,
         answerCount: 2,
         createdAt: Date.now() - 3600000 * 2,
+        imageUrl: "https://picsum.photos/seed/1/800/600"
       },
       {
         id: "2",
@@ -55,16 +56,18 @@ export default function HomePage() {
         viewCount: 210,
         answerCount: 0,
         createdAt: Date.now() - 3600000 * 0.5,
+        imageUrl: "https://picsum.photos/seed/design/800/600"
       }
     ]
     setQuestions(initialQuestions)
   }, [])
 
-  const handleAddQuestion = (nickname: string, text: string) => {
+  const handleAddQuestion = (nickname: string, text: string, imageUrl?: string) => {
     const newQuestion: Question = {
       id: Math.random().toString(36).substr(2, 9),
       text,
       nickname,
+      imageUrl,
       viewCount: 0,
       answerCount: 0,
       createdAt: Date.now(),
@@ -156,26 +159,41 @@ export default function HomePage() {
             피드로 돌아가기
           </Button>
 
-          <div className="glass-morphism border-primary p-8 rounded-2xl mb-8 relative">
+          <div className="glass-morphism border-primary p-0 rounded-2xl mb-8 relative overflow-hidden">
             {isAdminMode && (
               <Button 
                 variant="destructive" 
                 size="sm" 
-                className="absolute top-4 right-4 h-7 text-[10px]"
+                className="absolute top-4 right-4 h-7 text-[10px] z-20"
                 onClick={() => handleDeleteQuestion(selectedQuestion.id)}
               >
                 삭제하기
               </Button>
             )}
-            <div className="flex justify-between items-start mb-6">
-              <span className="text-primary font-bold text-lg">@{selectedQuestion.nickname}</span>
-              <span className="text-muted-foreground text-sm">
-                작성일: {new Date(selectedQuestion.createdAt).toLocaleDateString()}
-              </span>
+            
+            <div className="p-8">
+              <div className="flex justify-between items-start mb-6">
+                <span className="text-primary font-bold text-lg">@{selectedQuestion.nickname}</span>
+                <span className="text-muted-foreground text-sm">
+                  작성일: {new Date(selectedQuestion.createdAt).toLocaleDateString()}
+                </span>
+              </div>
+              <h1 className="text-3xl font-headline font-bold text-foreground leading-tight mb-6">
+                {selectedQuestion.text}
+              </h1>
             </div>
-            <h1 className="text-3xl font-headline font-bold text-foreground leading-tight">
-              {selectedQuestion.text}
-            </h1>
+
+            {selectedQuestion.imageUrl && (
+              <div className="relative w-full aspect-video border-t border-white/5">
+                <Image 
+                  src={selectedQuestion.imageUrl} 
+                  alt="상세 이미지" 
+                  fill 
+                  className="object-cover"
+                  data-ai-hint="post detail"
+                />
+              </div>
+            )}
           </div>
 
           <SubmissionForm 

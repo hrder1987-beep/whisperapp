@@ -6,6 +6,7 @@ import { MessageCircle, Eye, Clock } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 import { ko } from "date-fns/locale"
 import { Button } from "@/components/ui/button"
+import Image from "next/image"
 
 interface QuestionFeedProps {
   questions: Question[]
@@ -33,20 +34,34 @@ export function QuestionFeed({ questions, onSelectQuestion }: QuestionFeedProps)
         sortedQuestions.map((q) => (
           <Card 
             key={q.id} 
-            className="glass-morphism border-white/5 hover:border-primary/30 transition-all duration-300 group cursor-pointer"
+            className="glass-morphism border-white/5 hover:border-primary/30 transition-all duration-300 group cursor-pointer overflow-hidden"
             onClick={() => onSelectQuestion(q.id)}
           >
-            <CardContent className="p-6">
-              <div className="flex justify-between items-center mb-4 text-xs">
-                <span className="text-primary font-semibold">@{q.nickname}</span>
-                <span className="text-muted-foreground flex items-center gap-1">
-                  <Clock className="w-3 h-3" />
-                  {formatDistanceToNow(q.createdAt, { addSuffix: true, locale: ko })}
-                </span>
+            <CardContent className="p-0">
+              <div className="p-6 pb-4">
+                <div className="flex justify-between items-center mb-4 text-xs">
+                  <span className="text-primary font-semibold">@{q.nickname}</span>
+                  <span className="text-muted-foreground flex items-center gap-1">
+                    <Clock className="w-3 h-3" />
+                    {formatDistanceToNow(q.createdAt, { addSuffix: true, locale: ko })}
+                  </span>
+                </div>
+                <p className="text-lg leading-relaxed group-hover:translate-x-1 transition-transform">
+                  {q.text}
+                </p>
               </div>
-              <p className="text-lg leading-relaxed mb-6 group-hover:translate-x-1 transition-transform">
-                {q.text}
-              </p>
+              
+              {q.imageUrl && (
+                <div className="relative w-full aspect-video border-y border-white/5">
+                  <Image 
+                    src={q.imageUrl} 
+                    alt="속삭임 이미지" 
+                    fill 
+                    className="object-cover"
+                    data-ai-hint="post image"
+                  />
+                </div>
+              )}
             </CardContent>
             <CardFooter className="px-6 py-4 bg-white/5 border-t border-white/5 flex gap-4">
               <div className="flex items-center gap-1.5 text-xs text-muted-foreground">

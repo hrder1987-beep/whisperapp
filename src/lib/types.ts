@@ -5,6 +5,7 @@ export interface Question {
   viewCount: number;
   answerCount: number;
   createdAt: number;
+  imageUrl?: string;
 }
 
 export interface Answer {
