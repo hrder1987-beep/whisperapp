@@ -2,9 +2,8 @@
 
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import Image from "next/image"
-import { Sparkles, Users, ArrowRight } from "lucide-react"
+import { Sparkles, ArrowRight } from "lucide-react"
 
 export function MainBanner() {
   const banners = [
@@ -13,16 +12,14 @@ export function MainBanner() {
       title: "HR 현직자들의\n품격 있는 속삭임",
       description: "채용, 교육, 조직문화까지.\n현직 담당자들과 익명으로 인사이트를 공유하세요.",
       image: "https://images.unsplash.com/photo-1454165833767-1316b0215b3f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxocmFkbWluJTIwb2ZmaWNlfGVufDB8fHx8MTc3MDI4MTYxN3ww&ixlib=rb-4.1.0&q=80&w=1080",
-      badge: "현직자 인증",
-      cta: "지금 참여하기"
+      badge: "실시간 트렌드"
     },
     {
       id: 2,
       title: "가장 실질적인\n인사 솔루션의 시작",
       description: "막막했던 평가 제도부터 사내 이벤트 아이디어까지,\n동료 HRer들에게 직접 물어보고 답을 얻으세요.",
       image: "https://images.unsplash.com/photo-1552664730-d307ca884978?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxtZWV0aW5nfGVufDB8fHx8MTc3MDM1NDM3N3ww&ixlib=rb-4.1.0&q=80&w=1080",
-      badge: "네트워킹",
-      cta: "인사이트 보기"
+      badge: "지식 공유"
     }
   ]
 
@@ -32,7 +29,7 @@ export function MainBanner() {
         <CarouselContent>
           {banners.map((banner) => (
             <CarouselItem key={banner.id}>
-              <div className="relative h-[400px] md:h-[520px] w-full overflow-hidden premium-gradient">
+              <div className="relative h-[400px] md:h-[480px] w-full overflow-hidden premium-gradient">
                 <Image 
                   src={banner.image} 
                   alt={banner.title} 
@@ -52,14 +49,9 @@ export function MainBanner() {
                     {banner.title}
                   </h1>
                   
-                  <p className="text-base md:text-xl text-accent/90 font-medium mb-12 max-w-2xl whitespace-pre-line leading-relaxed text-balance animate-in fade-in slide-in-from-bottom-6 duration-1000">
+                  <p className="text-base md:text-xl text-accent/90 font-medium max-w-2xl whitespace-pre-line leading-relaxed text-balance animate-in fade-in slide-in-from-bottom-6 duration-1000">
                     {banner.description}
                   </p>
-                  
-                  <Button className="w-fit bg-white hover:bg-accent text-primary font-black h-14 px-10 rounded-2xl shadow-xl transition-all transform hover:scale-105 active:scale-95 group/btn">
-                    {banner.cta}
-                    <ArrowRight className="w-5 h-5 ml-2 group-hover/btn:translate-x-1 transition-transform" />
-                  </Button>
                 </div>
               </div>
             </CarouselItem>
