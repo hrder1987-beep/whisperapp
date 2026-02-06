@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
@@ -5,11 +6,10 @@ import { Logo } from "@/components/chuchot/Logo"
 import { MainBanner } from "@/components/chuchot/MainBanner"
 import { SubmissionForm } from "@/components/chuchot/SubmissionForm"
 import { QuestionFeed } from "@/components/chuchot/QuestionFeed"
-import { AnswerFeed } from "@/components/chuchot/AnswerFeed"
 import { RankingList } from "@/components/chuchot/RankingList"
 import { Question, Answer } from "@/lib/types"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, Bell, Search, User as UserIcon, Settings, Info, Eye, MessageCircle } from "lucide-react"
+import { Bell, Search, User as UserIcon, Settings, Info } from "lucide-react"
 import { 
   Dialog, 
   DialogContent, 
@@ -20,7 +20,6 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
-import Image from "next/image"
 import { generateAiReply } from "@/ai/flows/generate-ai-reply-flow"
 
 export default function HomePage() {
@@ -37,11 +36,11 @@ export default function HomePage() {
     const initialQuestions: Question[] = [
       {
         id: "1",
-        title: "2025년 기업 교육 트렌드: AI 리터러시 교육 설계",
+        title: "2025년 HRD 트렌드: AI 리터러시 교육 설계",
         text: "내년도 교육 계획 수립 중인데, 전사 AI 리터러시 교육을 어떻게 설계하고 계신가요? 기술 교육 위주인지, 실제 업무 활용 사례 중심인지 궁금합니다.",
         nickname: "교육기획자K",
         viewCount: 1540,
-        answerCount: 12,
+        answerCount: 1,
         createdAt: Date.now() - 3600000 * 2,
         category: "L&D 전략",
         imageUrl: "https://images.unsplash.com/photo-1552664730-d307ca884978?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxtZWV0aW5nfGVufDB8fHx8MTc3MDM1NDM3N3ww&ixlib=rb-4.1.0&q=80&w=1080"
@@ -52,7 +51,7 @@ export default function HomePage() {
         text: "리더십 교육은 만족도 조사 외에 실제 행동 변화를 측정하기가 너무 어렵네요. 다면 평가나 현업 적용도 체크리스트 외에 좋은 방법이 있을까요?",
         nickname: "성과개발담당",
         viewCount: 920,
-        answerCount: 8,
+        answerCount: 0,
         category: "평가/ROI",
         createdAt: Date.now() - 3600000 * 5,
       },
@@ -62,13 +61,25 @@ export default function HomePage() {
         text: "신규 입사자 이탈을 막기 위한 '임팩트 있는' 온보딩 프로그램을 기획 중입니다. 게이미피케이션 요소를 도입해보신 분 계신가요?",
         nickname: "조직문화L",
         viewCount: 2100,
-        answerCount: 15,
+        answerCount: 0,
         category: "온보딩",
         createdAt: Date.now() - 3600000 * 0.5,
         imageUrl: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxNXx8ZWR1Y2F0aW9ufGVufDB8fHx8MTc3MDI4MTYxN3ww&ixlib=rb-4.1.0&q=80&w=1080"
       }
     ]
     setQuestions(initialQuestions)
+
+    // 초기 데이터에 대한 '슈'의 기본 답변 하나 추가
+    setAnswers([
+      {
+        id: "ai-initial",
+        questionId: "1",
+        text: "안녕하세요! 슈입니다. AI 리터러시 교육은 이제 선택이 아닌 필수죠. 최근에는 생성형 AI 도구를 활용한 '직무별 워크플로우 자동화' 실습 위주로 설계하는 추세입니다. 기술적인 이해도 중요하지만, 실제 업무 시간을 얼마나 단축할 수 있는지 체감하게 하는 것이 핵심이에요!",
+        nickname: "슈 (AI)",
+        createdAt: Date.now() - 3600000 * 1,
+        avatarId: "sparkles"
+      }
+    ])
   }, [])
 
   const filteredQuestions = useMemo(() => {
@@ -98,7 +109,6 @@ export default function HomePage() {
     }
     setQuestions([newQuestion, ...questions])
 
-    // AI '슈'의 자동 답글 생성
     generateAiReply({ title, text }).then((res) => {
       const aiAnswer: Answer = {
         id: `ai-${Date.now()}`,
@@ -126,18 +136,22 @@ export default function HomePage() {
       nickname,
       createdAt: Date.now(),
     }
-    setAnswers([newAnswer, ...answers])
-    setQuestions(questions.map(q => 
+    setAnswers(prev => [newAnswer, ...prev])
+    setQuestions(prev => prev.map(q => 
       q.id === selectedQuestionId ? { ...q, answerCount: q.answerCount + 1 } : q
     ))
   }
 
   const handleSelectQuestion = (id: string) => {
-    setSelectedQuestionId(id)
-    setQuestions(questions.map(q => 
-      q.id === id ? { ...q, viewCount: q.viewCount + 1 } : q
-    ))
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    // 이미 선택된 거면 닫기, 아니면 열기 (아코디언 방식)
+    if (selectedQuestionId === id) {
+      setSelectedQuestionId(null)
+    } else {
+      setSelectedQuestionId(id)
+      setQuestions(prev => prev.map(q => 
+        q.id === id ? { ...q, viewCount: q.viewCount + 1 } : q
+      ))
+    }
   }
 
   const handleAdminAuth = () => {
@@ -150,16 +164,6 @@ export default function HomePage() {
     }
     setAdminPassword("")
   }
-
-  const handleDeleteQuestion = (id: string) => {
-    setQuestions(questions.filter(q => q.id !== id))
-    setAnswers(answers.filter(a => a.questionId !== id))
-    if (selectedQuestionId === id) setSelectedQuestionId(null)
-    toast({ title: "속삭임 삭제", description: "운영 정책에 따라 게시물이 삭제되었습니다." })
-  }
-
-  const selectedQuestion = questions.find(q => q.id === selectedQuestionId)
-  const questionAnswers = answers.filter(a => a.questionId === selectedQuestionId)
 
   return (
     <div className="min-h-screen bg-[#F8F9FA]">
@@ -184,11 +188,12 @@ export default function HomePage() {
             <Button variant="ghost" size="icon" className="text-white/70 hover:text-accent hover:bg-white/5 rounded-full">
               <UserIcon className="w-5 h-5" />
             </Button>
-            {isAdminMode ? (
+            {isAdminMode && (
               <Button variant="outline" size="sm" onClick={() => setIsAdminMode(false)} className="h-8 border-accent/30 text-accent text-[10px] font-black hover:bg-accent/10">
                 ADMIN EXIT
               </Button>
-            ) : (
+            )}
+            {!isAdminMode && (
               <Button variant="ghost" size="icon" onClick={() => setShowAdminDialog(true)} className="text-white/70 hover:text-accent hover:bg-white/5 rounded-full">
                 <Settings className="w-5 h-5" />
               </Button>
@@ -198,121 +203,56 @@ export default function HomePage() {
       </header>
 
       <div className="max-w-6xl mx-auto px-4 py-8 md:py-12">
-        {selectedQuestionId && selectedQuestion ? (
-          <div className="max-w-3xl mx-auto animate-in fade-in slide-in-from-right-8 duration-700">
-            <Button 
-              variant="ghost" 
-              className="mb-8 text-primary font-bold hover:text-accent group pl-0 hover:bg-transparent"
-              onClick={() => setSelectedQuestionId(null)}
-            >
-              <ChevronLeft className="w-5 h-5 mr-1 group-hover:-translate-x-1 transition-transform" />
-              전체 피드로 돌아가기
-            </Button>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+          <main className="lg:col-span-8 space-y-10">
+            <MainBanner />
+            
+            <div className="space-y-10">
+              <SubmissionForm 
+                type="question"
+                placeholder="교육 설계, L&D 전략, 사내 세미나 등 HRD 관련 고민을 속삭여보세요."
+                onSubmit={handleAddQuestion}
+              />
 
-            <article className="bg-white border border-primary/5 rounded-[2rem] overflow-hidden mb-8 shadow-2xl">
-              <div className="p-8 md:p-12">
-                <div className="flex justify-between items-start mb-8">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-primary/5 flex items-center justify-center text-sm font-black text-primary border border-primary/10 shadow-inner">
-                      {selectedQuestion.nickname.substring(0, 1)}
-                    </div>
-                    <div>
-                      <h3 className="font-black text-primary text-lg">@{selectedQuestion.nickname}</h3>
-                      <p className="text-[12px] font-bold text-primary/30">
-                        {new Date(selectedQuestion.createdAt).toLocaleString()}
-                      </p>
-                    </div>
-                  </div>
-                  {selectedQuestion.category && (
-                    <div className="px-4 py-1.5 rounded-full bg-accent text-primary font-black text-[12px]">
-                      #{selectedQuestion.category}
-                    </div>
-                  )}
+              <QuestionFeed 
+                questions={filteredQuestions} 
+                onSelectQuestion={handleSelectQuestion}
+                selectedId={selectedQuestionId}
+                answers={answers}
+                onAddAnswer={handleAddAnswer}
+              />
+            </div>
+          </main>
+
+          <aside className="lg:col-span-4 space-y-8 hidden lg:block">
+            <RankingList questions={topQuestions} onSelectQuestion={handleSelectQuestion} />
+            
+            <div className="bg-white rounded-[2rem] p-8 border border-primary/5 shadow-xl">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 rounded-xl bg-accent/10">
+                  <Info className="w-5 h-5 text-accent" />
                 </div>
-                
-                <h1 className="text-3xl md:text-4xl font-black text-primary leading-tight mb-8 tracking-tighter">
-                  {selectedQuestion.title}
-                </h1>
-
-                <p className="text-lg md:text-xl text-primary/80 leading-[1.8] mb-10 break-words whitespace-pre-wrap font-medium">
-                  {selectedQuestion.text}
-                </p>
-
-                {selectedQuestion.imageUrl && (
-                  <div className="relative w-full aspect-[16/9] rounded-[2rem] overflow-hidden border border-primary/5 bg-primary/5 mb-10 shadow-lg">
-                    <Image 
-                      src={selectedQuestion.imageUrl} 
-                      alt="HRD 관련 이미지" 
-                      fill 
-                      className="object-cover"
-                    />
-                  </div>
-                )}
-                
-                <div className="flex gap-6 pt-8 border-t border-primary/5 text-[13px] font-black text-primary/30">
-                  <span className="flex items-center gap-2"><Eye className="w-4 h-4"/> 조회 {selectedQuestion.viewCount}</span>
-                  <span className="flex items-center gap-2"><MessageCircle className="w-4 h-4"/> 답변 {selectedQuestion.answerCount}</span>
-                </div>
+                <h3 className="text-lg font-black text-primary">HRD 현직자 플랫폼 가이드</h3>
               </div>
-            </article>
-
-            <SubmissionForm 
-              type="answer"
-              placeholder="동료 HRD 현직자들에게 따뜻한 조언이나 교육 노하우를 공유해주세요."
-              onSubmit={handleAddAnswer}
-            />
-
-            <AnswerFeed answers={questionAnswers} />
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-            <main className="lg:col-span-8 space-y-10">
-              <MainBanner />
-              
-              <div className="space-y-10">
-                <SubmissionForm 
-                  type="question"
-                  placeholder="교육 기획, L&D 전략, 사내 세미나 등 HRD 관련 고민을 속삭여보세요."
-                  onSubmit={handleAddQuestion}
-                />
-
-                <QuestionFeed 
-                  questions={filteredQuestions} 
-                  onSelectQuestion={handleSelectQuestion} 
-                />
+              <div className="space-y-6">
+                 <div className="group space-y-2">
+                    <p className="text-[15px] font-black text-primary group-hover:text-accent transition-colors flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-accent"></span>
+                      철저한 비식별 익명 보장
+                    </p>
+                    <p className="text-[13px] text-primary/50 leading-relaxed font-medium pl-3.5">모든 활동은 암호화되어 보호되며, 교육 담당자들의 솔직한 소통을 지원합니다.</p>
+                 </div>
+                 <div className="group space-y-2">
+                    <p className="text-[15px] font-black text-primary group-hover:text-accent transition-colors flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-accent"></span>
+                      전문 L&D 카테고리
+                    </p>
+                    <p className="text-[13px] text-primary/50 leading-relaxed font-medium pl-3.5">교육 설계, 성과 평가, 리더십 육성 등 HRD 핵심 직무 인사이트를 제공합니다.</p>
+                 </div>
               </div>
-            </main>
-
-            <aside className="lg:col-span-4 space-y-8 hidden lg:block">
-              <RankingList questions={topQuestions} onSelectQuestion={handleSelectQuestion} />
-              
-              <div className="bg-white rounded-[2rem] p-8 border border-primary/5 shadow-xl">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="p-2 rounded-xl bg-accent/10">
-                    <Info className="w-5 h-5 text-accent" />
-                  </div>
-                  <h3 className="text-lg font-black text-primary">HRD 현직자 플랫폼 가이드</h3>
-                </div>
-                <div className="space-y-6">
-                   <div className="group space-y-2">
-                      <p className="text-[15px] font-black text-primary group-hover:text-accent transition-colors flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-accent"></span>
-                        철저한 비식별 익명 보장
-                      </p>
-                      <p className="text-[13px] text-primary/50 leading-relaxed font-medium pl-3.5">모든 활동은 암호화되어 보호되며, 교육 담당자들의 솔직한 소통을 지원합니다.</p>
-                   </div>
-                   <div className="group space-y-2">
-                      <p className="text-[15px] font-black text-primary group-hover:text-accent transition-colors flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-accent"></span>
-                        전문 L&D 카테고리
-                      </p>
-                      <p className="text-[13px] text-primary/50 leading-relaxed font-medium pl-3.5">교육 설계, 성과 평가, 리더십 육성 등 HRD 핵심 직무 인사이트를 제공합니다.</p>
-                   </div>
-                </div>
-              </div>
-            </aside>
-          </div>
-        )}
+            </div>
+          </aside>
+        </div>
       </div>
 
       <Dialog open={showAdminDialog} onOpenChange={setShowAdminDialog}>
