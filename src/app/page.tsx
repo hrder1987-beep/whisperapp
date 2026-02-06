@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
@@ -7,6 +6,7 @@ import { MainBanner } from "@/components/chuchot/MainBanner"
 import { SubmissionForm } from "@/components/chuchot/SubmissionForm"
 import { QuestionFeed } from "@/components/chuchot/QuestionFeed"
 import { RankingList } from "@/components/chuchot/RankingList"
+import { ShuChat } from "@/components/chuchot/ShuChat"
 import { Question, Answer } from "@/lib/types"
 import { Button } from "@/components/ui/button"
 import { Bell, Search, User as UserIcon, Settings, Info } from "lucide-react"
@@ -238,6 +238,8 @@ export default function HomePage() {
           <aside className="lg:col-span-4 space-y-8 hidden lg:block">
             <RankingList questions={topQuestions} onSelectQuestion={handleSelectQuestion} />
             
+            <ShuChat />
+
             <div className="bg-white rounded-[2rem] p-8 border border-primary/5 shadow-xl">
               <div className="flex items-center gap-3 mb-6">
                 <div className="p-2 rounded-xl bg-accent/10">
