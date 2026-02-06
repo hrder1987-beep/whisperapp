@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useRef } from "react"
@@ -5,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
-import { SendHorizontal, User, ImageIcon, X } from "lucide-react"
+import { SendHorizontal, ImageIcon, X, Smile } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import Image from "next/image"
 
@@ -62,6 +63,7 @@ export function SubmissionForm({ placeholder, onSubmit, type }: SubmissionFormPr
     }
 
     setIsSubmitting(true)
+    // 인공적인 지연을 주어 제출 느낌을 줌
     setTimeout(() => {
       onSubmit(nickname, text, imageUrl)
       setNickname("")
@@ -71,36 +73,38 @@ export function SubmissionForm({ placeholder, onSubmit, type }: SubmissionFormPr
       setIsSubmitting(false)
       toast({
         title: "속삭임 전송 완료",
-        description: `당신의 ${type === 'question' ? '질문이' : '답변이'} 익명으로 게시되었습니다.`
+        description: `익명으로 ${type === 'question' ? '질문이' : '답변이'} 등록되었습니다.`
       })
-    }, 600)
+    }, 400)
   }
 
   return (
-    <Card className="glass-morphism border-primary/20 mb-8 overflow-hidden shadow-2xl">
-      <div className="h-1 gold-gradient w-full"></div>
-      <CardContent className="p-6">
+    <Card className="bg-card border-white/10 mb-6 overflow-hidden shadow-sm">
+      <CardContent className="p-4 md:p-5">
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="relative group">
-            <User className="absolute left-3 top-3 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
-            <Input
-              placeholder="닉네임 (예: 비밀손님)"
-              value={nickname}
-              onChange={(e) => setNickname(e.target.value)}
-              className="pl-10 bg-white/5 border-white/10 focus-visible:ring-primary focus-visible:border-primary placeholder:text-muted-foreground/50"
-              maxLength={50}
-            />
+          <div className="flex gap-3">
+             <div className="w-10 h-10 rounded-full bg-primary/10 flex-shrink-0 flex items-center justify-center border border-primary/10">
+               <span className="text-primary text-xs font-bold">익명</span>
+             </div>
+             <div className="flex-1 space-y-3">
+                <Input
+                  placeholder="닉네임을 입력하세요"
+                  value={nickname}
+                  onChange={(e) => setNickname(e.target.value)}
+                  className="bg-transparent border-none p-0 h-auto focus-visible:ring-0 text-sm font-bold placeholder:text-muted-foreground/50"
+                  maxLength={20}
+                />
+                <Textarea
+                  placeholder={placeholder}
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
+                  className="min-h-[80px] bg-transparent border-none p-0 focus-visible:ring-0 resize-none placeholder:text-muted-foreground/40 text-[15px]"
+                />
+             </div>
           </div>
-          
-          <Textarea
-            placeholder={placeholder}
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            className="min-h-[120px] bg-white/5 border-white/10 focus-visible:ring-primary focus-visible:border-primary resize-y placeholder:text-muted-foreground/50 text-lg"
-          />
 
           {imageUrl && (
-            <div className="relative w-full aspect-video rounded-lg overflow-hidden border border-white/10 group">
+            <div className="relative w-full max-w-sm aspect-video rounded-lg overflow-hidden border border-white/10 group mt-2 ml-13">
               <Image 
                 src={imageUrl} 
                 alt="미리보기" 
@@ -111,7 +115,7 @@ export function SubmissionForm({ placeholder, onSubmit, type }: SubmissionFormPr
                 type="button"
                 variant="destructive"
                 size="icon"
-                className="absolute top-2 right-2 rounded-full h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                className="absolute top-2 right-2 rounded-full h-7 w-7"
                 onClick={handleRemoveImage}
               >
                 <X className="h-4 w-4" />
@@ -119,8 +123,8 @@ export function SubmissionForm({ placeholder, onSubmit, type }: SubmissionFormPr
             </div>
           )}
 
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-2">
+          <div className="flex justify-between items-center pt-3 border-t border-white/5">
+            <div className="flex items-center gap-1">
               {type === "question" && (
                 <>
                   <input
@@ -132,30 +136,33 @@ export function SubmissionForm({ placeholder, onSubmit, type }: SubmissionFormPr
                   />
                   <Button
                     type="button"
-                    variant="outline"
+                    variant="ghost"
                     size="sm"
-                    className="border-white/10 hover:bg-white/5 text-muted-foreground h-9"
+                    className="text-muted-foreground hover:text-primary h-9 px-2"
                     onClick={() => fileInputRef.current?.click()}
                   >
-                    <ImageIcon className="w-4 h-4 mr-2" />
-                    사진 첨부
+                    <ImageIcon className="w-5 h-5 mr-1.5" />
+                    이미지
                   </Button>
                 </>
               )}
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="text-muted-foreground hover:text-primary h-9 px-2"
+              >
+                <Smile className="w-5 h-5 mr-1.5" />
+                이모지
+              </Button>
             </div>
             
             <Button 
               type="submit" 
-              disabled={isSubmitting}
-              className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-8"
+              disabled={isSubmitting || !text.trim()}
+              className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-9 px-5 rounded-md transition-all"
             >
-              {isSubmitting ? (
-                "전송 중..."
-              ) : (
-                <span className="flex items-center gap-2">
-                  속삭이기 <SendHorizontal className="w-4 h-4" />
-                </span>
-              )}
+              {isSubmitting ? "등록 중..." : "등록"}
             </Button>
           </div>
         </form>

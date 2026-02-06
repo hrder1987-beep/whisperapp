@@ -3,7 +3,7 @@
 
 import { Question } from "@/lib/types"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
-import { MessageCircle, Eye, Clock } from "lucide-react"
+import { MessageCircle, Eye, Clock, MoreHorizontal } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 import { ko } from "date-fns/locale"
 import { Button } from "@/components/ui/button"
@@ -18,13 +18,13 @@ export function QuestionFeed({ questions, onSelectQuestion }: QuestionFeedProps)
   const sortedQuestions = [...questions].sort((a, b) => b.createdAt - a.createdAt)
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-xl font-bold text-primary">실시간 피드</h3>
-        <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-          라이브 업데이트
-        </span>
+    <div className="space-y-3">
+      <div className="flex items-center justify-between mb-4 px-1">
+        <div className="flex gap-4">
+          <button className="text-sm font-bold text-primary border-b-2 border-primary pb-1">전체</button>
+          <button className="text-sm font-medium text-muted-foreground hover:text-foreground pb-1">인기</button>
+          <button className="text-sm font-medium text-muted-foreground hover:text-foreground pb-1">최신</button>
+        </div>
       </div>
       
       {sortedQuestions.length === 0 ? (
@@ -35,50 +35,56 @@ export function QuestionFeed({ questions, onSelectQuestion }: QuestionFeedProps)
         sortedQuestions.map((q) => (
           <Card 
             key={q.id} 
-            className="glass-morphism border-white/5 hover:border-primary/30 transition-all duration-300 group cursor-pointer overflow-hidden"
+            className="bg-card border-white/5 hover:bg-white/[0.03] transition-colors cursor-pointer rounded-none md:rounded-xl overflow-hidden shadow-sm"
             onClick={() => onSelectQuestion(q.id)}
           >
-            <CardContent className="p-0">
-              <div className="p-6 pb-4">
-                <div className="flex justify-between items-center mb-4 text-xs">
-                  <span className="text-primary font-semibold">@{q.nickname}</span>
-                  <span className="text-muted-foreground flex items-center gap-1">
-                    <Clock className="w-3 h-3" />
-                    {formatDistanceToNow(q.createdAt, { addSuffix: true, locale: ko })}
-                  </span>
+            <CardContent className="p-5 md:p-6">
+              <div className="flex justify-between items-start mb-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-[10px] font-bold text-primary border border-primary/20">
+                    {q.nickname.substring(0, 1)}
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-bold text-foreground/90">@{q.nickname}</span>
+                    <span className="text-[11px] text-muted-foreground flex items-center gap-1">
+                      <Clock className="w-3 h-3" />
+                      {formatDistanceToNow(q.createdAt, { addSuffix: true, locale: ko })}
+                    </span>
+                  </div>
                 </div>
-                <p className="text-lg leading-relaxed group-hover:translate-x-1 transition-transform">
+                <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
+                  <MoreHorizontal className="w-4 h-4" />
+                </Button>
+              </div>
+
+              <div className="space-y-4">
+                <p className="text-[15px] md:text-base leading-relaxed text-foreground/90 whitespace-pre-wrap break-words line-clamp-4">
                   {q.text}
                 </p>
+                
+                {q.imageUrl && (
+                  <div className="relative w-full aspect-video rounded-lg overflow-hidden border border-white/5 bg-black/20">
+                    <Image 
+                      src={q.imageUrl} 
+                      alt="속삭임 이미지" 
+                      fill 
+                      className="object-cover"
+                      data-ai-hint="community post"
+                    />
+                  </div>
+                )}
               </div>
-              
-              {q.imageUrl && (
-                <div className="relative w-full h-60 md:h-72 border-y border-white/5 bg-black/20">
-                  <Image 
-                    src={q.imageUrl} 
-                    alt="속삭임 이미지" 
-                    fill 
-                    className="object-cover"
-                    data-ai-hint="post image"
-                  />
-                </div>
-              )}
             </CardContent>
-            <CardFooter className="px-6 py-4 bg-white/5 border-t border-white/5 flex gap-4">
-              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                <Eye className="w-4 h-4" />
-                조회수 {q.viewCount}
-              </div>
-              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            
+            <CardFooter className="px-5 md:px-6 py-3 border-t border-white/5 flex gap-5 bg-white/[0.01]">
+              <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-primary transition-colors">
                 <MessageCircle className="w-4 h-4" />
-                답변 {q.answerCount}
+                댓글 {q.answerCount}
               </div>
-              <Button 
-                variant="link" 
-                className="ml-auto text-primary hover:text-primary/80 h-auto p-0 text-xs"
-              >
-                답변하기 →
-              </Button>
+              <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+                <Eye className="w-4 h-4" />
+                조회 {q.viewCount}
+              </div>
             </CardFooter>
           </Card>
         ))
