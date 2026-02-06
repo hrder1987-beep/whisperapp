@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
@@ -9,7 +10,7 @@ import { RankingList } from "@/components/chuchot/RankingList"
 import { ShuChat } from "@/components/chuchot/ShuChat"
 import { Question, Answer } from "@/lib/types"
 import { Button } from "@/components/ui/button"
-import { Bell, Search, User as UserIcon, Settings, Info } from "lucide-react"
+import { Bell, Search, User as UserIcon, Settings, Info, X } from "lucide-react"
 import { 
   Dialog, 
   DialogContent, 
@@ -83,19 +84,27 @@ export default function HomePage() {
   }, [])
 
   const filteredQuestions = useMemo(() => {
-    let result = questions.filter(q => 
-      q.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      q.text.toLowerCase().includes(searchQuery.toLowerCase()) || 
-      q.nickname.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      q.category?.toLowerCase().includes(searchQuery.toLowerCase())
-    )
+    if (!searchQuery.trim()) {
+      let result = [...questions]
+      if (activeTab === "popular") result.sort((a, b) => b.viewCount - a.viewCount)
+      else if (activeTab === "waiting") result = result.filter(q => q.answerCount === 0)
+      else result.sort((a, b) => b.createdAt - a.createdAt)
+      return result
+    }
+
+    const keywords = searchQuery.toLowerCase().split(/\s+/).filter(k => k.length > 0)
+    
+    let result = questions.filter(q => {
+      const content = `${q.title} ${q.text} ${q.nickname} ${q.category || ""}`.toLowerCase()
+      return keywords.every(kw => content.includes(kw))
+    })
 
     if (activeTab === "popular") {
-      result = result.sort((a, b) => b.viewCount - a.viewCount)
+      result.sort((a, b) => b.viewCount - a.viewCount)
     } else if (activeTab === "waiting") {
       result = result.filter(q => q.answerCount === 0)
     } else {
-      result = result.sort((a, b) => b.createdAt - a.createdAt)
+      result.sort((a, b) => b.createdAt - a.createdAt)
     }
 
     return result
@@ -184,10 +193,18 @@ export default function HomePage() {
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50 group-focus-within:text-accent transition-colors" />
             <Input 
               placeholder="HRD 트렌드, 과정 설계 사례, L&D 도구 검색..." 
-              className="pl-11 bg-white/10 border-none focus-visible:ring-accent/50 h-11 rounded-full text-sm text-white placeholder:text-white/40"
+              className="pl-11 pr-10 bg-white/10 border-none focus-visible:ring-accent/50 h-11 rounded-full text-sm text-white placeholder:text-white/40"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
+            {searchQuery && (
+              <button 
+                onClick={() => setSearchQuery("")}
+                className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-white/10 rounded-full transition-colors"
+              >
+                <X className="w-4 h-4 text-white/50" />
+              </button>
+            )}
           </div>
 
           <div className="flex items-center gap-1 md:gap-3">
@@ -258,7 +275,7 @@ export default function HomePage() {
                  <div className="group space-y-2">
                     <p className="text-[15px] font-black text-primary group-hover:text-accent transition-colors flex items-center gap-2">
                       <span className="w-1.5 h-1.5 rounded-full bg-accent"></span>
-                      전문 L&D 카테고리
+                      전문 HRD 카테고리
                     </p>
                     <p className="text-[13px] text-primary/50 leading-relaxed font-medium pl-3.5">교육 설계, 성과 평가, 리더십 육성 등 HRD 핵심 직무 인사이트를 제공합니다.</p>
                  </div>
