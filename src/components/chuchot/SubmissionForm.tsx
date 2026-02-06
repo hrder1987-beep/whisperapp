@@ -100,7 +100,7 @@ export function SubmissionForm({ placeholder, onSubmit, type }: SubmissionFormPr
                     placeholder="익명 닉네임"
                     value={nickname}
                     onChange={(e) => setNickname(e.target.value)}
-                    className="bg-primary/5 border-none h-9 w-fit min-w-[150px] focus-visible:ring-accent/30 text-sm font-bold text-primary placeholder:text-primary/30 rounded-xl px-4"
+                    className="bg-primary/5 border-none h-10 w-fit min-w-[150px] focus-visible:ring-accent/30 text-sm font-bold text-primary placeholder:text-primary/50 rounded-xl px-4"
                     maxLength={20}
                   />
                   <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
@@ -112,7 +112,7 @@ export function SubmissionForm({ placeholder, onSubmit, type }: SubmissionFormPr
                     placeholder="전하고 싶은 핵심 제목을 적어주세요"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    className="bg-transparent border-none p-0 h-auto focus-visible:ring-0 text-xl md:text-2xl font-black placeholder:text-primary/10 border-b-2 border-primary/5 pb-4 rounded-none focus:border-accent transition-all"
+                    className="bg-transparent border-none p-0 h-auto focus-visible:ring-0 text-xl md:text-2xl font-black text-primary placeholder:text-primary/30 border-b-2 border-primary/5 pb-4 rounded-none focus:border-accent transition-all"
                   />
                 )}
 
@@ -120,7 +120,7 @@ export function SubmissionForm({ placeholder, onSubmit, type }: SubmissionFormPr
                   placeholder={placeholder}
                   value={text}
                   onChange={(e) => setText(e.target.value)}
-                  className="min-h-[160px] bg-transparent border-none p-0 focus-visible:ring-0 resize-y placeholder:text-primary/10 text-base md:text-lg leading-relaxed text-foreground/90"
+                  className="min-h-[160px] bg-transparent border-none p-0 focus-visible:ring-0 resize-y text-base md:text-lg leading-relaxed text-foreground placeholder:text-primary/30"
                 />
              </div>
           </div>
@@ -184,7 +184,7 @@ export function SubmissionForm({ placeholder, onSubmit, type }: SubmissionFormPr
             <Button 
               type="submit" 
               disabled={isSubmitting || !text.trim()}
-              className="bg-primary hover:bg-primary/90 text-accent font-black h-12 px-10 rounded-2xl transition-all shadow-xl active:scale-95 disabled:opacity-20 flex items-center gap-2"
+              className="bg-primary hover:bg-primary/90 text-accent font-black h-12 px-10 rounded-2xl transition-all shadow-xl active:scale-95 disabled:opacity-50 flex items-center gap-2"
             >
               {isSubmitting ? "전송 중..." : (
                 <>
