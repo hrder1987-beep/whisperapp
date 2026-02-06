@@ -3,7 +3,7 @@
 
 import { Question, Answer } from "@/lib/types"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
-import { MessageCircle, Eye, Clock, Bookmark, ChevronDown, ChevronUp } from "lucide-react"
+import { MessageCircle, Eye, Clock, Bookmark, ChevronDown, ChevronUp, Trash2 } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 import { ko } from "date-fns/locale"
 import { Button } from "@/components/ui/button"
@@ -22,6 +22,9 @@ interface QuestionFeedProps {
   onAddAnswer: (nickname: string, title: string, text: string) => void
   activeTab: "all" | "popular" | "waiting"
   onTabChange: (tab: "all" | "popular" | "waiting") => void
+  isAdminMode?: boolean
+  onDeleteQuestion?: (id: string) => void
+  onDeleteAnswer?: (id: string) => void
 }
 
 export function QuestionFeed({ 
@@ -31,7 +34,10 @@ export function QuestionFeed({
   answers, 
   onAddAnswer,
   activeTab,
-  onTabChange
+  onTabChange,
+  isAdminMode = false,
+  onDeleteQuestion,
+  onDeleteAnswer
 }: QuestionFeedProps) {
   return (
     <div className="space-y-6">
@@ -101,6 +107,19 @@ export function QuestionFeed({
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
+                    {isAdminMode && (
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="text-red-400 hover:text-red-600 hover:bg-red-50"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onDeleteQuestion?.(q.id);
+                        }}
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </Button>
+                    )}
                     {q.category && (
                       <Badge className="bg-accent/10 text-accent font-black border-none px-3 py-1 rounded-full text-[11px]">
                         #{q.category}
@@ -143,7 +162,7 @@ export function QuestionFeed({
                       placeholder="동료 HRD 현직자들에게 따뜻한 조언이나 교육 노하우를 공유해주세요."
                       onSubmit={onAddAnswer}
                     />
-                    <AnswerFeed answers={questionAnswers} />
+                    <AnswerFeed answers={questionAnswers} isAdminMode={isAdminMode} onDeleteAnswer={onDeleteAnswer} />
                   </div>
                 )}
               </CardContent>
@@ -162,7 +181,6 @@ export function QuestionFeed({
                   </div>
                   <Button variant="ghost" size="icon" className="text-primary/20 hover:text-accent" onClick={(e) => {
                     e.stopPropagation();
-                    // 북마크 로직 (프로토타입용)
                   }}>
                     <Bookmark className="w-5 h-5" />
                   </Button>

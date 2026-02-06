@@ -164,6 +164,23 @@ export default function HomePage() {
     ))
   }
 
+  const handleDeleteQuestion = (id: string) => {
+    setQuestions(prev => prev.filter(q => q.id !== id))
+    setAnswers(prev => prev.filter(a => a.questionId !== id))
+    toast({ title: "게시물 삭제 완료", description: "관리자 권한으로 해당 속삭임을 삭제했습니다." })
+  }
+
+  const handleDeleteAnswer = (id: string) => {
+    const answerToDelete = answers.find(a => a.id === id)
+    if (!answerToDelete) return
+    
+    setAnswers(prev => prev.filter(a => a.id !== id))
+    setQuestions(prev => prev.map(q => 
+      q.id === answerToDelete.questionId ? { ...q, answerCount: Math.max(0, q.answerCount - 1) } : q
+    ))
+    toast({ title: "답글 삭제 완료", description: "관리자 권한으로 해당 답글을 삭제했습니다." })
+  }
+
   const handleSelectQuestion = (id: string) => {
     if (selectedQuestionId === id) {
       setSelectedQuestionId(null)
@@ -292,6 +309,9 @@ export default function HomePage() {
                 onAddAnswer={handleAddAnswer}
                 activeTab={activeTab}
                 onTabChange={setActiveTab}
+                isAdminMode={isAdminMode}
+                onDeleteQuestion={handleDeleteQuestion}
+                onDeleteAnswer={handleDeleteAnswer}
               />
             </div>
           </main>
