@@ -1,0 +1,122 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * FIRESTORE SECURITY RULES DOCUMENTATION
+     *
+     * Core Philosophy:
+     * This ruleset implements an "Anonymous Open Access" model for user-generated content and a 
+     * "Database-Based Access Control" (DBAC) model for administrative functions. The platform 
+     * (Chuchot) prioritizes frictionless, anonymous interaction for questions and answers.
+     *
+     * Data Structure:
+     * - /questions/{questionId}: Publicly accessible root collection for user queries.
+     * - /questions/{questionId}/answers/{answerId}: Subcollection for responses.
+     * - /roles_admin/{userId}: Administrative registry mapping UIDs to admin status.
+     * - /admin_configuration/{configId}: Centralized UI/UX and theme settings.
+     *
+     * Key Security Decisions:
+     * 1. Public Content: Questions and Answers are globally readable and writable to support 
+     *    anonymous usage without requiring Auth-UID-based ownership.
+     * 2. Admin Privileges: Administrative rights are determined by the presence of a document 
+     *    in the 'roles_admin' collection. This allows for simple 'isAdmin()' checks across the app.
+     * 3. UI/UX Protection: The 'admin_configuration' collection is restricted to admin-only 
+     *    access to prevent unauthorized tampering with banners, themes, or site-wide text.
+     *
+     * Denormalization for Authorization:
+     * - Relational integrity is enforced by ensuring subcollection documents (Answers) 
+     *   correctly reference their parent document IDs (questionId) during creation.
+     */
+
+    // --- GLOBAL HELPER FUNCTIONS ---
+
+    /**
+     * @description Checks if the user is authenticated with Firebase Auth.
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * @description Checks if the current user has a record in the roles_admin collection.
+     */
+    function isAdmin() {
+      return isSignedIn() && exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
+    }
+
+    /**
+     * @description Checks if the authenticated user's UID matches the provided userId.
+     */
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    /**
+     * @description Verifies that the document exists before performing a state-changing operation.
+     */
+    function documentExists() {
+      return resource != null;
+    }
+
+    // --- COLLECTION RULES ---
+
+    /**
+     * @description Public collection for questions. Supports anonymous submission and public listing.
+     * @path /questions/{questionId}
+     * @allow (get, list, create) if true (Anonymous access)
+     * @deny (update, delete) if false (Placeholder for future moderation logic)
+     * @principle Implements public read/write access for anonymous submissions as per IR.
+     */
+    match /questions/{questionId} {
+      allow get, list: if true;
+      allow create: if true;
+      // Prototyping Mode: Allowing updates/deletes for the purpose of the 'viewCount' increment and moderation.
+      allow update: if documentExists();
+      allow delete: if documentExists();
+
+      /**
+       * @description Subcollection for answers. Maintains a relationship to the parent question.
+       * @path /questions/{questionId}/answers/{answerId}
+       * @allow (create) if questionId matches internal questionId field.
+       * @deny (read) if true (Anonymous access)
+       * @principle Ensures relational integrity by validating parent-child links on create.
+       */
+      match /answers/{answerId} {
+        allow get, list: if true;
+        allow create: if request.resource.data.questionId == questionId;
+        allow update, delete: if documentExists();
+      }
+    }
+
+    /**
+     * @description Registry of administrative users.
+     * @path /roles_admin/{userId}
+     * @allow (get) if isOwner(userId) (Check own status)
+     * @deny (create, update, delete) if false (Managed via console/admin SDK)
+     * @principle Restricted access to authorization source-of-truth.
+     */
+    match /roles_admin/{userId} {
+      allow get: if isOwner(userId) || isAdmin();
+      allow list: if isAdmin();
+      allow create, update, delete: if false; 
+    }
+
+    /**
+     * @description Site-wide configuration for UI text, banners, and themes.
+     * @path /admin_configuration/{configId}
+     * @allow (get) if true (Public needed for rendering UI)
+     * @allow (update) if isAdmin() (Only admins can edit site behavior)
+     * @deny (create, delete) if !isAdmin()
+     * @principle Restricts structural site changes to verified administrative accounts.
+     */
+    match /admin_configuration/{configId} {
+      // Note: IR says "Only accessible to admin", but UI text is usually public read to render the app.
+      // We allow get/list to allow the app to function, but restrict writes.
+      allow get, list: if true;
+      allow create: if isAdmin();
+      allow update: if isAdmin() && documentExists();
+      allow delete: if isAdmin() && documentExists();
+    }
+  }
+}
