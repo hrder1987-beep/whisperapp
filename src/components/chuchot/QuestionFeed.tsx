@@ -20,6 +20,8 @@ interface QuestionFeedProps {
   selectedId: string | null
   answers: Answer[]
   onAddAnswer: (nickname: string, title: string, text: string) => void
+  activeTab: "all" | "popular" | "waiting"
+  onTabChange: (tab: "all" | "popular" | "waiting") => void
 }
 
 export function QuestionFeed({ 
@@ -27,26 +29,50 @@ export function QuestionFeed({
   onSelectQuestion, 
   selectedId, 
   answers, 
-  onAddAnswer 
+  onAddAnswer,
+  activeTab,
+  onTabChange
 }: QuestionFeedProps) {
-  const sortedQuestions = [...questions].sort((a, b) => b.createdAt - a.createdAt)
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between mb-4 px-1">
         <div className="flex gap-6">
-          <button className="text-[17px] font-black text-primary border-b-[3px] border-accent pb-2 transition-all">전체</button>
-          <button className="text-[17px] font-bold text-primary/30 hover:text-primary pb-2 transition-all">인기</button>
-          <button className="text-[17px] font-bold text-primary/30 hover:text-primary pb-2 transition-all">답변대기</button>
+          <button 
+            onClick={() => onTabChange("all")}
+            className={cn(
+              "text-[17px] pb-2 transition-all",
+              activeTab === "all" ? "font-black text-primary border-b-[3px] border-accent" : "font-bold text-primary/30 hover:text-primary"
+            )}
+          >
+            전체
+          </button>
+          <button 
+            onClick={() => onTabChange("popular")}
+            className={cn(
+              "text-[17px] pb-2 transition-all",
+              activeTab === "popular" ? "font-black text-primary border-b-[3px] border-accent" : "font-bold text-primary/30 hover:text-primary"
+            )}
+          >
+            인기
+          </button>
+          <button 
+            onClick={() => onTabChange("waiting")}
+            className={cn(
+              "text-[17px] pb-2 transition-all",
+              activeTab === "waiting" ? "font-black text-primary border-b-[3px] border-accent" : "font-bold text-primary/30 hover:text-primary"
+            )}
+          >
+            답변대기
+          </button>
         </div>
       </div>
       
-      {sortedQuestions.length === 0 ? (
+      {questions.length === 0 ? (
         <Card className="bg-white border-dashed border-primary/10 p-24 text-center rounded-[2.5rem]">
-          <p className="text-primary/30 font-bold text-lg">아직 등록된 속삭임이 없습니다.</p>
+          <p className="text-primary/30 font-bold text-lg">해당 조건에 맞는 속삭임이 없습니다.</p>
         </Card>
       ) : (
-        sortedQuestions.map((q) => {
+        questions.map((q) => {
           const isExpanded = selectedId === q.id
           const questionAnswers = answers.filter(a => a.questionId === q.id)
 
@@ -134,7 +160,10 @@ export function QuestionFeed({
                       조회 {q.viewCount}
                     </div>
                   </div>
-                  <Button variant="ghost" size="icon" className="text-primary/20 hover:text-accent">
+                  <Button variant="ghost" size="icon" className="text-primary/20 hover:text-accent" onClick={(e) => {
+                    e.stopPropagation();
+                    // 북마크 로직 (프로토타입용)
+                  }}>
                     <Bookmark className="w-5 h-5" />
                   </Button>
                 </CardFooter>

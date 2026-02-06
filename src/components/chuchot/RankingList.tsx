@@ -1,8 +1,10 @@
+
 "use client"
 
 import { Question } from "@/lib/types"
 import { TrendingUp, MessageCircle, Crown, ChevronRight } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useToast } from "@/hooks/use-toast"
 
 interface RankingListProps {
   questions: Question[]
@@ -10,6 +12,15 @@ interface RankingListProps {
 }
 
 export function RankingList({ questions, onSelectQuestion }: RankingListProps) {
+  const { toast } = useToast()
+
+  const handleMoreClick = () => {
+    toast({
+      title: "실시간 랭킹 분석 중",
+      description: "더 많은 통계와 랭킹 리포트는 다음 업데이트에서 제공될 예정입니다.",
+    })
+  }
+
   return (
     <div className="bg-white rounded-[2rem] p-8 border border-primary/5 shadow-xl relative overflow-hidden">
       <div className="absolute top-0 right-0 -mr-6 -mt-6 opacity-[0.03]">
@@ -61,7 +72,10 @@ export function RankingList({ questions, onSelectQuestion }: RankingListProps) {
         ))}
       </div>
       
-      <button className="w-full mt-6 bg-primary text-accent hover:bg-primary/95 font-black text-[15px] py-4 rounded-2xl shadow-lg transition-all transform hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 group">
+      <button 
+        onClick={handleMoreClick}
+        className="w-full mt-6 bg-primary text-accent hover:bg-primary/95 font-black text-[15px] py-4 rounded-2xl shadow-lg transition-all transform hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 group"
+      >
         실시간 랭킹 더보기
         <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
       </button>

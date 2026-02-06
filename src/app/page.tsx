@@ -30,6 +30,7 @@ export default function HomePage() {
   const [showAdminDialog, setShowAdminDialog] = useState(false)
   const [adminPassword, setAdminPassword] = useState("")
   const [searchQuery, setSearchQuery] = useState("")
+  const [activeTab, setActiveTab] = useState<"all" | "popular" | "waiting">("all")
   const { toast } = useToast()
 
   useEffect(() => {
@@ -69,7 +70,6 @@ export default function HomePage() {
     ]
     setQuestions(initialQuestions)
 
-    // 초기 데이터에 대한 '슈'의 기본 답변 하나 추가
     setAnswers([
       {
         id: "ai-initial",
@@ -83,13 +83,23 @@ export default function HomePage() {
   }, [])
 
   const filteredQuestions = useMemo(() => {
-    return questions.filter(q => 
+    let result = questions.filter(q => 
       q.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       q.text.toLowerCase().includes(searchQuery.toLowerCase()) || 
       q.nickname.toLowerCase().includes(searchQuery.toLowerCase()) ||
       q.category?.toLowerCase().includes(searchQuery.toLowerCase())
     )
-  }, [questions, searchQuery])
+
+    if (activeTab === "popular") {
+      result = result.sort((a, b) => b.viewCount - a.viewCount)
+    } else if (activeTab === "waiting") {
+      result = result.filter(q => q.answerCount === 0)
+    } else {
+      result = result.sort((a, b) => b.createdAt - a.createdAt)
+    }
+
+    return result
+  }, [questions, searchQuery, activeTab])
 
   const topQuestions = useMemo(() => {
     return [...questions].sort((a, b) => b.viewCount - a.viewCount).slice(0, 5)
@@ -143,7 +153,6 @@ export default function HomePage() {
   }
 
   const handleSelectQuestion = (id: string) => {
-    // 이미 선택된 거면 닫기, 아니면 열기 (아코디언 방식)
     if (selectedQuestionId === id) {
       setSelectedQuestionId(null)
     } else {
@@ -174,7 +183,7 @@ export default function HomePage() {
           <div className="hidden md:flex flex-1 max-w-xl relative group">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50 group-focus-within:text-accent transition-colors" />
             <Input 
-              placeholder="교육 트렌드, 과정 설계 사례, L&D 도구 검색..." 
+              placeholder="HRD 트렌드, 과정 설계 사례, L&D 도구 검색..." 
               className="pl-11 bg-white/10 border-none focus-visible:ring-accent/50 h-11 rounded-full text-sm text-white placeholder:text-white/40"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -220,6 +229,8 @@ export default function HomePage() {
                 selectedId={selectedQuestionId}
                 answers={answers}
                 onAddAnswer={handleAddAnswer}
+                activeTab={activeTab}
+                onTabChange={setActiveTab}
               />
             </div>
           </main>
@@ -264,12 +275,12 @@ export default function HomePage() {
             </DialogDescription>
           </DialogHeader>
           <div className="py-6">
-            <Input 
+            <input 
               type="password" 
               placeholder="ADMIN ACCESS KEY" 
               value={adminPassword}
               onChange={(e) => setAdminPassword(e.target.value)}
-              className="bg-primary/5 border-none h-12 rounded-xl text-center font-black placeholder:text-primary/20 focus-visible:ring-accent/50"
+              className="w-full bg-primary/5 border-none h-12 rounded-xl text-center font-black placeholder:text-primary/20 focus-visible:ring-accent/50 focus:outline-none focus:ring-2 focus:ring-accent/50"
               onKeyDown={(e) => e.key === 'Enter' && handleAdminAuth()}
             />
           </div>
