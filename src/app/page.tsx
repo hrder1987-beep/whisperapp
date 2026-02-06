@@ -217,7 +217,7 @@ export default function HomePage() {
             </div>
 
             {selectedQuestion.imageUrl && (
-              <div className="relative w-full aspect-video border-t border-white/5">
+              <div className="relative w-full h-[300px] md:h-[450px] border-t border-white/5 bg-black/20">
                 <Image 
                   src={selectedQuestion.imageUrl} 
                   alt="상세 이미지" 

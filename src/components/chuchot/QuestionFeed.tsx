@@ -1,3 +1,4 @@
+
 "use client"
 
 import { Question } from "@/lib/types"
@@ -52,7 +53,7 @@ export function QuestionFeed({ questions, onSelectQuestion }: QuestionFeedProps)
               </div>
               
               {q.imageUrl && (
-                <div className="relative w-full aspect-video border-y border-white/5">
+                <div className="relative w-full h-60 md:h-72 border-y border-white/5 bg-black/20">
                   <Image 
                     src={q.imageUrl} 
                     alt="속삭임 이미지" 
