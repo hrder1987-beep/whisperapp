@@ -183,6 +183,22 @@ export default function HomePage() {
     setAdminPassword("")
   }
 
+  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      if (searchQuery.trim()) {
+        toast({
+          title: "검색 결과 필터링",
+          description: `'${searchQuery}' 키워드로 검색된 결과입니다.`,
+        })
+      } else {
+        toast({
+          title: "검색어 입력",
+          description: "검색어를 입력하시면 실시간으로 필터링됩니다.",
+        })
+      }
+    }
+  }
+
   return (
     <div className="min-h-screen bg-[#F8F9FA]">
       <header className="sticky top-0 z-50 w-full premium-gradient border-b border-white/10 shadow-xl">
@@ -196,6 +212,7 @@ export default function HomePage() {
               className="pl-11 pr-10 bg-white/10 border-none focus-visible:ring-accent/50 h-11 rounded-full text-sm text-white placeholder:text-white/40"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={handleSearchKeyDown}
             />
             {searchQuery && (
               <button 
