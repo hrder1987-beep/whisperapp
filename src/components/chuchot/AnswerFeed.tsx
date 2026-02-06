@@ -23,7 +23,7 @@ export function AnswerFeed({ answers }: AnswerFeedProps) {
         <p className="text-muted-foreground text-center py-8">이 속삭임에 첫 번째 답글을 남겨보세요.</p>
       ) : (
         sortedAnswers.map((a) => (
-          <Card key={a.id} className="glass-morphism border-white/5 bg-white/5">
+          <Card key={a.id} className="bg-card border-black/5 shadow-sm">
             <CardContent className="p-4">
               <div className="flex justify-between items-center mb-2 text-xs">
                 <span className="text-primary font-medium italic">@{a.nickname}</span>

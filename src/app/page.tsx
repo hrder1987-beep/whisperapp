@@ -147,8 +147,8 @@ export default function HomePage() {
   const questionAnswers = answers.filter(a => a.questionId === selectedQuestionId)
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-50 w-full border-b border-white/5 bg-background/80 backdrop-blur-md">
+    <div className="min-h-screen">
+      <header className="sticky top-0 z-50 w-full border-b border-black/5 bg-white/80 backdrop-blur-md">
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
           <Logo className="flex-shrink-0" />
           
@@ -156,17 +156,17 @@ export default function HomePage() {
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
             <Input 
               placeholder="관심 있는 내용을 검색해보세요..." 
-              className="pl-11 bg-white/5 border-white/10 focus-visible:ring-primary h-10 rounded-full text-sm"
+              className="pl-11 bg-black/[0.03] border-none focus-visible:ring-primary h-10 rounded-full text-sm"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
 
           <div className="flex items-center gap-1 md:gap-3">
-            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary">
+            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary hover:bg-black/[0.03]">
               <Bell className="w-5 h-5" />
             </Button>
-            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary">
+            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary hover:bg-black/[0.03]">
               <UserIcon className="w-5 h-5" />
             </Button>
             {isAdminMode ? (
@@ -174,7 +174,7 @@ export default function HomePage() {
                 관리 종료
               </Button>
             ) : (
-              <Button variant="ghost" size="icon" onClick={() => setShowAdminDialog(true)} className="text-muted-foreground">
+              <Button variant="ghost" size="icon" onClick={() => setShowAdminDialog(true)} className="text-muted-foreground hover:bg-black/[0.03]">
                 <Settings className="w-5 h-5" />
               </Button>
             )}
@@ -187,18 +187,18 @@ export default function HomePage() {
           <div className="max-w-3xl mx-auto animate-in slide-in-from-right-4 duration-500">
             <Button 
               variant="ghost" 
-              className="mb-6 text-muted-foreground hover:text-primary group pl-0"
+              className="mb-6 text-muted-foreground hover:text-primary group pl-0 hover:bg-transparent"
               onClick={() => setSelectedQuestionId(null)}
             >
               <ChevronLeft className="w-4 h-4 mr-1 group-hover:-translate-x-1 transition-transform" />
               목록으로
             </Button>
 
-            <article className="bg-card border border-white/5 rounded-xl overflow-hidden mb-6 shadow-sm">
+            <article className="bg-card border border-black/5 rounded-xl overflow-hidden mb-6 shadow-sm">
               <div className="p-6 md:p-8">
                 <div className="flex justify-between items-start mb-6">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-xs font-bold text-primary border border-primary/20">
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold text-primary border border-primary/10">
                       {selectedQuestion.nickname.substring(0, 1)}
                     </div>
                     <div>
@@ -222,7 +222,7 @@ export default function HomePage() {
                 </p>
 
                 {selectedQuestion.imageUrl && (
-                  <div className="relative w-full aspect-video rounded-xl overflow-hidden border border-white/5 bg-black/20 mb-8">
+                  <div className="relative w-full aspect-video rounded-xl overflow-hidden border border-black/5 bg-black/[0.02] mb-8">
                     <Image 
                       src={selectedQuestion.imageUrl} 
                       alt="상세 이미지" 
@@ -233,7 +233,7 @@ export default function HomePage() {
                   </div>
                 )}
                 
-                <div className="flex gap-4 pt-6 border-t border-white/5 text-xs text-muted-foreground">
+                <div className="flex gap-4 pt-6 border-t border-black/5 text-xs text-muted-foreground">
                   <span>조회 {selectedQuestion.viewCount}</span>
                   <span>댓글 {selectedQuestion.answerCount}</span>
                 </div>
@@ -272,7 +272,7 @@ export default function HomePage() {
             <aside className="lg:col-span-4 space-y-6 hidden lg:block">
               <RankingList questions={topQuestions} onSelectQuestion={handleSelectQuestion} />
               
-              <div className="bg-card rounded-xl p-6 border border-white/5 shadow-sm">
+              <div className="bg-card rounded-xl p-6 border border-black/5 shadow-sm">
                 <h3 className="text-sm font-bold text-primary mb-4">슈쇼 서비스 가이드</h3>
                 <div className="space-y-4">
                    <div className="space-y-1">
@@ -305,7 +305,7 @@ export default function HomePage() {
       </div>
 
       <Dialog open={showAdminDialog} onOpenChange={setShowAdminDialog}>
-        <DialogContent className="glass-morphism border-primary/30 text-foreground">
+        <DialogContent className="bg-white border-primary/30 text-foreground">
           <DialogHeader>
             <DialogTitle className="text-primary">관리자 인증</DialogTitle>
             <DialogDescription className="text-muted-foreground">
@@ -318,12 +318,12 @@ export default function HomePage() {
               placeholder="키 입력..." 
               value={adminPassword}
               onChange={(e) => setAdminPassword(e.target.value)}
-              className="bg-white/5 border-white/10"
+              className="bg-black/[0.02] border-black/5"
               onKeyDown={(e) => e.key === 'Enter' && handleAdminAuth()}
             />
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowAdminDialog(false)} className="border-white/10">취소</Button>
+            <Button variant="outline" onClick={() => setShowAdminDialog(false)} className="border-black/5">취소</Button>
             <Button onClick={handleAdminAuth}>인증하기</Button>
           </DialogFooter>
         </DialogContent>
