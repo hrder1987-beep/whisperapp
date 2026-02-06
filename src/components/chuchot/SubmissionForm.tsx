@@ -88,7 +88,7 @@ export function SubmissionForm({ placeholder, onSubmit, type }: SubmissionFormPr
               value={nickname}
               onChange={(e) => setNickname(e.target.value)}
               className="pl-10 bg-white/5 border-white/10 focus-visible:ring-primary focus-visible:border-primary placeholder:text-muted-foreground/50"
-              maxLength={20}
+              maxLength={50}
             />
           </div>
           
@@ -96,8 +96,7 @@ export function SubmissionForm({ placeholder, onSubmit, type }: SubmissionFormPr
             placeholder={placeholder}
             value={text}
             onChange={(e) => setText(e.target.value)}
-            className="min-h-[100px] bg-white/5 border-white/10 focus-visible:ring-primary focus-visible:border-primary resize-none placeholder:text-muted-foreground/50 text-lg"
-            maxLength={300}
+            className="min-h-[120px] bg-white/5 border-white/10 focus-visible:ring-primary focus-visible:border-primary resize-y placeholder:text-muted-foreground/50 text-lg"
           />
 
           {imageUrl && (
@@ -143,7 +142,6 @@ export function SubmissionForm({ placeholder, onSubmit, type }: SubmissionFormPr
                   </Button>
                 </>
               )}
-              <span className="text-xs text-muted-foreground">{text.length}/300 자</span>
             </div>
             
             <Button 
