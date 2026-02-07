@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState } from "react"
@@ -84,7 +85,7 @@ export function AdminCMS({ initialBanners, onUpdate }: AdminCMSProps) {
         </CardHeader>
         <CardContent className="p-8 space-y-10">
           {banners.map((banner, idx) => (
-            <div key={idx} className="p-6 bg-primary/5 rounded-[2rem] border border-primary/5 space-y-6 relative group">
+            <div key={banner.id} className="p-6 bg-primary/5 rounded-[2rem] border border-primary/5 space-y-6 relative group">
               <div className="flex justify-between items-center">
                 <Badge className="bg-primary text-accent font-black">BANNER #{idx + 1}</Badge>
                 <Button variant="ghost" size="icon" onClick={() => removeBanner(idx)} className="text-red-400 hover:text-red-600 hover:bg-red-50 rounded-full">

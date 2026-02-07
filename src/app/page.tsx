@@ -35,14 +35,17 @@ export default function HomePage() {
   const { toast } = useToast()
   const db = useFirestore()
 
-  // Real-time data from Firestore
+  // Real-time data from Firestore with robust error handling
   const questionsQuery = useMemoFirebase(() => {
     if (!db) return null
     return query(collection(db, "questions"), orderBy("createdAt", "desc"))
   }, [db])
   
   const { data: questionsData } = useCollection<Question>(questionsQuery)
-  const questions = useMemo(() => questionsData || [], [questionsData])
+  const questions = useMemo(() => {
+    if (!questionsData) return []
+    return Array.isArray(questionsData) ? questionsData : []
+  }, [questionsData])
 
   const [answers, setAnswers] = useState<Answer[]>([])
 
@@ -128,6 +131,10 @@ export default function HomePage() {
     setAdminPassword("")
   }
 
+  const handleResetSearch = () => {
+    setSearchQuery("")
+  }
+
   return (
     <div className="min-h-screen bg-[#F8F9FA]">
       <Header 
@@ -152,10 +159,10 @@ export default function HomePage() {
                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
                   <div className="flex flex-col gap-6 mb-12">
                     <button 
-                      onClick={() => setSearchQuery("")} 
-                      className="flex items-center gap-2 text-primary/40 hover:text-accent font-bold text-sm transition-colors w-fit"
+                      onClick={handleResetSearch} 
+                      className="flex items-center gap-2 text-primary/40 hover:text-accent font-bold text-sm transition-colors w-fit group"
                     >
-                      <ArrowLeft className="w-4 h-4" />
+                      <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                       홈으로 돌아가기
                     </button>
                     
@@ -168,7 +175,7 @@ export default function HomePage() {
                       </p>
                     </div>
                     
-                    <div className="h-1 w-20 bg-accent rounded-full mt-2"></div>
+                    <div className="h-1.5 w-24 gold-gradient rounded-full mt-2"></div>
                   </div>
 
                   <QuestionFeed 
