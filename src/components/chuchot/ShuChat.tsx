@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useRef, useEffect } from "react"
@@ -22,6 +21,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { AvatarIcon } from "./AvatarIcon"
+import { useFirestore, useDoc, useMemoFirebase } from "@/firebase"
+import { doc } from "firebase/firestore"
 
 interface Message {
   role: "user" | "bot"
@@ -174,6 +175,10 @@ interface AldiChatProps {
 }
 
 export function AldiChat({ forceOpenTrigger, onTriggerClose }: AldiChatProps) {
+  const db = useFirestore()
+  const aldiDocRef = useMemoFirebase(() => db ? doc(db, "admin_configuration", "aldi_knowledge") : null, [db])
+  const { data: aldiKnowledge } = useDoc<any>(aldiDocRef)
+
   const [messages, setMessages] = useState<Message[]>([
     { role: "bot", text: "반가워요! Whisper의 HR 인텔리전스 가이드 '알디'입니다. 채용 전략, 조직문화, 교육 설계부터 실무 노하우까지 무엇이든 물어보세요." }
   ])
@@ -197,7 +202,10 @@ export function AldiChat({ forceOpenTrigger, onTriggerClose }: AldiChatProps) {
     setIsLoading(true)
 
     try {
-      const res = await chatAldi({ message: userMessage })
+      const res = await chatAldi({ 
+        message: userMessage,
+        knowledge: aldiKnowledge?.content 
+      })
       setMessages(prev => [...prev, { role: "bot", text: res.reply }])
     } catch (error) {
       setMessages(prev => [...prev, { role: "bot", text: "미안해요, Whisper의 기운이 잠시 약해졌나 봐요. 다시 한번 말씀해주시겠어요?" }])

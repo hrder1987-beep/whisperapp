@@ -76,7 +76,7 @@ export interface Instructor {
   website?: string;
   references?: string;
   curriculumPdfUrl?: string;
-  isVerified?: boolean; // 관리자 인증 여부 추가
+  isVerified?: boolean;
 }
 
 export interface JobListing {
@@ -114,4 +114,9 @@ export interface AppNotification {
   senderNickname: string;
   createdAt: number;
   isRead: boolean;
+}
+
+export interface AldiKnowledge {
+  content: string;
+  updatedAt: string;
 }
