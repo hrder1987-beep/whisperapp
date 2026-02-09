@@ -85,15 +85,15 @@ export function useCollection<T = any>(
         setError(null);
         setIsLoading(false);
       },
-      (error: FirestoreError) => {
+      async (error: FirestoreError) => {
         // This logic extracts the path from either a ref or a query safely
         let path: string = 'unknown';
         try {
           if (memoizedTargetRefOrQuery.type === 'collection') {
             path = (memoizedTargetRefOrQuery as CollectionReference).path;
           } else {
-            const internal = memoizedTargetRefOrQuery as unknown as InternalQuery;
-            path = internal._query?.path?.canonicalString() || 'query';
+            const internal = memoizedTargetRefOrQuery as any;
+            path = internal._query?.path?.canonicalString() || internal.path || 'query';
           }
         } catch (e) {
           // ignore path extraction error
