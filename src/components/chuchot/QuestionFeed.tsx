@@ -1,9 +1,10 @@
+
 "use client"
 
 import { useState } from "react"
 import { Question, Answer } from "@/lib/types"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
-import { MessageCircle, Eye, Clock, Bookmark, Trash2, Crown, Mail } from "lucide-react"
+import { MessageCircle, Eye, Clock, Bookmark, Trash2, Crown, Mail, Share2 } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 import { ko } from "date-fns/locale"
 import { Button } from "@/components/ui/button"
@@ -15,6 +16,7 @@ import { SubmissionForm } from "./SubmissionForm"
 import { MessageDialog } from "./MessageDialog"
 import { cn } from "@/lib/utils"
 import { useUser } from "@/firebase"
+import { useToast } from "@/hooks/use-toast"
 
 interface QuestionFeedProps {
   questions: Question[]
@@ -42,7 +44,39 @@ export function QuestionFeed({
   onDeleteAnswer
 }: QuestionFeedProps) {
   const { user } = useUser()
+  const { toast } = useToast()
   const [messageTarget, setMessageTarget] = useState<{ id: string, nickname: string } | null>(null)
+
+  const handleShare = async (e: React.MouseEvent, q: Question) => {
+    e.stopPropagation();
+    const shareUrl = `${window.location.origin}/questions/${q.id}`;
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: q.title,
+          text: q.text.substring(0, 100),
+          url: shareUrl,
+        });
+      } catch (err) {
+        // 사용자가 취소한 경우는 무시
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        toast({
+          title: "링크 복사 완료",
+          description: "게시글 주소가 클립보드에 복사되었습니다. 이제 원하는 곳에 공유해보세요!",
+        });
+      } catch (err) {
+        toast({
+          title: "복사 실패",
+          description: "링크를 복사할 수 없습니다.",
+          variant: "destructive"
+        });
+      }
+    }
+  }
 
   return (
     <div className="space-y-4 md:space-y-6">
@@ -77,6 +111,7 @@ export function QuestionFeed({
           return (
             <Card 
               key={q.id} 
+              id={`q-${q.id}`}
               className={cn(
                 "group bg-white border-primary/5 transition-all duration-300 cursor-pointer rounded-[1.5rem] md:rounded-[2rem] overflow-hidden shadow-sm",
                 isExpanded ? "ring-2 md:ring-4 ring-accent/10 shadow-lg" : "hover:shadow-md"
@@ -227,7 +262,16 @@ export function QuestionFeed({
                       <span className="text-primary/60">조회 {q.viewCount}</span>
                     </div>
                   </div>
-                  <Bookmark className="w-4 h-4 md:w-5 md:h-5 text-primary/20" />
+                  <div className="flex items-center gap-3">
+                    <button 
+                      onClick={(e) => handleShare(e, q)}
+                      className="p-1.5 text-primary/20 hover:text-accent transition-all rounded-full hover:bg-accent/10"
+                      title="공유하기"
+                    >
+                      <Share2 className="w-4 h-4 md:w-5 md:h-5" />
+                    </button>
+                    <Bookmark className="w-4 h-4 md:w-5 md:h-5 text-primary/20" />
+                  </div>
                 </CardFooter>
               )}
             </Card>
