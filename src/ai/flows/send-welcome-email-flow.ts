@@ -23,13 +23,6 @@ const SendWelcomeEmailOutputSchema = z.object({
 });
 export type SendWelcomeEmailOutput = z.infer<typeof SendWelcomeEmailOutputSchema>;
 
-/**
- * 회원가입 환영 메일을 발송하는 서버 액션입니다.
- */
-export async function sendWelcomeEmail(input: SendWelcomeEmailInput): Promise<SendWelcomeEmailOutput> {
-  return sendWelcomeEmailFlow(input);
-}
-
 const emailPrompt = ai.definePrompt({
   name: 'welcomeEmailPrompt',
   input: { schema: SendWelcomeEmailInputSchema },
@@ -62,32 +55,19 @@ const sendWelcomeEmailFlow = ai.defineFlow(
     const { output } = await emailPrompt(input);
     if (!output) throw new Error('이메일 생성 실패');
 
-    // 2. 이메일 발송 설정 (프로토타입 환경이므로 로그로 대체하거나 가상의 SMTP 설정)
-    // 실제 환경에서는 환경 변수를 통해 SMTP 정보를 설정해야 합니다.
+    // 2. 이메일 발송 설정 (프로토타입 환경이므로 로그로 대체)
     console.log(`[Email Simulation] To: ${input.email}, Subject: ${output.subject}`);
     
-    /* 
-    // 실제 발송 로직 예시 (SMTP 설정 필요)
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: Number(process.env.SMTP_PORT),
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-    });
-
-    await transporter.sendMail({
-      from: '"Whisper Team" <welcome@whisper.hr>',
-      to: input.email,
-      subject: output.subject,
-      html: output.htmlContent,
-    });
-    */
-
     return {
       success: true,
       message: '환영 메일 발송 플로우가 성공적으로 완료되었습니다 (시뮬레이션).',
     };
   }
 );
+
+/**
+ * 회원가입 환영 메일을 발송하는 서버 액션입니다.
+ */
+export async function sendWelcomeEmail(input: SendWelcomeEmailInput): Promise<SendWelcomeEmailOutput> {
+  return sendWelcomeEmailFlow(input);
+}

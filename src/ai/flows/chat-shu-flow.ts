@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview Whisper의 지능형 HR 길잡이 '알디'의 대화 생성 플로우
@@ -18,10 +19,6 @@ const ChatAldiOutputSchema = z.object({
   reply: z.string(),
 });
 export type ChatAldiOutput = z.infer<typeof ChatAldiOutputSchema>;
-
-export async function chatAldi(input: ChatAldiInput): Promise<ChatAldiOutput> {
-  return chatAldiFlow(input);
-}
 
 const prompt = ai.definePrompt({
   name: 'chatAldiPrompt',
@@ -54,3 +51,7 @@ const chatAldiFlow = ai.defineFlow(
     return output!;
   }
 );
+
+export async function chatAldi(input: ChatAldiInput): Promise<ChatAldiOutput> {
+  return chatAldiFlow(input);
+}

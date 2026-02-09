@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview Whisper의 AI 어시스턴트 '알디(ALDI)'의 자동 답변 생성 플로우
@@ -16,10 +17,6 @@ const GenerateAiReplyOutputSchema = z.object({
   replyText: z.string(),
 });
 export type GenerateAiReplyOutput = z.infer<typeof GenerateAiReplyOutputSchema>;
-
-export async function generateAiReply(input: GenerateAiReplyInput): Promise<GenerateAiReplyOutput> {
-  return generateAiReplyFlow(input);
-}
 
 const prompt = ai.definePrompt({
   name: 'generateAiReplyPrompt',
@@ -49,3 +46,7 @@ const generateAiReplyFlow = ai.defineFlow(
     return output!;
   }
 );
+
+export async function generateAiReply(input: GenerateAiReplyInput): Promise<GenerateAiReplyOutput> {
+  return generateAiReplyFlow(input);
+}
