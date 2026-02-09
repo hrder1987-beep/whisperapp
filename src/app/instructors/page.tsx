@@ -7,12 +7,12 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase"
 import { collection, query, orderBy, addDoc } from "firebase/firestore"
 import { Instructor } from "@/lib/types"
-import { Plus, Search, Star, Award, Briefcase, MessageSquare, Camera, Check, ChevronRight, GraduationCap, Sparkles, Phone, Mail, Globe, FileText, User } from "lucide-react"
+import { Plus, Search, Star, Award, Briefcase, Camera, Check, GraduationCap, Sparkles, Phone, Mail, Globe, FileText, X, User, ExternalLink } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
@@ -75,6 +75,7 @@ export default function InstructorsPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("전체보기")
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [viewTarget, setViewTarget] = useState<Instructor | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   // Registration Form States
@@ -206,6 +207,7 @@ export default function InstructorsPage() {
             강사 프로필 등록하기
           </Button>
 
+          {/* Registration Dialog */}
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogContent className="max-w-3xl bg-white border-none rounded-[3rem] p-10 shadow-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
@@ -348,48 +350,25 @@ export default function InstructorsPage() {
                       #{i.specialty}
                     </Badge>
                   </div>
-
-                  <div className="w-full bg-primary/5 rounded-2xl p-4 mb-6 space-y-2 text-left">
-                    {i.phoneNumber && (
-                      <div className="flex items-center gap-2 text-[11px] font-bold text-primary/60">
-                        <Phone className="w-3.5 h-3.5 text-accent" /> {i.phoneNumber}
-                      </div>
-                    )}
-                    {i.email && (
-                      <div className="flex items-center gap-2 text-[11px] font-bold text-primary/60 truncate">
-                        <Mail className="w-3.5 h-3.5 text-accent" /> {i.email}
-                      </div>
-                    )}
-                    {i.website && (
-                      <div className="flex items-center gap-2 text-[11px] font-bold text-primary/60 truncate">
-                        <Globe className="w-3.5 h-3.5 text-accent" /> {i.website.replace('https://', '')}
-                      </div>
-                    )}
-                  </div>
                   
-                  <p className="text-xs text-primary/60 line-clamp-3 mb-6 font-medium leading-relaxed italic px-2">
+                  <p className="text-xs text-primary/60 line-clamp-3 mb-8 font-medium leading-relaxed italic px-2">
                     "{i.bio}"
                   </p>
 
-                  {i.references && (
-                    <div className="w-full mb-8">
-                      <p className="text-[10px] font-black text-primary/30 uppercase tracking-widest text-left mb-2">Lecture References</p>
-                      <p className="text-[11px] text-primary/50 text-left line-clamp-2 leading-relaxed font-bold">
-                        {i.references}
-                      </p>
-                    </div>
-                  )}
-
                   <div className="grid grid-cols-1 w-full gap-3 mt-auto">
+                    <Button 
+                      onClick={() => setViewTarget(i)}
+                      className="h-12 rounded-xl bg-accent text-primary font-black transition-all gap-2 text-xs shadow-lg hover:scale-105"
+                    >
+                      <User className="w-4 h-4" /> 상세 프로필 보기
+                    </Button>
                     <Button 
                       disabled={!i.curriculumPdfUrl}
                       onClick={() => i.curriculumPdfUrl && window.open(i.curriculumPdfUrl, '_blank')}
-                      className="h-12 rounded-xl bg-primary/5 hover:bg-primary text-primary hover:text-accent font-black transition-all gap-2 text-xs"
+                      variant="outline"
+                      className="h-12 rounded-xl border-primary/10 text-primary font-black gap-2 hover:bg-primary/5 transition-all text-xs"
                     >
-                      <Briefcase className="w-4 h-4" /> 대표 커리큘럼 보기
-                    </Button>
-                    <Button variant="outline" className="h-12 rounded-xl border-primary/10 text-primary font-black gap-2 hover:bg-accent/10 transition-all text-xs">
-                      <MessageSquare className="w-4 h-4" /> 섭외 및 견적 문의
+                      <FileText className="w-4 h-4" /> 대표 커리큘럼 보기
                     </Button>
                   </div>
                 </CardContent>
@@ -398,6 +377,104 @@ export default function InstructorsPage() {
           </div>
         )}
       </main>
+
+      {/* Instructor Detail Dialog */}
+      <Dialog open={!!viewTarget} onOpenChange={() => setViewTarget(null)}>
+        <DialogContent className="max-w-2xl bg-white border-none rounded-[3rem] p-0 overflow-hidden shadow-2xl">
+          {viewTarget && (
+            <div className="flex flex-col max-h-[90vh]">
+              <div className="premium-gradient p-10 flex items-center gap-8 shrink-0">
+                <div className="w-32 h-32 rounded-[2.5rem] overflow-hidden border-4 border-white/20 shadow-2xl shadow-black/20">
+                  <img src={viewTarget.profilePictureUrl} alt={viewTarget.name} className="w-full h-full object-cover" />
+                </div>
+                <div className="space-y-2">
+                  <Badge className="bg-accent text-primary font-black border-none px-3 py-1 rounded-lg text-[10px]">VERIFIED INSTRUCTOR</Badge>
+                  <h2 className="text-3xl font-black text-white">{viewTarget.name} 강사</h2>
+                  <p className="text-accent/80 font-bold text-sm">#{viewTarget.specialty}</p>
+                </div>
+                <button onClick={() => setViewTarget(null)} className="absolute top-6 right-6 text-white/40 hover:text-white transition-colors">
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+
+              <div className="p-10 space-y-10 overflow-y-auto">
+                <section className="space-y-4">
+                  <h4 className="text-xs font-black text-primary/30 uppercase tracking-widest flex items-center gap-2">
+                    <Star className="w-3.5 h-3.5 text-accent" /> 상세 프로필 및 강점
+                  </h4>
+                  <p className="text-[15px] leading-relaxed text-primary/70 whitespace-pre-wrap font-medium">
+                    {viewTarget.bio}
+                  </p>
+                </section>
+
+                {viewTarget.references && (
+                  <section className="space-y-4">
+                    <h4 className="text-xs font-black text-primary/30 uppercase tracking-widest flex items-center gap-2">
+                      <Award className="w-3.5 h-3.5 text-accent" /> 주요 강의 레퍼런스
+                    </h4>
+                    <div className="bg-primary/5 rounded-2xl p-6 border border-primary/5">
+                      <p className="text-sm leading-relaxed text-primary/60 font-bold whitespace-pre-wrap italic">
+                        {viewTarget.references}
+                      </p>
+                    </div>
+                  </section>
+                )}
+
+                <section className="space-y-4">
+                  <h4 className="text-xs font-black text-primary/30 uppercase tracking-widest">직접 연락 및 정보</h4>
+                  <div className="grid grid-cols-1 gap-3">
+                    {viewTarget.phoneNumber && (
+                      <div className="flex items-center justify-between p-4 bg-primary/5 rounded-xl group">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 bg-white rounded-lg shadow-sm"><Phone className="w-4 h-4 text-accent" /></div>
+                          <span className="text-sm font-black text-primary/70">{viewTarget.phoneNumber}</span>
+                        </div>
+                        <Button variant="ghost" size="sm" className="text-[10px] font-black text-primary/30 hover:text-accent" onClick={() => navigator.clipboard.writeText(viewTarget.phoneNumber!)}>번호 복사</Button>
+                      </div>
+                    )}
+                    {viewTarget.email && (
+                      <div className="flex items-center justify-between p-4 bg-primary/5 rounded-xl group">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 bg-white rounded-lg shadow-sm"><Mail className="w-4 h-4 text-accent" /></div>
+                          <span className="text-sm font-black text-primary/70">{viewTarget.email}</span>
+                        </div>
+                        <Button variant="ghost" size="sm" className="text-[10px] font-black text-primary/30 hover:text-accent" onClick={() => navigator.clipboard.writeText(viewTarget.email!)}>이메일 복사</Button>
+                      </div>
+                    )}
+                    {viewTarget.website && (
+                      <div className="flex items-center justify-between p-4 bg-primary/5 rounded-xl group cursor-pointer hover:bg-primary/10 transition-colors" onClick={() => window.open(viewTarget.website, '_blank')}>
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 bg-white rounded-lg shadow-sm"><Globe className="w-4 h-4 text-accent" /></div>
+                          <span className="text-sm font-black text-primary/70 truncate max-w-[250px]">{viewTarget.website.replace('https://', '')}</span>
+                        </div>
+                        <ExternalLink className="w-4 h-4 text-primary/20 group-hover:text-accent" />
+                      </div>
+                    )}
+                  </div>
+                </section>
+              </div>
+
+              <div className="p-8 bg-primary/5 border-t border-primary/5 shrink-0 flex gap-4">
+                <Button 
+                  onClick={() => setViewTarget(null)}
+                  variant="outline" 
+                  className="flex-1 h-14 rounded-2xl border-primary/10 font-black text-primary"
+                >
+                  닫기
+                </Button>
+                {viewTarget.curriculumPdfUrl && (
+                  <Button 
+                    onClick={() => window.open(viewTarget.curriculumPdfUrl, '_blank')}
+                    className="flex-1 h-14 rounded-2xl bg-primary text-accent font-black shadow-xl"
+                  >
+                    커리큘럼 PDF 열기
+                  </Button>
+                )}
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
