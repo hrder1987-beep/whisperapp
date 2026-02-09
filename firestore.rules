@@ -90,12 +90,12 @@ service cloud.firestore {
 
     // 지식 피드 및 답변 (공개 읽기 허용)
     match /questions/{questionId} {
-      allow read: if true; // 명시적으로 공개 읽기 허용
+      allow read: if true; 
       allow create: if isSignedIn();
       allow update, delete: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
 
       match /answers/{answerId} {
-        allow read: if true; // 하위 답변도 공개 읽기 허용
+        allow read: if true; 
         allow create: if isSignedIn();
         allow update, delete: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
       }
