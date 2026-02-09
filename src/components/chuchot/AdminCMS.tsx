@@ -35,7 +35,7 @@ export function AdminCMS({ initialBanners, onUpdate }: AdminCMSProps) {
       id: Date.now(),
       title: "새로운 배너 제목",
       description: "배너 설명을 입력하세요.",
-      image: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655",
+      image: "https://picsum.photos/seed/new/1200/600",
       badge: "NEW"
     }
     setBanners([...banners, newBanner])
