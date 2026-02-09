@@ -47,6 +47,7 @@ export interface TrainingProgram {
   description: string;
   instructorName: string;
   category: string;
+  subCategory?: string;
   startDate: string;
   endDate: string;
   imageUrl?: string;
