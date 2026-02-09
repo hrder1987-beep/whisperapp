@@ -11,7 +11,7 @@ import { AldiChat } from "@/components/chuchot/ShuChat"
 import { AdminCMS } from "@/components/chuchot/AdminCMS"
 import { Question, Answer, UserRole } from "@/lib/types"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, ExternalLink, Sparkles } from "lucide-react"
+import { ArrowLeft, ExternalLink } from "lucide-react"
 import { 
   Dialog, 
   DialogContent, 
@@ -289,18 +289,18 @@ export default function HomePage() {
                 </div>
               ) : (
                 <div className="flex flex-col gap-0 md:gap-10">
-                  {/* 모바일 버전 요청 순서: 배너 광고 -> 작성란 -> 피드 */}
-                  <div className="w-full">
+                  {/* 모바일 최적화 배치: 배너 광고 -> 작성란 -> 피드 리스트 */}
+                  <div className="w-full order-1">
                     <MainBanner banners={cmsBanners} />
                   </div>
-                  <div className="px-4 md:px-0 -mt-8 md:mt-0 relative z-20">
+                  <div className="px-4 md:px-0 -mt-6 md:mt-0 relative z-20 order-2">
                     <SubmissionForm 
                       type="question"
                       placeholder="채용, 교육, 조직문화 등 HR 현업의 고민을 속삭여보세요."
                       onSubmit={handleAddQuestion}
                     />
                   </div>
-                  <div className="px-4 md:px-0">
+                  <div className="px-4 md:px-0 order-3">
                     <QuestionFeed 
                       questions={filteredQuestions} 
                       onSelectQuestion={handleSelectQuestion}
