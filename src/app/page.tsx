@@ -21,14 +21,49 @@ import mockData from "@/lib/mock-data.json"
 
 const ITEMS_PER_PAGE = 7
 
-const MOCK_QUESTIONS: Question[] = (mockData.questions as any[]).map((q, idx) => ({
-  ...q,
-  // Ensure deterministic values for hydration stability
-  viewCount: q.viewCount || (100 + idx * 5),
-  answerCount: q.answerCount || 1,
-  createdAt: q.createdAt || (1714521600000 - idx * 3600000)
-}));
+// 200개의 샘플 데이터를 안전하게 생성 (JSON이 부족할 경우 대비)
+const generateFullMockQuestions = () => {
+  const baseQuestions: any[] = mockData.questions;
+  const fullList: Question[] = [];
+  
+  // 1. HRM 100건 (hr-q1 ~ hr-q100)
+  for (let i = 1; i <= 100; i++) {
+    const existing = baseQuestions.find(q => q.id === `hr-q${i}`);
+    fullList.push(existing || {
+      id: `hr-q${i}`,
+      title: `HR 실무 인사이트 질문 #${i}`,
+      text: `인사 및 노무 실무에서 발생하는 고민 #${i}에 대한 조언을 구합니다.`,
+      nickname: `전문가_${i}`,
+      userId: `mock-u${i}`,
+      userRole: "member",
+      viewCount: 100 + i,
+      answerCount: 1,
+      createdAt: 1714521600000 - i * 3600000,
+      category: "인사전략/HRM"
+    });
+  }
 
+  // 2. HRD/조직문화 100건 (cul-q1 ~ cul-q100)
+  for (let i = 1; i <= 100; i++) {
+    const existing = baseQuestions.find(q => q.id === `cul-q${i}`);
+    fullList.push(existing || {
+      id: `cul-q${i}`,
+      title: `조직문화 및 교육 전략 질문 #${i}`,
+      text: `구성원 몰입과 교육 설계 #${i}에 대한 실무 노하우를 공유해 주세요.`,
+      nickname: `컬처러_${i}`,
+      userId: `mock-c${i}`,
+      userRole: "member",
+      viewCount: 200 + i,
+      answerCount: 1,
+      createdAt: 1714881600000 - i * 3600000,
+      category: i % 2 === 0 ? "조직문화/EVP" : "HRD/교육"
+    });
+  }
+
+  return fullList.sort((a, b) => b.createdAt - a.createdAt);
+};
+
+const MOCK_QUESTIONS = generateFullMockQuestions();
 const MOCK_ANSWERS: Answer[] = (mockData.answers as any[]).map((a, idx) => ({
   ...a,
   createdAt: a.createdAt || (1714525200000 - idx * 3600000)
@@ -73,7 +108,6 @@ export default function HomePage() {
   
   const questions = useMemo(() => {
     const fetched = questionsData || []
-    // Fallback to MOCK_QUESTIONS if Firestore is empty or loading
     if (fetched.length === 0 && !searchQuery) return MOCK_QUESTIONS
     return fetched
   }, [questionsData, searchQuery])
