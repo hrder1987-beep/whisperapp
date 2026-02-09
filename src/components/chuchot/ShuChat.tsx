@@ -18,6 +18,8 @@ import { cn } from "@/lib/utils"
 import {
   Dialog,
   DialogContent,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog"
 import { AvatarIcon } from "./AvatarIcon"
 
@@ -211,6 +213,9 @@ export function AldiChat() {
 
       <Dialog open={isFocused} onOpenChange={setIsFocused}>
         <DialogContent className="max-w-5xl h-[85vh] p-0 border-none bg-transparent shadow-none overflow-hidden outline-none">
+          <DialogHeader className="sr-only">
+            <DialogTitle>알디와 대화하기 (확대 모드)</DialogTitle>
+          </DialogHeader>
           <div className="relative w-full h-full flex flex-col animate-in zoom-in-95 duration-300">
             <Button 
               variant="ghost" 
