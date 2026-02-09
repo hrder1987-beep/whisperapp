@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -23,7 +24,7 @@
     --border: 165 20% 88%;
     --input: 165 20% 88%;
     --ring: 165 100% 12%;
-    --radius: 1rem;
+    --radius: 2rem;
     --chart-1: 165 100% 12%;
     --chart-2: 45 90% 55%;
     --chart-3: 165 50% 30%;
@@ -84,4 +85,13 @@
 
 .bg-gold {
   background-color: hsl(45 90% 55%);
+}
+
+/* Custom radius classes for super-rounded look */
+.rounded-whisper {
+  border-radius: 3rem;
+}
+
+.rounded-whisper-card {
+  border-radius: 2.5rem;
 }
