@@ -43,7 +43,7 @@ export function Header({
   const navLinks = [
     { name: "지식 속삭임", href: "/" },
     { name: "프로그램", href: "/programs" },
-    { name: "HR 멘토", href: "/mentors" },
+    { name: "위스퍼러", href: "/mentors" },
     { name: "강사 정보", href: "/instructors" },
   ]
 
@@ -55,8 +55,6 @@ export function Header({
             <Logo 
               isLight 
               onClick={(e) => {
-                // 관리자 모드가 아닐 때만 비밀 인증 창을 띄웁니다.
-                // 이벤트 전파를 막지 않아 Link의 이동 기능도 함께 작동합니다.
                 if (!isAdminMode) {
                   onOpenAdminAuth?.();
                 }

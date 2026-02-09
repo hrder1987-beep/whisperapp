@@ -59,7 +59,7 @@ export function AnswerFeed({ answers, isAdminMode = false, onDeleteAnswer }: Ans
                       @{a.nickname}
                     </span>
                     {isMentor && (
-                      <Badge className="bg-accent text-primary text-[9px] font-black border-none px-1.5 py-0">MENTOR</Badge>
+                      <Badge className="bg-accent text-primary text-[9px] font-black border-none px-1.5 py-0">WHISPERER</Badge>
                     )}
                   </div>
                   <div className="flex items-center gap-3">

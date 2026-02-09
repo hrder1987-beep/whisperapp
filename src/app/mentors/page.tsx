@@ -12,7 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase"
 import { collection, query, orderBy, addDoc } from "firebase/firestore"
 import { Instructor } from "@/lib/types"
-import { Plus, Star, Award, Briefcase, MessageSquare, Crown, Camera, X } from "lucide-react"
+import { Plus, Star, Award, Briefcase, MessageSquare, Crown, Camera, X, Sparkles } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
 export default function MentorsPage() {
@@ -55,7 +55,7 @@ export default function MentorsPage() {
   const handleAddMentor = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!user) {
-      toast({ title: "로그인 필요", description: "멘토 신청을 하시려면 로그인이 필요합니다.", variant: "destructive" })
+      toast({ title: "로그인 필요", description: "위스퍼러 신청을 하시려면 로그인이 필요합니다.", variant: "destructive" })
       return
     }
 
@@ -70,7 +70,7 @@ export default function MentorsPage() {
         role: "mentor",
         createdAt: Date.now()
       })
-      toast({ title: "신청 완료", description: "멘토 프로필이 등록되었습니다. 관리자 승인 후 뱃지가 부여됩니다." })
+      toast({ title: "신청 완료", description: "위스퍼러 프로필이 등록되었습니다. 관리자 승인 후 뱃지가 부여됩니다." })
       setIsDialogOpen(false)
       setName(""); setSpecialty(""); setBio(""); setProfilePictureUrl(null)
     } catch (error) {
@@ -86,27 +86,31 @@ export default function MentorsPage() {
       
       <main className="max-w-7xl mx-auto px-4 py-12">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
-          <div>
-            <h1 className="text-4xl font-black text-primary tracking-tight mb-2">HR 멘토</h1>
-            <p className="text-lg font-bold text-primary/30">각 분야 최고의 전문가들이 전하는 실무 인사이트</p>
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-accent animate-pulse" />
+              <span className="text-xs font-black text-accent uppercase tracking-widest">Voices of Wisdom</span>
+            </div>
+            <h1 className="text-4xl font-black text-primary tracking-tight">위스퍼러 (Whisperer)</h1>
+            <p className="text-lg font-bold text-primary/30">침묵을 깨는 지혜의 목소리, 각 분야 최고의 인사이트 파트너</p>
           </div>
 
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button className="gold-gradient text-primary font-black h-12 px-8 rounded-2xl shadow-xl hover:scale-105 transition-transform gap-2">
                 <Crown className="w-5 h-5" />
-                멘토 신청하기
+                위스퍼러 신청하기
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-xl bg-white border-none rounded-[2.5rem] p-8 shadow-2xl">
               <DialogHeader>
-                <DialogTitle className="text-2xl font-black text-primary mb-6">Whisper HR 멘토 등록</DialogTitle>
+                <DialogTitle className="text-2xl font-black text-primary mb-6">Whisperer Profile Registration</DialogTitle>
               </DialogHeader>
               <form onSubmit={handleAddMentor} className="space-y-6">
                 <div className="flex flex-col items-center mb-4">
                   <div 
                     onClick={() => fileInputRef.current?.click()}
-                    className="relative w-32 h-32 rounded-[2rem] bg-primary/5 border-2 border-dashed border-primary/10 flex flex-col items-center justify-center cursor-pointer hover:border-accent transition-all overflow-hidden"
+                    className="relative w-32 h-32 rounded-[2rem] bg-primary/5 border-2 border-dashed border-primary/10 flex flex-col items-center justify-center cursor-pointer hover:border-accent transition-all overflow-hidden shadow-inner"
                   >
                     {profilePictureUrl ? (
                       <img src={profilePictureUrl} alt="preview" className="w-full h-full object-cover" />
@@ -133,7 +137,7 @@ export default function MentorsPage() {
                   <Textarea value={bio} onChange={e => setBio(e.target.value)} required placeholder="동료 HR 전문가들에게 전하고 싶은 가치와 경력을 입력하세요" className="bg-primary/5 border-none rounded-xl min-h-[150px]" />
                 </div>
                 <Button type="submit" disabled={isSubmitting} className="w-full h-14 bg-primary text-accent font-black rounded-2xl shadow-lg mt-4">
-                  {isSubmitting ? "등록 중..." : "멘토 프로필 등록"}
+                  {isSubmitting ? "등록 중..." : "위스퍼러 프로필 등록"}
                 </Button>
               </form>
             </DialogContent>
@@ -150,17 +154,17 @@ export default function MentorsPage() {
                   <div className="relative mb-6">
                     <div className="absolute inset-0 bg-accent blur-2xl opacity-20 group-hover:opacity-40 transition-opacity"></div>
                     <div className="relative w-32 h-32 rounded-[2rem] overflow-hidden border-4 border-white shadow-xl">
-                       <img src={m.profilePictureUrl} alt={m.name} className="w-full h-full object-cover" />
+                       <img src={m.profilePictureUrl} alt={m.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                     </div>
-                    <Badge className="absolute -bottom-2 right-0 bg-primary text-accent font-black border-none px-3 py-1 rounded-lg flex gap-1 items-center">
-                      <Award className="w-3 h-3" /> MENTOR
+                    <Badge className="absolute -bottom-2 right-0 bg-primary text-accent font-black border-none px-3 py-1 rounded-lg flex gap-1 items-center animate-bounce">
+                      <Award className="w-3 h-3" /> WHISPERER
                     </Badge>
                   </div>
                   
                   <h3 className="text-2xl font-black text-primary mb-1 group-hover:text-accent transition-colors">{m.name}</h3>
                   <p className="text-accent font-black text-xs uppercase tracking-widest mb-4">#{m.specialty}</p>
                   
-                  <div className="w-full h-px bg-primary/5 mb-6"></div>
+                  <div className="w-12 h-0.5 bg-primary/5 mb-6 group-hover:w-20 group-hover:bg-accent transition-all duration-500"></div>
                   
                   <p className="text-sm text-primary/50 line-clamp-4 mb-8 font-medium leading-relaxed italic">
                     "{m.bio}"
@@ -168,7 +172,7 @@ export default function MentorsPage() {
 
                   <div className="grid grid-cols-1 w-full gap-3 mt-auto">
                     <Button variant="outline" size="sm" className="h-12 rounded-xl border-primary/10 text-primary font-bold gap-1.5 hover:bg-primary hover:text-white transition-all">
-                      <MessageSquare className="w-4 h-4" /> 1:1 멘토링 문의
+                      <MessageSquare className="w-4 h-4" /> 1:1 인사이트 문의
                     </Button>
                   </div>
                 </CardContent>

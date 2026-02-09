@@ -116,7 +116,7 @@ export function QuestionFeed({
                           @{q.nickname}
                         </span>
                         {isMentor ? (
-                          <Badge className="bg-accent text-primary text-[10px] font-black border-none px-2 py-0">HR MENTOR</Badge>
+                          <Badge className="bg-accent text-primary text-[10px] font-black border-none px-2 py-0">WHISPERER</Badge>
                         ) : (
                           <Badge variant="secondary" className="bg-primary/5 text-[10px] text-primary/60 font-bold border-none px-2 py-0">HR Specialist</Badge>
                         )}
@@ -180,7 +180,7 @@ export function QuestionFeed({
                   <div className="mt-10 pt-10 border-t border-primary/5 animate-in slide-in-from-top-4 duration-500" onClick={(e) => e.stopPropagation()}>
                     <SubmissionForm 
                       type="answer"
-                      placeholder="동료 HR 전문가들에게 따뜻한 조언이나 교육 노하우를 공유해주세요."
+                      placeholder="동료 전문가들에게 따뜻한 조언이나 노하우를 공유해주세요."
                       onSubmit={onAddAnswer}
                     />
                     <AnswerFeed answers={questionAnswers} isAdminMode={isAdminMode} onDeleteAnswer={onDeleteAnswer} />
