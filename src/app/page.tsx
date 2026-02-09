@@ -21,8 +21,18 @@ import mockData from "@/lib/mock-data.json"
 
 const ITEMS_PER_PAGE = 7
 
-const MOCK_QUESTIONS: Question[] = mockData.questions as any;
-const MOCK_ANSWERS: Answer[] = mockData.answers as any;
+const MOCK_QUESTIONS: Question[] = (mockData.questions as any[]).map((q, idx) => ({
+  ...q,
+  // Ensure deterministic values for hydration stability
+  viewCount: q.viewCount || (100 + idx * 5),
+  answerCount: q.answerCount || 1,
+  createdAt: q.createdAt || (1714521600000 - idx * 3600000)
+}));
+
+const MOCK_ANSWERS: Answer[] = (mockData.answers as any[]).map((a, idx) => ({
+  ...a,
+  createdAt: a.createdAt || (1714525200000 - idx * 3600000)
+}));
 
 export default function HomePage() {
   const { user } = useUser()
@@ -63,6 +73,7 @@ export default function HomePage() {
   
   const questions = useMemo(() => {
     const fetched = questionsData || []
+    // Fallback to MOCK_QUESTIONS if Firestore is empty or loading
     if (fetched.length === 0 && !searchQuery) return MOCK_QUESTIONS
     return fetched
   }, [questionsData, searchQuery])
@@ -89,8 +100,8 @@ export default function HomePage() {
     }
     if (activeTab === "popular") result.sort((a, b) => b.viewCount - a.viewCount);
     else if (activeTab === "waiting") result = result.filter(q => q.answerCount === 0);
-    else if (activeTab === "hrd") result = result.filter(q => q.category === "HRD/교육");
-    else if (activeTab === "culture") result = result.filter(q => q.category === "조직문화/EVP");
+    else if (activeTab === "hrd") result = result.filter(q => q.category?.includes("HRD") || q.category === "HRD/교육");
+    else if (activeTab === "culture") result = result.filter(q => q.category?.includes("조직문화") || q.category === "조직문화/EVP");
     return result
   }, [questions, searchQuery, activeTab])
 
