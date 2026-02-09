@@ -52,7 +52,6 @@ export function QuestionFeed({
     
     const shareUrl = `${window.location.origin}/questions/${q.id}`;
     
-    // 1. 브라우저 기본 공유 기능 시도 (보안 정책 등으로 실패할 수 있음)
     if (typeof navigator !== 'undefined' && navigator.share) {
       try {
         await navigator.share({
@@ -60,18 +59,14 @@ export function QuestionFeed({
           text: q.text.substring(0, 100),
           url: shareUrl,
         });
-        return; // 성공 시 함수 종료
+        return;
       } catch (err) {
-        // 사용자가 직접 취소(AbortError)한 경우에만 중단하고, 
-        // 그 외의 권한(NotAllowedError) 등 모든 에러는 클립보드 복사로 진행
         if ((err as Error).name === 'AbortError') {
           return;
         }
-        // 에러를 콘솔에 찍지 않고 조용히 클립보드 복사 로직으로 넘어감
       }
     }
 
-    // 2. 클립보드 복사 폴백 (Desktop/Chrome 및 권한 거부 환경)
     try {
       if (navigator.clipboard && navigator.clipboard.writeText) {
         await navigator.clipboard.writeText(shareUrl);
@@ -80,7 +75,6 @@ export function QuestionFeed({
           description: "게시글 주소가 복사되었습니다. 원하는 곳에 붙여넣어 공유해 보세요.",
         });
       } else {
-        // 구형 브라우저 혹은 특정 환경을 위한 전통적인 방식
         const textArea = document.createElement("textarea");
         textArea.value = shareUrl;
         textArea.style.position = "fixed";
@@ -244,12 +238,11 @@ export function QuestionFeed({
                   </p>
                   
                   {isExpanded && q.imageUrl && (
-                    <div className="relative w-full h-[200px] md:h-[400px] rounded-[1rem] md:rounded-[1.5rem] overflow-hidden border border-primary/5 bg-primary/5 mt-4">
-                      <Image 
+                    <div className="relative w-full rounded-[1rem] md:rounded-[1.5rem] overflow-hidden border border-primary/5 bg-primary/5 mt-4">
+                      <img 
                         src={q.imageUrl} 
                         alt="속삭임 이미지" 
-                        fill 
-                        className="object-cover"
+                        className="w-full h-auto block"
                       />
                     </div>
                   )}

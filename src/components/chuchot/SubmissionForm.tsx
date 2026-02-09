@@ -191,7 +191,7 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
             <div className="relative w-full rounded-2xl overflow-hidden border border-primary/10 shadow-md bg-primary/5 animate-in fade-in zoom-in duration-300">
               {imageUrl && (
                 <div className="p-1">
-                  <Image src={imageUrl} alt="미리보기" width={800} height={450} className="w-full h-auto rounded-xl object-contain max-h-[400px]" />
+                  <img src={imageUrl} alt="미리보기" className="w-full h-auto rounded-xl object-contain max-h-[500px]" />
                 </div>
               )}
 
@@ -234,7 +234,6 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
                 <ImageIcon className="w-4 h-4 mr-1.5 text-emerald-500" />
                 <div className="flex flex-col items-start leading-none">
                   <span className="font-black text-[11px]">이미지</span>
-                  <span className="text-[8px] font-bold text-emerald-600/60">권장: 800x450px</span>
                 </div>
               </Button>
               
