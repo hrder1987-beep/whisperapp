@@ -50,53 +50,59 @@ export function QuestionFeed({
   const handleShare = async (e: React.MouseEvent, q: Question) => {
     e.stopPropagation();
     
-    // 절대 경로 생성
     const shareUrl = `${window.location.origin}/questions/${q.id}`;
     
-    // 1. 브라우저 기본 공유 기능 시도 (Mobile/Safari 등)
-    if (navigator.share) {
+    // 1. 브라우저 기본 공유 기능 시도 (보안 정책 등으로 실패할 수 있음)
+    if (typeof navigator !== 'undefined' && navigator.share) {
       try {
         await navigator.share({
           title: `[Whisper] ${q.title}`,
           text: q.text.substring(0, 100),
           url: shareUrl,
         });
-        return; // 성공 시 종료
+        return; // 성공 시 함수 종료
       } catch (err) {
-        // 사용자가 취소한 경우 외의 에러라면 클립보드 복사로 넘어감
-        if ((err as Error).name !== 'AbortError') {
-          console.error("Share failed:", err);
-        } else {
-          return; // 취소는 무시
+        // 사용자가 직접 취소(AbortError)한 경우에만 중단하고, 
+        // 그 외의 권한(NotAllowedError) 등 모든 에러는 클립보드 복사로 진행
+        if ((err as Error).name === 'AbortError') {
+          return;
         }
+        // 에러를 콘솔에 찍지 않고 조용히 클립보드 복사 로직으로 넘어감
       }
     }
 
-    // 2. 클립보드 복사 (Desktop/Chrome 등)
+    // 2. 클립보드 복사 폴백 (Desktop/Chrome 및 권한 거부 환경)
     try {
       if (navigator.clipboard && navigator.clipboard.writeText) {
         await navigator.clipboard.writeText(shareUrl);
         toast({
           title: "링크 복사 완료!",
-          description: "게시글 주소가 복사되었습니다. 카카오톡 등 원하는 곳에 붙여넣어 공유해 보세요.",
+          description: "게시글 주소가 복사되었습니다. 원하는 곳에 붙여넣어 공유해 보세요.",
         });
       } else {
-        // 구형 브라우저 대응 (execCommand)
+        // 구형 브라우저 혹은 특정 환경을 위한 전통적인 방식
         const textArea = document.createElement("textarea");
         textArea.value = shareUrl;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-9999px";
+        textArea.style.top = "0";
         document.body.appendChild(textArea);
+        textArea.focus();
         textArea.select();
-        document.execCommand("copy");
+        const successful = document.execCommand("copy");
         document.body.removeChild(textArea);
-        toast({
-          title: "링크 복사 완료",
-          description: "클립보드에 주소가 저장되었습니다.",
-        });
+        
+        if (successful) {
+          toast({
+            title: "링크 복사 완료",
+            description: "클립보드에 주소가 저장되었습니다.",
+          });
+        }
       }
     } catch (err) {
       toast({
         title: "복사 실패",
-        description: "공유 링크를 복사할 수 없습니다. 주소창의 링크를 직접 복사해 주세요.",
+        description: "주소창의 링크를 직접 복사해 주세요.",
         variant: "destructive"
       });
     }
@@ -195,7 +201,6 @@ export function QuestionFeed({
                     </div>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    {/* 공유 버튼을 상단 우측으로 이동시켜 상시 노출 */}
                     <button 
                       onClick={(e) => handleShare(e, q)}
                       className="p-2 text-primary/20 hover:text-accent transition-all rounded-full hover:bg-accent/10"
