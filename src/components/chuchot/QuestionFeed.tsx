@@ -171,7 +171,7 @@ export function QuestionFeed({
                     </div>
                     <div className="flex items-center gap-1.5 text-[10px] md:text-xs font-black">
                       <Eye className="w-3.5 h-3.5 md:w-4 md:h-4 text-primary/30" />
-                      <span className="text-primary/60">조회 {q.viewCount}</span>
+                      {isMounted && <span className="text-primary/60">조회 {q.viewCount}</span>}
                     </div>
                   </div>
                   <Bookmark className="w-4 h-4 md:w-5 md:h-5 text-primary/20" />
