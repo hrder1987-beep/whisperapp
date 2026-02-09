@@ -18,7 +18,7 @@ import { useFirestore, useCollection, useDoc, useMemoFirebase, addDocumentNonBlo
 import { collection, query, orderBy, doc, increment } from "firebase/firestore"
 import { Badge } from "@/components/ui/badge"
 
-const MOCK_REF_TIME = 1739952000000;
+const ITEMS_PER_PAGE = 7
 
 export default function HomePage() {
   const { user } = useUser()
@@ -35,7 +35,6 @@ export default function HomePage() {
   const [activeTab, setActiveTab] = useState<"all" | "popular" | "waiting" | "hrd" | "culture">("all")
   const [selectedQuestionId, setSelectedQuestionId] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
-  const ITEMS_PER_PAGE = 7
 
   const banners = useMemo(() => {
     if (config?.bannerSettings) {
@@ -49,9 +48,9 @@ export default function HomePage() {
       try { return JSON.parse(config.premiumAdsSettings) as PremiumAd[] } catch (e) { return [] }
     }
     return [
-      { id: "ad1", title: "HR 전문가를 위한\n커리어 엑셀러레이팅", badge: "SPECIAL EVENT", webImage: "https://picsum.photos/seed/ad1/400/220", mobileImage: "https://picsum.photos/seed/ad1m/400/500", link: "#" },
-      { id: "ad2", title: "조직문화 진단 툴킷\n무료 체험 신청하기", badge: "PARTNER", webImage: "https://picsum.photos/seed/ad2/400/220", mobileImage: "https://picsum.photos/seed/ad2m/400/500", link: "#" },
-      { id: "ad3", title: "AI 기반 자동 채용\n어시스턴트 도입 가이드", badge: "NEW SOLUTION", webImage: "https://picsum.photos/seed/ad3/400/220", mobileImage: "https://picsum.photos/seed/ad3m/400/500", link: "#" }
+      { id: "ad1", title: "HR 전문가를 위한\n커리어 엑셀러레이팅", badge: "SPECIAL EVENT", webImage: "https://picsum.photos/seed/ad1/400/220", mobileImage: "https://picsum.photos/seed/ad1m/400/220", link: "#" },
+      { id: "ad2", title: "조직문화 진단 툴킷\n무료 체험 신청하기", badge: "PARTNER", webImage: "https://picsum.photos/seed/ad2/400/220", mobileImage: "https://picsum.photos/seed/ad2m/400/220", link: "#" },
+      { id: "ad3", title: "AI 기반 자동 채용\n어시스턴트 도입 가이드", badge: "NEW SOLUTION", webImage: "https://picsum.photos/seed/ad3/400/220", mobileImage: "https://picsum.photos/seed/ad3m/400/220", link: "#" }
     ]
   }, [config])
 
@@ -142,12 +141,12 @@ export default function HomePage() {
               </div>
               <QuestionFeed questions={paginatedQuestions} onSelectQuestion={handleSelectQuestion} selectedId={selectedQuestionId} answers={answers} onAddAnswer={handleAddAnswer} activeTab={activeTab as any} onTabChange={setActiveTab as any} />
               
-              {/* 모바일 전용 프리미엄 광고 (피드 하단) */}
+              {/* 모바일 전용 프리미엄 광고 (피드 하단) - 가로형 레이아웃 */}
               {!searchQuery && (
                 <div className="lg:hidden space-y-6 mt-12 mb-12">
                   {premiumAds.map((ad) => (
-                    <div key={ad.id} onClick={() => window.open(ad.link, '_blank')} className="relative group cursor-pointer overflow-hidden rounded-[2rem] shadow-xl border border-primary/5 transition-all">
-                      <img src={ad.mobileImage} alt={ad.title} className="w-full h-auto object-cover" />
+                    <div key={ad.id} onClick={() => window.open(ad.link, '_blank')} className="relative group cursor-pointer overflow-hidden rounded-[2rem] shadow-xl border border-primary/5 transition-all aspect-[16/9]">
+                      <img src={ad.mobileImage} alt={ad.title} className="w-full h-full object-cover" />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
                       <div className="absolute bottom-6 left-6 right-6">
                         <Badge className="bg-accent text-primary font-black mb-2 text-[10px]">{ad.badge}</Badge>
@@ -177,9 +176,9 @@ export default function HomePage() {
               {/* 데스크탑 전용 트리플 배너 광고란 */}
               <div className="space-y-6">
                 {premiumAds.map((ad) => (
-                  <div key={ad.id} onClick={() => window.open(ad.link, '_blank')} className="relative group cursor-pointer overflow-hidden rounded-[2rem] shadow-xl border border-primary/5 transition-all hover:shadow-2xl hover:-translate-y-1">
+                  <div key={ad.id} onClick={() => window.open(ad.link, '_blank')} className="relative group cursor-pointer overflow-hidden rounded-[2rem] shadow-xl border border-primary/5 transition-all hover:shadow-2xl hover:-translate-y-1 aspect-[16/9]">
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10 opacity-80 group-hover:opacity-100 transition-opacity"></div>
-                    <img src={ad.webImage} alt={ad.title} className="w-full h-auto object-cover group-hover:scale-110 transition-transform duration-700" />
+                    <img src={ad.webImage} alt={ad.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                     <div className="absolute bottom-6 left-6 right-6 z-20">
                       <Badge className="bg-accent text-primary font-black mb-2 text-[9px]">{ad.badge}</Badge>
                       <p className="text-white font-black text-lg leading-tight whitespace-pre-line drop-shadow-md">{ad.title}</p>

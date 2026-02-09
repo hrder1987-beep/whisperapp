@@ -24,9 +24,9 @@ interface AdminCMSProps {
 export function AdminCMS({ initialBanners, initialPremiumAds, onUpdate }: AdminCMSProps) {
   const [banners, setBanners] = useState<BannerData[]>(initialBanners)
   const [premiumAds, setPremiumAds] = useState<PremiumAd[]>(initialPremiumAds || [
-    { id: "ad1", title: "HR 전문가를 위한\n커리어 엑셀러레이팅", badge: "SPECIAL EVENT", webImage: "https://picsum.photos/seed/ad1/400/220", mobileImage: "https://picsum.photos/seed/ad1m/400/500", link: "#" },
-    { id: "ad2", title: "조직문화 진단 툴킷\n무료 체험 신청하기", badge: "PARTNER", webImage: "https://picsum.photos/seed/ad2/400/220", mobileImage: "https://picsum.photos/seed/ad2m/400/500", link: "#" },
-    { id: "ad3", title: "AI 기반 자동 채용\n어시스턴트 도입 가이드", badge: "NEW SOLUTION", webImage: "https://picsum.photos/seed/ad3/400/220", mobileImage: "https://picsum.photos/seed/ad3m/400/500", link: "#" }
+    { id: "ad1", title: "HR 전문가를 위한\n커리어 엑셀러레이팅", badge: "SPECIAL EVENT", webImage: "https://picsum.photos/seed/ad1/400/220", mobileImage: "https://picsum.photos/seed/ad1m/400/220", link: "#" },
+    { id: "ad2", title: "조직문화 진단 툴킷\n무료 체험 신청하기", badge: "PARTNER", webImage: "https://picsum.photos/seed/ad2/400/220", mobileImage: "https://picsum.photos/seed/ad2m/400/220", link: "#" },
+    { id: "ad3", title: "AI 기반 자동 채용\n어시스턴트 도입 가이드", badge: "NEW SOLUTION", webImage: "https://picsum.photos/seed/ad3/400/220", mobileImage: "https://picsum.photos/seed/ad3m/400/220", link: "#" }
   ])
   const [isSaving, setIsSaving] = useState(false)
   const db = useFirestore()
@@ -107,7 +107,7 @@ export function AdminCMS({ initialBanners, initialPremiumAds, onUpdate }: AdminC
                 </div>
                 <div className="space-y-2">
                   <div onClick={() => document.getElementById(`banner-img-${idx}`)?.click()} className="w-full aspect-video bg-white rounded-xl border-2 border-dashed border-primary/10 flex flex-col items-center justify-center cursor-pointer overflow-hidden relative group">
-                    {banner.image ? <img src={banner.image} className="w-full h-full object-cover" /> : <Camera className="w-8 h-8 text-primary/20" />}
+                    {banner.image ? <img src={banner.image} className="w-full h-full object-cover" alt="banner preview" /> : <Camera className="w-8 h-8 text-primary/20" />}
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all text-white text-xs font-black">이미지 교체</div>
                   </div>
                   <input type="file" id={`banner-img-${idx}`} className="hidden" accept="image/*" onChange={(e) => handleImageUpload('banner', idx, e)} />
@@ -163,7 +163,7 @@ export function AdminCMS({ initialBanners, initialPremiumAds, onUpdate }: AdminC
                       <span className="text-[9px] text-accent font-black">400x220px</span>
                     </div>
                     <div onClick={() => document.getElementById(`ad-web-${idx}`)?.click()} className="relative aspect-[16/9] bg-white rounded-2xl border-2 border-dashed border-primary/10 flex flex-col items-center justify-center cursor-pointer overflow-hidden group shadow-inner">
-                      {ad.webImage ? <img src={ad.webImage} className="w-full h-full object-cover" /> : <Camera className="w-6 h-6 text-primary/20" />}
+                      {ad.webImage ? <img src={ad.webImage} className="w-full h-full object-cover" alt="web ad preview" /> : <Camera className="w-6 h-6 text-primary/20" />}
                       <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all text-white text-[10px] font-black">웹 이미지 교체</div>
                     </div>
                     <input type="file" id={`ad-web-${idx}`} className="hidden" accept="image/*" onChange={(e) => handleImageUpload('ad-web', idx, e)} />
@@ -172,10 +172,10 @@ export function AdminCMS({ initialBanners, initialPremiumAds, onUpdate }: AdminC
                   <div className="space-y-2">
                     <div className="flex items-center justify-between px-1">
                       <span className="text-[10px] font-black text-primary/40 flex items-center gap-1"><Smartphone className="w-3 h-3" /> MOBILE VERSION</span>
-                      <span className="text-[9px] text-accent font-black">400x500px</span>
+                      <span className="text-[9px] text-accent font-black">400x220px</span>
                     </div>
-                    <div onClick={() => document.getElementById(`ad-mobile-${idx}`)?.click()} className="relative aspect-[4/5] bg-white rounded-2xl border-2 border-dashed border-primary/10 flex flex-col items-center justify-center cursor-pointer overflow-hidden group shadow-inner">
-                      {ad.mobileImage ? <img src={ad.mobileImage} className="w-full h-full object-cover" /> : <Camera className="w-6 h-6 text-primary/20" />}
+                    <div onClick={() => document.getElementById(`ad-mobile-${idx}`)?.click()} className="relative aspect-[16/9] bg-white rounded-2xl border-2 border-dashed border-primary/10 flex flex-col items-center justify-center cursor-pointer overflow-hidden group shadow-inner">
+                      {ad.mobileImage ? <img src={ad.mobileImage} className="w-full h-full object-cover" alt="mobile ad preview" /> : <Camera className="w-6 h-6 text-primary/20" />}
                       <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all text-white text-[10px] font-black">모바일 이미지 교체</div>
                     </div>
                     <input type="file" id={`ad-mobile-${idx}`} className="hidden" accept="image/*" onChange={(e) => handleImageUpload('ad-mobile', idx, e)} />
