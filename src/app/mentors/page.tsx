@@ -14,7 +14,6 @@ import { Instructor, Question } from "@/lib/types"
 import { Plus, Star, Award, Briefcase, MessageSquare, Crown, Camera, Sparkles, Search, Building2, User as UserIcon, FileText, X } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { MessageDialog } from "@/components/chuchot/MessageDialog"
-import { QuestionFeed } from "@/components/chuchot/QuestionFeed"
 
 const MOCK_MENTORS: Instructor[] = [
   {
