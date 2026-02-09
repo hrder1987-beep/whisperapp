@@ -49,32 +49,56 @@ export function QuestionFeed({
 
   const handleShare = async (e: React.MouseEvent, q: Question) => {
     e.stopPropagation();
+    
+    // 절대 경로 생성
     const shareUrl = `${window.location.origin}/questions/${q.id}`;
     
+    // 1. 브라우저 기본 공유 기능 시도 (Mobile/Safari 등)
     if (navigator.share) {
       try {
         await navigator.share({
-          title: q.title,
+          title: `[Whisper] ${q.title}`,
           text: q.text.substring(0, 100),
           url: shareUrl,
         });
+        return; // 성공 시 종료
       } catch (err) {
-        // 사용자가 취소한 경우는 무시
+        // 사용자가 취소한 경우 외의 에러라면 클립보드 복사로 넘어감
+        if ((err as Error).name !== 'AbortError') {
+          console.error("Share failed:", err);
+        } else {
+          return; // 취소는 무시
+        }
       }
-    } else {
-      try {
+    }
+
+    // 2. 클립보드 복사 (Desktop/Chrome 등)
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
         await navigator.clipboard.writeText(shareUrl);
         toast({
-          title: "링크 복사 완료",
-          description: "게시글 주소가 클립보드에 복사되었습니다. 이제 원하는 곳에 공유해보세요!",
+          title: "링크 복사 완료!",
+          description: "게시글 주소가 복사되었습니다. 카카오톡 등 원하는 곳에 붙여넣어 공유해 보세요.",
         });
-      } catch (err) {
+      } else {
+        // 구형 브라우저 대응 (execCommand)
+        const textArea = document.createElement("textarea");
+        textArea.value = shareUrl;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textArea);
         toast({
-          title: "복사 실패",
-          description: "링크를 복사할 수 없습니다.",
-          variant: "destructive"
+          title: "링크 복사 완료",
+          description: "클립보드에 주소가 저장되었습니다.",
         });
       }
+    } catch (err) {
+      toast({
+        title: "복사 실패",
+        description: "공유 링크를 복사할 수 없습니다. 주소창의 링크를 직접 복사해 주세요.",
+        variant: "destructive"
+      });
     }
   }
 
@@ -151,7 +175,6 @@ export function QuestionFeed({
                         ) : (
                           <Badge variant="secondary" className="bg-primary/5 text-[8px] md:text-[9px] text-primary/40 font-black border-none px-1.5 py-0 md:px-2 md:py-0.5 rounded-md tracking-tighter">PRO</Badge>
                         )}
-                        {/* 로그인 상태이고 본인 글이 아닐 때만 쪽지 버튼 노출 */}
                         {user && user.uid !== q.userId && (
                           <button 
                             onClick={(e) => {
@@ -172,6 +195,14 @@ export function QuestionFeed({
                     </div>
                   </div>
                   <div className="flex items-center gap-1.5">
+                    {/* 공유 버튼을 상단 우측으로 이동시켜 상시 노출 */}
+                    <button 
+                      onClick={(e) => handleShare(e, q)}
+                      className="p-2 text-primary/20 hover:text-accent transition-all rounded-full hover:bg-accent/10"
+                      title="공유하기"
+                    >
+                      <Share2 className="w-4 h-4 md:w-5 md:h-5" />
+                    </button>
                     {isAdminMode && (
                       <Button 
                         variant="ghost" 
@@ -263,13 +294,6 @@ export function QuestionFeed({
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <button 
-                      onClick={(e) => handleShare(e, q)}
-                      className="p-1.5 text-primary/20 hover:text-accent transition-all rounded-full hover:bg-accent/10"
-                      title="공유하기"
-                    >
-                      <Share2 className="w-4 h-4 md:w-5 md:h-5" />
-                    </button>
                     <Bookmark className="w-4 h-4 md:w-5 md:h-5 text-primary/20" />
                   </div>
                 </CardFooter>
