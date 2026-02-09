@@ -1,22 +1,23 @@
 
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useRef } from "react"
 import { Header } from "@/components/chuchot/Header"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase"
 import { collection, query, orderBy, addDoc } from "firebase/firestore"
 import { TrainingProgram } from "@/lib/types"
-import { Calendar, GraduationCap, Plus, BookOpen, Clock, ChevronRight, Hash, Sparkles, Search } from "lucide-react"
+import { Calendar, GraduationCap, Plus, BookOpen, Clock, ChevronRight, Hash, Sparkles, Search, Camera, X } from "lucide-react"
 import Image from "next/image"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
+import { useRouter } from "next/navigation"
 
 const PROGRAM_CATEGORIES = [
   { id: "all", name: "전체보기", sub: [] },
@@ -41,6 +42,9 @@ export default function ProgramsPage() {
   const { user } = useUser()
   const db = useFirestore()
   const { toast } = useToast()
+  const router = useRouter()
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("all")
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -53,7 +57,8 @@ export default function ProgramsPage() {
   const [subCategory, setSubCategory] = useState("")
   const [startDate, setStartDate] = useState("")
   const [endDate, setEndDate] = useState("")
-  const [imageUrl, setImageUrl] = useState("")
+  const [imageUrl, setImageUrl] = useState<string | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const programsQuery = useMemoFirebase(() => {
     if (!db) return null
@@ -72,20 +77,42 @@ export default function ProgramsPage() {
     });
   }, [programs, searchQuery, selectedCategory]);
 
-  const handleAddProgram = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleOpenDialog = () => {
     if (!user) {
-      toast({ title: "로그인 필요", description: "프로그램을 등록하려면 로그인이 필요합니다.", variant: "destructive" })
+      toast({ 
+        title: "로그인 필요", 
+        description: "프로그램을 등록하시려면 먼저 로그인을 해주세요.", 
+        variant: "destructive" 
+      })
+      router.push("/auth?mode=login")
       return
     }
+    setIsDialogOpen(true)
+  }
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setImageUrl(reader.result as string)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const handleAddProgram = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!user) return
+
+    setIsSubmitting(true)
     try {
       await addDoc(collection(db, "trainingPrograms"), {
         title,
         description,
         instructorName,
-        category: category,
-        subCategory: subCategory,
+        category,
+        subCategory,
         startDate,
         endDate,
         imageUrl: imageUrl || `https://picsum.photos/seed/${Date.now()}/800/400`,
@@ -94,9 +121,12 @@ export default function ProgramsPage() {
       })
       toast({ title: "등록 완료", description: "프로그램 광고가 성공적으로 등록되었습니다." })
       setIsDialogOpen(false)
-      setTitle(""); setDescription(""); setInstructorName(""); setCategory(""); setSubCategory(""); setStartDate(""); setEndDate(""); setImageUrl("")
+      // Reset form
+      setTitle(""); setDescription(""); setInstructorName(""); setCategory(""); setSubCategory(""); setStartDate(""); setEndDate(""); setImageUrl(null)
     } catch (error) {
       toast({ title: "오류 발생", description: "등록 중 문제가 발생했습니다.", variant: "destructive" })
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -111,12 +141,11 @@ export default function ProgramsPage() {
           <div className="space-y-4 flex-1">
             <div className="flex items-center gap-2">
               <div className="h-1 w-12 bg-accent rounded-full"></div>
-              <span className="text-xs font-black text-accent uppercase tracking-widest">Library</span>
+              <span className="text-xs font-black text-accent uppercase tracking-widest">Ad Center</span>
             </div>
             <h1 className="text-4xl md:text-5xl font-black text-primary tracking-tighter">프로그램</h1>
             <p className="text-lg font-bold text-primary/30">HR 전문가들이 엄선한 최고의 실무 커리큘럼</p>
             
-            {/* Search Bar at Top */}
             <div className="relative max-w-xl group">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-primary/30 group-focus-within:text-accent transition-colors" />
               <Input 
@@ -128,21 +157,53 @@ export default function ProgramsPage() {
             </div>
           </div>
 
+          <Button 
+            onClick={handleOpenDialog}
+            className="gold-gradient text-primary font-black h-14 px-10 rounded-[1.5rem] shadow-xl hover:scale-105 active:scale-95 transition-all gap-3"
+          >
+            <Plus className="w-6 h-6" />
+            프로그램 등록하기
+          </Button>
+
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="gold-gradient text-primary font-black h-14 px-10 rounded-[1.5rem] shadow-xl hover:scale-105 active:scale-95 transition-all gap-3">
-                <Plus className="w-6 h-6" />
-                프로그램 등록하기
-              </Button>
-            </DialogTrigger>
             <DialogContent className="max-w-2xl bg-white border-none rounded-[2.5rem] p-8 max-h-[90vh] overflow-y-auto shadow-2xl">
               <DialogHeader>
                 <DialogTitle className="text-2xl font-black text-primary mb-6 flex items-center gap-2">
                   <Sparkles className="w-6 h-6 text-accent" />
-                  새로운 프로그램 광고 등록
+                  프로그램 광고 등록
                 </DialogTitle>
               </DialogHeader>
               <form onSubmit={handleAddProgram} className="space-y-6">
+                {/* Image Upload Area */}
+                <div className="space-y-2">
+                  <label className="text-xs font-black text-primary/40 ml-1">광고 배너 이미지</label>
+                  <div 
+                    onClick={() => fileInputRef.current?.click()}
+                    className="relative w-full aspect-video bg-primary/5 rounded-[1.5rem] border-2 border-dashed border-primary/10 flex flex-col items-center justify-center cursor-pointer hover:border-accent transition-all overflow-hidden"
+                  >
+                    {imageUrl ? (
+                      <>
+                        <img src={imageUrl} alt="banner preview" className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                          <p className="text-white font-black text-sm">이미지 변경하기</p>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <Camera className="w-10 h-10 text-primary/20 mb-2" />
+                        <p className="text-primary/40 text-sm font-bold">배너 이미지 업로드 (추천: 16:9)</p>
+                      </>
+                    )}
+                  </div>
+                  <input 
+                    type="file" 
+                    ref={fileInputRef} 
+                    onChange={handleImageChange} 
+                    accept="image/*" 
+                    className="hidden" 
+                  />
+                </div>
+
                 <div className="space-y-2">
                   <label className="text-xs font-black text-primary/40 ml-1">프로그램명</label>
                   <Input value={title} onChange={e => setTitle(e.target.value)} required placeholder="인사담당자가 한눈에 알 수 있는 제목" className="h-12 bg-primary/5 border-none rounded-xl" />
@@ -197,20 +258,16 @@ export default function ProgramsPage() {
                     <Input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} required className="h-12 bg-primary/5 border-none rounded-xl" />
                   </div>
                 </div>
-
-                <div className="space-y-2">
-                  <label className="text-xs font-black text-primary/40 ml-1">광고 배너 이미지 URL</label>
-                  <Input value={imageUrl} onChange={e => setImageUrl(e.target.value)} placeholder="https://..." className="h-12 bg-primary/5 border-none rounded-xl" />
-                </div>
                 
-                <Button type="submit" className="w-full h-14 bg-primary text-accent font-black rounded-2xl shadow-lg mt-4 text-lg">프로그램 광고 신청</Button>
+                <Button type="submit" disabled={isSubmitting} className="w-full h-14 bg-primary text-accent font-black rounded-2xl shadow-lg mt-4 text-lg">
+                  {isSubmitting ? "등록 중..." : "프로그램 광고 신청"}
+                </Button>
               </form>
             </DialogContent>
           </Dialog>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-          {/* Category Sidebar */}
           <aside className="lg:col-span-3 space-y-2">
             <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-primary/5 sticky top-28">
               <h3 className="text-lg font-black text-primary mb-6 flex items-center gap-2">
@@ -237,7 +294,6 @@ export default function ProgramsPage() {
             </div>
           </aside>
 
-          {/* Program Grid */}
           <div className="lg:col-span-9">
             {isLoading ? (
               <div className="flex justify-center py-20"><Clock className="w-10 h-10 animate-spin text-accent" /></div>
@@ -257,21 +313,21 @@ export default function ProgramsPage() {
                           alt={p.title} 
                           fill 
                           className="object-cover transition-transform duration-700 group-hover:scale-105" 
-                          data-ai-hint="business meeting"
+                          data-ai-hint="business seminar"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-primary/60 to-transparent"></div>
                         <div className="absolute top-4 left-4 flex flex-wrap gap-2">
                           <Badge className="bg-accent text-primary font-black border-none px-3 py-1 rounded-full text-[10px] shadow-lg">#{catName}</Badge>
-                          {(p as any).subCategory && (
-                            <Badge className="bg-white/90 text-primary font-black border-none px-3 py-1 rounded-full text-[10px] shadow-lg">{(p as any).subCategory}</Badge>
-                          )}
                         </div>
                       </div>
                       <CardContent className="p-7 flex-1 flex flex-col">
-                        <h3 className="text-xl md:text-2xl font-black text-primary mb-3 line-clamp-2 group-hover:text-accent transition-colors leading-tight">
+                        <h3 className="text-xl md:text-2xl font-black text-primary mb-2 line-clamp-1 group-hover:text-accent transition-colors leading-tight">
                           {p.title}
                         </h3>
-                        <div className="space-y-2 mb-4">
+                        <p className="text-sm font-bold text-accent mb-4 line-clamp-1">
+                          {p.description}
+                        </p>
+                        <div className="space-y-2 mb-6">
                           <div className="flex items-center gap-2 text-primary/60 text-xs font-bold">
                             <GraduationCap className="w-3.5 h-3.5 text-accent" /> {p.instructorName}
                           </div>
@@ -279,9 +335,6 @@ export default function ProgramsPage() {
                             <Calendar className="w-3.5 h-3.5 text-accent" /> {p.startDate} ~ {p.endDate}
                           </div>
                         </div>
-                        <p className="text-sm text-primary/40 line-clamp-3 mb-8 font-medium leading-relaxed italic">
-                          "{p.description}"
-                        </p>
                         <Button className="w-full h-12 mt-auto bg-primary/5 hover:bg-primary text-primary hover:text-accent font-black rounded-xl transition-all gap-2">
                           과정 상세 보기
                           <ChevronRight className="w-4 h-4" />
