@@ -1,11 +1,12 @@
+
 import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 import { FirebaseClientProvider } from "@/firebase/client-provider"
 
 export const metadata: Metadata = {
-  title: 'Chuchot (슈쇼) HRD - 대한민국 L&D 실무자들의 성장을 위한 속삭임',
-  description: '교육 설계, L&D 전략, 조직문화, 온보딩까지. HRD 현직자들을 위한 실시간 익명 지식 공유 플랫폼입니다.',
+  title: 'Whisper (위스퍼) - HR Intelligence Hub',
+  description: '대한민국 모든 HR 전문가들의 집단지성 플랫폼. 채용, 교육, 조직문화 고민을 실시간으로 나누세요.',
 };
 
 export default function RootLayout({

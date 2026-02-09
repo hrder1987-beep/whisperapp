@@ -1,193 +1,45 @@
+
 {
   "entities": {
     "UserProfile": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "UserProfile",
       "type": "object",
-      "description": "Represents a user profile in the Chuchot platform.",
+      "description": "Whisper 플랫폼의 HR 전문가 프로필 정보",
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the UserProfile entity."
-        },
-        "username": {
-          "type": "string",
-          "description": "The username of the user."
-        },
-        "email": {
-          "type": "string",
-          "description": "The email address of the user.",
-          "format": "email"
-        },
-        "registrationDate": {
-          "type": "string",
-          "description": "The date and time when the user registered.",
-          "format": "date-time"
-        }
+        "id": { "type": "string", "description": "Firebase UID" },
+        "username": { "type": "string", "description": "사용자 아이디(닉네임)" },
+        "email": { "type": "string", "format": "email" },
+        "name": { "type": "string", "description": "성함" },
+        "company": { "type": "string", "description": "소속" },
+        "department": { "type": "string", "description": "부서" },
+        "jobTitle": { "type": "string", "description": "직함" },
+        "phoneNumber": { "type": "string", "description": "휴대전화" },
+        "registrationDate": { "type": "string", "format": "date-time" }
       },
-      "required": [
-        "id",
-        "username",
-        "email",
-        "registrationDate"
-      ]
-    },
-    "TrainingProgram": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "TrainingProgram",
-      "type": "object",
-      "description": "Represents a training program offered on the Chuchot platform.",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the TrainingProgram entity."
-        },
-        "title": {
-          "type": "string",
-          "description": "The title of the training program."
-        },
-        "description": {
-          "type": "string",
-          "description": "A detailed description of the training program."
-        },
-        "instructorId": {
-          "type": "string",
-          "description": "Reference to Instructor. (Relationship: Instructor 1:N TrainingProgram)"
-        },
-        "startDate": {
-          "type": "string",
-          "description": "The start date of the training program.",
-          "format": "date-time"
-        },
-        "endDate": {
-          "type": "string",
-          "description": "The end date of the training program.",
-          "format": "date-time"
-        }
-      },
-      "required": [
-        "id",
-        "title",
-        "description",
-        "instructorId",
-        "startDate",
-        "endDate"
-      ]
-    },
-    "Instructor": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "Instructor",
-      "type": "object",
-      "description": "Represents an instructor who conducts training programs.",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the Instructor entity."
-        },
-        "name": {
-          "type": "string",
-          "description": "The name of the instructor."
-        },
-        "bio": {
-          "type": "string",
-          "description": "A short biography of the instructor."
-        },
-        "profilePictureUrl": {
-          "type": "string",
-          "description": "URL to the instructor's profile picture.",
-          "format": "uri"
-        }
-      },
-      "required": [
-        "id",
-        "name",
-        "bio",
-        "profilePictureUrl"
-      ]
+      "required": ["id", "username", "email", "name", "company", "department", "jobTitle", "phoneNumber", "registrationDate"]
     },
     "Question": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Question",
       "type": "object",
-      "description": "Represents a question submitted by a user.",
+      "description": "HR 현업 고민 및 정보 공유 게시글",
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the Question entity."
-        },
-        "title": {
-          "type": "string",
-          "description": "The title of the question."
-        },
-        "content": {
-          "type": "string",
-          "description": "The content of the question."
-        },
-        "userId": {
-          "type": "string",
-          "description": "Reference to UserProfile. (Relationship: UserProfile 1:N Question)"
-        },
-        "submissionDate": {
-          "type": "string",
-          "description": "The date and time when the question was submitted.",
-          "format": "date-time"
-        },
-        "viewCount": {
-          "type": "number",
-          "description": "The number of views for the question."
-        }
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "content": { "type": "string" },
+        "userId": { "type": "string" },
+        "nickname": { "type": "string" },
+        "category": { "type": "string" },
+        "viewCount": { "type": "number" },
+        "answerCount": { "type": "number" },
+        "createdAt": { "type": "number" }
       },
-      "required": [
-        "id",
-        "title",
-        "content",
-        "userId",
-        "submissionDate",
-        "viewCount"
-      ]
-    },
-    "Answer": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "Answer",
-      "type": "object",
-      "description": "Represents an answer to a question.",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the Answer entity."
-        },
-        "content": {
-          "type": "string",
-          "description": "The content of the answer."
-        },
-        "questionId": {
-          "type": "string",
-          "description": "Reference to Question. (Relationship: Question 1:N Answer)"
-        },
-        "userId": {
-          "type": "string",
-          "description": "Reference to UserProfile. (Relationship: UserProfile 1:N Answer)"
-        },
-        "submissionDate": {
-          "type": "string",
-          "description": "The date and time when the answer was submitted.",
-          "format": "date-time"
-        }
-      },
-      "required": [
-        "id",
-        "content",
-        "questionId",
-        "userId",
-        "submissionDate"
-      ]
+      "required": ["id", "title", "content", "userId", "nickname", "createdAt"]
     }
   },
   "auth": {
-    "providers": [
-      "password",
-      "anonymous"
-    ]
+    "providers": ["password"]
   },
   "firestore": {
     "structure": [
@@ -195,87 +47,18 @@
         "path": "/users/{userId}",
         "definition": {
           "entityName": "UserProfile",
-          "schema": {
-            "$ref": "#/backend/entities/UserProfile"
-          },
-          "description": "Stores user profile information. Path-based ownership ensures only the user can access their own profile.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The unique identifier of the user."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/trainingPrograms/{trainingProgramId}",
-        "definition": {
-          "entityName": "TrainingProgram",
-          "schema": {
-            "$ref": "#/backend/entities/TrainingProgram"
-          },
-          "description": "Stores information about training programs. Instructor ID is used to manage ownership.",
-          "params": [
-            {
-              "name": "trainingProgramId",
-              "description": "The unique identifier of the training program."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/instructors/{instructorId}",
-        "definition": {
-          "entityName": "Instructor",
-          "schema": {
-            "$ref": "#/backend/entities/Instructor"
-          },
-          "description": "Stores instructor information.",
-          "params": [
-            {
-              "name": "instructorId",
-              "description": "The unique identifier of the instructor."
-            }
-          ]
+          "schema": { "$ref": "#/backend/entities/UserProfile" },
+          "description": "상세 HR 전문가 프로필"
         }
       },
       {
         "path": "/questions/{questionId}",
         "definition": {
           "entityName": "Question",
-          "schema": {
-            "$ref": "#/backend/entities/Question"
-          },
-          "description": "Stores user questions.",
-          "params": [
-            {
-              "name": "questionId",
-              "description": "The unique identifier of the question."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/questions/{questionId}/answers/{answerId}",
-        "definition": {
-          "entityName": "Answer",
-          "schema": {
-            "$ref": "#/backend/entities/Answer"
-          },
-          "description": "Stores answers to questions.",
-          "params": [
-            {
-              "name": "questionId",
-              "description": "The unique identifier of the question."
-            },
-            {
-              "name": "answerId",
-              "description": "The unique identifier of the answer."
-            }
-          ]
+          "schema": { "$ref": "#/backend/entities/Question" },
+          "description": "HR 고민 피드"
         }
       }
-    ],
-    "reasoning": "The Firestore structure is designed to support the Chuchot platform's features, including user profiles, training programs, instructors, and a question/answer system. It prioritizes authorization independence and supports secure list operations (QAPs). User profiles are stored in a path-based structure (`/users/{userId}`) for private data. Training programs and instructors are managed under a dedicated collection (`/trainingPrograms` and `/instructors`). Questions and Answers, which are anonymous, are stored under the `/questions` collection, and answers as a subcollection of questions (`/questions/{questionId}/answers`).\n\nAuthorization Independence is achieved by storing UserProfile under `/users/{userId}`, enforcing path-based ownership, so rules can easily rely on `request.auth.uid`. Training programs are created by instructors, however, the instructorId is enough to query and list training programs. The security rule will rely on `request.auth.uid` matching the instructorId on create/update requests.\n\nThe structure supports QAPs (Rules are not Filters) by segregating data based on ownership and access needs. Path-based ownership for user profiles ensures that only the authenticated user can access their profile data. The membership map model is not used here, as there is no collaborative data requirements."
+    ]
   }
 }

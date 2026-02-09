@@ -1,14 +1,26 @@
 
+export interface UserProfile {
+  id: string;
+  username: string;
+  email: string;
+  name: string;
+  company: string;
+  department: string;
+  jobTitle: string;
+  phoneNumber: string;
+  registrationDate: string;
+}
+
 export interface Question {
   id: string;
   title: string;
   text: string;
   nickname: string;
+  userId: string;
   viewCount: number;
   answerCount: number;
   createdAt: number;
   imageUrl?: string;
-  avatarId?: string;
   category?: string;
 }
 
@@ -17,8 +29,8 @@ export interface Answer {
   questionId: string;
   text: string;
   nickname: string;
+  userId: string;
   createdAt: number;
-  avatarId?: string;
 }
 
 export interface TrainingProgram {
