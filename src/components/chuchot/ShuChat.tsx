@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState } from "react"
@@ -16,7 +15,7 @@ interface Message {
 
 export function ShuChat() {
   const [messages, setMessages] = useState<Message[]>([
-    { role: "bot", text: "반가워요! 저는 Whisper의 HR 인텔리전스 가이드 '슈'입니다. 채용, 교육, 조직문화 등 무엇이든 물어보세요." }
+    { role: "bot", text: "반가워요! Whisper의 HR 인텔리전스 가이드 '슈(Shu)'입니다. 어떤 고민을 함께 나눠볼까요?" }
   ])
   const [input, setInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
