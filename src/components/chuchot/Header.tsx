@@ -4,7 +4,7 @@
 import { Logo } from "./Logo"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Search, User as UserIcon, LogOut, Settings, LayoutDashboard } from "lucide-react"
+import { Search, User as UserIcon, LogOut, LayoutDashboard } from "lucide-react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useUser, useAuth } from "@/firebase"
@@ -50,9 +50,10 @@ export function Header({
     <header className="sticky top-0 z-50 w-full premium-gradient border-b border-white/10 shadow-xl">
       <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between gap-6">
         <div className="flex items-center gap-8">
-          <Link href="/">
-            <Logo isLight />
-          </Link>
+          <Logo 
+            isLight 
+            onClick={() => !isAdminMode && onOpenAdminAuth?.()} 
+          />
           
           <nav className="hidden lg:flex items-center gap-6">
             {navLinks.map((link) => (
@@ -124,12 +125,6 @@ export function Header({
                 </Button>
               </Link>
             </div>
-          )}
-
-          {!isAdminMode && onOpenAdminAuth && (
-             <Button variant="ghost" size="icon" onClick={onOpenAdminAuth} className="text-white/30 hover:text-accent ml-2">
-                <Settings className="w-4 h-4" />
-             </Button>
           )}
           
           {isAdminMode && onExitAdmin && (
