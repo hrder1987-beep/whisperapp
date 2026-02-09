@@ -30,19 +30,32 @@ const icons = [
 ]
 
 interface AvatarIconProps {
+  src?: string
   seed?: string
   avatarId?: string
   className?: string
 }
 
-export function AvatarIcon({ seed, avatarId, className }: AvatarIconProps) {
-  // 닉네임(seed)이나 고유 ID가 있으면 해당 값으로 아이콘을 고정
+export function AvatarIcon({ src, seed, avatarId, className }: AvatarIconProps) {
+  // 프로필 사진이 있는 경우 이미지 노출
+  if (src) {
+    return (
+      <div className={cn(
+        "w-10 h-10 rounded-full bg-white border border-primary/5 flex items-center justify-center shadow-md overflow-hidden",
+        className
+      )}>
+        <img src={src} alt="avatar" className="w-full h-full object-cover" />
+      </div>
+    )
+  }
+
+  // 사진이 없는 경우 동물/곤충 아이콘 할당
   const getIcon = () => {
     if (avatarId) {
       return icons.find(i => i.id === avatarId) || icons[0]
     }
     if (seed) {
-      // '슈'라는 이름이 포함되면 반짝이 아이콘 고정
+      // '슈'라는 이름이 포함되면 반짝이 아이콘 고정 (AI 어시스턴트)
       if (seed.includes("슈")) return icons.find(i => i.id === "sparkles") || icons[0]
       
       const index = seed.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0) % (icons.length - 1)

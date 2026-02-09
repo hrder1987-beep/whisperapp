@@ -1,4 +1,3 @@
-
 "use client"
 
 import { Answer } from "@/lib/types"
@@ -32,7 +31,11 @@ export function AnswerFeed({ answers, isAdminMode = false, onDeleteAnswer }: Ans
             <CardContent className="p-4">
               <div className="flex justify-between items-center mb-3">
                 <div className="flex items-center gap-2">
-                  <AvatarIcon seed={a.nickname} className="w-7 h-7" />
+                  <AvatarIcon 
+                    src={a.userProfilePicture}
+                    seed={a.nickname} 
+                    className="w-7 h-7" 
+                  />
                   <span className="text-primary font-bold text-sm">@{a.nickname}</span>
                 </div>
                 <div className="flex items-center gap-3">

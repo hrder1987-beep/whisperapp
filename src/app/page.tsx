@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo } from "react"
@@ -27,6 +26,9 @@ import { collection, query, orderBy, doc, increment } from "firebase/firestore"
 
 export default function HomePage() {
   const { user } = useUser()
+  const userDocRef = useMemoFirebase(() => user ? doc(user.firestore, "users", user.uid) : null, [user])
+  const { data: profile } = useDoc<any>(userDocRef)
+
   const [isAdminMode, setIsAdminMode] = useState(false)
   const [isCMSActive, setIsCMSActive] = useState(false)
   const [showAdminDialog, setShowAdminDialog] = useState(false)
@@ -101,6 +103,7 @@ export default function HomePage() {
       text,
       nickname,
       userId: user.uid,
+      userProfilePicture: profile?.profilePictureUrl || null,
       imageUrl: imageUrl || null,
       category: category || null,
       viewCount: 0,
@@ -117,7 +120,7 @@ export default function HomePage() {
             nickname: "슈 (AI Whisper)",
             userId: "ai-whisper",
             createdAt: Date.now(),
-            avatarId: "sparkles",
+            userProfilePicture: null,
           }
           addDocumentNonBlocking(collection(db, "questions", docRef.id, "answers"), aiAnswer)
           updateDocumentNonBlocking(doc(db, "questions", docRef.id), { answerCount: increment(1) })
@@ -134,6 +137,7 @@ export default function HomePage() {
       text,
       nickname,
       userId: user.uid,
+      userProfilePicture: profile?.profilePictureUrl || null,
       createdAt: Date.now(),
     }
 
@@ -240,10 +244,7 @@ export default function HomePage() {
 
             {!isSearching && (
               <aside className="lg:col-span-4 space-y-8 hidden lg:block">
-                {/* 챗봇이 가장 상단으로 이동 */}
                 <ShuChat />
-                
-                {/* 실시간 Best 글 5개가 그 아래로 이동 */}
                 <RankingList questions={topQuestions} onSelectQuestion={handleSelectQuestion} />
 
                 <div className="bg-primary p-6 rounded-[2rem] text-white shadow-xl relative overflow-hidden">

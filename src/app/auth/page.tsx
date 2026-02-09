@@ -1,7 +1,6 @@
-
 "use client"
 
-import { useState, Suspense } from "react"
+import { useState, Suspense, useRef } from "react"
 import { Header } from "@/components/chuchot/Header"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -13,7 +12,7 @@ import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "fire
 import { doc, setDoc } from "firebase/firestore"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
-import { Mail, Lock, UserPlus, LogIn, Sparkles, Building, Briefcase, Phone, User } from "lucide-react"
+import { Mail, Lock, UserPlus, LogIn, Sparkles, Building, Briefcase, Phone, User, Camera, X } from "lucide-react"
 
 function AuthContent() {
   const searchParams = useSearchParams()
@@ -21,6 +20,7 @@ function AuthContent() {
   const auth = useAuth()
   const db = useFirestore()
   const { toast } = useToast()
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const [isLoading, setIsLoading] = useState(false)
   const [activeTab, setActiveTab] = useState(searchParams.get("mode") === "signup" ? "signup" : "login")
@@ -34,6 +34,18 @@ function AuthContent() {
   const [department, setDepartment] = useState("")
   const [jobTitle, setJobTitle] = useState("")
   const [phone, setPhone] = useState("")
+  const [profilePicture, setProfilePicture] = useState<string | null>(null)
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setProfilePicture(reader.result as string)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -65,7 +77,8 @@ function AuthContent() {
         department,
         jobTitle,
         phoneNumber: phone,
-        registrationDate: new Date().toISOString()
+        registrationDate: new Date().toISOString(),
+        profilePictureUrl: profilePicture || null
       })
 
       toast({ title: "가입 완료!", description: "Whisper의 일원이 되신 것을 환영합니다." })
@@ -88,8 +101,8 @@ function AuthContent() {
         <CardContent className="px-8 pb-10">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-2 bg-primary/5 p-1 rounded-2xl mb-8">
-              <TabsTrigger value="login" className="rounded-xl font-black">로그인</TabsTrigger>
-              <TabsTrigger value="signup" className="rounded-xl font-black">회원가입</TabsTrigger>
+              <TabsTrigger value="login" className="rounded-xl font-black text-xs md:text-sm">로그인</TabsTrigger>
+              <TabsTrigger value="signup" className="rounded-xl font-black text-xs md:text-sm">회원가입</TabsTrigger>
             </TabsList>
             
             <TabsContent value="login">
@@ -111,6 +124,33 @@ function AuthContent() {
 
             <TabsContent value="signup">
               <form onSubmit={handleSignup} className="space-y-4">
+                {/* Profile Picture Upload */}
+                <div className="flex flex-col items-center mb-6">
+                  <div className="relative group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
+                    <div className="w-24 h-24 rounded-full bg-primary/5 border-2 border-dashed border-primary/20 flex items-center justify-center overflow-hidden transition-all group-hover:border-accent">
+                      {profilePicture ? (
+                        <img src={profilePicture} alt="preview" className="w-full h-full object-cover" />
+                      ) : (
+                        <Camera className="w-8 h-8 text-primary/20 group-hover:text-accent transition-colors" />
+                      )}
+                    </div>
+                    {profilePicture && (
+                      <button 
+                        type="button" 
+                        onClick={(e) => { e.stopPropagation(); setProfilePicture(null); }}
+                        className="absolute -top-1 -right-1 bg-red-500 text-white p-1 rounded-full shadow-lg"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    )}
+                    <div className="absolute bottom-0 right-0 bg-accent p-1.5 rounded-full shadow-md">
+                      <Camera className="w-3 h-3 text-primary" />
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-black text-primary/40 mt-2 uppercase tracking-tighter">프로필 사진 등록 (선택)</span>
+                  <input type="file" ref={fileInputRef} onChange={handleImageChange} accept="image/*" className="hidden" />
+                </div>
+
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label className="text-xs font-black text-primary/40 ml-1">아이디(닉네임)</Label>

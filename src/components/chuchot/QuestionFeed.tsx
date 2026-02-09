@@ -1,4 +1,3 @@
-
 "use client"
 
 import { Question, Answer } from "@/lib/types"
@@ -94,11 +93,15 @@ export function QuestionFeed({
               <CardContent className="p-7 md:p-9">
                 <div className="flex justify-between items-start mb-6">
                   <div className="flex items-center gap-4">
-                    <AvatarIcon seed={q.nickname} className="w-12 h-12 shadow-md border-2 border-primary/5" />
+                    <AvatarIcon 
+                      src={q.userProfilePicture}
+                      seed={q.nickname} 
+                      className="w-12 h-12 shadow-md border-2 border-primary/5" 
+                    />
                     <div className="flex flex-col gap-0.5">
                       <div className="flex items-center gap-2">
                         <span className="text-[15px] font-black text-primary">@{q.nickname}</span>
-                        <Badge variant="secondary" className="bg-primary/5 text-[10px] text-primary/60 font-bold border-none px-2 py-0">HRD 현직자</Badge>
+                        <Badge variant="secondary" className="bg-primary/5 text-[10px] text-primary/60 font-bold border-none px-2 py-0">HR Specialist</Badge>
                       </div>
                       <span className="text-[12px] font-medium text-primary/40 flex items-center gap-1.5">
                         <Clock className="w-3.5 h-3.5" />
@@ -159,7 +162,7 @@ export function QuestionFeed({
                   <div className="mt-10 pt-10 border-t border-primary/5 animate-in slide-in-from-top-4 duration-500" onClick={(e) => e.stopPropagation()}>
                     <SubmissionForm 
                       type="answer"
-                      placeholder="동료 HRD 현직자들에게 따뜻한 조언이나 교육 노하우를 공유해주세요."
+                      placeholder="동료 HR 전문가들에게 따뜻한 조언이나 교육 노하우를 공유해주세요."
                       onSubmit={onAddAnswer}
                     />
                     <AnswerFeed answers={questionAnswers} isAdminMode={isAdminMode} onDeleteAnswer={onDeleteAnswer} />

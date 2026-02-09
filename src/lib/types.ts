@@ -1,4 +1,3 @@
-
 export interface UserProfile {
   id: string;
   username: string;
@@ -9,6 +8,7 @@ export interface UserProfile {
   jobTitle: string;
   phoneNumber: string;
   registrationDate: string;
+  profilePictureUrl?: string;
 }
 
 export interface Question {
@@ -22,6 +22,7 @@ export interface Question {
   createdAt: number;
   imageUrl?: string;
   category?: string;
+  userProfilePicture?: string;
 }
 
 export interface Answer {
@@ -31,6 +32,7 @@ export interface Answer {
   nickname: string;
   userId: string;
   createdAt: number;
+  userProfilePicture?: string;
 }
 
 export interface TrainingProgram {
