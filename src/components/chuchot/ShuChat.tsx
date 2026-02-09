@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState } from "react"
@@ -16,7 +15,7 @@ interface Message {
 
 export function AldiChat() {
   const [messages, setMessages] = useState<Message[]>([
-    { role: "bot", text: "반가워요! Whisper의 HR 인텔리전스 가이드 '알디'입니다. 어떤 고민을 함께 나눠볼까요?" }
+    { role: "bot", text: "반가워요! Whisper의 HR 인텔리전스 가이드 '알디'입니다. 채용 전략부터 조직문화, 교육 설계까지 어떤 고민이든 말씀해 주세요." }
   ])
   const [input, setInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
@@ -110,7 +109,7 @@ export function AldiChat() {
           </Button>
         </div>
         <p className="text-[10px] text-center text-primary/20 mt-3 font-black tracking-widest uppercase">
-          HR 전문 AI 챗봇 알디입니다
+          HR전문 AI챗봇 알디입니다
         </p>
       </div>
     </Card>
