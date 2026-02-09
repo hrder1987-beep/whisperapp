@@ -65,6 +65,10 @@ export interface Instructor {
   userId: string;
   role?: UserRole;
   createdAt: number;
+  company?: string;
+  department?: string;
+  jobTitle?: string;
+  phoneNumber?: string;
 }
 
 export interface JobListing {
