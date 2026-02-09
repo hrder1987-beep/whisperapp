@@ -7,7 +7,9 @@ import { Header } from "@/components/chuchot/Header"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { AvatarIcon } from "@/components/chuchot/AvatarIcon"
 import { Badge } from "@/components/ui/badge"
-import { Mail, Building2, User as UserIcon, Phone, Briefcase, Calendar, Sparkles } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Building2, User as UserIcon, Phone, Briefcase, Calendar, Sparkles, Settings, ArrowRight } from "lucide-react"
+import Link from "next/link"
 
 export default function ProfilePage() {
   const { user, isUserLoading } = useUser()
@@ -38,17 +40,19 @@ export default function ProfilePage() {
     )
   }
 
+  const isAdmin = profile.role === 'admin'
+
   return (
     <div className="min-h-screen bg-[#F8F9FA]">
       <Header />
-      <main className="max-w-3xl mx-auto px-4 py-12 md:py-20">
+      <main className="max-w-3xl mx-auto px-4 py-12 md:py-20 pb-32">
         <div className="mb-10 flex flex-col items-center text-center">
           <div className="h-1.5 w-16 bg-accent rounded-full mb-4"></div>
           <h1 className="text-3xl font-black text-primary tracking-tighter">마이 프로필</h1>
           <p className="text-sm font-bold text-primary/30 mt-1 uppercase tracking-widest">Expert Intelligence Identity</p>
         </div>
 
-        <Card className="border-none shadow-2xl rounded-[3rem] overflow-hidden bg-white">
+        <Card className="border-none shadow-2xl rounded-[3rem] overflow-hidden bg-white mb-10">
           <div className="h-3 w-full gold-gradient"></div>
           <CardHeader className="flex flex-col items-center pt-12 pb-8">
             <div className="relative mb-6">
@@ -146,6 +150,28 @@ export default function ProfilePage() {
             </div>
           </CardContent>
         </Card>
+
+        {isAdmin && (
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-1000">
+            <Link href="/admin">
+              <Button className="w-full h-20 bg-primary text-accent hover:bg-primary/95 rounded-[2rem] shadow-2xl flex items-center justify-between px-10 group transition-all">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-white/10 rounded-2xl group-hover:scale-110 transition-transform">
+                    <Settings className="w-6 h-6" />
+                  </div>
+                  <div className="text-left">
+                    <p className="text-[10px] font-black uppercase tracking-widest opacity-50">Authorized Personnel Only</p>
+                    <p className="text-lg font-black tracking-tight">플랫폼 통합 관리 센터 접속</p>
+                  </div>
+                </div>
+                <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
+              </Button>
+            </Link>
+            <p className="text-center mt-4 text-[11px] font-bold text-primary/20 uppercase tracking-tighter">
+              위 버튼은 관리자 권한 계정(@{profile.username})에게만 노출됩니다.
+            </p>
+          </div>
+        )}
       </main>
     </div>
   )

@@ -1,9 +1,10 @@
+
 "use client"
 
 import { Logo } from "./Logo"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Search, User as UserIcon, LogOut, LayoutDashboard, Menu, X, Mail, Bell, FileText, Settings } from "lucide-react"
+import { Search, User as UserIcon, LogOut, Menu, Mail, Bell, FileText } from "lucide-react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useUser, useAuth, useCollection, useMemoFirebase, useFirestore, useDoc } from "@/firebase"
@@ -16,11 +17,6 @@ import { Badge } from "@/components/ui/badge"
 
 interface HeaderProps {
   onSearch?: (query: string) => void
-  isAdminMode?: boolean
-  isCMSActive?: boolean
-  onToggleCMS?: () => void
-  onExitAdmin?: () => void
-  onOpenAdminAuth?: () => void
 }
 
 export function Header({ 
@@ -75,8 +71,6 @@ export function Header({
     { name: "채용 정보", href: "/jobs" },
   ]
 
-  const isAdmin = profile?.role === 'admin'
-
   return (
     <header className="sticky top-0 z-50 w-full premium-gradient border-b border-white/10 shadow-xl">
       <div className="max-w-7xl mx-auto px-4 h-16 md:h-20 flex items-center justify-between gap-4">
@@ -107,18 +101,6 @@ export function Header({
                       {link.name}
                     </Link>
                   ))}
-                  {isAdmin && (
-                    <Link 
-                      href="/admin"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className={cn(
-                        "text-xl font-black text-accent flex items-center gap-2",
-                        pathname === "/admin" && "opacity-50"
-                      )}
-                    >
-                      <Settings className="w-5 h-5" /> 관리자 센터
-                    </Link>
-                  )}
                 </nav>
                 <div className="mt-auto pb-10 flex flex-col gap-4">
                   {user ? (
@@ -177,21 +159,6 @@ export function Header({
         </div>
 
         <div className="flex items-center gap-2">
-          {isAdmin && (
-            <Link href="/admin">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className={cn(
-                  "h-9 rounded-xl font-black text-[11px] gap-2 hidden sm:flex border-accent/30 text-accent hover:bg-accent hover:text-primary"
-                )}
-              >
-                <Settings className="w-3.5 h-3.5" />
-                ADMIN CENTER
-              </Button>
-            </Link>
-          )}
-
           {user && (
             <div className="flex items-center gap-1">
               <Link href="/notifications" className="relative group">
