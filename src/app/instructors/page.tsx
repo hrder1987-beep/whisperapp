@@ -48,7 +48,8 @@ const MOCK_INSTRUCTORS: Instructor[] = [
     phoneNumber: "010-1234-5678",
     email: "choi@expert.com",
     website: "https://choiexpert.com",
-    references: "삼성전자, 현대자동차, SK하이닉스 등 다수 출강"
+    references: "삼성전자, 현대자동차, SK하이닉스 등 다수 출강",
+    isVerified: true
   },
   {
     id: "inst-2",
@@ -60,7 +61,8 @@ const MOCK_INSTRUCTORS: Instructor[] = [
     createdAt: Date.now(),
     phoneNumber: "010-2222-3333",
     email: "jung@leadership.com",
-    references: "LG전자 신임팀장 과정 전담 강사"
+    references: "LG전자 신임팀장 과정 전담 강사",
+    isVerified: true
   }
 ]
 
@@ -161,9 +163,10 @@ export default function InstructorsPage() {
         profilePictureUrl: profilePictureUrl || `https://picsum.photos/seed/${name}/400/400`,
         curriculumPdfUrl: curriculumPdfUrl || null,
         userId: user.uid,
-        createdAt: Date.now()
+        createdAt: Date.now(),
+        isVerified: false // 기본적으로 미인증 상태로 등록
       })
-      toast({ title: "등록 완료", description: "강사 프로필이 성공적으로 생성되었습니다." })
+      toast({ title: "등록 완료", description: "강사 프로필이 성공적으로 생성되었습니다. 관리자 확인 후 인증 마크가 부여됩니다." })
       setIsDialogOpen(false)
       // Reset form
       setName(""); setSpecialty(""); setBio(""); setPhone(""); setEmail(""); setWebsite(""); setReferences(""); setProfilePictureUrl(null); setCurriculumPdfUrl(null);
@@ -338,9 +341,11 @@ export default function InstructorsPage() {
                     <div className="relative w-40 h-40 rounded-[2.5rem] overflow-hidden border-4 border-white shadow-2xl">
                        <img src={i.profilePictureUrl} alt={i.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                     </div>
-                    <Badge className="absolute -bottom-2 right-0 bg-primary text-accent font-black border-none px-4 py-1.5 rounded-xl shadow-2xl flex gap-1.5 items-center text-[10px]">
-                      <Check className="w-3.5 h-3.5" /> VERIFIED
-                    </Badge>
+                    {i.isVerified && (
+                      <Badge className="absolute -bottom-2 right-0 bg-primary text-accent font-black border-none px-4 py-1.5 rounded-xl shadow-2xl flex gap-1.5 items-center text-[10px]">
+                        <Check className="w-3.5 h-3.5" /> VERIFIED
+                      </Badge>
+                    )}
                   </div>
                   
                   <div className="space-y-1.5 mb-6">
@@ -388,7 +393,7 @@ export default function InstructorsPage() {
                   <img src={viewTarget.profilePictureUrl} alt={viewTarget.name} className="w-full h-full object-cover" />
                 </div>
                 <div className="space-y-2">
-                  <Badge className="bg-accent text-primary font-black border-none px-3 py-1 rounded-lg text-[10px]">VERIFIED INSTRUCTOR</Badge>
+                  {viewTarget.isVerified && <Badge className="bg-accent text-primary font-black border-none px-3 py-1 rounded-lg text-[10px]">VERIFIED INSTRUCTOR</Badge>}
                   <h2 className="text-3xl font-black text-white">{viewTarget.name} 강사</h2>
                   <p className="text-accent/80 font-bold text-sm">#{viewTarget.specialty}</p>
                 </div>

@@ -76,6 +76,7 @@ export interface Instructor {
   website?: string;
   references?: string;
   curriculumPdfUrl?: string;
+  isVerified?: boolean; // 관리자 인증 여부 추가
 }
 
 export interface JobListing {
