@@ -1,3 +1,4 @@
+
 "use client"
 
 import { 
@@ -14,6 +15,22 @@ import {
   Sparkles
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+
+const AldiEggIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 100 120" className={cn("w-full h-full p-1", className)} fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M50 110C75 110 90 85 90 55C90 25 72 10 50 10C28 10 10 25 10 55C10 85 25 110 50 110Z"
+      fill="currentColor"
+    />
+    <circle cx="35" cy="52" r="5" fill="white" />
+    <circle cx="65" cy="52" r="5" fill="white" />
+    <path d="M42 70C42 70 50 77 58 70" stroke="white" strokeWidth="4" strokeLinecap="round" />
+    <circle cx="28" cy="65" r="4" fill="white" fillOpacity="0.4" />
+    <circle cx="72" cy="65" r="4" fill="white" fillOpacity="0.4" />
+    <circle cx="50" cy="18" r="4" fill="white" fillOpacity="0.6" />
+    <path d="M50 18L50 12" stroke="white" strokeWidth="2" strokeLinecap="round" />
+  </svg>
+)
 
 const icons = [
   { id: "bird", Icon: Bird, color: "text-blue-500" },
@@ -37,7 +54,6 @@ interface AvatarIconProps {
 }
 
 export function AvatarIcon({ src, seed, avatarId, className }: AvatarIconProps) {
-  // 프로필 사진이 있는 경우 이미지 노출
   if (src) {
     return (
       <div className={cn(
@@ -49,15 +65,24 @@ export function AvatarIcon({ src, seed, avatarId, className }: AvatarIconProps) 
     )
   }
 
-  // 사진이 없는 경우 동물/곤충 아이콘 할당
+  const isAldi = seed?.includes("알디") || seed?.includes("ALDI") || avatarId === "aldi";
+
+  if (isAldi) {
+    return (
+      <div className={cn(
+        "w-10 h-10 rounded-full bg-accent text-white flex items-center justify-center shadow-lg avatar-animation border-2 border-white",
+        className
+      )}>
+        <AldiEggIcon />
+      </div>
+    )
+  }
+
   const getIcon = () => {
     if (avatarId) {
       return icons.find(i => i.id === avatarId) || icons[0]
     }
     if (seed) {
-      // '알디', '슈쇼' 또는 'AI'라는 이름이 포함되면 반짝이 아이콘 고정 (AI 어시스턴트)
-      if (seed.includes("알디") || seed.includes("슈쇼") || seed.includes("AI")) return icons.find(i => i.id === "sparkles") || icons[0]
-      
       const index = seed.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0) % (icons.length - 1)
       return icons[index]
     }

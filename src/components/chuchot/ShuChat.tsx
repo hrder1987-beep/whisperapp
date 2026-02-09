@@ -22,6 +22,7 @@ import {
   Dialog,
   DialogContent,
 } from "@/components/ui/dialog"
+import { AvatarIcon } from "./AvatarIcon"
 
 interface Message {
   role: "user" | "bot"
@@ -67,12 +68,10 @@ export function AldiChat() {
         "p-6 flex flex-row items-center justify-between space-y-0",
         isExpanded ? "premium-gradient text-white" : "premium-gradient"
       )}>
-        <div className="flex items-center gap-3">
-          <div className="p-3 bg-accent/20 rounded-2xl backdrop-blur-md">
-            <Sparkles className="w-6 h-6 text-accent animate-pulse" />
-          </div>
+        <div className="flex items-center gap-4">
+          <AvatarIcon avatarId="aldi" className="w-12 h-12 shadow-2xl scale-110" />
           <div>
-            <CardTitle className="text-white text-xl font-black tracking-tight">알디 (ALDI)</CardTitle>
+            <CardTitle className="text-white text-xl font-black tracking-tight">알디</CardTitle>
             <p className="text-[11px] text-accent/80 font-black uppercase tracking-widest mt-0.5">HR Intelligence Guide</p>
           </div>
         </div>
@@ -112,11 +111,14 @@ export function AldiChat() {
             "flex items-start gap-3 animate-in fade-in slide-in-from-bottom-2 duration-300",
             msg.role === "user" ? "flex-row-reverse" : "flex-row"
           )}>
-            <div className={cn(
-              "p-2.5 rounded-2xl shadow-sm shrink-0",
-              msg.role === "user" ? "bg-primary/10" : "bg-accent/10"
-            )}>
-              {msg.role === "user" ? <User className="w-4 h-4 text-primary/60" /> : <Bot className="w-4 h-4 text-accent" />}
+            <div className="shrink-0">
+              {msg.role === "user" ? (
+                <div className="p-2.5 bg-primary/10 rounded-2xl">
+                  <User className="w-4 h-4 text-primary/60" />
+                </div>
+              ) : (
+                <AvatarIcon avatarId="aldi" className="w-9 h-9" />
+              )}
             </div>
             <div className={cn(
               "max-w-[85%] p-4 rounded-[1.5rem] text-[14px] leading-relaxed shadow-sm",
@@ -130,9 +132,7 @@ export function AldiChat() {
         ))}
         {isLoading && (
           <div className="flex items-start gap-3">
-            <div className="p-2.5 bg-accent/10 rounded-2xl">
-              <Loader2 className="w-4 h-4 text-accent animate-spin" />
-            </div>
+            <AvatarIcon avatarId="aldi" className="w-9 h-9" />
             <div className="bg-white border border-primary/5 p-4 rounded-[1.5rem] rounded-tl-none shadow-sm">
               <span className="flex gap-1.5">
                 <span className="w-1.5 h-1.5 bg-accent/40 rounded-full animate-bounce"></span>
