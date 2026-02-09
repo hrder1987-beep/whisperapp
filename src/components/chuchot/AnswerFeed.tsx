@@ -6,7 +6,7 @@ import { Answer } from "@/lib/types"
 import { Card, CardContent } from "@/components/ui/card"
 import { formatDistanceToNow } from "date-fns"
 import { ko } from "date-fns/locale"
-import { Clock, Trash2, Award, Crown, Mail } from "lucide-react"
+import { Clock, Trash2, Crown, Mail } from "lucide-react"
 import { AvatarIcon } from "./AvatarIcon"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -67,6 +67,7 @@ export function AnswerFeed({ answers, isAdminMode = false, onDeleteAnswer }: Ans
                       {isMentor && (
                         <Badge className="bg-accent text-primary text-[9px] font-black border-none px-1.5 py-0">WHISPERER</Badge>
                       )}
+                      {/* 로그인 상태이고 본인 답글이 아닐 때만 쪽지 버튼 노출 */}
                       {user && user.uid !== a.userId && (
                         <button 
                           onClick={(e) => {
@@ -74,6 +75,7 @@ export function AnswerFeed({ answers, isAdminMode = false, onDeleteAnswer }: Ans
                             setMessageTarget({ id: a.userId, nickname: a.nickname });
                           }}
                           className="p-1 text-primary/20 hover:text-accent transition-colors bg-primary/5 rounded-full"
+                          title="쪽지 보내기"
                         >
                           <Mail className="w-2.5 h-2.5" />
                         </button>

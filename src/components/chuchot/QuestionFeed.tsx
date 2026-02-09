@@ -4,7 +4,7 @@
 import { useState } from "react"
 import { Question, Answer } from "@/lib/types"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
-import { MessageCircle, Eye, Clock, Bookmark, ChevronDown, ChevronUp, Trash2, Crown, Mail } from "lucide-react"
+import { MessageCircle, Eye, Clock, Bookmark, Trash2, Crown, Mail } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 import { ko } from "date-fns/locale"
 import { Button } from "@/components/ui/button"
@@ -49,33 +49,18 @@ export function QuestionFeed({
     <div className="space-y-4 md:space-y-6">
       <div className="flex items-center justify-between mb-2 overflow-x-auto pb-2 scrollbar-hide px-1">
         <div className="flex gap-4 md:gap-8 whitespace-nowrap">
-          <button 
-            onClick={() => onTabChange("all")}
-            className={cn(
-              "text-sm md:text-base pb-2 transition-all border-b-2",
-              activeTab === "all" ? "font-black text-primary border-accent" : "font-bold text-primary/20 border-transparent hover:text-primary"
-            )}
-          >
-            전체 피드
-          </button>
-          <button 
-            onClick={() => onTabChange("popular")}
-            className={cn(
-              "text-sm md:text-base pb-2 transition-all border-b-2",
-              activeTab === "popular" ? "font-black text-primary border-accent" : "font-bold text-primary/20 border-transparent hover:text-primary"
-            )}
-          >
-            실시간 인기
-          </button>
-          <button 
-            onClick={() => onTabChange("waiting")}
-            className={cn(
-              "text-sm md:text-base pb-2 transition-all border-b-2",
-              activeTab === "waiting" ? "font-black text-primary border-accent" : "font-bold text-primary/20 border-transparent hover:text-primary"
-            )}
-          >
-            답변 대기
-          </button>
+          {["all", "popular", "waiting"].map((tab) => (
+            <button 
+              key={tab}
+              onClick={() => onTabChange(tab as any)}
+              className={cn(
+                "text-sm md:text-base pb-2 transition-all border-b-2",
+                activeTab === tab ? "font-black text-primary border-accent" : "font-bold text-primary/20 border-transparent hover:text-primary"
+              )}
+            >
+              {tab === "all" ? "전체 피드" : tab === "popular" ? "실시간 인기" : "답변 대기"}
+            </button>
+          ))}
         </div>
       </div>
       
@@ -127,6 +112,7 @@ export function QuestionFeed({
                         ) : (
                           <Badge variant="secondary" className="bg-primary/5 text-[8px] md:text-[9px] text-primary/40 font-black border-none px-1.5 py-0 md:px-2 md:py-0.5 rounded-md tracking-tighter">PRO</Badge>
                         )}
+                        {/* 로그인 상태이고 본인 글이 아닐 때만 쪽지 버튼 노출 */}
                         {user && user.uid !== q.userId && (
                           <button 
                             onClick={(e) => {
@@ -134,6 +120,7 @@ export function QuestionFeed({
                               setMessageTarget({ id: q.userId, nickname: q.nickname });
                             }}
                             className="p-1.5 text-primary/20 hover:text-accent transition-colors bg-primary/5 rounded-full"
+                            title="쪽지 보내기"
                           >
                             <Mail className="w-3 h-3 md:w-3.5 md:h-3.5" />
                           </button>

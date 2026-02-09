@@ -10,10 +10,6 @@ import { useUser, useCollection, useMemoFirebase } from "@/firebase"
 import { collection, query, where } from "firebase/firestore"
 import { Badge } from "@/components/ui/badge"
 
-/**
- * 모바일 전용 하단 내비게이션 바
- * 메뉴 구성: 지식 속삭임, 위스퍼러, 프로그램, 강사 정보, 채용 정보 + 챗봇(알디)
- */
 export function BottomNav() {
   const pathname = usePathname()
   const router = useRouter()
@@ -34,8 +30,8 @@ export function BottomNav() {
     { name: "지식 속삭임", href: "/", icon: MessageSquareQuote },
     { name: "위스퍼러", href: "/mentors", icon: Award },
     { name: "프로그램", href: "/programs", icon: GraduationCap },
-    { name: "쪽지함", href: "/messages", icon: Mail, badgeCount: unreadMessages?.length || 0 },
     { name: "강사 정보", href: "/instructors", icon: Star },
+    { name: "쪽지함", href: "/messages", icon: Mail, badgeCount: unreadMessages?.length || 0 },
     { name: "채용 정보", href: "/jobs", icon: Briefcase },
   ]
 
@@ -46,6 +42,10 @@ export function BottomNav() {
           {navItems.map((item) => {
             const isActive = pathname === item.href
             const Icon = item.icon
+            
+            // 쪽지함은 로그인한 사용자에게만 특별한 배지와 함께 노출 (비로그인시에는 그냥 아이콘만 노출되거나 홈으로 유도 가능)
+            if (item.name === "쪽지함" && !user) return null;
+
             return (
               <button
                 key={item.href}
@@ -60,7 +60,7 @@ export function BottomNav() {
                     "w-4 h-4 md:w-5 md:h-5 transition-colors",
                     isActive ? "text-accent stroke-[3]" : "text-primary/30"
                   )} />
-                  {item.badgeCount ? (
+                  {item.badgeCount && item.badgeCount > 0 ? (
                     <Badge className="absolute -top-1 -right-1 bg-accent text-primary border-none text-[8px] h-4 w-4 flex items-center justify-center p-0 rounded-full animate-bounce">
                       {item.badgeCount}
                     </Badge>
