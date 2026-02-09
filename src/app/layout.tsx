@@ -3,6 +3,7 @@ import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 import { FirebaseClientProvider } from "@/firebase/client-provider"
+import { BottomNav } from "@/components/chuchot/BottomNav"
 
 export const metadata: Metadata = {
   title: 'Whisper (위스퍼) - HR Intelligence Hub',
@@ -23,11 +24,12 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased selection:bg-primary selection:text-primary-foreground bg-[#F8F9FA]">
         <FirebaseClientProvider>
-          <div className="relative min-h-screen overflow-x-hidden">
+          <div className="relative min-h-screen overflow-x-hidden flex flex-col">
             <div className="fixed inset-0 pointer-events-none opacity-30">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,hsl(var(--primary)/0.05)_0%,transparent_70%)] blur-3xl transform -translate-y-1/2"></div>
             </div>
-            <main className="relative z-10">{children}</main>
+            <main className="relative z-10 flex-1 pb-24 lg:pb-0">{children}</main>
+            <BottomNav />
             <Toaster />
           </div>
         </FirebaseClientProvider>

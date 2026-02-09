@@ -126,7 +126,6 @@ export default function HomePage() {
         return null
       }
     }
-    // 기본 광고 데이터
     return {
       image: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxocm98ZW58MHx8fHwxNzcwMjgxNjE3fDA&ixlib=rb-4.1.0&q=80&w=1080",
       link: "https://whisper.hr",
@@ -244,7 +243,7 @@ export default function HomePage() {
         onOpenAdminAuth={() => setShowAdminDialog(true)}
       />
 
-      <div className="max-w-7xl mx-auto px-4 py-8 md:py-12">
+      <div className="max-w-7xl mx-auto px-4 py-4 md:py-12">
         {isCMSActive && isAdminMode ? (
           <AdminCMS 
             initialBanners={cmsBanners} 
@@ -254,7 +253,7 @@ export default function HomePage() {
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
             <main className={cn(
-              "space-y-10 transition-all duration-500",
+              "space-y-6 md:space-y-10 transition-all duration-500",
               isSearching ? "lg:col-span-12 max-w-4xl mx-auto w-full" : "lg:col-span-8"
             )}>
               {isSearching ? (
@@ -290,8 +289,9 @@ export default function HomePage() {
                 </div>
               ) : (
                 <>
-                  <MainBanner banners={cmsBanners} />
-                  <div className="space-y-10">
+                  {/* 모바일 최적화 레이아웃: 배너 -> 작성란 -> 피드 */}
+                  <div className="flex flex-col gap-6 md:gap-10">
+                    <MainBanner banners={cmsBanners} />
                     <SubmissionForm 
                       type="question"
                       placeholder="채용, 교육, 조직문화 등 HR 현업의 고민을 속삭여보세요."

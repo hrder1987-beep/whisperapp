@@ -38,10 +38,6 @@ interface ChatContentProps {
   setIsFocused?: (val: boolean) => void
 }
 
-/**
- * 실제 채팅 인터페이스를 담당하는 내부 컴포넌트
- * AldiChat 외부에 정의하여 입력 시 재렌더링으로 인한 포커스 유실 방지
- */
 function ChatInterface({ 
   messages, 
   input, 
@@ -172,13 +168,25 @@ function ChatInterface({
   )
 }
 
-export function AldiChat() {
+interface AldiChatProps {
+  forceOpenTrigger?: boolean
+  onTriggerClose?: () => void
+}
+
+export function AldiChat({ forceOpenTrigger, onTriggerClose }: AldiChatProps) {
   const [messages, setMessages] = useState<Message[]>([
     { role: "bot", text: "반가워요! Whisper의 HR 인텔리전스 가이드 '알디'입니다. 채용 전략, 조직문화, 교육 설계부터 실무 노하우까지 무엇이든 물어보세요." }
   ])
   const [input, setInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [isFocused, setIsFocused] = useState(false)
+
+  useEffect(() => {
+    if (forceOpenTrigger) {
+      setIsFocused(true)
+      onTriggerClose?.()
+    }
+  }, [forceOpenTrigger, onTriggerClose])
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return
@@ -212,7 +220,7 @@ export function AldiChat() {
       </Card>
 
       <Dialog open={isFocused} onOpenChange={setIsFocused}>
-        <DialogContent className="max-w-5xl h-[85vh] p-0 border-none bg-transparent shadow-none overflow-hidden outline-none">
+        <DialogContent className="max-w-5xl h-[90vh] md:h-[85vh] p-0 border-none bg-transparent shadow-none overflow-hidden outline-none">
           <DialogHeader className="sr-only">
             <DialogTitle>알디와 대화하기 (확대 모드)</DialogTitle>
           </DialogHeader>
@@ -225,7 +233,7 @@ export function AldiChat() {
             >
               <Minimize2 className="w-6 h-6" />
             </Button>
-            <div className="flex-1 rounded-[3.5rem] overflow-hidden shadow-2xl bg-white border-8 border-primary/5">
+            <div className="flex-1 rounded-[2.5rem] md:rounded-[3.5rem] overflow-hidden shadow-2xl bg-white border-4 md:border-8 border-primary/5">
               <ChatInterface 
                 messages={messages}
                 input={input}
