@@ -6,7 +6,7 @@ import { MainBanner, BannerData } from "@/components/chuchot/MainBanner"
 import { SubmissionForm } from "@/components/chuchot/SubmissionForm"
 import { QuestionFeed } from "@/components/chuchot/QuestionFeed"
 import { RankingList } from "@/components/chuchot/RankingList"
-import { ChuchotChat } from "@/components/chuchot/ShuChat"
+import { AldiChat } from "@/components/chuchot/ShuChat"
 import { AdminCMS } from "@/components/chuchot/AdminCMS"
 import { Question, Answer, UserRole } from "@/lib/types"
 import { Button } from "@/components/ui/button"
@@ -129,7 +129,7 @@ export default function HomePage() {
           const aiAnswer = {
             questionId: docRef.id,
             text: res.replyText,
-            nickname: "슈쇼 (AI Whisper)",
+            nickname: "알디 (AI Whisper)",
             userId: "ai-whisper",
             userRole: "admin",
             createdAt: Date.now(),
@@ -262,7 +262,7 @@ export default function HomePage() {
 
             {!isSearching && (
               <aside className="lg:col-span-4 space-y-8 hidden lg:block">
-                <ChuchotChat />
+                <AldiChat />
                 <RankingList questions={topQuestions} onSelectQuestion={handleSelectQuestion} />
 
                 {/* 수익형 광고 배너 */}

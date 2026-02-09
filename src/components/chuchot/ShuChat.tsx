@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Sparkles, Send, Bot, User, Loader2 } from "lucide-react"
-import { chatChuchot } from "@/ai/flows/chat-shu-flow"
+import { chatAldi } from "@/ai/flows/chat-shu-flow"
 import { cn } from "@/lib/utils"
 
 interface Message {
@@ -13,9 +13,9 @@ interface Message {
   text: string
 }
 
-export function ChuchotChat() {
+export function AldiChat() {
   const [messages, setMessages] = useState<Message[]>([
-    { role: "bot", text: "반가워요! Whisper의 HR 인텔리전스 가이드 '슈쇼(Chuchot)'입니다. 어떤 고민을 함께 나눠볼까요?" }
+    { role: "bot", text: "반가워요! Whisper의 HR 인텔리전스 가이드 '알디(ALDI)'입니다. 어떤 고민을 함께 나눠볼까요?" }
   ])
   const [input, setInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
@@ -29,7 +29,7 @@ export function ChuchotChat() {
     setIsLoading(true)
 
     try {
-      const res = await chatChuchot({ message: userMessage })
+      const res = await chatAldi({ message: userMessage })
       setMessages(prev => [...prev, { role: "bot", text: res.reply }])
     } catch (error) {
       setMessages(prev => [...prev, { role: "bot", text: "미안해요, Whisper의 기운이 잠시 약해졌나 봐요. 다시 한번 말씀해주시겠어요?" }])
@@ -46,7 +46,7 @@ export function ChuchotChat() {
             <Sparkles className="w-5 h-5 text-accent animate-pulse" />
           </div>
           <div>
-            <CardTitle className="text-white text-lg font-black">AI 슈쇼(Chuchot)</CardTitle>
+            <CardTitle className="text-white text-lg font-black">AI 알디(ALDI)</CardTitle>
             <p className="text-[10px] text-accent/80 font-bold">Whisper Intelligence Guide</p>
           </div>
         </div>
@@ -109,7 +109,7 @@ export function ChuchotChat() {
           </Button>
         </div>
         <p className="text-[9px] text-center text-primary/20 mt-2 font-bold tracking-tighter">
-          *슈쇼는 Whisper의 HR 전문가 DB를 기반으로 답변합니다.
+          *알디는 Whisper의 HR 전문가 DB를 기반으로 답변합니다.
         </p>
       </div>
     </Card>

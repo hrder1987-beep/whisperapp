@@ -55,8 +55,8 @@ export function AvatarIcon({ src, seed, avatarId, className }: AvatarIconProps) 
       return icons.find(i => i.id === avatarId) || icons[0]
     }
     if (seed) {
-      // '슈쇼' 또는 'AI'라는 이름이 포함되면 반짝이 아이콘 고정 (AI 어시스턴트)
-      if (seed.includes("슈쇼") || seed.includes("AI")) return icons.find(i => i.id === "sparkles") || icons[0]
+      // '알디', '슈쇼' 또는 'AI'라는 이름이 포함되면 반짝이 아이콘 고정 (AI 어시스턴트)
+      if (seed.includes("알디") || seed.includes("슈쇼") || seed.includes("AI")) return icons.find(i => i.id === "sparkles") || icons[0]
       
       const index = seed.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0) % (icons.length - 1)
       return icons[index]
