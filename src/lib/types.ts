@@ -66,3 +66,18 @@ export interface Instructor {
   role?: UserRole;
   createdAt: number;
 }
+
+export interface JobListing {
+  id: string;
+  companyName: string;
+  title: string;
+  location: string;
+  experience: string;
+  education: string;
+  deadline: string;
+  tags: string[];
+  logoUrl?: string;
+  category?: string;
+  createdAt: number;
+  userId: string;
+}

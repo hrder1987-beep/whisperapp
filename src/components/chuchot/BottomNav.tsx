@@ -2,7 +2,7 @@
 "use client"
 
 import { usePathname, useRouter } from "next/navigation"
-import { MessageSquareQuote, Award, GraduationCap, Users, Bot } from "lucide-react"
+import { MessageSquareQuote, Award, GraduationCap, Briefcase, Bot } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useState } from "react"
 import { AldiChat } from "./ShuChat"
@@ -14,9 +14,9 @@ export function BottomNav() {
 
   const navItems = [
     { name: "지식 속삭임", href: "/", icon: MessageSquareQuote },
-    { name: "위스퍼러", href: "/mentors", icon: Award },
+    { name: "위스퍼러", href: "/mentors" },
+    { name: "채용 정보", href: "/jobs", icon: Briefcase },
     { name: "프로그램", href: "/programs", icon: GraduationCap },
-    { name: "강사 정보", href: "/instructors", icon: Users },
   ]
 
   return (
@@ -25,6 +25,7 @@ export function BottomNav() {
         <div className="flex justify-around items-center h-20">
           {navItems.map((item) => {
             const isActive = pathname === item.href
+            const Icon = item.icon || Award; // Default fallback icon
             return (
               <button
                 key={item.href}
@@ -35,7 +36,7 @@ export function BottomNav() {
                   "p-2 rounded-xl transition-all",
                   isActive ? "bg-accent/10" : ""
                 )}>
-                  <item.icon className={cn(
+                  <Icon className={cn(
                     "w-5 h-5 transition-colors",
                     isActive ? "text-accent" : "text-primary/30"
                   )} />
@@ -63,7 +64,6 @@ export function BottomNav() {
         </div>
       </nav>
 
-      {/* 챗봇 트리거용 히든 인스턴스 (다이얼로그 제어) */}
       <div className="hidden">
          <AldiChat forceOpenTrigger={isChatOpen} onTriggerClose={() => setIsChatOpen(false)} />
       </div>

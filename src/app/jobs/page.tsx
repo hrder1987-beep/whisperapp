@@ -1,0 +1,332 @@
+
+"use client"
+
+import { useState, useMemo, useRef } from "react"
+import { Header } from "@/components/chuchot/Header"
+import { Card, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Badge } from "@/components/ui/badge"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase"
+import { collection, query, orderBy, addDoc } from "firebase/firestore"
+import { JobListing } from "@/lib/types"
+import { Briefcase, MapPin, Calendar, Plus, Search, ChevronRight, Building2, Flame, Award, Clock } from "lucide-react"
+import Image from "next/image"
+import { useToast } from "@/hooks/use-toast"
+import { cn } from "@/lib/utils"
+import { useRouter } from "next/navigation"
+
+const JOB_CATEGORIES = [
+  "전체보기", "인사기획/전략", "채용/리크루팅", "HRD/교육", "급여/보상/C&B", "조직문화/EVP", "노무/ER", "HR 애널리틱스"
+]
+
+const MOCK_JOBS: JobListing[] = [
+  {
+    id: "job-1",
+    companyName: "위스퍼 테크놀로지",
+    title: "시니어 HR 매니저 (인사전략 및 조직문화)",
+    location: "서울 강남구",
+    experience: "경력 7-12년",
+    education: "대졸 이상",
+    deadline: "2024-05-30",
+    tags: ["스톡옵션", "자율출퇴근", "인센티브"],
+    logoUrl: "https://picsum.photos/seed/company1/100/100",
+    category: "인사기획/전략",
+    createdAt: Date.now(),
+    userId: "mock-j1"
+  },
+  {
+    id: "job-2",
+    companyName: "글로벌 에듀그룹",
+    title: "HRD 교육 컨텐츠 설계 담당자 채용",
+    location: "서울 서초구",
+    experience: "경력 3-5년",
+    education: "대졸 이상",
+    deadline: "2024-06-15",
+    tags: ["재택근무", "교육비지원", "식대제공"],
+    logoUrl: "https://picsum.photos/seed/company2/100/100",
+    category: "HRD/교육",
+    createdAt: Date.now(),
+    userId: "mock-j2"
+  },
+  {
+    id: "job-3",
+    companyName: "유니콘 모빌리티",
+    title: "Talent Acquisition (IT 채용 담당자)",
+    location: "서울 성동구",
+    experience: "경력 2-7년",
+    education: "무관",
+    deadline: "상시채용",
+    tags: ["커리어성장", "최신장비", "수평적문화"],
+    logoUrl: "https://picsum.photos/seed/company3/100/100",
+    category: "채용/리크루팅",
+    createdAt: Date.now(),
+    userId: "mock-j3"
+  }
+]
+
+export default function JobsPage() {
+  const { user } = useUser()
+  const db = useFirestore()
+  const { toast } = useToast()
+  const router = useRouter()
+  
+  const [searchQuery, setSearchQuery] = useState("")
+  const [selectedCategory, setSelectedCategory] = useState("전체보기")
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  // Registration Form States
+  const [companyName, setCompanyName] = useState("")
+  const [title, setTitle] = useState("")
+  const [location, setLocation] = useState("")
+  const [experience, setExperience] = useState("")
+  const [deadline, setDeadline] = useState("")
+  const [category, setCategory] = useState("")
+
+  const jobsQuery = useMemoFirebase(() => {
+    if (!db) return null
+    return query(collection(db, "jobs"), orderBy("createdAt", "desc"))
+  }, [db])
+
+  const { data: jobsData, isLoading } = useCollection<JobListing>(jobsQuery)
+  
+  const jobs = useMemo(() => {
+    const fetched = jobsData || []
+    if (fetched.length === 0 && !searchQuery) return MOCK_JOBS
+    return fetched
+  }, [jobsData, searchQuery])
+
+  const filteredJobs = useMemo(() => {
+    return jobs.filter(j => {
+      const matchesSearch = j.companyName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          j.title.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesCategory = selectedCategory === "전체보기" || j.category === selectedCategory;
+      return matchesSearch && matchesCategory;
+    });
+  }, [jobs, searchQuery, selectedCategory]);
+
+  const handleAddJob = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!user) return
+
+    setIsSubmitting(true)
+    try {
+      await addDoc(collection(db, "jobs"), {
+        companyName,
+        title,
+        location,
+        experience,
+        education: "대졸 이상",
+        deadline,
+        tags: ["HR 전문", "Whisper 인증"],
+        logoUrl: `https://picsum.photos/seed/${companyName}/100/100`,
+        category,
+        createdAt: Date.now(),
+        userId: user.uid
+      })
+      toast({ title: "공고 등록 완료", description: "성공적으로 게시되었습니다." })
+      setIsDialogOpen(false)
+      setCompanyName(""); setTitle(""); setLocation(""); setExperience(""); setDeadline(""); setCategory("");
+    } catch (error) {
+      toast({ title: "오류 발생", description: "등록 중 문제가 발생했습니다.", variant: "destructive" })
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-[#F8F9FA]">
+      <Header />
+      
+      <main className="max-w-7xl mx-auto px-4 py-8 md:py-12">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+          <div className="space-y-4 flex-1">
+            <div className="flex items-center gap-3">
+              <div className="h-1.5 w-12 bg-accent rounded-full"></div>
+              <span className="text-xs font-black text-accent uppercase tracking-widest">HR HOT 100</span>
+            </div>
+            <h1 className="text-4xl md:text-5xl font-black text-primary tracking-tighter">채용 정보</h1>
+            <p className="text-lg font-bold text-primary/30">대한민국 모든 HR 전문가들의 커리어 성장을 지원합니다.</p>
+            
+            <div className="relative max-w-xl group pt-4">
+              <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-primary/30 group-focus-within:text-accent transition-colors" />
+              <Input 
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                placeholder="기업명 또는 직무를 검색하세요..." 
+                className="h-14 pl-14 pr-6 bg-white border-none rounded-2xl shadow-sm focus-visible:ring-accent/50 text-sm font-bold"
+              />
+            </div>
+          </div>
+
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="gold-gradient text-primary font-black h-16 px-10 rounded-3xl shadow-2xl hover:scale-105 active:scale-95 transition-all gap-3">
+                <Plus className="w-6 h-6" />
+                공고 등록하기
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-xl bg-white border-none rounded-[3rem] p-10 shadow-2xl">
+              <DialogHeader>
+                <DialogTitle className="text-2xl font-black text-primary mb-8 flex items-center gap-3">
+                  <Briefcase className="w-8 h-8 text-accent" />
+                  채용 공고 등록
+                </DialogTitle>
+              </DialogHeader>
+              <form onSubmit={handleAddJob} className="space-y-5">
+                <div className="space-y-2">
+                  <label className="text-xs font-black text-primary/40 ml-1 uppercase">기업명</label>
+                  <Input value={companyName} onChange={e => setCompanyName(e.target.value)} required placeholder="회사명을 입력하세요" className="h-12 bg-primary/5 border-none rounded-xl" />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-black text-primary/40 ml-1 uppercase">공고 제목</label>
+                  <Input value={title} onChange={e => setTitle(e.target.value)} required placeholder="예: 시니어 채용 담당자 모집" className="h-12 bg-primary/5 border-none rounded-xl" />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-xs font-black text-primary/40 ml-1 uppercase">근무지</label>
+                    <Input value={location} onChange={e => setLocation(e.target.value)} required placeholder="서울 강남구 등" className="h-12 bg-primary/5 border-none rounded-xl" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-black text-primary/40 ml-1 uppercase">마감일</label>
+                    <Input value={deadline} onChange={e => setDeadline(e.target.value)} required placeholder="YYYY-MM-DD" className="h-12 bg-primary/5 border-none rounded-xl" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-xs font-black text-primary/40 ml-1 uppercase">경력사항</label>
+                    <Input value={experience} onChange={e => setExperience(e.target.value)} required placeholder="신입 / 경력 n년" className="h-12 bg-primary/5 border-none rounded-xl" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-black text-primary/40 ml-1 uppercase">직무 분류</label>
+                    <Select onValueChange={setCategory} required>
+                      <SelectTrigger className="h-12 bg-primary/5 border-none rounded-xl"><SelectValue placeholder="분류 선택" /></SelectTrigger>
+                      <SelectContent>
+                        {JOB_CATEGORIES.filter(c => c !== "전체보기").map(c => (
+                          <SelectItem key={c} value={c}>{c}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <Button type="submit" disabled={isSubmitting} className="w-full h-14 bg-primary text-accent font-black rounded-2xl shadow-lg mt-6">
+                  {isSubmitting ? "등록 중..." : "채용 공고 게시하기"}
+                </Button>
+              </form>
+            </DialogContent>
+          </Dialog>
+        </div>
+
+        {/* Categories Bar */}
+        <div className="flex overflow-x-auto gap-3 mb-12 scrollbar-hide pb-2">
+          {JOB_CATEGORIES.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
+              className={cn(
+                "px-6 py-3 rounded-2xl text-sm font-black transition-all border-2 whitespace-nowrap",
+                selectedCategory === cat 
+                  ? "bg-primary text-accent border-primary shadow-xl" 
+                  : "bg-white text-primary/30 border-primary/5 hover:border-accent/30 hover:text-primary"
+              )}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+
+        {/* Hot Picks Section */}
+        {!searchQuery && selectedCategory === "전체보기" && (
+          <div className="mb-16">
+            <div className="flex items-center gap-2 mb-6">
+              <Flame className="w-6 h-6 text-red-500 fill-red-500" />
+              <h2 className="text-2xl font-black text-primary">실시간 HOT HR 공고</h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {jobs.slice(0, 3).map((job) => (
+                <Card key={job.id} className="bg-white border-primary/5 rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-2xl transition-all group">
+                  <CardContent className="p-8">
+                    <div className="flex justify-between items-start mb-6">
+                      <div className="w-16 h-16 rounded-2xl bg-primary/5 flex items-center justify-center overflow-hidden border border-primary/10">
+                        {job.logoUrl ? (
+                          <img src={job.logoUrl} alt={job.companyName} className="w-full h-full object-cover" />
+                        ) : (
+                          <Building2 className="w-8 h-8 text-primary/20" />
+                        )}
+                      </div>
+                      <Badge className="bg-red-50 text-red-500 border-none font-black text-[10px] px-3 py-1 animate-pulse">HOT</Badge>
+                    </div>
+                    <div className="space-y-1 mb-6">
+                      <p className="text-xs font-black text-primary/40 uppercase tracking-tighter">{job.companyName}</p>
+                      <h3 className="text-xl font-black text-primary group-hover:text-accent transition-colors leading-snug line-clamp-2">
+                        {job.title}
+                      </h3>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5 mb-8">
+                      {job.tags.slice(0, 2).map(tag => (
+                        <Badge key={tag} variant="outline" className="border-primary/10 text-primary/40 font-bold text-[10px] px-2 py-0">#{tag}</Badge>
+                      ))}
+                    </div>
+                    <div className="flex items-center justify-between text-[11px] font-black text-primary/30 pt-4 border-t border-primary/5">
+                      <div className="flex items-center gap-3">
+                        <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> {job.location}</span>
+                        <span className="flex items-center gap-1"><Award className="w-3 h-3" /> {job.experience}</span>
+                      </div>
+                      <span className="text-red-400">D-{job.deadline.includes("-") ? "Day" : job.deadline}</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Regular Listings */}
+        <div className="bg-white rounded-[3rem] shadow-sm border border-primary/5 overflow-hidden">
+          <div className="p-8 border-b border-primary/5 flex items-center justify-between">
+            <h2 className="text-xl font-black text-primary">전체 채용 리스트 <span className="text-accent ml-2">{filteredJobs.length}</span></h2>
+            <div className="flex gap-4 text-xs font-black text-primary/40">
+              <button className="text-primary border-b-2 border-primary">최신순</button>
+              <button className="hover:text-primary">마감임박순</button>
+              <button className="hover:text-primary">인기순</button>
+            </div>
+          </div>
+          
+          <div className="divide-y divide-primary/5">
+            {isLoading ? (
+              <div className="flex justify-center py-40"><Clock className="w-12 h-12 animate-spin text-accent" /></div>
+            ) : filteredJobs.map((job) => (
+              <div key={job.id} className="p-8 hover:bg-primary/[0.01] transition-all group flex flex-col md:flex-row md:items-center gap-8">
+                <div className="w-20 h-20 rounded-2xl bg-primary/5 flex items-center justify-center overflow-hidden border border-primary/5 flex-shrink-0">
+                  <img src={job.logoUrl} alt={job.companyName} className="w-full h-full object-cover" />
+                </div>
+                
+                <div className="flex-1 space-y-2">
+                  <p className="text-sm font-black text-primary/40">{job.companyName}</p>
+                  <h3 className="text-xl font-black text-primary group-hover:text-accent transition-colors leading-tight">{job.title}</h3>
+                  <div className="flex flex-wrap items-center gap-4 text-xs font-bold text-primary/50 pt-1">
+                    <span className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5 text-accent" /> {job.location}</span>
+                    <span className="flex items-center gap-1.5"><Award className="w-3.5 h-3.5 text-accent" /> {job.experience}</span>
+                    <span className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5 text-accent" /> {job.deadline}</span>
+                  </div>
+                </div>
+                
+                <div className="flex flex-col md:items-end gap-3">
+                  <Badge className="bg-primary/5 text-primary/40 font-black border-none px-3 py-1 rounded-full text-[10px] w-fit">
+                    #{job.category}
+                  </Badge>
+                  <Button className="h-12 px-8 rounded-xl bg-primary/5 hover:bg-primary text-primary hover:text-accent font-black transition-all">
+                    상세보기
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </main>
+    </div>
+  )
+}

@@ -45,6 +45,7 @@ export function Header({
   const navLinks = [
     { name: "지식 속삭임", href: "/" },
     { name: "위스퍼러", href: "/mentors" },
+    { name: "채용 정보", href: "/jobs" },
     { name: "프로그램", href: "/programs" },
     { name: "강사 정보", href: "/instructors" },
   ]

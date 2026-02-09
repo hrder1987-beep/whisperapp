@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "UserProfile": {
@@ -39,6 +40,27 @@
         "userProfilePicture": { "type": "string" }
       },
       "required": ["id", "title", "text", "userId", "nickname", "createdAt"]
+    },
+    "JobListing": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "JobListing",
+      "type": "object",
+      "description": "HR 전문 채용 공고 정보",
+      "properties": {
+        "id": { "type": "string" },
+        "companyName": { "type": "string" },
+        "title": { "type": "string" },
+        "location": { "type": "string" },
+        "experience": { "type": "string" },
+        "education": { "type": "string" },
+        "deadline": { "type": "string" },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "logoUrl": { "type": "string" },
+        "category": { "type": "string" },
+        "createdAt": { "type": "number" },
+        "userId": { "type": "string" }
+      },
+      "required": ["id", "companyName", "title", "location", "deadline", "createdAt"]
     }
   },
   "auth": {
@@ -52,6 +74,10 @@
     "/questions/{questionId}": {
       "schema": { "$ref": "#/entities/Question" },
       "description": "공개 HR 지식 공유 피드"
+    },
+    "/jobs/{jobId}": {
+      "schema": { "$ref": "#/entities/JobListing" },
+      "description": "HR 채용 정보 데이터베이스"
     },
     "/admin_configuration/site_settings": {
       "schema": { "type": "object" },
