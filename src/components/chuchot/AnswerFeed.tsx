@@ -1,6 +1,7 @@
+
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Answer } from "@/lib/types"
 import { Card, CardContent } from "@/components/ui/card"
 import { formatDistanceToNow } from "date-fns"
@@ -22,34 +23,28 @@ interface AnswerFeedProps {
 export function AnswerFeed({ answers, isAdminMode = false, onDeleteAnswer }: AnswerFeedProps) {
   const { user } = useUser()
   const [messageTarget, setMessageTarget] = useState<{ id: string, nickname: string } | null>(null)
+  
+  const [isMounted, setIsMounted] = useState(false)
+  useEffect(() => setIsMounted(true), [])
+
   const sortedAnswers = [...answers].sort((a, b) => b.createdAt - a.createdAt)
 
   return (
     <div className="mt-8 space-y-4">
-      <h3 className="text-lg font-semibold text-primary mb-4 flex items-center gap-2">
-        답글 ({answers.length})
-      </h3>
+      <h3 className="text-lg font-semibold text-primary mb-4 flex items-center gap-2">답글 ({answers.length})</h3>
       
       {sortedAnswers.length === 0 ? (
         <p className="text-muted-foreground text-center py-8">이 속삭임에 첫 번째 답글을 남겨보세요.</p>
       ) : (
         sortedAnswers.map((a) => {
           const isMentor = a.userRole === 'mentor';
-          
           return (
-            <Card key={a.id} className={cn(
-              "bg-card border-black/5 shadow-sm",
-              isMentor && "border-accent/30 bg-accent/5"
-            )}>
+            <Card key={a.id} className={cn("bg-card border-black/5 shadow-sm", isMentor && "border-accent/30 bg-accent/5")}>
               <CardContent className="p-4">
                 <div className="flex justify-between items-center mb-3">
                   <div className="flex items-center gap-2">
                     <div className="relative">
-                      <AvatarIcon 
-                        src={a.userProfilePicture}
-                        seed={a.nickname} 
-                        className="w-7 h-7" 
-                      />
+                      <AvatarIcon src={a.userProfilePicture} seed={a.nickname} className="w-7 h-7" />
                       {isMentor && (
                         <div className="absolute -top-1 -right-1 bg-accent p-0.5 rounded-full shadow-sm border border-white">
                           <Crown className="w-2 h-2 text-primary" />
@@ -57,28 +52,11 @@ export function AnswerFeed({ answers, isAdminMode = false, onDeleteAnswer }: Ans
                       )}
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <span className={cn(
-                        "font-bold text-sm",
-                        isMentor ? "text-accent" : "text-primary"
-                      )}>
-                        @{a.nickname}
-                      </span>
-                      {a.jobTitle && (
-                        <span className="text-[10px] font-bold text-accent/60 italic">#{a.jobTitle}</span>
-                      )}
-                      {isMentor && (
-                        <Badge className="bg-accent text-primary text-[9px] font-black border-none px-1.5 py-0">WHISPERER</Badge>
-                      )}
-                      {/* 로그인 상태이고 본인 답글이 아닐 때만 쪽지 버튼 노출 */}
+                      <span className={cn("font-bold text-sm", isMentor ? "text-accent" : "text-primary")}>@{a.nickname}</span>
+                      {a.jobTitle && <span className="text-[10px] font-bold text-accent/60 italic">#{a.jobTitle}</span>}
+                      {isMentor && <Badge className="bg-accent text-primary text-[9px] font-black border-none px-1.5 py-0">WHISPERER</Badge>}
                       {user && user.uid !== a.userId && (
-                        <button 
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setMessageTarget({ id: a.userId, nickname: a.nickname });
-                          }}
-                          className="p-1 text-primary/20 hover:text-accent transition-colors bg-primary/5 rounded-full"
-                          title="쪽지 보내기"
-                        >
+                        <button onClick={() => setMessageTarget({ id: a.userId, nickname: a.nickname })} className="p-1 text-primary/20 hover:text-accent transition-colors bg-primary/5 rounded-full">
                           <Mail className="w-2.5 h-2.5" />
                         </button>
                       )}
@@ -87,23 +65,16 @@ export function AnswerFeed({ answers, isAdminMode = false, onDeleteAnswer }: Ans
                   <div className="flex items-center gap-3">
                     <span className="text-muted-foreground flex items-center gap-1 text-[10px]">
                       <Clock className="w-3 h-3" />
-                      {formatDistanceToNow(a.createdAt, { addSuffix: true, locale: ko })}
+                      {isMounted ? formatDistanceToNow(a.createdAt, { addSuffix: true, locale: ko }) : '...'}
                     </span>
                     {isAdminMode && (
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="w-6 h-6 text-red-300 hover:text-red-500 hover:bg-red-50 rounded-full"
-                        onClick={() => onDeleteAnswer?.(a.id)}
-                      >
+                      <Button variant="ghost" size="icon" className="w-6 h-6 text-red-300 hover:text-red-500 hover:bg-red-50 rounded-full" onClick={() => onDeleteAnswer?.(a.id)}>
                         <Trash2 className="w-3.5 h-3.5" />
                       </Button>
                     )}
                   </div>
                 </div>
-                <p className="text-base text-foreground/90 leading-relaxed pl-9">
-                  {a.text}
-                </p>
+                <p className="text-base text-foreground/90 leading-relaxed pl-9">{a.text}</p>
               </CardContent>
             </Card>
           )
@@ -111,12 +82,7 @@ export function AnswerFeed({ answers, isAdminMode = false, onDeleteAnswer }: Ans
       )}
 
       {messageTarget && (
-        <MessageDialog 
-          isOpen={!!messageTarget}
-          onClose={() => setMessageTarget(null)}
-          receiverId={messageTarget.id}
-          receiverNickname={messageTarget.nickname}
-        />
+        <MessageDialog isOpen={!!messageTarget} onClose={() => setMessageTarget(null)} receiverId={messageTarget.id} receiverNickname={messageTarget.nickname} />
       )}
     </div>
   )
