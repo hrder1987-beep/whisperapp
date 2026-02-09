@@ -44,16 +44,25 @@ export function Header({
     { name: "지식 속삭임", href: "/" },
     { name: "프로그램", href: "/programs" },
     { name: "HR 멘토", href: "/mentors" },
+    { name: "강사 정보", href: "/instructors" },
   ]
 
   return (
     <header className="sticky top-0 z-50 w-full premium-gradient border-b border-white/10 shadow-xl">
       <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between gap-6">
         <div className="flex items-center gap-8">
-          <Logo 
-            isLight 
-            onClick={() => !isAdminMode && onOpenAdminAuth?.()} 
-          />
+          <Link href="/">
+            <Logo 
+              isLight 
+              onClick={(e) => {
+                // 관리자 모드가 아닐 때만 비밀 인증 창을 띄웁니다.
+                // 이벤트 전파를 막지 않아 Link의 이동 기능도 함께 작동합니다.
+                if (!isAdminMode) {
+                  onOpenAdminAuth?.();
+                }
+              }} 
+            />
+          </Link>
           
           <nav className="hidden lg:flex items-center gap-6">
             {navLinks.map((link) => (
@@ -102,12 +111,10 @@ export function Header({
 
           {user ? (
             <div className="flex items-center gap-2">
-              <Link href="/profile">
-                <Button variant="ghost" size="sm" className="text-white hover:text-accent hover:bg-white/5 font-bold gap-2">
-                  <UserIcon className="w-4 h-4" />
-                  <span className="hidden sm:inline">내 정보</span>
-                </Button>
-              </Link>
+              <Button variant="ghost" size="sm" className="text-white hover:text-accent hover:bg-white/5 font-bold gap-2">
+                <UserIcon className="w-4 h-4" />
+                <span className="hidden sm:inline">내 정보</span>
+              </Button>
               <Button variant="ghost" size="icon" onClick={handleLogout} className="text-white/70 hover:text-red-400">
                 <LogOut className="w-5 h-5" />
               </Button>
