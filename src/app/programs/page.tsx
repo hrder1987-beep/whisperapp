@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase"
 import { collection, query, orderBy, addDoc } from "firebase/firestore"
 import { TrainingProgram } from "@/lib/types"
-import { Calendar, GraduationCap, Plus, ChevronRight, Search, Camera, Clock, Video, Building2, MessageSquare, Info } from "lucide-react"
+import { Calendar, GraduationCap, Plus, ChevronRight, Search, Camera, Clock, Video, Building2, MessageSquare, Info, X, PlayCircle, BookOpen } from "lucide-react"
 import Image from "next/image"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
@@ -43,14 +43,15 @@ const MOCK_PROGRAMS: TrainingProgram[] = [
   {
     id: "prog-1",
     title: "HR 애널리틱스 실무 마스터 클래스",
-    description: "데이터로 말하는 HR 담당자를 위한 실무 과정. 파이썬과 태블로를 활용한 인사 데이터 시각화 및 전략 도출 기법을 전수합니다.",
-    companyDescription: "국내 최고의 데이터 사이언스 전문 교육 기관입니다.",
+    description: "데이터로 말하는 HR 담당자를 위한 실무 과정입니다. 파이썬과 태블로를 활용한 인사 데이터 시각화 및 전략 도출 기법을 전수합니다. 본 과정은 실무 프로젝트 기반으로 운영되며, 교육 종료 후 즉시 현업에 적용 가능한 템플릿을 제공합니다.\n\n[주요 커리큘럼]\n1. HR 데이터의 이해와 가공\n2. 인사 통계의 기초와 분석 모델링\n3. 대시보드 설계 및 스토리텔링\n4. 데이터 기반 의사결정 프로세스",
+    companyDescription: "데이터인사이트 연구소는 국내 최고의 HR 데이터 사이언스 전문 교육 및 컨설팅 기관입니다. 삼성, 현대, SK 등 국내 주요 대기업의 인사 데이터를 분석하고 최적화된 교육 솔루션을 제공하고 있습니다.",
     instructorName: "데이터인사이트 연구소",
     category: "ai",
     subCategory: "데이터 분석 실무",
     startDate: "2024-05-15",
     endDate: "2024-06-30",
     imageUrl: "https://images.unsplash.com/photo-1551288049-bbbda536339a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxkYXRhJTIwYW5hbHl0aWNzfGVufDB8fHx8MTc3MDI4MTYxN3ww&ixlib=rb-4.1.0&q=80&w=1080",
+    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
     userId: "mock-p1",
     createdAt: Date.now()
   }
@@ -66,6 +67,7 @@ export default function ProgramsPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("all")
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [selectedProgram, setSelectedProgram] = useState<TrainingProgram | null>(null)
   const [messageTarget, setMessageTarget] = useState<{ id: string, nickname: string } | null>(null)
 
   // Form States
@@ -166,7 +168,20 @@ export default function ProgramsPage() {
     setMessageTarget({ id: p.userId, nickname: p.instructorName })
   }
 
-  const selectedCategoryData = PROGRAM_CATEGORIES.find(c => c.id === category);
+  const selectedCategoryDataForForm = PROGRAM_CATEGORIES.find(c => c.id === category);
+
+  const getYoutubeEmbedUrl = (url?: string) => {
+    if (!url) return null;
+    let videoId = "";
+    if (url.includes("v=")) {
+      videoId = url.split("v=")[1].split("&")[0];
+    } else if (url.includes("youtu.be/")) {
+      videoId = url.split("youtu.be/")[1].split("?")[0];
+    } else if (url.includes("embed/")) {
+      videoId = url.split("embed/")[1].split("?")[0];
+    }
+    return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
+  };
 
   return (
     <div className="min-h-screen bg-[#F8F9FA]">
@@ -261,7 +276,7 @@ export default function ProgramsPage() {
                         <Select onValueChange={setSubCategory} disabled={!category}>
                           <SelectTrigger className="h-11 bg-primary/5 border-none rounded-lg text-xs"><SelectValue placeholder="소분류" /></SelectTrigger>
                           <SelectContent>
-                            {selectedCategoryData?.sub.map(s => (
+                            {selectedCategoryDataForForm?.sub.map(s => (
                               <SelectItem key={s} value={s}>{s}</SelectItem>
                             ))}
                           </SelectContent>
@@ -417,7 +432,10 @@ export default function ProgramsPage() {
                         </div>
 
                         <div className="grid grid-cols-2 gap-4 mt-auto">
-                          <Button className="h-12 md:h-14 bg-primary/5 hover:bg-primary text-primary hover:text-accent font-black rounded-xl transition-all text-xs md:text-sm">
+                          <Button 
+                            onClick={() => setSelectedProgram(p)}
+                            className="h-12 md:h-14 bg-primary/5 hover:bg-primary text-primary hover:text-accent font-black rounded-xl transition-all text-xs md:text-sm"
+                          >
                             상세 정보
                           </Button>
                           <Button 
@@ -437,6 +455,124 @@ export default function ProgramsPage() {
           </div>
         </div>
       </main>
+
+      {/* Program Detail Dialog */}
+      <Dialog open={!!selectedProgram} onOpenChange={(open) => !open && setSelectedProgram(null)}>
+        <DialogContent className="max-w-4xl bg-white border-none rounded-[3rem] p-0 overflow-hidden shadow-2xl max-h-[95vh] flex flex-col">
+          {selectedProgram && (
+            <>
+              <div className="relative h-[250px] md:h-[400px] w-full shrink-0">
+                <Image 
+                  src={selectedProgram.imageUrl || "https://images.unsplash.com/photo-1524178232363-1fb2b075b655"} 
+                  alt={selectedProgram.title} 
+                  fill 
+                  className="object-cover" 
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                <button 
+                  onClick={() => setSelectedProgram(null)}
+                  className="absolute top-6 right-6 p-2 bg-black/20 backdrop-blur-md rounded-full text-white hover:bg-white/20 transition-all"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+                <div className="absolute bottom-10 left-10 right-10">
+                   <Badge className="bg-accent text-primary font-black mb-4 px-4 py-1.5 rounded-full text-[10px]">
+                      #{PROGRAM_CATEGORIES.find(c => c.id === selectedProgram.category)?.name || "기타"}
+                   </Badge>
+                   <h2 className="text-3xl md:text-5xl font-black text-white leading-tight tracking-tighter drop-shadow-lg">
+                      {selectedProgram.title}
+                   </h2>
+                </div>
+              </div>
+              
+              <div className="flex-1 overflow-y-auto p-10 space-y-12">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+                  <div className="md:col-span-2 space-y-10">
+                    <section className="space-y-4">
+                      <h3 className="text-2xl font-black text-primary flex items-center gap-2">
+                        <BookOpen className="w-6 h-6 text-accent" />
+                        프로그램 소개
+                      </h3>
+                      <p className="text-lg leading-relaxed text-primary/70 whitespace-pre-wrap font-medium">
+                        {selectedProgram.description}
+                      </p>
+                    </section>
+
+                    {selectedProgram.videoUrl && (
+                      <section className="space-y-4">
+                        <h3 className="text-2xl font-black text-primary flex items-center gap-2">
+                          <PlayCircle className="w-6 h-6 text-accent" />
+                          홍보 영상
+                        </h3>
+                        <div className="aspect-video w-full rounded-[2rem] overflow-hidden bg-black shadow-2xl">
+                          {getYoutubeEmbedUrl(selectedProgram.videoUrl) ? (
+                            <iframe 
+                              src={getYoutubeEmbedUrl(selectedProgram.videoUrl)!}
+                              className="w-full h-full"
+                              allowFullScreen
+                            ></iframe>
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-white/20">
+                              <p>영상을 불러올 수 없습니다.</p>
+                            </div>
+                          )}
+                        </div>
+                      </section>
+                    )}
+                  </div>
+
+                  <aside className="space-y-8">
+                    <div className="bg-primary/5 rounded-[2.5rem] p-8 border border-primary/5 space-y-6">
+                      <h4 className="text-lg font-black text-primary">상세 정보</h4>
+                      <div className="space-y-4">
+                        <div className="flex flex-col gap-1">
+                          <span className="text-[10px] font-black text-primary/30 uppercase tracking-widest">진행 일정</span>
+                          <span className="text-sm font-bold text-primary/70 flex items-center gap-2">
+                            <Calendar className="w-4 h-4 text-accent" />
+                            {selectedProgram.startDate} ~ {selectedProgram.endDate}
+                          </span>
+                        </div>
+                        <div className="flex flex-col gap-1">
+                          <span className="text-[10px] font-black text-primary/30 uppercase tracking-widest">운영 기관</span>
+                          <span className="text-sm font-bold text-primary/70 flex items-center gap-2">
+                            <Building2 className="w-4 h-4 text-accent" />
+                            {selectedProgram.instructorName}
+                          </span>
+                        </div>
+                        <div className="flex flex-col gap-1">
+                          <span className="text-[10px] font-black text-primary/30 uppercase tracking-widest">세부 주제</span>
+                          <Badge variant="outline" className="w-fit border-accent/20 text-accent font-black">
+                            #{selectedProgram.subCategory}
+                          </Badge>
+                        </div>
+                      </div>
+                      <Button 
+                        onClick={() => handleInquireClick(selectedProgram)}
+                        className="w-full h-14 bg-accent text-primary font-black rounded-2xl shadow-lg gap-2"
+                      >
+                        <MessageSquare className="w-4 h-4" />
+                        문의하기
+                      </Button>
+                    </div>
+
+                    {selectedProgram.companyDescription && (
+                      <div className="bg-white rounded-[2.5rem] p-8 border border-primary/5 shadow-sm space-y-4">
+                        <h4 className="text-lg font-black text-primary flex items-center gap-2">
+                          <Info className="w-5 h-5 text-accent" />
+                          기관 소개
+                        </h4>
+                        <p className="text-sm leading-relaxed text-primary/60 font-medium">
+                          {selectedProgram.companyDescription}
+                        </p>
+                      </div>
+                    )}
+                  </aside>
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {messageTarget && (
         <MessageDialog 
