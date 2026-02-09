@@ -25,29 +25,29 @@ const AldiEggIcon = ({ className }: { className?: string }) => (
     />
     
     {/* 안경 - 지적인 HR 가이드의 상징 */}
-    <circle cx="35" cy="52" r="10" stroke="white" strokeWidth="2.5" />
-    <circle cx="65" cy="52" r="10" stroke="white" strokeWidth="2.5" />
-    <path d="M45 52H55" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
-    <path d="M25 52H20" stroke="white" strokeWidth="2" strokeLinecap="round" />
-    <path d="M75 52H80" stroke="white" strokeWidth="2" strokeLinecap="round" />
+    <circle cx="35" cy="52" r="12" stroke="white" strokeWidth="3" />
+    <circle cx="65" cy="52" r="12" stroke="white" strokeWidth="3" />
+    <path d="M47 52H53" stroke="white" strokeWidth="3" strokeLinecap="round" />
+    <path d="M23 52H18" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
+    <path d="M77 52H82" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
 
     {/* 눈 - 안경 너머로 반짝이는 눈 */}
-    <circle cx="35" cy="52" r="3" fill="white" />
-    <circle cx="65" cy="52" r="3" fill="white" />
+    <circle cx="35" cy="52" r="3.5" fill="white" />
+    <circle cx="65" cy="52" r="3.5" fill="white" />
     
     {/* 코 - 앙증맞은 코 */}
-    <circle cx="50" cy="62" r="2" fill="white" fillOpacity="0.8" />
+    <circle cx="50" cy="65" r="2.5" fill="white" fillOpacity="0.9" />
     
     {/* 입 - 친근한 미소 */}
-    <path d="M44 72C44 72 50 78 56 72" stroke="white" strokeWidth="3" strokeLinecap="round" />
+    <path d="M42 78C42 78 50 85 58 78" stroke="white" strokeWidth="3.5" strokeLinecap="round" />
     
     {/* 볼터치 - 수줍은 전문가의 열정 */}
-    <circle cx="28" cy="68" r="4" fill="white" fillOpacity="0.3" />
-    <circle cx="72" cy="68" r="4" fill="white" fillOpacity="0.3" />
+    <circle cx="25" cy="72" r="5" fill="white" fillOpacity="0.3" />
+    <circle cx="75" cy="72" r="5" fill="white" fillOpacity="0.3" />
     
     {/* 머리 위 안테나/빛 - AI 인텔리전스 상징 */}
-    <circle cx="50" cy="18" r="4" fill="white" fillOpacity="0.6" />
-    <path d="M50 18L50 12" stroke="white" strokeWidth="2" strokeLinecap="round" />
+    <circle cx="50" cy="20" r="5" fill="white" fillOpacity="0.7" />
+    <path d="M50 20L50 12" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
   </svg>
 )
 
@@ -84,7 +84,12 @@ export function AvatarIcon({ src, seed, avatarId, className }: AvatarIconProps) 
     )
   }
 
-  const isAldi = seed?.includes("알디") || seed?.includes("ALDI") || avatarId === "aldi";
+  // 알디(ALDI) 식별 로직 강화
+  const isAldi = avatarId === "aldi" || 
+                 seed?.toLowerCase() === "알디" || 
+                 seed?.toLowerCase() === "aldi" ||
+                 seed?.includes("알디") || 
+                 seed?.includes("ALDI");
 
   if (isAldi) {
     return (
