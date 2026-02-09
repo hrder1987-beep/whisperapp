@@ -11,7 +11,7 @@ import { ShuChat } from "@/components/chuchot/ShuChat"
 import { AdminCMS } from "@/components/chuchot/AdminCMS"
 import { Question, Answer, UserRole } from "@/lib/types"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, Users, BrainCircuit } from "lucide-react"
+import { ArrowLeft, ExternalLink } from "lucide-react"
 import { 
   Dialog, 
   DialogContent, 
@@ -24,6 +24,8 @@ import { generateAiReply } from "@/ai/flows/generate-ai-reply-flow"
 import { cn } from "@/lib/utils"
 import { useFirestore, useCollection, useDoc, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking, useUser } from "@/firebase"
 import { collection, query, orderBy, doc, increment } from "firebase/firestore"
+import Image from "next/image"
+import { Badge } from "@/components/ui/badge"
 
 export default function HomePage() {
   const { user } = useUser()
@@ -69,6 +71,17 @@ export default function HomePage() {
       }
     }
     return []
+  }, [config])
+
+  const sidebarAd = useMemo(() => {
+    if (config?.sidebarAdSettings) {
+      try {
+        return JSON.parse(config.sidebarAdSettings)
+      } catch (e) {
+        return null
+      }
+    }
+    return null
   }, [config])
 
   const isSearching = searchQuery.trim().length > 0
@@ -182,7 +195,11 @@ export default function HomePage() {
 
       <div className="max-w-7xl mx-auto px-4 py-8 md:py-12">
         {isCMSActive && isAdminMode ? (
-          <AdminCMS initialBanners={cmsBanners} onUpdate={() => {}} />
+          <AdminCMS 
+            initialBanners={cmsBanners} 
+            initialSidebarAd={sidebarAd}
+            onUpdate={() => {}} 
+          />
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
             <main className={cn(
@@ -249,20 +266,35 @@ export default function HomePage() {
                 <ShuChat />
                 <RankingList questions={topQuestions} onSelectQuestion={handleSelectQuestion} />
 
-                <div className="bg-primary p-6 rounded-[2rem] text-white shadow-xl relative overflow-hidden">
-                   <div className="relative z-10">
-                     <div className="flex items-center gap-3 mb-4">
-                       <BrainCircuit className="w-8 h-8 text-accent" />
-                       <h3 className="text-xl font-black">Whisper Intelligence</h3>
-                     </div>
-                     <p className="text-sm font-medium text-white/70 leading-relaxed">
-                       교육, 채용, 강사, 컨설팅펌 등 대한민국 모든 HR 전문가가 함께 고민을 나누고 집단지성의 힘을 만드는 공간입니다.
-                     </p>
-                   </div>
-                   <div className="absolute -right-4 -bottom-4 opacity-10">
-                     <Users className="w-32 h-32" />
-                   </div>
-                </div>
+                {/* 수익형 광고 배너 */}
+                {sidebarAd ? (
+                  <a href={sidebarAd.link} target="_blank" rel="noopener noreferrer" className="block group">
+                    <div className="relative w-full aspect-[4/5] rounded-[2.5rem] overflow-hidden shadow-2xl transition-all duration-500 hover:shadow-primary/20 hover:-translate-y-2">
+                      <Image 
+                        src={sidebarAd.image} 
+                        alt={sidebarAd.title} 
+                        fill 
+                        className="object-cover transition-transform duration-1000 group-hover:scale-110"
+                        data-ai-hint="vertical banner ad"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+                      <div className="absolute bottom-8 left-8 right-8">
+                        <Badge className="bg-accent text-primary font-black mb-3 px-3 py-1 text-[10px]">ADVERTISEMENT</Badge>
+                        <h3 className="text-white text-2xl font-black leading-tight drop-shadow-lg group-hover:text-accent transition-colors">
+                          {sidebarAd.title}
+                        </h3>
+                        <div className="mt-4 flex items-center gap-2 text-white/50 text-xs font-bold uppercase tracking-widest">
+                          자세히 보기 <ExternalLink className="w-3 h-3" />
+                        </div>
+                      </div>
+                    </div>
+                  </a>
+                ) : (
+                  <div className="bg-primary/5 border-2 border-dashed border-primary/10 p-12 rounded-[2.5rem] flex flex-col items-center justify-center text-center">
+                    <p className="text-primary/20 font-black text-sm uppercase tracking-widest">Ad Space</p>
+                    <p className="text-primary/10 text-xs mt-2 font-bold">광고 문의: admin@whisper.hr</p>
+                  </div>
+                )}
               </aside>
             )}
           </div>
