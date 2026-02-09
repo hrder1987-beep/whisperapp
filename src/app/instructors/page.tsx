@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo, useRef } from "react"
@@ -13,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase"
 import { collection, query, orderBy, addDoc } from "firebase/firestore"
 import { Instructor } from "@/lib/types"
-import { Plus, Search, Star, Award, Briefcase, MessageSquare, Camera, Check, ChevronRight, GraduationCap } from "lucide-react"
+import { Plus, Search, Star, Award, Briefcase, MessageSquare, Camera, Check, ChevronRight, GraduationCap, Sparkles } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
@@ -24,6 +23,7 @@ const INSTRUCTOR_CATEGORIES = [
   "리더십", 
   "신입사원", 
   "비즈니스 스킬", 
+  "DX/생성형 AI",
   "변화관리", 
   "공통역량", 
   "영업/CS", 
@@ -58,8 +58,8 @@ const MOCK_INSTRUCTORS: Instructor[] = [
   {
     id: "inst-3",
     name: "강수진",
-    specialty: "HRD",
-    bio: "교육과정개발 및 사내강사 양성 전문가. ADDIE 모델 기반의 실무 워크숍을 통해 기업 내 교육 전문가를 육성합니다.",
+    specialty: "DX/생성형 AI",
+    bio: "기업용 생성형 AI 활용 전략 전문가. ChatGPT와 Claude를 활용한 HR 업무 자동화 및 프롬프트 엔지니어링 실무 워크숍을 진행합니다.",
     profilePictureUrl: "https://picsum.photos/seed/inst3/400/400",
     userId: "mock-i3",
     createdAt: Date.now()
@@ -240,12 +240,13 @@ export default function InstructorsPage() {
               key={cat}
               onClick={() => setSelectedCategory(cat)}
               className={cn(
-                "px-5 py-2.5 rounded-full text-xs font-black transition-all border-2",
+                "px-5 py-2.5 rounded-full text-xs font-black transition-all border-2 flex items-center gap-2",
                 selectedCategory === cat 
                   ? "bg-primary text-accent border-primary shadow-lg scale-105" 
                   : "bg-white text-primary/30 border-primary/5 hover:border-accent/30 hover:text-primary"
               )}
             >
+              {cat === "DX/생성형 AI" && <Sparkles className={cn("w-3.5 h-3.5", selectedCategory === cat ? "text-accent" : "text-accent/40")} />}
               {cat}
             </button>
           ))}
@@ -270,7 +271,10 @@ export default function InstructorsPage() {
                   
                   <div className="space-y-1.5 mb-8">
                     <h3 className="text-2xl font-black text-primary group-hover:text-accent transition-colors">{i.name} 강사</h3>
-                    <Badge variant="outline" className="border-accent/20 text-accent font-black text-[10px] px-3 py-0.5">#{i.specialty}</Badge>
+                    <Badge variant="outline" className="border-accent/20 text-accent font-black text-[10px] px-3 py-0.5 flex items-center gap-1">
+                      {i.specialty === "DX/생성형 AI" && <Sparkles className="w-2.5 h-2.5" />}
+                      #{i.specialty}
+                    </Badge>
                   </div>
                   
                   <div className="w-16 h-1.5 bg-primary/5 rounded-full mb-8 group-hover:w-28 group-hover:bg-accent transition-all duration-500"></div>
