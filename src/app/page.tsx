@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo } from "react"
@@ -224,10 +225,10 @@ export default function HomePage() {
   }
 
   const handleAdminAuth = () => {
-    if (adminPassword === "admin123") {
+    if (adminPassword === "khrd9933-525") {
       setIsAdminMode(true)
       setShowAdminDialog(false)
-      toast({ title: "관리자 권한 획득", description: "Whisper 플랫폼 관리가 가능합니다." })
+      toast({ title: "관리자 모드 활성화", description: "실시간 랜딩페이지 편집이 가능합니다." })
     } else {
       toast({ title: "인증 실패", description: "암호가 올바르지 않습니다.", variant: "destructive" })
     }

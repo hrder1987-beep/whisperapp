@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo } from "react"
@@ -5,20 +6,26 @@ import { Header } from "@/components/chuchot/Header"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { useUser, useFirestore, useDoc, useMemoFirebase } from "@/firebase"
+import { Input } from "@/components/ui/input"
+import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from "@/firebase"
 import { doc } from "firebase/firestore"
 import { useRouter } from "next/navigation"
-import { LayoutDashboard, Users, FileText, Sparkles, Settings, ArrowLeft, ShieldAlert } from "lucide-react"
+import { LayoutDashboard, Users, FileText, Sparkles, Settings, ArrowLeft, ShieldAlert, Key } from "lucide-react"
 import { AdminCMS } from "@/components/chuchot/AdminCMS"
 import { MemberManager } from "@/components/chuchot/admin/MemberManager"
 import { ContentManager } from "@/components/chuchot/admin/ContentManager"
 import { AldiTrainer } from "@/components/chuchot/admin/AldiTrainer"
 import { BannerData } from "@/components/chuchot/MainBanner"
+import { useToast } from "@/hooks/use-toast"
 
 export default function AdminPage() {
   const { user, isUserLoading } = useUser()
   const db = useFirestore()
   const router = useRouter()
+  const { toast } = useToast()
+
+  const [adminKeyInput, setAdminKeyInput] = useState("")
+  const [isPromoting, setIsPromoting] = useState(false)
 
   const userDocRef = useMemoFirebase(() => (user && db) ? doc(db, "users", user.uid) : null, [user, db])
   const { data: profile, isLoading: isProfileLoading } = useDoc<any>(userDocRef)
@@ -51,18 +58,57 @@ export default function AdminPage() {
     return undefined
   }, [config])
 
+  const handleAdminPromotion = async () => {
+    if (!user || !db) return
+    if (adminKeyInput === "khrd9933-525") {
+      setIsPromoting(true)
+      try {
+        updateDocumentNonBlocking(doc(db, "users", user.uid), { role: "admin" })
+        toast({ title: "관리자 인증 성공", description: "플랫폼 관리자 권한을 획득했습니다." })
+        setAdminKeyInput("")
+      } catch (error) {
+        toast({ title: "오류 발생", description: "인증 중 문제가 발생했습니다.", variant: "destructive" })
+      } finally {
+        setIsPromoting(false)
+      }
+    } else {
+      toast({ title: "인증 실패", description: "올바른 관리자 키가 아닙니다.", variant: "destructive" })
+    }
+  }
+
   if (isUserLoading || isProfileLoading) {
     return <div className="min-h-screen flex items-center justify-center bg-[#F8F9FA]"><Sparkles className="w-12 h-12 animate-spin text-accent" /></div>
   }
 
-  // 관리자 권한 체크 (보안 강화)
+  // 관리자 권한 체크 및 인증 화면
   if (!user || profile?.role !== 'admin') {
     return (
       <div className="min-h-screen bg-[#F8F9FA] flex flex-col items-center justify-center p-4">
         <ShieldAlert className="w-20 h-20 text-red-500 mb-6" />
-        <h1 className="text-3xl font-black text-primary mb-2">접근 권한이 없습니다</h1>
-        <p className="text-primary/40 font-bold mb-8 text-center">관리자 계정으로 로그인 후 다시 시도해 주세요.</p>
-        <Button onClick={() => router.push("/")} className="bg-primary text-accent font-black rounded-xl h-14 px-10">홈으로 돌아가기</Button>
+        <h1 className="text-3xl font-black text-primary mb-2">관리자 전용 구역</h1>
+        <p className="text-primary/40 font-bold mb-8 text-center max-w-sm">해당 페이지는 관리자만 접근 가능합니다. 인증 키를 입력하여 권한을 획득하세요.</p>
+        
+        <div className="w-full max-w-sm space-y-4">
+          <div className="relative">
+            <Key className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-primary/20" />
+            <Input 
+              type="password" 
+              placeholder="ADMIN ACCESS KEY" 
+              value={adminKeyInput}
+              onChange={(e) => setAdminKeyInput(e.target.value)}
+              className="h-14 pl-12 bg-white border-none rounded-2xl text-center font-black text-lg focus:ring-accent shadow-sm"
+              onKeyDown={(e) => e.key === 'Enter' && handleAdminPromotion()}
+            />
+          </div>
+          <Button 
+            onClick={handleAdminPromotion} 
+            disabled={isPromoting || !adminKeyInput}
+            className="w-full h-14 bg-primary text-accent font-black rounded-2xl text-lg shadow-lg"
+          >
+            {isPromoting ? "인증 중..." : "관리자 권한 획득"}
+          </Button>
+          <Button variant="ghost" onClick={() => router.push("/")} className="w-full text-primary/30 font-bold">홈으로 돌아가기</Button>
+        </div>
       </div>
     )
   }

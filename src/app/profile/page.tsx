@@ -1,46 +1,22 @@
 
 "use client"
 
-import { useState } from "react"
-import { useUser, useDoc, useMemoFirebase, useFirestore, updateDocumentNonBlocking } from "@/firebase"
+import { useUser, useDoc, useMemoFirebase, useFirestore } from "@/firebase"
 import { doc } from "firebase/firestore"
 import { Header } from "@/components/chuchot/Header"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { AvatarIcon } from "@/components/chuchot/AvatarIcon"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Building2, User as UserIcon, Phone, Briefcase, Calendar, Sparkles, Settings, ArrowRight, ShieldCheck, Key } from "lucide-react"
+import { Building2, User as UserIcon, Phone, Briefcase, Calendar, Sparkles, Settings, ArrowRight } from "lucide-react"
 import Link from "next/link"
-import { useToast } from "@/hooks/use-toast"
 
 export default function ProfilePage() {
   const { user, isUserLoading } = useUser()
   const db = useFirestore()
-  const { toast } = useToast()
-  const [adminKey, setAdminKey] = useState("")
-  const [isPromoting, setIsPromoting] = useState(false)
 
   const userDocRef = useMemoFirebase(() => (user && db) ? doc(db, "users", user.uid) : null, [user, db])
   const { data: profile, isLoading: isProfileLoading } = useDoc<any>(userDocRef)
-
-  const handlePromoteAdmin = async () => {
-    if (!user || !db) return
-    if (adminKey === "admin123") {
-      setIsPromoting(true)
-      try {
-        updateDocumentNonBlocking(doc(db, "users", user.uid), { role: "admin" })
-        toast({ title: "관리자 승격 완료", description: "플랫폼 관리자 권한을 획득했습니다." })
-        setAdminKey("")
-      } catch (error) {
-        toast({ title: "오류 발생", description: "승격 중 문제가 발생했습니다.", variant: "destructive" })
-      } finally {
-        setIsPromoting(false)
-      }
-    } else {
-      toast({ title: "인증 실패", description: "올바른 관리자 키가 아닙니다.", variant: "destructive" })
-    }
-  }
 
   if (isUserLoading || isProfileLoading) {
     return (
@@ -175,7 +151,7 @@ export default function ProfilePage() {
           </CardContent>
         </Card>
 
-        {isAdmin ? (
+        {isAdmin && (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-1000">
             <Link href="/admin">
               <Button className="w-full h-20 bg-primary text-accent hover:bg-primary/95 rounded-[2rem] shadow-2xl flex items-center justify-between px-10 group transition-all">
@@ -193,35 +169,6 @@ export default function ProfilePage() {
             </Link>
             <p className="text-center mt-4 text-[11px] font-bold text-primary/20 uppercase tracking-tighter">
               위 버튼은 관리자 권한 계정(@{profile.username})에게만 노출됩니다.
-            </p>
-          </div>
-        ) : (
-          <div className="mt-12 p-8 bg-primary/5 rounded-[2.5rem] border border-dashed border-primary/10">
-            <div className="flex items-center gap-3 mb-4">
-              <ShieldCheck className="w-5 h-5 text-accent" />
-              <h4 className="text-sm font-black text-primary uppercase tracking-widest">Administrator Access</h4>
-            </div>
-            <div className="flex gap-2">
-              <div className="relative flex-1">
-                <Key className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/20" />
-                <Input 
-                  type="password" 
-                  placeholder="관리자 인증 키를 입력하세요" 
-                  value={adminKey}
-                  onChange={(e) => setAdminKey(e.target.value)}
-                  className="h-12 pl-11 bg-white border-none rounded-xl text-sm"
-                />
-              </div>
-              <Button 
-                onClick={handlePromoteAdmin} 
-                disabled={isPromoting || !adminKey}
-                className="h-12 px-6 bg-primary text-accent font-black rounded-xl"
-              >
-                {isPromoting ? "처리 중..." : "권한 획득"}
-              </Button>
-            </div>
-            <p className="text-[10px] text-primary/30 mt-3 ml-1 font-medium">
-              * 프로토타입 환경에서는 'admin123'을 입력하여 즉시 관리자 권한을 획득할 수 있습니다.
             </p>
           </div>
         )}
