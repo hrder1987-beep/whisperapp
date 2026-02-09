@@ -14,7 +14,7 @@ import { Separator } from "@/components/ui/separator"
 import { AvatarIcon } from "./AvatarIcon"
 import { containsProfanity } from "@/lib/utils"
 import { cn } from "@/lib/utils"
-import { useUser, useDoc, useMemoFirebase } from "@/firebase"
+import { useUser, useDoc, useMemoFirebase, useFirestore } from "@/firebase"
 import { doc } from "firebase/firestore"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
@@ -30,7 +30,9 @@ const HR_CATEGORIES = [
 
 export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
   const { user } = useUser()
-  const userDocRef = useMemoFirebase(() => user ? doc(user.firestore, "users", user.uid) : null, [user])
+  const db = useFirestore()
+  
+  const userDocRef = useMemoFirebase(() => (user && db) ? doc(db, "users", user.uid) : null, [user, db])
   const { data: profile } = useDoc<any>(userDocRef)
 
   const [title, setTitle] = useState("")

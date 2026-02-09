@@ -44,7 +44,9 @@ const MOCK_QUESTIONS: Question[] = [
 
 export default function HomePage() {
   const { user } = useUser()
-  const userDocRef = useMemoFirebase(() => user ? doc(user.firestore, "users", user.uid) : null, [user])
+  const db = useFirestore()
+  
+  const userDocRef = useMemoFirebase(() => (user && db) ? doc(db, "users", user.uid) : null, [user, db])
   const { data: profile } = useDoc<any>(userDocRef)
 
   const [isAdminMode, setIsAdminMode] = useState(false)
@@ -55,7 +57,6 @@ export default function HomePage() {
   const [activeTab, setActiveTab] = useState<"all" | "popular" | "waiting">("all")
   const [selectedQuestionId, setSelectedQuestionId] = useState<string | null>(null)
   const { toast } = useToast()
-  const db = useFirestore()
 
   const questionsQuery = useMemoFirebase(() => {
     if (!db) return null
