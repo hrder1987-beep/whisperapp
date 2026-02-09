@@ -1,12 +1,12 @@
 
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
-import { ImageIcon, X, Smile, Send, Hash, Video, Link as LinkIcon } from "lucide-react"
+import { ImageIcon, X, Send, Video, Link as LinkIcon } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import Image from "next/image"
 import { Separator } from "@/components/ui/separator"
@@ -39,11 +39,21 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
   const [videoUrlInput, setVideoUrlInput] = useState("")
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  
   const fileInputRef = useRef<HTMLInputElement>(null)
   const videoInputRef = useRef<HTMLInputElement>(null)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
   const { toast } = useToast()
 
   const nickname = profile?.username || "익명전문가"
+
+  // 자동 높이 조절 로직
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto"
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`
+    }
+  }, [text])
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -117,24 +127,26 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
   return (
     <Card className="bg-white border border-primary/10 mb-8 overflow-hidden shadow-xl rounded-[3rem]">
       <div className="h-2 w-full gold-gradient"></div>
-      <CardContent className="p-8 md:p-10">
+      <CardContent className="p-8 md:p-12">
         <form onSubmit={handleSubmit} className="space-y-8">
           <div className="flex items-start gap-6">
-            <AvatarIcon seed={nickname} className="w-14 h-14 shadow-lg" />
-            <div className="flex-1 space-y-5">
+            <div className="flex-shrink-0">
+              <AvatarIcon seed={nickname} className="w-14 h-14 shadow-lg border-2 border-white" />
+            </div>
+            <div className="flex-1 space-y-6 overflow-hidden">
               <div className="flex items-center gap-2">
-                <span className="text-[15px] font-black text-primary">@{nickname}</span>
-                <span className="text-[11px] bg-primary/5 text-primary/40 px-3 py-1 rounded-full font-black uppercase tracking-tighter">HR Specialist</span>
+                <span className="text-[16px] font-black text-primary">@{nickname}</span>
+                <span className="text-[10px] bg-primary/5 text-primary/40 px-3 py-1 rounded-full font-black uppercase tracking-widest">HR SPECIALIST</span>
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-6">
                 {type === "question" && (
                   <div className="space-y-5">
                     <Input
                       placeholder="공유하고 싶은 HR 주제 제목을 입력하세요."
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
-                      className="bg-transparent border-none p-0 h-auto focus-visible:ring-0 text-2xl font-black text-primary placeholder:text-primary/10 tracking-tight"
+                      className="bg-transparent border-none p-0 h-auto focus-visible:ring-0 text-2xl md:text-3xl font-black text-primary placeholder:text-primary/10 tracking-tight"
                     />
                     <div className="flex flex-wrap gap-2.5">
                       {HR_CATEGORIES.map((cat) => (
@@ -156,79 +168,90 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
                   </div>
                 )}
                 <Textarea
+                  ref={textareaRef}
                   placeholder={type === "question" ? "채용, 교육, 조직문화 등 현업의 고민과 정보를 자유롭게 속삭여보세요." : "동료 HR 전문가에게 따뜻한 조언이나 노하우를 공유해주세요."}
                   value={text}
                   onChange={(e) => setText(e.target.value)}
-                  className="min-h-[140px] bg-transparent border-none p-0 focus-visible:ring-0 resize-none text-lg leading-relaxed text-primary/80 font-medium placeholder:text-primary/10"
+                  className="min-h-[140px] bg-transparent border-none p-0 focus-visible:ring-0 resize-none text-lg md:text-xl leading-relaxed text-primary/80 font-medium placeholder:text-primary/10 overflow-hidden"
                 />
               </div>
             </div>
           </div>
 
-          {imageUrl && (
-            <div className="relative w-full rounded-[2rem] overflow-hidden border border-primary/10 max-w-2xl mx-auto shadow-inner bg-primary/5 p-2">
-              <Image src={imageUrl} alt="미리보기" width={800} height={450} className="w-full rounded-[1.5rem] object-contain max-h-[400px]" />
-              <button type="button" className="absolute top-4 right-4 bg-black/50 backdrop-blur-md text-white p-2 rounded-full hover:bg-red-500 transition-colors" onClick={() => setImageUrl(undefined)}><X className="h-5 w-5" /></button>
-            </div>
-          )}
-
-          {videoUrl && (
-            <div className="relative w-full rounded-[2rem] overflow-hidden border border-primary/10 max-w-2xl mx-auto shadow-inner bg-black p-2">
-              {isYoutube ? (
-                <div className="aspect-video w-full rounded-[1.5rem] overflow-hidden">
-                   <iframe 
-                    className="w-full h-full"
-                    src={videoUrl.replace("watch?v=", "embed/").replace("youtu.be/", "youtube.com/embed/")} 
-                    title="YouTube video player" 
-                    frameBorder="0" 
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                    allowFullScreen
-                  ></iframe>
+          {(imageUrl || videoUrl) && (
+            <div className="relative w-full rounded-[2.5rem] overflow-hidden border border-primary/10 mx-auto shadow-2xl bg-primary/5 animate-in fade-in zoom-in duration-500">
+              {imageUrl && (
+                <div className="p-2">
+                  <Image src={imageUrl} alt="미리보기" width={1200} height={675} className="w-full h-auto rounded-[2rem] object-contain max-h-[600px]" />
                 </div>
-              ) : (
-                <video src={videoUrl} controls className="w-full max-h-[400px] rounded-[1.5rem]" />
               )}
-              <button type="button" className="absolute top-4 right-4 bg-black/50 backdrop-blur-md text-white p-2 rounded-full z-10 hover:bg-red-500 transition-colors" onClick={() => setVideoUrl(undefined)}><X className="h-5 w-5" /></button>
+
+              {videoUrl && (
+                <div className="p-2 bg-black">
+                  {isYoutube ? (
+                    <div className="aspect-video w-full rounded-[2rem] overflow-hidden">
+                      <iframe 
+                        className="w-full h-full"
+                        src={videoUrl.replace("watch?v=", "embed/").replace("youtu.be/", "youtube.com/embed/")} 
+                        title="YouTube video player" 
+                        frameBorder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowFullScreen
+                      ></iframe>
+                    </div>
+                  ) : (
+                    <video src={videoUrl} controls className="w-full h-auto rounded-[2rem] max-h-[600px]" />
+                  )}
+                </div>
+              )}
+              <button 
+                type="button" 
+                className="absolute top-6 right-6 bg-black/60 backdrop-blur-md text-white p-3 rounded-full hover:bg-red-500 transition-all shadow-2xl z-20 group"
+                onClick={() => { setImageUrl(undefined); setVideoUrl(undefined); }}
+              >
+                <X className="h-6 w-6 group-hover:rotate-90 transition-transform" />
+              </button>
             </div>
           )}
 
           <Separator className="bg-primary/5" />
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
+          
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
+            <div className="flex items-center gap-3 w-full sm:w-auto overflow-x-auto pb-2 sm:pb-0 scrollbar-hide">
               <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={handleImageChange} />
               <input type="file" accept="video/*" className="hidden" ref={videoInputRef} onChange={handleVideoChange} />
               
-              <Button type="button" variant="ghost" size="sm" className="text-primary/40 rounded-2xl px-4 h-11 hover:bg-primary/5" onClick={() => fileInputRef.current?.click()}>
+              <Button type="button" variant="ghost" size="sm" className="text-primary/40 rounded-2xl px-5 h-12 hover:bg-primary/5 shrink-0" onClick={() => fileInputRef.current?.click()}>
                 <ImageIcon className="w-5 h-5 mr-2 text-emerald-500" />
-                <span className="font-black text-[13px]">이미지</span>
+                <span className="font-black text-[14px]">이미지</span>
               </Button>
               
-              <Button type="button" variant="ghost" size="sm" className="text-primary/40 rounded-2xl px-4 h-11 hover:bg-primary/5" onClick={() => videoInputRef.current?.click()}>
+              <Button type="button" variant="ghost" size="sm" className="text-primary/40 rounded-2xl px-5 h-12 hover:bg-primary/5 shrink-0" onClick={() => videoInputRef.current?.click()}>
                 <Video className="w-5 h-5 mr-2 text-blue-500" />
-                <span className="font-black text-[13px]">파일</span>
+                <span className="font-black text-[14px]">영상파일</span>
               </Button>
 
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button type="button" variant="ghost" size="sm" className="text-primary/40 rounded-2xl px-4 h-11 hover:bg-primary/5">
+                  <Button type="button" variant="ghost" size="sm" className="text-primary/40 rounded-2xl px-5 h-12 hover:bg-primary/5 shrink-0">
                     <LinkIcon className="w-5 h-5 mr-2 text-accent" />
-                    <span className="font-black text-[13px]">링크</span>
+                    <span className="font-black text-[14px]">외부링크</span>
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-80 bg-white p-6 rounded-[2rem] shadow-2xl border-primary/10">
+                <PopoverContent className="w-80 bg-white p-6 rounded-[2.5rem] shadow-2xl border-primary/10">
                   <div className="space-y-4">
                     <h4 className="font-black text-primary text-sm flex items-center gap-2">
                       <LinkIcon className="w-4 h-4 text-accent" />
-                      외부 영상 URL 입력
+                      유튜브/영상 URL 입력
                     </h4>
                     <div className="flex flex-col gap-3">
                       <Input 
-                        placeholder="유튜브 링크를 붙여넣으세요" 
+                        placeholder="https://youtube.com/..." 
                         value={videoUrlInput}
                         onChange={(e) => setVideoUrlInput(e.target.value)}
-                        className="h-11 bg-primary/5 border-none rounded-xl text-xs font-bold"
+                        className="h-12 bg-primary/5 border-none rounded-xl text-xs font-bold"
                       />
-                      <Button onClick={handleVideoUrlSubmit} className="bg-primary text-accent font-black h-11 rounded-xl">URL 연결하기</Button>
+                      <Button onClick={handleVideoUrlSubmit} className="bg-primary text-accent font-black h-12 rounded-xl shadow-lg">연결하기</Button>
                     </div>
                   </div>
                 </PopoverContent>
@@ -238,10 +261,10 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
             <Button 
               type="submit" 
               disabled={isSubmitting || !text.trim()} 
-              className="bg-primary text-accent font-black h-14 px-10 rounded-2xl shadow-xl transition-all hover:scale-105 active:scale-95 disabled:opacity-30"
+              className="w-full sm:w-auto bg-primary text-accent font-black h-16 px-12 rounded-2xl shadow-2xl transition-all hover:scale-105 active:scale-95 disabled:opacity-30 flex items-center justify-center text-lg"
             >
               {isSubmitting ? "전송 중..." : "지식 속삭이기"}
-              <Send className="w-5 h-5 ml-2" />
+              <Send className="w-5 h-5 ml-3" />
             </Button>
           </div>
         </form>
