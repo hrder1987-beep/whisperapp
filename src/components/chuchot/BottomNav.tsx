@@ -18,13 +18,19 @@ export function BottomNav() {
   const [isChatOpen, setIsChatOpen] = useState(false)
 
   const unreadMessagesQuery = useMemoFirebase(() => {
-    if (!db || !user) return null
-    return query(
-      collection(db, "messages"),
-      where("receiverId", "==", user.uid),
-      where("isRead", "==", false)
-    )
+    // db와 user 상태를 엄격하게 체크
+    if (!db || typeof db !== 'object' || !user || !user.uid) return null
+    try {
+      return query(
+        collection(db, "messages"),
+        where("receiverId", "==", user.uid),
+        where("isRead", "==", false)
+      )
+    } catch (e) {
+      return null
+    }
   }, [db, user])
+  
   const { data: unreadMessages } = useCollection(unreadMessagesQuery)
 
   const navItems = [
@@ -44,7 +50,6 @@ export function BottomNav() {
             const isActive = pathname === item.href
             const Icon = (item as any).icon || GraduationCap // Fallback for missing icon
             
-            // 쪽지함은 로그인한 사용자에게만 특별한 배지와 함께 노출 (비로그인시에는 그냥 아이콘만 노출되거나 홈으로 유도 가능)
             if (item.name === "쪽지함" && !user) return null;
 
             return (

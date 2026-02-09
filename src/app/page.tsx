@@ -59,8 +59,12 @@ export default function HomePage() {
   const { toast } = useToast()
 
   const questionsQuery = useMemoFirebase(() => {
-    if (!db) return null
-    return query(collection(db, "questions"), orderBy("createdAt", "desc"))
+    if (!db || typeof db !== 'object') return null
+    try {
+      return query(collection(db, "questions"), orderBy("createdAt", "desc"))
+    } catch (e) {
+      return null
+    }
   }, [db])
   const { data: questionsData } = useCollection<Question>(questionsQuery)
   
@@ -71,14 +75,18 @@ export default function HomePage() {
   }, [questionsData, searchQuery])
 
   const answersQuery = useMemoFirebase(() => {
-    if (!db || !selectedQuestionId) return null
-    return query(collection(db, "questions", selectedQuestionId, "answers"), orderBy("createdAt", "desc"))
+    if (!db || typeof db !== 'object' || !selectedQuestionId) return null
+    try {
+      return query(collection(db, "questions", selectedQuestionId, "answers"), orderBy("createdAt", "desc"))
+    } catch (e) {
+      return null
+    }
   }, [db, selectedQuestionId])
   const { data: answersData } = useCollection<Answer>(answersQuery)
   const answers = answersData || []
 
   const configDocRef = useMemoFirebase(() => {
-    if (!db) return null
+    if (!db || typeof db !== 'object') return null
     return doc(db, "admin_configuration", "site_settings")
   }, [db])
   const { data: config } = useDoc<any>(configDocRef)

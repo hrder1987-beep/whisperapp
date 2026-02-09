@@ -41,13 +41,19 @@ export function Header({
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const unreadMessagesQuery = useMemoFirebase(() => {
-    if (!db || !user) return null
-    return query(
-      collection(db, "messages"),
-      where("receiverId", "==", user.uid),
-      where("isRead", "==", false)
-    )
+    // db가 유효한 Firestore 인스턴스인지 엄격하게 확인
+    if (!db || typeof db !== 'object' || !user || !user.uid) return null
+    try {
+      return query(
+        collection(db, "messages"),
+        where("receiverId", "==", user.uid),
+        where("isRead", "==", false)
+      )
+    } catch (e) {
+      return null
+    }
   }, [db, user])
+  
   const { data: unreadMessages } = useCollection(unreadMessagesQuery)
 
   const handleLogout = () => {
