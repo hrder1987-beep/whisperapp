@@ -116,6 +116,15 @@ export interface AppNotification {
   isRead: boolean;
 }
 
+export interface PremiumAd {
+  id: string;
+  title: string;
+  badge: string;
+  webImage: string;
+  mobileImage: string;
+  link: string;
+}
+
 export interface AldiKnowledge {
   content: string;
   updatedAt: string;

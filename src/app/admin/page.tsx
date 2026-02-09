@@ -4,7 +4,6 @@
 import { useState, useMemo, useEffect } from "react"
 import { Header } from "@/components/chuchot/Header"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from "@/firebase"
@@ -16,6 +15,7 @@ import { MemberManager } from "@/components/chuchot/admin/MemberManager"
 import { ContentManager } from "@/components/chuchot/admin/ContentManager"
 import { AldiTrainer } from "@/components/chuchot/admin/AldiTrainer"
 import { BannerData } from "@/components/chuchot/MainBanner"
+import { PremiumAd } from "@/lib/types"
 import { useToast } from "@/hooks/use-toast"
 
 export default function AdminPage() {
@@ -33,34 +33,23 @@ export default function AdminPage() {
   // 관리자 계정 이메일 자동 감지
   useEffect(() => {
     if (user?.email === 'forum@khrd.co.kr' && profile && profile.role !== 'admin') {
-      setAdminKeyInput("khrd9933-525") // 이메일이 일치하면 키 자동 입력
+      setAdminKeyInput("khrd9933-525")
     }
   }, [user, profile])
 
-  const configDocRef = useMemoFirebase(() => {
-    if (!db) return null
-    return doc(db, "admin_configuration", "site_settings")
-  }, [db])
+  const configDocRef = useMemoFirebase(() => db ? doc(db, "admin_configuration", "site_settings") : null, [db])
   const { data: config } = useDoc<any>(configDocRef)
 
   const initialBanners = useMemo(() => {
     if (config?.bannerSettings) {
-      try {
-        return JSON.parse(config.bannerSettings) as BannerData[]
-      } catch (e) {
-        return []
-      }
+      try { return JSON.parse(config.bannerSettings) as BannerData[] } catch (e) { return [] }
     }
     return []
   }, [config])
 
-  const initialSidebarAd = useMemo(() => {
-    if (config?.sidebarAdSettings) {
-      try {
-        return JSON.parse(config.sidebarAdSettings)
-      } catch (e) {
-        return undefined
-      }
+  const initialPremiumAds = useMemo(() => {
+    if (config?.premiumAdsSettings) {
+      try { return JSON.parse(config.premiumAdsSettings) as PremiumAd[] } catch (e) { return undefined }
     }
     return undefined
   }, [config])
@@ -75,9 +64,7 @@ export default function AdminPage() {
         setAdminKeyInput("")
       } catch (error) {
         toast({ title: "오류 발생", description: "인증 중 문제가 발생했습니다.", variant: "destructive" })
-      } finally {
-        setIsPromoting(false)
-      }
+      } finally { setIsPromoting(false) }
     } else {
       toast({ title: "인증 실패", description: "올바른 관리자 키가 아닙니다.", variant: "destructive" })
     }
@@ -87,10 +74,8 @@ export default function AdminPage() {
     return <div className="min-h-screen flex items-center justify-center bg-[#F8F9FA]"><Sparkles className="w-12 h-12 animate-spin text-accent" /></div>
   }
 
-  // 관리자 권한 체크 및 인증 화면
   if (!user || profile?.role !== 'admin') {
     const isMasterEmail = user?.email === 'forum@khrd.co.kr'
-    
     return (
       <div className="min-h-screen bg-[#F8F9FA] flex flex-col items-center justify-center p-4">
         <ShieldAlert className="w-20 h-20 text-red-500 mb-6" />
@@ -98,26 +83,14 @@ export default function AdminPage() {
         <p className="text-primary/40 font-bold mb-8 text-center max-w-sm">
           {isMasterEmail ? "마스터 관리자님, 아래 버튼을 눌러 관리자 권한을 활성화하세요." : "해당 페이지는 관리자만 접근 가능합니다. 인증 키를 입력하여 권한을 획득하세요."}
         </p>
-        
         <div className="w-full max-w-sm space-y-4">
           {!isMasterEmail && (
             <div className="relative">
               <Key className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-primary/20" />
-              <Input 
-                type="password" 
-                placeholder="ADMIN ACCESS KEY" 
-                value={adminKeyInput}
-                onChange={(e) => setAdminKeyInput(e.target.value)}
-                className="h-14 pl-12 bg-white border-none rounded-2xl text-center font-black text-lg focus:ring-accent shadow-sm"
-                onKeyDown={(e) => e.key === 'Enter' && handleAdminPromotion()}
-              />
+              <Input type="password" placeholder="ADMIN ACCESS KEY" value={adminKeyInput} onChange={(e) => setAdminKeyInput(e.target.value)} className="h-14 pl-12 bg-white border-none rounded-2xl text-center font-black text-lg focus:ring-accent shadow-sm" onKeyDown={(e) => e.key === 'Enter' && handleAdminPromotion()} />
             </div>
           )}
-          <Button 
-            onClick={handleAdminPromotion} 
-            disabled={isPromoting || (!isMasterEmail && !adminKeyInput)}
-            className="w-full h-14 bg-primary text-accent font-black rounded-2xl text-lg shadow-lg"
-          >
+          <Button onClick={handleAdminPromotion} disabled={isPromoting || (!isMasterEmail && !adminKeyInput)} className="w-full h-14 bg-primary text-accent font-black rounded-2xl text-lg shadow-lg">
             {isPromoting ? "인증 중..." : isMasterEmail ? "관리자 권한 즉시 획득" : "관리자 권한 획득"}
           </Button>
           <Button variant="ghost" onClick={() => router.push("/")} className="w-full text-primary/30 font-bold">홈으로 돌아가기</Button>
@@ -145,35 +118,18 @@ export default function AdminPage() {
 
         <Tabs defaultValue="cms" className="space-y-10">
           <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 bg-primary/5 p-1 rounded-2xl h-16 md:h-20">
-            <TabsTrigger value="cms" className="rounded-xl font-black gap-2 data-[state=active]:bg-white data-[state=active]:shadow-lg text-sm md:text-base">
-              <LayoutDashboard className="w-4 h-4" /> 랜딩페이지
-            </TabsTrigger>
-            <TabsTrigger value="members" className="rounded-xl font-black gap-2 data-[state=active]:bg-white data-[state=active]:shadow-lg text-sm md:text-base">
-              <Users className="w-4 h-4" /> 회원 관리
-            </TabsTrigger>
-            <TabsTrigger value="content" className="rounded-xl font-black gap-2 data-[state=active]:bg-white data-[state=active]:shadow-lg text-sm md:text-base">
-              <FileText className="w-4 h-4" /> 콘텐츠 관리
-            </TabsTrigger>
-            <TabsTrigger value="aldi" className="rounded-xl font-black gap-2 data-[state=active]:bg-white data-[state=active]:shadow-lg text-sm md:text-base">
-              <Sparkles className="w-4 h-4" /> 알디 챗 학습
-            </TabsTrigger>
+            <TabsTrigger value="cms" className="rounded-xl font-black gap-2 data-[state=active]:bg-white data-[state=active]:shadow-lg text-sm md:text-base"><LayoutDashboard className="w-4 h-4" /> 랜딩페이지</TabsTrigger>
+            <TabsTrigger value="members" className="rounded-xl font-black gap-2 data-[state=active]:bg-white data-[state=active]:shadow-lg text-sm md:text-base"><Users className="w-4 h-4" /> 회원 관리</TabsTrigger>
+            <TabsTrigger value="content" className="rounded-xl font-black gap-2 data-[state=active]:bg-white data-[state=active]:shadow-lg text-sm md:text-base"><FileText className="w-4 h-4" /> 콘텐츠 관리</TabsTrigger>
+            <TabsTrigger value="aldi" className="rounded-xl font-black gap-2 data-[state=active]:bg-white data-[state=active]:shadow-lg text-sm md:text-base"><Sparkles className="w-4 h-4" /> 알디 챗 학습</TabsTrigger>
           </TabsList>
 
           <TabsContent value="cms">
-            <AdminCMS initialBanners={initialBanners} initialSidebarAd={initialSidebarAd} onUpdate={() => router.refresh()} />
+            <AdminCMS initialBanners={initialBanners} initialPremiumAds={initialPremiumAds} onUpdate={() => router.refresh()} />
           </TabsContent>
-
-          <TabsContent value="members">
-            <MemberManager />
-          </TabsContent>
-
-          <TabsContent value="content">
-            <ContentManager />
-          </TabsContent>
-
-          <TabsContent value="aldi">
-            <AldiTrainer />
-          </TabsContent>
+          <TabsContent value="members"><MemberManager /></TabsContent>
+          <TabsContent value="content"><ContentManager /></TabsContent>
+          <TabsContent value="aldi"><AldiTrainer /></TabsContent>
         </Tabs>
       </main>
     </div>
