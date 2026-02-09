@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase"
 import { collection, query, orderBy, addDoc } from "firebase/firestore"
 import { TrainingProgram } from "@/lib/types"
-import { Calendar, GraduationCap, Plus, BookOpen, Clock, ChevronRight, Hash, Sparkles, Search, Camera, X } from "lucide-react"
+import { Calendar, GraduationCap, Plus, ChevronRight, Search, Camera, Clock } from "lucide-react"
 import Image from "next/image"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
@@ -159,7 +159,7 @@ export default function ProgramsPage() {
         userId: user.uid,
         createdAt: Date.now()
       })
-      toast({ title: "등록 완료", description: "프로그램 광고가 성공적으로 등록되었습니다." })
+      toast({ title: "등록 완료", description: "성공적으로 등록되었습니다." })
       setIsDialogOpen(false)
       setTitle(""); setDescription(""); setInstructorName(""); setCategory(""); setSubCategory(""); setStartDate(""); setEndDate(""); setImageUrl(null)
     } catch (error) {
@@ -175,138 +175,123 @@ export default function ProgramsPage() {
     <div className="min-h-screen bg-[#F8F9FA]">
       <Header />
       
-      <main className="max-w-7xl mx-auto px-4 py-12">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 mb-16">
-          <div className="space-y-4 flex-1">
+      <main className="max-w-7xl mx-auto px-4 py-8 md:py-12">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 md:gap-10 mb-8 md:mb-16">
+          <div className="space-y-3 flex-1">
             <div className="flex items-center gap-3">
-              <div className="h-1.5 w-16 bg-accent rounded-full"></div>
-              <span className="text-xs font-black text-accent uppercase tracking-[0.2em]">Ad Center</span>
+              <div className="h-1 w-12 bg-accent rounded-full"></div>
+              <span className="text-[10px] font-black text-accent uppercase tracking-[0.2em]">Ad Center</span>
             </div>
-            <h1 className="text-4xl md:text-5xl font-black text-primary tracking-tighter">프로그램</h1>
-            <p className="text-lg font-bold text-primary/30">현직 HR 전문가들이 선택한 검증된 교육 솔루션</p>
+            <h1 className="text-3xl md:text-5xl font-black text-primary tracking-tighter">프로그램</h1>
+            <p className="text-sm md:text-lg font-bold text-primary/30">현직 HR 전문가들이 선택한 검증된 교육 솔루션</p>
             
-            <div className="relative max-w-xl group pt-4">
-              <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-primary/30 group-focus-within:text-accent transition-colors" />
+            <div className="relative max-w-xl group pt-2">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/30 group-focus-within:text-accent transition-colors" />
               <Input 
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                placeholder="관심 있는 프로그램이나 강사명을 검색해보세요..." 
-                className="h-14 pl-14 pr-6 bg-white border-none rounded-2xl shadow-sm focus-visible:ring-accent/50 text-sm font-bold placeholder:text-primary/20"
+                placeholder="관심 있는 프로그램 검색..." 
+                className="h-12 pl-12 pr-6 bg-white border-none rounded-xl shadow-sm focus-visible:ring-accent/50 text-xs font-bold"
               />
             </div>
           </div>
 
           <Button 
             onClick={handleOpenDialog}
-            className="gold-gradient text-primary font-black h-16 px-12 rounded-[2rem] shadow-2xl hover:scale-105 active:scale-95 transition-all gap-3"
+            className="gold-gradient text-primary font-black h-12 md:h-16 px-8 md:px-12 rounded-xl md:rounded-[2rem] shadow-xl hover:scale-105 active:scale-95 transition-all gap-2 text-sm"
           >
-            <Plus className="w-6 h-6" />
-            프로그램 등록하기
+            <Plus className="w-5 h-5" />
+            등록하기
           </Button>
 
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogContent className="max-w-2xl bg-white border-none rounded-[3rem] p-10 max-h-[90vh] overflow-y-auto shadow-2xl">
+            <DialogContent className="max-w-2xl bg-white border-none rounded-[2rem] md:rounded-[3rem] p-6 md:p-10 max-h-[90vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle className="text-2xl font-black text-primary mb-8 flex items-center gap-3">
-                  <Sparkles className="w-7 h-7 text-accent" />
+                <DialogTitle className="text-xl md:text-2xl font-black text-primary mb-4 md:mb-8 flex items-center gap-3">
                   프로그램 광고 등록
                 </DialogTitle>
               </DialogHeader>
-              <form onSubmit={handleAddProgram} className="space-y-6">
+              <form onSubmit={handleAddProgram} className="space-y-4 md:space-y-6">
                 <div className="space-y-2">
-                  <label className="text-xs font-black text-primary/40 ml-2">광고 배너 이미지 (16:9 추천)</label>
+                  <label className="text-[10px] font-black text-primary/40 ml-1">광고 배너 이미지</label>
                   <div 
                     onClick={() => fileInputRef.current?.click()}
-                    className="relative w-full aspect-video bg-primary/5 rounded-[2rem] border-2 border-dashed border-primary/10 flex flex-col items-center justify-center cursor-pointer hover:border-accent transition-all overflow-hidden"
+                    className="relative w-full aspect-video bg-primary/5 rounded-xl border-2 border-dashed border-primary/10 flex flex-col items-center justify-center cursor-pointer overflow-hidden"
                   >
                     {imageUrl ? (
                       <img src={imageUrl} alt="preview" className="w-full h-full object-cover" />
                     ) : (
-                      <>
-                        <Camera className="w-12 h-12 text-primary/20 mb-2" />
-                        <p className="text-primary/40 text-sm font-bold">이미지 파일을 선택하세요</p>
-                      </>
+                      <Camera className="w-10 h-10 text-primary/20" />
                     )}
                   </div>
                   <input type="file" ref={fileInputRef} onChange={handleImageChange} accept="image/*" className="hidden" />
                 </div>
-
-                <div className="space-y-2">
-                  <label className="text-xs font-black text-primary/40 ml-2">프로그램 제목</label>
-                  <Input value={title} onChange={e => setTitle(e.target.value)} required placeholder="과정의 핵심을 담은 제목" className="h-12 bg-primary/5 border-none rounded-xl" />
-                </div>
-
+                <Input value={title} onChange={e => setTitle(e.target.value)} required placeholder="프로그램 제목" className="h-11 bg-primary/5 border-none rounded-lg" />
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-xs font-black text-primary/40 ml-2">대분류</label>
-                    <Select onValueChange={setCategory} required>
-                      <SelectTrigger className="h-12 bg-primary/5 border-none rounded-xl"><SelectValue placeholder="카테고리" /></SelectTrigger>
-                      <SelectContent>
-                        {PROGRAM_CATEGORIES.filter(c => c.id !== "all").map(c => (
-                          <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-black text-primary/40 ml-2">소분류</label>
-                    <Select onValueChange={setSubCategory} disabled={!category}>
-                      <SelectTrigger className="h-12 bg-primary/5 border-none rounded-xl"><SelectValue placeholder="세부 주제" /></SelectTrigger>
-                      <SelectContent>
-                        {selectedCategoryData?.sub.map(s => (
-                          <SelectItem key={s} value={s}>{s}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                  <Select onValueChange={setCategory} required>
+                    <SelectTrigger className="h-11 bg-primary/5 border-none rounded-lg"><SelectValue placeholder="카테고리" /></SelectTrigger>
+                    <SelectContent>
+                      {PROGRAM_CATEGORIES.filter(c => c.id !== "all").map(c => (
+                        <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Select onValueChange={setSubCategory} disabled={!category}>
+                    <SelectTrigger className="h-11 bg-primary/5 border-none rounded-lg"><SelectValue placeholder="세부 주제" /></SelectTrigger>
+                    <SelectContent>
+                      {selectedCategoryData?.sub.map(s => (
+                        <SelectItem key={s} value={s}>{s}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
-
-                <div className="space-y-2">
-                  <label className="text-xs font-black text-primary/40 ml-2">강사 및 교육기관</label>
-                  <Input value={instructorName} onChange={e => setInstructorName(e.target.value)} required placeholder="성함 또는 기업명" className="h-12 bg-primary/5 border-none rounded-xl" />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-xs font-black text-primary/40 ml-2">프로그램 소개</label>
-                  <Textarea value={description} onChange={e => setDescription(e.target.value)} required placeholder="인사 담당자의 눈길을 끌 수 있는 핵심 내용을 입력하세요" className="bg-primary/5 border-none rounded-xl min-h-[120px]" />
-                </div>
-
+                <Input value={instructorName} onChange={e => setInstructorName(e.target.value)} required placeholder="강사 및 교육기관" className="h-11 bg-primary/5 border-none rounded-lg" />
+                <Textarea value={description} onChange={e => setDescription(e.target.value)} required placeholder="프로그램 소개" className="bg-primary/5 border-none rounded-lg min-h-[100px]" />
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-xs font-black text-primary/40 ml-2">시작일</label>
-                    <Input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} required className="h-12 bg-primary/5 border-none rounded-xl" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-black text-primary/40 ml-2">종료일</label>
-                    <Input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} required className="h-12 bg-primary/5 border-none rounded-xl" />
-                  </div>
+                  <Input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} required className="h-11 bg-primary/5 border-none rounded-lg" />
+                  <Input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} required className="h-11 bg-primary/5 border-none rounded-lg" />
                 </div>
-                
-                <Button type="submit" disabled={isSubmitting} className="w-full h-16 bg-primary text-accent font-black rounded-2xl shadow-lg mt-6 text-lg">
-                  {isSubmitting ? "등록 중..." : "프로그램 광고 신청"}
+                <Button type="submit" disabled={isSubmitting} className="w-full h-12 bg-primary text-accent font-black rounded-xl">
+                  {isSubmitting ? "등록 중..." : "광고 신청"}
                 </Button>
               </form>
             </DialogContent>
           </Dialog>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-          <aside className="lg:col-span-3">
-            <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-primary/5 sticky top-32">
-              <h3 className="text-xl font-black text-primary mb-8 flex items-center gap-3">
-                <Hash className="w-6 h-6 text-accent" />
-                카테고리
-              </h3>
+        <div className="lg:hidden mb-8 overflow-x-auto pb-4 scrollbar-hide">
+          <div className="flex gap-2 whitespace-nowrap">
+            {PROGRAM_CATEGORIES.map((cat) => (
+              <button
+                key={cat.id}
+                onClick={() => setSelectedCategory(cat.id)}
+                className={cn(
+                  "px-5 py-2.5 rounded-full text-xs font-black transition-all",
+                  selectedCategory === cat.id 
+                    ? "bg-primary text-accent shadow-lg" 
+                    : "bg-white text-primary/40 border border-primary/5"
+                )}
+              >
+                {cat.name}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
+          <aside className="hidden lg:block lg:col-span-3">
+            <div className="bg-white rounded-[2rem] p-8 shadow-sm border border-primary/5 sticky top-32">
+              <h3 className="text-xl font-black text-primary mb-6">카테고리</h3>
               <div className="flex flex-col gap-1.5">
                 {PROGRAM_CATEGORIES.map((cat) => (
                   <button
                     key={cat.id}
                     onClick={() => setSelectedCategory(cat.id)}
                     className={cn(
-                      "flex items-center justify-between px-5 py-4 rounded-2xl transition-all font-black text-[15px] text-left",
+                      "flex items-center justify-between px-5 py-3 rounded-xl transition-all font-black text-[14px]",
                       selectedCategory === cat.id 
-                        ? "bg-primary text-accent shadow-xl translate-x-2" 
-                        : "text-primary/40 hover:bg-primary/5 hover:text-primary"
+                        ? "bg-primary text-accent shadow-lg translate-x-2" 
+                        : "text-primary/40 hover:bg-primary/5"
                     )}
                   >
                     <span>{cat.name}</span>
@@ -319,48 +304,46 @@ export default function ProgramsPage() {
 
           <div className="lg:col-span-9">
             {isLoading ? (
-              <div className="flex justify-center py-40"><Clock className="w-16 h-16 animate-spin text-accent" /></div>
+              <div className="flex justify-center py-40"><Clock className="w-12 h-12 animate-spin text-accent" /></div>
             ) : filteredPrograms.length === 0 ? (
-              <div className="py-40 text-center bg-white rounded-[3rem] border-2 border-dashed border-primary/5">
-                <p className="text-2xl font-black text-primary/10">조건에 맞는 프로그램이 아직 없습니다.</p>
+              <div className="py-40 text-center bg-white rounded-[2rem] border-2 border-dashed border-primary/5 px-6">
+                <p className="text-xl font-black text-primary/10">조건에 맞는 프로그램이 아직 없습니다.</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
                 {filteredPrograms.map((p) => {
                   const catName = PROGRAM_CATEGORIES.find(c => c.id === p.category)?.name || "기타";
                   return (
-                    <Card key={p.id} className="group bg-white border-primary/5 rounded-[3rem] overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-3 transition-all duration-500 flex flex-col">
-                      <div className="relative h-64 w-full overflow-hidden">
+                    <Card key={p.id} className="group bg-white border-primary/5 rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl transition-all flex flex-col">
+                      <div className="relative h-48 md:h-64 w-full overflow-hidden">
                         <Image 
                           src={p.imageUrl || "https://images.unsplash.com/photo-1524178232363-1fb2b075b655"} 
                           alt={p.title} 
                           fill 
-                          className="object-cover transition-transform duration-1000 group-hover:scale-110" 
+                          className="object-cover transition-transform duration-1000 group-hover:scale-105" 
                           data-ai-hint="business seminar"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-primary/80 via-primary/20 to-transparent opacity-60"></div>
-                        <div className="absolute top-6 left-6 flex flex-wrap gap-2">
-                          <Badge className="bg-accent text-primary font-black border-none px-4 py-1.5 rounded-full text-[11px] shadow-2xl">#{catName}</Badge>
+                        <div className="absolute top-4 left-4">
+                          <Badge className="bg-accent text-primary font-black border-none px-3 py-1 rounded-full text-[9px]">#{catName}</Badge>
                         </div>
                       </div>
-                      <CardContent className="p-8 flex-1 flex flex-col">
-                        <h3 className="text-2xl font-black text-primary mb-3 line-clamp-1 group-hover:text-accent transition-colors leading-tight">
+                      <CardContent className="p-6 flex-1 flex flex-col">
+                        <h3 className="text-lg md:text-2xl font-black text-primary mb-2 line-clamp-1 group-hover:text-accent">
                           {p.title}
                         </h3>
-                        <p className="text-sm font-bold text-accent/80 mb-6 line-clamp-2 leading-relaxed">
+                        <p className="text-xs md:text-sm font-bold text-accent/80 mb-6 line-clamp-2">
                           {p.description}
                         </p>
-                        <div className="space-y-3 mb-8">
-                          <div className="flex items-center gap-3 text-primary/60 text-[13px] font-black">
-                            <GraduationCap className="w-4 h-4 text-accent" /> {p.instructorName}
+                        <div className="space-y-2 mb-6">
+                          <div className="flex items-center gap-2 text-primary/60 text-[11px] font-black">
+                            <GraduationCap className="w-3.5 h-3.5 text-accent" /> {p.instructorName}
                           </div>
-                          <div className="flex items-center gap-3 text-primary/60 text-[13px] font-black">
-                            <Calendar className="w-4 h-4 text-accent" /> {p.startDate} ~ {p.endDate}
+                          <div className="flex items-center gap-2 text-primary/60 text-[11px] font-black">
+                            <Calendar className="w-3.5 h-3.5 text-accent" /> {p.startDate} ~ {p.endDate}
                           </div>
                         </div>
-                        <Button className="w-full h-14 mt-auto bg-primary/5 hover:bg-primary text-primary hover:text-accent font-black rounded-2xl transition-all gap-2 text-[15px]">
-                          상세 정보 및 신청하기
-                          <ChevronRight className="w-4 h-4" />
+                        <Button className="w-full h-11 md:h-14 mt-auto bg-primary/5 hover:bg-primary text-primary hover:text-accent font-black rounded-xl transition-all text-xs md:text-sm">
+                          상세 정보 및 신청
                         </Button>
                       </CardContent>
                     </Card>
