@@ -1,4 +1,3 @@
-
 export type UserRole = 'member' | 'mentor' | 'admin';
 
 export interface UserProfile {
@@ -22,6 +21,7 @@ export interface Question {
   nickname: string;
   userId: string;
   userRole?: UserRole;
+  jobTitle?: string;
   viewCount: number;
   answerCount: number;
   createdAt: number;
@@ -38,6 +38,7 @@ export interface Answer {
   nickname: string;
   userId: string;
   userRole?: UserRole;
+  jobTitle?: string;
   createdAt: number;
   userProfilePicture?: string;
 }

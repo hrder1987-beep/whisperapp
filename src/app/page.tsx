@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo } from "react"
@@ -35,6 +34,7 @@ const MOCK_QUESTIONS: Question[] = [
     nickname: "채용마스터",
     userId: "mock-1",
     userRole: "member",
+    jobTitle: "채용담당자",
     viewCount: 1240,
     answerCount: 8,
     createdAt: Date.now() - 1000 * 60 * 60 * 2,
@@ -111,7 +111,7 @@ export default function HomePage() {
       }
     }
     return {
-      image: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxocm98ZW58MHx8fHwxNzcwMjgxNjE3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      image: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHhzfHxocm98ZW58MHx8fHwxNzcwMjgxNjE3fDA&ixlib=rb-4.1.0&q=80&w=1080",
       link: "https://whisper.hr",
       title: "HR 전문가를 위한\n프리미엄 채용 솔루션"
     }
@@ -124,7 +124,7 @@ export default function HomePage() {
     if (searchQuery.trim()) {
       const keywords = searchQuery.toLowerCase().split(/\s+/).filter(k => k.length > 0)
       result = result.filter(q => {
-        const content = `${q.title} ${q.text} ${q.nickname} ${q.category || ""}`.toLowerCase()
+        const content = `${q.title} ${q.text} ${q.nickname} ${q.category || ""} ${q.jobTitle || ""}`.toLowerCase()
         return keywords.every(kw => content.includes(kw))
       })
     }
@@ -149,6 +149,7 @@ export default function HomePage() {
       nickname,
       userId: user.uid,
       userRole: (profile?.role as UserRole) || "member",
+      jobTitle: profile?.jobTitle || null,
       userProfilePicture: profile?.profilePictureUrl || null,
       imageUrl: imageUrl || null,
       videoUrl: videoUrl || null,
@@ -167,6 +168,7 @@ export default function HomePage() {
             nickname: "알디",
             userId: "ai-whisper",
             userRole: "admin",
+            jobTitle: "AI 길잡이",
             createdAt: Date.now(),
             userProfilePicture: null,
           }
@@ -186,6 +188,7 @@ export default function HomePage() {
       nickname,
       userId: user.uid,
       userRole: (profile?.role as UserRole) || "member",
+      jobTitle: profile?.jobTitle || null,
       userProfilePicture: profile?.profilePictureUrl || null,
       createdAt: Date.now(),
     }

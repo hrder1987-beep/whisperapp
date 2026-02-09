@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState } from "react"
@@ -64,6 +63,9 @@ export function AnswerFeed({ answers, isAdminMode = false, onDeleteAnswer }: Ans
                       )}>
                         @{a.nickname}
                       </span>
+                      {a.jobTitle && (
+                        <span className="text-[10px] font-bold text-accent/60 italic">#{a.jobTitle}</span>
+                      )}
                       {isMentor && (
                         <Badge className="bg-accent text-primary text-[9px] font-black border-none px-1.5 py-0">WHISPERER</Badge>
                       )}

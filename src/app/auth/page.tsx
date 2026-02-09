@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, Suspense, useRef } from "react"
@@ -78,7 +77,7 @@ function AuthContent() {
         name,
         company,
         department,
-        jobTitle,
+        jobTitle, // 사용자가 직접 작성하는 직무/직함
         phoneNumber: phone,
         role: "member",
         registrationDate: new Date().toISOString(),
@@ -86,7 +85,6 @@ function AuthContent() {
       })
 
       // 2. 자동 웰컴 메일 발송 플로우 트리거 (Server Action)
-      // 비동기로 처리하여 가입 프로세스 지연 방지
       sendWelcomeEmail({ name, email }).catch(err => console.error("Welcome email failed:", err));
 
       toast({ title: "가입 완료!", description: "Whisper의 일원이 되신 것을 환영합니다. 가입 환영 메일을 확인해주세요!" })
@@ -189,8 +187,8 @@ function AuthContent() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label className="text-xs font-black text-primary/40 ml-1">직함</Label>
-                    <Input placeholder="팀장/매니저 등" value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} required className="h-11 bg-primary/5 border-none rounded-xl" />
+                    <Label className="text-xs font-black text-primary/40 ml-1">직무/직함 (예: 채용담당자)</Label>
+                    <Input placeholder="인사담당자 등 직접 입력" value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} required className="h-11 bg-primary/5 border-none rounded-xl" />
                   </div>
                   <div className="space-y-2">
                     <Label className="text-xs font-black text-primary/40 ml-1">휴대전화</Label>

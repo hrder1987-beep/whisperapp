@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState } from "react"
@@ -107,6 +106,11 @@ export function QuestionFeed({
                         )}>
                           @{q.nickname}
                         </span>
+                        {q.jobTitle && (
+                          <span className="text-[10px] md:text-[12px] font-bold text-accent bg-accent/5 px-2 py-0.5 rounded-lg border border-accent/10">
+                            #{q.jobTitle}
+                          </span>
+                        )}
                         {isMentor ? (
                           <Badge className="bg-accent text-primary text-[8px] md:text-[9px] font-black border-none px-1.5 py-0 md:px-2 md:py-0.5 rounded-md">WHISPERER</Badge>
                         ) : (
