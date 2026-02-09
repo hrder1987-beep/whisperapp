@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Sparkles, Send, Bot, User, Loader2 } from "lucide-react"
-import { chatShu } from "@/ai/flows/chat-shu-flow"
+import { chatChuchot } from "@/ai/flows/chat-shu-flow"
 import { cn } from "@/lib/utils"
 
 interface Message {
@@ -13,9 +13,9 @@ interface Message {
   text: string
 }
 
-export function ShuChat() {
+export function ChuchotChat() {
   const [messages, setMessages] = useState<Message[]>([
-    { role: "bot", text: "반가워요! Whisper의 HR 인텔리전스 가이드 '슈(Shu)'입니다. 어떤 고민을 함께 나눠볼까요?" }
+    { role: "bot", text: "반가워요! Whisper의 HR 인텔리전스 가이드 '슈쇼(Chuchot)'입니다. 어떤 고민을 함께 나눠볼까요?" }
   ])
   const [input, setInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
@@ -29,7 +29,7 @@ export function ShuChat() {
     setIsLoading(true)
 
     try {
-      const res = await chatShu({ message: userMessage })
+      const res = await chatChuchot({ message: userMessage })
       setMessages(prev => [...prev, { role: "bot", text: res.reply }])
     } catch (error) {
       setMessages(prev => [...prev, { role: "bot", text: "미안해요, Whisper의 기운이 잠시 약해졌나 봐요. 다시 한번 말씀해주시겠어요?" }])
@@ -46,7 +46,7 @@ export function ShuChat() {
             <Sparkles className="w-5 h-5 text-accent animate-pulse" />
           </div>
           <div>
-            <CardTitle className="text-white text-lg font-black">AI 슈(Shu)</CardTitle>
+            <CardTitle className="text-white text-lg font-black">AI 슈쇼(Chuchot)</CardTitle>
             <p className="text-[10px] text-accent/80 font-bold">Whisper Intelligence Guide</p>
           </div>
         </div>
@@ -109,7 +109,7 @@ export function ShuChat() {
           </Button>
         </div>
         <p className="text-[9px] text-center text-primary/20 mt-2 font-bold tracking-tighter">
-          *슈는 Whisper의 HR 전문가 DB를 기반으로 답변합니다.
+          *슈쇼는 Whisper의 HR 전문가 DB를 기반으로 답변합니다.
         </p>
       </div>
     </Card>
