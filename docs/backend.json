@@ -1,20 +1,19 @@
-
 {
   "entities": {
     "UserProfile": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "UserProfile",
       "type": "object",
-      "description": "Whisper 플랫폼의 HR 전문가 프로필 정보",
+      "description": "Whisper 플랫폼의 HR 전문가 상세 프로필 (개인정보 보안 적용)",
       "properties": {
         "id": { "type": "string", "description": "Firebase UID" },
-        "username": { "type": "string", "description": "사용자 아이디(닉네임)" },
-        "email": { "type": "string", "format": "email" },
-        "name": { "type": "string", "description": "성함" },
-        "company": { "type": "string", "description": "소속" },
-        "department": { "type": "string", "description": "부서" },
+        "username": { "type": "string", "description": "사용자 닉네임" },
+        "email": { "type": "string", "format": "email", "description": "이메일 (민감 정보)" },
+        "name": { "type": "string", "description": "성함 (민감 정보)" },
+        "company": { "type": "string", "description": "소속 회사" },
+        "department": { "type": "string", "description": "소속 부서" },
         "jobTitle": { "type": "string", "description": "직함" },
-        "phoneNumber": { "type": "string", "description": "휴대전화" },
+        "phoneNumber": { "type": "string", "description": "휴대전화 (민감 정보)" },
         "role": { "type": "string", "enum": ["member", "mentor", "admin"], "description": "사용자 권한" },
         "registrationDate": { "type": "string", "format": "date-time" },
         "profilePictureUrl": { "type": "string" }
@@ -25,43 +24,38 @@
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Question",
       "type": "object",
-      "description": "HR 현업 고민 및 정보 공유 게시글",
+      "description": "HR 집단지성 피드 게시글",
       "properties": {
         "id": { "type": "string" },
         "title": { "type": "string" },
-        "content": { "type": "string" },
+        "text": { "type": "string" },
         "userId": { "type": "string" },
         "userRole": { "type": "string" },
         "nickname": { "type": "string" },
         "category": { "type": "string" },
         "viewCount": { "type": "number" },
         "answerCount": { "type": "number" },
-        "createdAt": { "type": "number" }
+        "createdAt": { "type": "number" },
+        "userProfilePicture": { "type": "string" }
       },
-      "required": ["id", "title", "content", "userId", "nickname", "createdAt"]
+      "required": ["id", "title", "text", "userId", "nickname", "createdAt"]
     }
   },
   "auth": {
     "providers": ["password"]
   },
   "firestore": {
-    "structure": [
-      {
-        "path": "/users/{userId}",
-        "definition": {
-          "entityName": "UserProfile",
-          "schema": { "$ref": "#/backend/entities/UserProfile" },
-          "description": "상세 HR 전문가 프로필"
-        }
-      },
-      {
-        "path": "/questions/{questionId}",
-        "definition": {
-          "entityName": "Question",
-          "schema": { "$ref": "#/backend/entities/Question" },
-          "description": "HR 고민 피드"
-        }
-      }
-    ]
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "HR 전문가 개인 프로필 정보 (보안 구역)"
+    },
+    "/questions/{questionId}": {
+      "schema": { "$ref": "#/entities/Question" },
+      "description": "공개 HR 지식 공유 피드"
+    },
+    "/admin_configuration/site_settings": {
+      "schema": { "type": "object" },
+      "description": "관리자 전용 사이트 구성 정보"
+    }
   }
 }

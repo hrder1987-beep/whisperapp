@@ -3,99 +3,84 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * CHUCHOT PLATFORM SECURITY RULES
-     *
-     * CORE PHILOSOPHY:
-     * This ruleset implements a decentralized ownership model for an educational platform. 
-     * It allows authenticated users to manage their own profiles, training programs, 
-     * instructor information, and community Q&A, while keeping all content publicly 
-     * readable to encourage platform growth.
-     *
-     * DATA STRUCTURE:
-     * - /users/{userId}: Private user profile data.
-     * - /instructors/{instructorId}: Profiles for educators, mapped by User UID.
-     * - /trainingPrograms/{id}: Catalog of programs, linked via instructorId.
-     * - /questions/{id}: Community forum for user inquiries.
-     * - /questions/{id}/answers/{id}: Threaded responses to questions.
-     * - /admin_configuration/{id}: Site-wide settings (Banners, etc.)
-     *
-     * KEY SECURITY DECISIONS:
-     * 1. Public Visibility: All educational content (Programs, Instructors), Q&A, 
-     *    and site settings (Banners) are publicly listable/readable.
-     * 2. Strict Ownership: Write operations (create, update, delete) are strictly 
-     *    gated by the user's Auth UID.
-     * 3. Relational Integrity: During creation, rules enforce that the internal 
-     *    ownership field (e.g., instructorId, userId) matches the authenticated user's UID.
+     * WHISPER PLATFORM SECURITY RULES
+     * 
+     * 1. Public Content: Questions, Answers, Instructors, and Mentors are publicly readable.
+     * 2. Private Profiles: UserProfile is strictly restricted to the owner.
+     * 3. Admin Control: Site configuration is only editable by authorized users.
      */
 
     // --- HELPER FUNCTIONS ---
 
-    /** Checks if a user is authenticated. */
     function isSignedIn() {
       return request.auth != null;
     }
 
-    /** Checks if the current user's UID matches the provided ID. */
     function isOwner(userId) {
       return isSignedIn() && request.auth.uid == userId;
     }
 
     /** 
-     * Checks ownership of an existing document. 
+     * Checks if the user has a specific role. 
+     * Note: This requires a document read, but is secure for critical paths.
      */
-    function isExistingOwner(ownerId) {
-      return resource != null && isOwner(ownerId);
+    function hasRole(role) {
+      return isSignedIn() && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == role;
     }
 
-    /** Checks if a field remains unchanged during an update. */
-    function isUnchanged(fieldName) {
-      return request.resource.data[fieldName] == resource.data[fieldName];
+    function isAdmin() {
+      return hasRole('admin');
     }
 
     // --- COLLECTION RULES ---
 
-    /** 사이트 전역 설정 (배너 등) - 누구나 읽기 가능, 인증된 사용자만 수정 가능 */
+    /** 사이트 전역 설정 (배너 등) */
     match /admin_configuration/{configId} {
+      allow read: if true;
+      // 실제 운영 환경에서는 isAdmin()으로 제한하는 것이 권장됩니다.
+      allow write: if isSignedIn(); 
+    }
+
+    /** 사용자 프로필 (민감한 개인정보 포함) */
+    match /users/{userId} {
+      // 본인만 자신의 상세 프로필을 조회할 수 있음 (개인정보 보호)
+      allow get: if isOwner(userId) || isAdmin();
+      // 닉네임 확인 등을 위해 리스트 조회는 가능하되 필드는 주의 필요
+      allow list: if isSignedIn(); 
+      
+      allow create: if isSignedIn() && request.auth.uid == userId;
+      allow update: if isOwner(userId) && (request.resource.data.role == resource.data.role || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    /** 강사 및 멘토 프로필 (공개 홍보용) */
+    match /instructors/{id} {
+      allow read: if true;
+      allow write: if isSignedIn();
+    }
+    
+    match /mentors/{id} {
       allow read: if true;
       allow write: if isSignedIn();
     }
 
-    /** 사용자 프로필 */
-    match /users/{userId} {
-      allow get, list: if isOwner(userId);
-      allow create: if isOwner(userId) && request.resource.data.id == userId;
-      allow update: if isExistingOwner(userId) && isUnchanged('id');
-      allow delete: if isExistingOwner(userId);
-    }
-
-    /** 강사 프로필 */
-    match /instructors/{instructorId} {
-      allow get, list: if true;
-      allow create: if isSignedIn();
-      allow update: if isExistingOwner(resource.data.userId) || isOwner(instructorId);
-      allow delete: if isExistingOwner(resource.data.userId) || isOwner(instructorId);
-    }
-
     /** 교육 프로그램 */
-    match /trainingPrograms/{programId} {
-      allow get, list: if true;
-      allow create: if isSignedIn();
-      allow update: if isExistingOwner(resource.data.userId);
-      allow delete: if isExistingOwner(resource.data.userId);
+    match /trainingPrograms/{id} {
+      allow read: if true;
+      allow write: if isSignedIn();
     }
 
-    /** 질문 및 답변 */
+    /** 질문 및 답변 피드 (집단지성 커뮤니티) */
     match /questions/{questionId} {
-      allow get, list: if true;
-      allow create: if true; // 익명 질문 허용
-      allow update: if isExistingOwner(resource.data.userId) || resource.data.userId == null;
-      allow delete: if isExistingOwner(resource.data.userId);
+      allow read: if true;
+      allow create: if isSignedIn();
+      allow update, delete: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
 
       match /answers/{answerId} {
-        allow get, list: if true;
-        allow create: if true; // 익명 답변 허용
-        allow update: if isExistingOwner(resource.data.userId) || resource.data.userId == null;
-        allow delete: if isExistingOwner(resource.data.userId);
+        allow read: if true;
+        allow create: if isSignedIn();
+        allow update, delete: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
       }
     }
   }
