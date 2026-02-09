@@ -72,6 +72,10 @@ export interface Instructor {
   department?: string;
   jobTitle?: string;
   phoneNumber?: string;
+  email?: string;
+  website?: string;
+  references?: string;
+  curriculumPdfUrl?: string;
 }
 
 export interface JobListing {
