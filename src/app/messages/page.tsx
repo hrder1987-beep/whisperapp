@@ -8,9 +8,9 @@ import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { useUser, useFirestore, useCollection, useMemoFirebase, updateDocumentNonBlocking } from "@/firebase"
-import { collection, query, where, orderBy, doc } from "firebase/firestore"
+import { collection, query, where, doc } from "firebase/firestore"
 import { PrivateMessage } from "@/lib/types"
-import { Mail, Send, Inbox, Clock, User, CheckCircle2, ChevronRight, MessageSquare } from "lucide-react"
+import { Mail, Send, Inbox, Clock, CheckCircle2 } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 import { ko } from "date-fns/locale"
 import { AvatarIcon } from "@/components/chuchot/AvatarIcon"
@@ -23,12 +23,12 @@ export default function MessagesPage() {
   const [activeTab, setActiveTab] = useState("inbox")
   const [replyTarget, setReplyTarget] = useState<{ id: string, nickname: string } | null>(null)
 
+  // 복합 인덱스 오류를 방지하기 위해 orderBy를 제거하고 클라이언트에서 정렬합니다.
   const inboxQuery = useMemoFirebase(() => {
     if (!db || !user) return null
     return query(
       collection(db, "messages"),
-      where("receiverId", "==", user.uid),
-      orderBy("createdAt", "desc")
+      where("receiverId", "==", user.uid)
     )
   }, [db, user])
 
@@ -36,13 +36,21 @@ export default function MessagesPage() {
     if (!db || !user) return null
     return query(
       collection(db, "messages"),
-      where("senderId", "==", user.uid),
-      orderBy("createdAt", "desc")
+      where("senderId", "==", user.uid)
     )
   }, [db, user])
 
-  const { data: inboxMessages, isLoading: isInboxLoading } = useCollection<PrivateMessage>(inboxQuery)
-  const { data: outboxMessages, isLoading: isOutboxLoading } = useCollection<PrivateMessage>(outboxQuery)
+  const { data: inboxMessagesData, isLoading: isInboxLoading } = useCollection<PrivateMessage>(inboxQuery)
+  const { data: outboxMessagesData, isLoading: isOutboxLoading } = useCollection<PrivateMessage>(outboxQuery)
+
+  // 클라이언트 사이드 정렬
+  const inboxMessages = useMemo(() => {
+    return (inboxMessagesData || []).sort((a, b) => b.createdAt - a.createdAt)
+  }, [inboxMessagesData])
+
+  const outboxMessages = useMemo(() => {
+    return (outboxMessagesData || []).sort((a, b) => b.createdAt - a.createdAt)
+  }, [outboxMessagesData])
 
   const handleMarkAsRead = (msg: PrivateMessage) => {
     if (db && !msg.isRead && user?.uid === msg.receiverId) {
@@ -50,8 +58,8 @@ export default function MessagesPage() {
     }
   }
 
-  const MessageList = ({ messages, type }: { messages: PrivateMessage[] | null, type: 'inbox' | 'outbox' }) => {
-    if (!messages || messages.length === 0) {
+  const MessageList = ({ messages, type }: { messages: PrivateMessage[], type: 'inbox' | 'outbox' }) => {
+    if (messages.length === 0) {
       return (
         <div className="flex flex-col items-center justify-center py-24 text-primary/20 bg-white rounded-[2.5rem] border border-dashed border-primary/5">
           <Mail className="w-16 h-16 mb-4 opacity-50" />
@@ -147,7 +155,7 @@ export default function MessagesPage() {
             <TabsTrigger value="inbox" className="rounded-xl font-black text-base gap-2 data-[state=active]:bg-white data-[state=active]:shadow-lg">
               <Inbox className="w-4 h-4" />
               받은 쪽지
-              {inboxMessages && inboxMessages.filter(m => !m.isRead).length > 0 && (
+              {inboxMessages.filter(m => !m.isRead).length > 0 && (
                 <Badge className="ml-1 bg-accent text-primary border-none text-[10px] h-5 w-5 flex items-center justify-center p-0 rounded-full">
                   {inboxMessages.filter(m => !m.isRead).length}
                 </Badge>
@@ -160,11 +168,11 @@ export default function MessagesPage() {
           </TabsList>
 
           <TabsContent value="inbox">
-            <MessageList messages={inboxMessages || []} type="inbox" />
+            <MessageList messages={inboxMessages} type="inbox" />
           </TabsContent>
           
           <TabsContent value="outbox">
-            <MessageList messages={outboxMessages || []} type="outbox" />
+            <MessageList messages={outboxMessages} type="outbox" />
           </TabsContent>
         </Tabs>
       </main>
