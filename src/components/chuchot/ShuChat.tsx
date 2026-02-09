@@ -1,12 +1,27 @@
+
 "use client"
 
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Sparkles, Send, Bot, User, Loader2 } from "lucide-react"
+import { 
+  Sparkles, 
+  Send, 
+  Bot, 
+  User, 
+  Loader2, 
+  Maximize2, 
+  Minimize2,
+  BrainCircuit,
+  Lightbulb,
+} from "lucide-react"
 import { chatAldi } from "@/ai/flows/chat-shu-flow"
 import { cn } from "@/lib/utils"
+import {
+  Dialog,
+  DialogContent,
+} from "@/components/ui/dialog"
 
 interface Message {
   role: "user" | "bot"
@@ -15,10 +30,18 @@ interface Message {
 
 export function AldiChat() {
   const [messages, setMessages] = useState<Message[]>([
-    { role: "bot", text: "반가워요! Whisper의 HR 인텔리전스 가이드 '알디'입니다. 채용 전략부터 조직문화, 교육 설계까지 어떤 고민이든 말씀해 주세요." }
+    { role: "bot", text: "반가워요! Whisper의 HR 인텔리전스 가이드 '알디'입니다. 채용 전략, 조직문화, 교육 설계부터 실무 노하우까지 무엇이든 물어보세요." }
   ])
   const [input, setInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const [isFocused, setIsFocused] = useState(false)
+  const scrollRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight
+    }
+  }, [messages, isLoading])
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return
@@ -38,9 +61,12 @@ export function AldiChat() {
     }
   }
 
-  return (
-    <Card className="bg-white rounded-[3rem] border border-primary/5 shadow-2xl overflow-hidden flex flex-col h-[500px]">
-      <CardHeader className="premium-gradient p-6 flex flex-row items-center justify-between space-y-0">
+  const ChatContent = ({ isExpanded = false }: { isExpanded?: boolean }) => (
+    <div className={cn("flex flex-col h-full bg-white", isExpanded ? "rounded-[3rem]" : "")}>
+      <CardHeader className={cn(
+        "p-6 flex flex-row items-center justify-between space-y-0",
+        isExpanded ? "premium-gradient text-white" : "premium-gradient"
+      )}>
         <div className="flex items-center gap-3">
           <div className="p-3 bg-accent/20 rounded-2xl backdrop-blur-md">
             <Sparkles className="w-6 h-6 text-accent animate-pulse" />
@@ -50,16 +76,44 @@ export function AldiChat() {
             <p className="text-[11px] text-accent/80 font-black uppercase tracking-widest mt-0.5">HR Intelligence Guide</p>
           </div>
         </div>
+        {!isExpanded && (
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={() => setIsFocused(true)}
+            className="text-white/70 hover:text-white hover:bg-white/10 rounded-xl"
+          >
+            <Maximize2 className="w-5 h-5" />
+          </Button>
+        )}
       </CardHeader>
       
-      <CardContent className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-hide bg-[#FDFDFD]">
+      <CardContent 
+        ref={scrollRef}
+        className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-hide bg-[#FDFDFD]"
+      >
+        {isExpanded && messages.length === 1 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            <div className="p-6 bg-primary/5 rounded-[2rem] border border-primary/5 space-y-3 animate-in fade-in slide-in-from-top-4 duration-500">
+              <BrainCircuit className="w-6 h-6 text-accent" />
+              <h4 className="font-black text-primary">채용/인사 실무 지원</h4>
+              <p className="text-xs text-primary/40 font-bold leading-relaxed">직무기술서(JD) 초안 작성 및 면접 질문 리스트 생성을 도와드립니다.</p>
+            </div>
+            <div className="p-6 bg-primary/5 rounded-[2rem] border border-primary/5 space-y-3 animate-in fade-in slide-in-from-top-4 duration-700">
+              <Lightbulb className="w-6 h-6 text-accent" />
+              <h4 className="font-black text-primary">조직문화/기획 아이디어</h4>
+              <p className="text-xs text-primary/40 font-bold leading-relaxed">임직원 몰입도를 높이는 이벤트와 핵심가치 내재화 프로그램을 제안합니다.</p>
+            </div>
+          </div>
+        )}
+
         {messages.map((msg, idx) => (
           <div key={idx} className={cn(
-            "flex items-start gap-3",
+            "flex items-start gap-3 animate-in fade-in slide-in-from-bottom-2 duration-300",
             msg.role === "user" ? "flex-row-reverse" : "flex-row"
           )}>
             <div className={cn(
-              "p-2.5 rounded-2xl shadow-sm",
+              "p-2.5 rounded-2xl shadow-sm shrink-0",
               msg.role === "user" ? "bg-primary/10" : "bg-accent/10"
             )}>
               {msg.role === "user" ? <User className="w-4 h-4 text-primary/60" /> : <Bot className="w-4 h-4 text-accent" />}
@@ -91,19 +145,25 @@ export function AldiChat() {
       </CardContent>
 
       <div className="p-6 bg-white border-t border-primary/5">
-        <div className="relative group">
+        <div className="relative group max-w-4xl mx-auto">
           <Input 
             placeholder="알디에게 HR 고민을 속삭여보세요..." 
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-            className="pr-14 bg-primary/5 border-none h-14 rounded-2xl text-[13px] font-bold placeholder:text-primary/20 focus-visible:ring-accent/50 transition-all"
+            className={cn(
+              "pr-14 bg-primary/5 border-none rounded-2xl text-[14px] font-bold placeholder:text-primary/20 focus-visible:ring-accent/50 transition-all",
+              isExpanded ? "h-16 text-base" : "h-14"
+            )}
           />
           <Button 
             size="icon" 
             onClick={handleSend}
             disabled={!input.trim() || isLoading}
-            className="absolute right-2 top-2 h-10 w-10 bg-primary hover:bg-primary/90 text-accent rounded-xl transition-all active:scale-90 shadow-lg disabled:opacity-20"
+            className={cn(
+              "absolute right-2 top-2 bg-primary hover:bg-primary/90 text-accent rounded-xl transition-all active:scale-90 shadow-lg disabled:opacity-20",
+              isExpanded ? "h-12 w-12" : "h-10 w-10"
+            )}
           >
             <Send className="w-5 h-5" />
           </Button>
@@ -112,6 +172,32 @@ export function AldiChat() {
           HR전문 AI챗봇 알디입니다
         </p>
       </div>
-    </Card>
+    </div>
+  )
+
+  return (
+    <>
+      <Card className="bg-white rounded-[3rem] border border-primary/5 shadow-2xl overflow-hidden flex flex-col h-[500px]">
+        <ChatContent />
+      </Card>
+
+      <Dialog open={isFocused} onOpenChange={setIsFocused}>
+        <DialogContent className="max-w-5xl h-[85vh] p-0 border-none bg-transparent shadow-none overflow-hidden outline-none">
+          <div className="relative w-full h-full flex flex-col animate-in zoom-in-95 duration-300">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={() => setIsFocused(false)}
+              className="absolute top-4 right-4 z-[60] text-white/50 hover:text-white hover:bg-white/10 rounded-full"
+            >
+              <Minimize2 className="w-6 h-6" />
+            </Button>
+            <div className="flex-1 rounded-[3.5rem] overflow-hidden shadow-2xl bg-white border-8 border-primary/5">
+              <ChatContent isExpanded />
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   )
 }
