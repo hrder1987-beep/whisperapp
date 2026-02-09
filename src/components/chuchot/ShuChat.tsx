@@ -6,11 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { 
-  Sparkles, 
   Send, 
-  Bot, 
   User, 
-  Loader2, 
   Maximize2, 
   Minimize2,
   BrainCircuit,
@@ -29,13 +26,29 @@ interface Message {
   text: string
 }
 
-export function AldiChat() {
-  const [messages, setMessages] = useState<Message[]>([
-    { role: "bot", text: "반가워요! Whisper의 HR 인텔리전스 가이드 '알디'입니다. 채용 전략, 조직문화, 교육 설계부터 실무 노하우까지 무엇이든 물어보세요." }
-  ])
-  const [input, setInput] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-  const [isFocused, setIsFocused] = useState(false)
+interface ChatContentProps {
+  messages: Message[]
+  input: string
+  setInput: (val: string) => void
+  isLoading: boolean
+  handleSend: () => void
+  isExpanded?: boolean
+  setIsFocused?: (val: boolean) => void
+}
+
+/**
+ * 실제 채팅 인터페이스를 담당하는 내부 컴포넌트
+ * AldiChat 외부에 정의하여 입력 시 재렌더링으로 인한 포커스 유실 방지
+ */
+function ChatInterface({ 
+  messages, 
+  input, 
+  setInput, 
+  isLoading, 
+  handleSend, 
+  isExpanded = false,
+  setIsFocused 
+}: ChatContentProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -44,29 +57,10 @@ export function AldiChat() {
     }
   }, [messages, isLoading])
 
-  const handleSend = async () => {
-    if (!input.trim() || isLoading) return
-
-    const userMessage = input.trim()
-    setMessages(prev => [...prev, { role: "user", text: userMessage }])
-    setInput("")
-    setIsLoading(true)
-
-    try {
-      const res = await chatAldi({ message: userMessage })
-      setMessages(prev => [...prev, { role: "bot", text: res.reply }])
-    } catch (error) {
-      setMessages(prev => [...prev, { role: "bot", text: "미안해요, Whisper의 기운이 잠시 약해졌나 봐요. 다시 한번 말씀해주시겠어요?" }])
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  const ChatContent = ({ isExpanded = false }: { isExpanded?: boolean }) => (
+  return (
     <div className={cn("flex flex-col h-full bg-white", isExpanded ? "rounded-[3rem]" : "")}>
       <CardHeader className={cn(
-        "p-6 flex flex-row items-center justify-between space-y-0",
-        isExpanded ? "premium-gradient text-white" : "premium-gradient"
+        "p-6 flex flex-row items-center justify-between space-y-0 premium-gradient"
       )}>
         <div className="flex items-center gap-4">
           <AvatarIcon avatarId="aldi" className="w-12 h-12 shadow-2xl scale-110" />
@@ -75,7 +69,7 @@ export function AldiChat() {
             <p className="text-[11px] text-accent/80 font-black uppercase tracking-widest mt-0.5">HR Intelligence Guide</p>
           </div>
         </div>
-        {!isExpanded && (
+        {!isExpanded && setIsFocused && (
           <Button 
             variant="ghost" 
             size="icon" 
@@ -174,11 +168,45 @@ export function AldiChat() {
       </div>
     </div>
   )
+}
+
+export function AldiChat() {
+  const [messages, setMessages] = useState<Message[]>([
+    { role: "bot", text: "반가워요! Whisper의 HR 인텔리전스 가이드 '알디'입니다. 채용 전략, 조직문화, 교육 설계부터 실무 노하우까지 무엇이든 물어보세요." }
+  ])
+  const [input, setInput] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
+  const [isFocused, setIsFocused] = useState(false)
+
+  const handleSend = async () => {
+    if (!input.trim() || isLoading) return
+
+    const userMessage = input.trim()
+    setMessages(prev => [...prev, { role: "user", text: userMessage }])
+    setInput("")
+    setIsLoading(true)
+
+    try {
+      const res = await chatAldi({ message: userMessage })
+      setMessages(prev => [...prev, { role: "bot", text: res.reply }])
+    } catch (error) {
+      setMessages(prev => [...prev, { role: "bot", text: "미안해요, Whisper의 기운이 잠시 약해졌나 봐요. 다시 한번 말씀해주시겠어요?" }])
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   return (
     <>
       <Card className="bg-white rounded-[3rem] border border-primary/5 shadow-2xl overflow-hidden flex flex-col h-[500px]">
-        <ChatContent />
+        <ChatInterface 
+          messages={messages}
+          input={input}
+          setInput={setInput}
+          isLoading={isLoading}
+          handleSend={handleSend}
+          setIsFocused={setIsFocused}
+        />
       </Card>
 
       <Dialog open={isFocused} onOpenChange={setIsFocused}>
@@ -193,7 +221,14 @@ export function AldiChat() {
               <Minimize2 className="w-6 h-6" />
             </Button>
             <div className="flex-1 rounded-[3.5rem] overflow-hidden shadow-2xl bg-white border-8 border-primary/5">
-              <ChatContent isExpanded />
+              <ChatInterface 
+                messages={messages}
+                input={input}
+                setInput={setInput}
+                isLoading={isLoading}
+                handleSend={handleSend}
+                isExpanded
+              />
             </div>
           </div>
         </DialogContent>
