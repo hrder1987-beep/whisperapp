@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge"
 import { BannerData } from "./MainBanner"
 import { useFirestore, setDocumentNonBlocking } from "@/firebase"
 import { doc } from "firebase/firestore"
-import { Trash2, Plus, Save, RefreshCcw, ExternalLink, ImageIcon, Camera } from "lucide-react"
+import { Trash2, Plus, Save, RefreshCcw, ExternalLink, ImageIcon, Camera, Info } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
 interface SidebarAdData {
@@ -141,7 +141,10 @@ export function AdminCMS({ initialBanners, initialSidebarAd, onUpdate }: AdminCM
                 </div>
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <label className="text-xs font-black text-primary/40 ml-1 uppercase">배너 이미지 (클릭하여 업로드)</label>
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-black text-primary/40 ml-1 uppercase">배너 이미지 (클릭하여 업로드)</label>
+                      <span className="text-[10px] text-accent font-black flex items-center gap-1"><Info className="w-3 h-3" /> 권장: 1200x600px (2:1)</span>
+                    </div>
                     <div 
                       onClick={() => document.getElementById(`banner-image-${idx}`)?.click()}
                       className="w-full aspect-video bg-white rounded-xl border-2 border-dashed border-primary/10 flex flex-col items-center justify-center cursor-pointer hover:border-accent transition-all overflow-hidden relative"
@@ -200,7 +203,10 @@ export function AdminCMS({ initialBanners, initialSidebarAd, onUpdate }: AdminCM
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-black text-primary/40 ml-1 uppercase">광고 이미지 (클릭하여 업로드)</label>
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-black text-primary/40 ml-1 uppercase">광고 이미지 (클릭하여 업로드)</label>
+                  <span className="text-[10px] text-primary/40 font-black flex items-center gap-1"><Info className="w-3 h-3 text-accent" /> 권장: 400x500px (4:5)</span>
+                </div>
                 <div 
                   onClick={() => document.getElementById('sidebar-ad-image')?.click()}
                   className="w-full h-24 bg-primary/5 rounded-xl border-2 border-dashed border-primary/10 flex items-center justify-center cursor-pointer hover:border-accent transition-all overflow-hidden"

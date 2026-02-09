@@ -228,7 +228,10 @@ export default function ProgramsPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-4">
                     <div className="space-y-2">
-                      <label className="text-[10px] font-black text-primary/40 ml-1 uppercase">대표 홍보 이미지</label>
+                      <div className="flex items-center justify-between">
+                        <label className="text-[10px] font-black text-primary/40 ml-1 uppercase">대표 홍보 이미지</label>
+                        <span className="text-[9px] text-accent font-black flex items-center gap-1"><Info className="w-3 h-3" /> 권장: 800x450px (16:9)</span>
+                      </div>
                       <div 
                         onClick={() => fileInputRef.current?.click()}
                         className="relative w-full aspect-video bg-primary/5 rounded-xl border-2 border-dashed border-primary/10 flex flex-col items-center justify-center cursor-pointer overflow-hidden transition-all hover:border-accent"

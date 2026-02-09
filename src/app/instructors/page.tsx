@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo, useRef } from "react"
@@ -12,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase"
 import { collection, query, orderBy, addDoc } from "firebase/firestore"
 import { Instructor } from "@/lib/types"
-import { Plus, Search, Star, Award, Briefcase, Camera, Check, GraduationCap, Sparkles, Phone, Mail, Globe, FileText, X, User, ExternalLink } from "lucide-react"
+import { Plus, Search, Star, Award, Briefcase, Camera, Check, GraduationCap, Sparkles, Phone, Mail, Globe, FileText, X, User, ExternalLink, Info } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
@@ -236,6 +237,7 @@ export default function InstructorsPage() {
                       )}
                     </div>
                     <input type="file" ref={fileInputRef} onChange={handleImageChange} accept="image/*" className="hidden" />
+                    <p className="text-[10px] text-accent font-black mt-2 flex items-center gap-1"><Info className="w-3 h-3" /> 권장: 400x400px (1:1)</p>
                     
                     <div className="mt-6 w-full space-y-2">
                       <label className="text-[10px] font-black text-primary/40 ml-2 uppercase">대표 커리큘럼 (PDF)</label>

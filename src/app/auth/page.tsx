@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, Suspense, useRef } from "react"
@@ -12,7 +13,7 @@ import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "fire
 import { doc, setDoc } from "firebase/firestore"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
-import { LogIn, UserPlus, Camera, X, Sparkles } from "lucide-react"
+import { LogIn, UserPlus, Camera, X, Sparkles, Info } from "lucide-react"
 import { sendWelcomeEmail } from "@/ai/flows/send-welcome-email-flow"
 
 function AuthContent() {
@@ -150,6 +151,7 @@ function AuthContent() {
                     )}
                   </div>
                   <span className="text-[10px] font-black text-primary/40 mt-2 uppercase tracking-tighter">프로필 사진 등록 (선택)</span>
+                  <span className="text-[8px] font-bold text-accent mt-1 flex items-center gap-1"><Info className="w-3 h-3" /> 권장: 400x400px</span>
                   <input type="file" ref={fileInputRef} onChange={handleImageChange} accept="image/*" className="hidden" />
                 </div>
 

@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
-import { ImageIcon, X, Send, Video, Link as LinkIcon } from "lucide-react"
+import { ImageIcon, X, Send, Video, Link as LinkIcon, Info } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import Image from "next/image"
 import { Separator } from "@/components/ui/separator"
@@ -232,7 +232,10 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
               
               <Button type="button" variant="ghost" size="sm" className="h-9 rounded-xl px-3 text-primary/50 hover:bg-primary/5" onClick={() => fileInputRef.current?.click()}>
                 <ImageIcon className="w-4 h-4 mr-1.5 text-emerald-500" />
-                <span className="font-black text-[11px]">이미지</span>
+                <div className="flex flex-col items-start leading-none">
+                  <span className="font-black text-[11px]">이미지</span>
+                  <span className="text-[8px] font-bold text-emerald-600/60">권장: 800x450px</span>
+                </div>
               </Button>
               
               <Button type="button" variant="ghost" size="sm" className="h-9 rounded-xl px-3 text-primary/50 hover:bg-primary/5" onClick={() => videoInputRef.current?.click()}>
