@@ -6,7 +6,7 @@ import { MessageSquareQuote, Award, GraduationCap, Briefcase, Bot, Star, Mail } 
 import { cn } from "@/lib/utils"
 import { useState } from "react"
 import { AldiChat } from "./ShuChat"
-import { useUser, useCollection, useMemoFirebase } from "@/firebase"
+import { useUser, useCollection, useMemoFirebase, useFirestore } from "@/firebase"
 import { collection, query, where } from "firebase/firestore"
 import { Badge } from "@/components/ui/badge"
 
@@ -14,22 +14,23 @@ export function BottomNav() {
   const pathname = usePathname()
   const router = useRouter()
   const { user } = useUser()
+  const db = useFirestore()
   const [isChatOpen, setIsChatOpen] = useState(false)
 
   const unreadMessagesQuery = useMemoFirebase(() => {
-    if (!user) return null
+    if (!db || !user) return null
     return query(
-      collection(user.firestore, "messages"),
+      collection(db, "messages"),
       where("receiverId", "==", user.uid),
       where("isRead", "==", false)
     )
-  }, [user])
+  }, [db, user])
   const { data: unreadMessages } = useCollection(unreadMessagesQuery)
 
   const navItems = [
     { name: "지식 속삭임", href: "/", icon: MessageSquareQuote },
     { name: "위스퍼러", href: "/mentors", icon: Award },
-    { name: "프로그램", href: "/programs", icon: GraduationCap },
+    { name: "프로그램", href: "/programs" },
     { name: "강사 정보", href: "/instructors", icon: Star },
     { name: "쪽지함", href: "/messages", icon: Mail, badgeCount: unreadMessages?.length || 0 },
     { name: "채용 정보", href: "/jobs", icon: Briefcase },
@@ -41,7 +42,7 @@ export function BottomNav() {
         <div className="flex justify-around items-center h-18 md:h-20 py-2">
           {navItems.map((item) => {
             const isActive = pathname === item.href
-            const Icon = item.icon
+            const Icon = (item as any).icon || GraduationCap // Fallback for missing icon
             
             // 쪽지함은 로그인한 사용자에게만 특별한 배지와 함께 노출 (비로그인시에는 그냥 아이콘만 노출되거나 홈으로 유도 가능)
             if (item.name === "쪽지함" && !user) return null;
@@ -60,9 +61,9 @@ export function BottomNav() {
                     "w-4 h-4 md:w-5 md:h-5 transition-colors",
                     isActive ? "text-accent stroke-[3]" : "text-primary/30"
                   )} />
-                  {item.badgeCount && item.badgeCount > 0 ? (
+                  {(item as any).badgeCount && (item as any).badgeCount > 0 ? (
                     <Badge className="absolute -top-1 -right-1 bg-accent text-primary border-none text-[8px] h-4 w-4 flex items-center justify-center p-0 rounded-full animate-bounce">
-                      {item.badgeCount}
+                      {(item as any).badgeCount}
                     </Badge>
                   ) : null}
                 </div>

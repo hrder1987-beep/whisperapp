@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Search, User as UserIcon, LogOut, LayoutDashboard, Menu, X, Mail } from "lucide-react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { useUser, useAuth, useCollection, useMemoFirebase } from "@/firebase"
+import { useUser, useAuth, useCollection, useMemoFirebase, useFirestore } from "@/firebase"
 import { signOut } from "firebase/auth"
 import { collection, query, where } from "firebase/firestore"
 import { cn } from "@/lib/utils"
@@ -36,17 +36,18 @@ export function Header({
   const router = useRouter()
   const { user } = useUser()
   const auth = useAuth()
+  const db = useFirestore()
   const [searchQuery, setSearchQuery] = useState("")
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const unreadMessagesQuery = useMemoFirebase(() => {
-    if (!user) return null
+    if (!db || !user) return null
     return query(
-      collection(user.firestore, "messages"),
+      collection(db, "messages"),
       where("receiverId", "==", user.uid),
       where("isRead", "==", false)
     )
-  }, [user])
+  }, [db, user])
   const { data: unreadMessages } = useCollection(unreadMessagesQuery)
 
   const handleLogout = () => {
