@@ -46,12 +46,14 @@ export interface TrainingProgram {
   id: string;
   title: string;
   description: string;
+  companyDescription?: string;
   instructorName: string;
   category: string;
   subCategory?: string;
   startDate: string;
   endDate: string;
   imageUrl?: string;
+  videoUrl?: string;
   userId: string;
   createdAt: number;
 }
