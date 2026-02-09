@@ -14,6 +14,7 @@ import { doc, setDoc } from "firebase/firestore"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
 import { LogIn, UserPlus, Camera, X, Sparkles } from "lucide-react"
+import { sendWelcomeEmail } from "@/ai/flows/send-welcome-email-flow"
 
 function AuthContent() {
   const searchParams = useSearchParams()
@@ -69,6 +70,7 @@ function AuthContent() {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password)
       const user = userCredential.user
 
+      // 1. Firestore에 사용자 프로필 저장
       await setDoc(doc(db, "users", user.uid), {
         id: user.uid,
         username,
@@ -78,12 +80,16 @@ function AuthContent() {
         department,
         jobTitle,
         phoneNumber: phone,
-        role: "member", // 기본 역할은 일반 멤버
+        role: "member",
         registrationDate: new Date().toISOString(),
         profilePictureUrl: profilePicture || null
       })
 
-      toast({ title: "가입 완료!", description: "Whisper의 일원이 되신 것을 환영합니다." })
+      // 2. 자동 웰컴 메일 발송 플로우 트리거 (Server Action)
+      // 비동기로 처리하여 가입 프로세스 지연 방지
+      sendWelcomeEmail({ name, email }).catch(err => console.error("Welcome email failed:", err));
+
+      toast({ title: "가입 완료!", description: "Whisper의 일원이 되신 것을 환영합니다. 가입 환영 메일을 확인해주세요!" })
       router.push("/")
     } catch (error: any) {
       toast({ title: "가입 실패", description: error.message, variant: "destructive" })
