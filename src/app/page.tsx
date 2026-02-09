@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo } from "react"
@@ -103,7 +104,7 @@ export default function HomePage() {
     return [...questions].sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0)).slice(0, 5)
   }, [questions])
 
-  const handleAddQuestion = (nickname: string, title: string, text: string, imageUrl?: string, category?: string) => {
+  const handleAddQuestion = (nickname: string, title: string, text: string, imageUrl?: string, videoUrl?: string, category?: string) => {
     if (!db || !user) {
       toast({ title: "로그인 필요", description: "질문을 등록하려면 로그인이 필요합니다.", variant: "destructive" })
       return
@@ -117,6 +118,7 @@ export default function HomePage() {
       userRole: (profile?.role as UserRole) || "member",
       userProfilePicture: profile?.profilePictureUrl || null,
       imageUrl: imageUrl || null,
+      videoUrl: videoUrl || null,
       category: category || null,
       viewCount: 0,
       answerCount: 0,
@@ -129,7 +131,7 @@ export default function HomePage() {
           const aiAnswer = {
             questionId: docRef.id,
             text: res.replyText,
-            nickname: "알디 (AI Whisper)",
+            nickname: "알디",
             userId: "ai-whisper",
             userRole: "admin",
             createdAt: Date.now(),

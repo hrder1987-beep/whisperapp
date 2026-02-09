@@ -26,6 +26,7 @@ export interface Question {
   answerCount: number;
   createdAt: number;
   imageUrl?: string;
+  videoUrl?: string;
   category?: string;
   userProfilePicture?: string;
 }

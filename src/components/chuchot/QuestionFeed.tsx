@@ -174,6 +174,12 @@ export function QuestionFeed({
                       />
                     </div>
                   )}
+
+                  {isExpanded && q.videoUrl && (
+                    <div className="relative w-full rounded-2xl overflow-hidden border border-primary/5 bg-black mt-8 animate-in fade-in zoom-in duration-500">
+                      <video src={q.videoUrl} controls className="w-full max-h-[500px]" />
+                    </div>
+                  )}
                 </div>
 
                 {isExpanded && (

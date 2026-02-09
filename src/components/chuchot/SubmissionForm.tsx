@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
-import { ImageIcon, X, Smile, Send, Hash } from "lucide-react"
+import { ImageIcon, X, Smile, Send, Hash, Video } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import Image from "next/image"
 import { Separator } from "@/components/ui/separator"
@@ -18,7 +18,7 @@ import { doc } from "firebase/firestore"
 
 interface SubmissionFormProps {
   placeholder: string
-  onSubmit: (nickname: string, title: string, text: string, imageUrl?: string, category?: string) => void
+  onSubmit: (nickname: string, title: string, text: string, imageUrl?: string, videoUrl?: string, category?: string) => void
   type: "question" | "answer"
 }
 
@@ -34,9 +34,11 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
   const [title, setTitle] = useState("")
   const [text, setText] = useState("")
   const [imageUrl, setImageUrl] = useState<string | undefined>(undefined)
+  const [videoUrl, setVideoUrl] = useState<string | undefined>(undefined)
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const videoInputRef = useRef<HTMLInputElement>(null)
   const { toast } = useToast()
 
   const nickname = profile?.username || "익명전문가"
@@ -49,7 +51,26 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
         return
       }
       const reader = new FileReader()
-      reader.onloadend = () => setImageUrl(reader.result as string)
+      reader.onloadend = () => {
+        setImageUrl(reader.result as string)
+        setVideoUrl(undefined) // 이미지와 영상은 동시에 하나만
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      if (file.size > 50 * 1024 * 1024) {
+        toast({ title: "파일 크기 초과", description: "영상은 50MB 이하만 가능합니다.", variant: "destructive" })
+        return
+      }
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setVideoUrl(reader.result as string)
+        setImageUrl(undefined) // 이미지와 영상은 동시에 하나만
+      }
       reader.readAsDataURL(file)
     }
   }
@@ -73,8 +94,8 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
 
     setIsSubmitting(true)
     setTimeout(() => {
-      onSubmit(nickname, title, text, imageUrl, selectedCategory || undefined)
-      setTitle(""); setText(""); setImageUrl(undefined); setSelectedCategory(null)
+      onSubmit(nickname, title, text, imageUrl, videoUrl, selectedCategory || undefined)
+      setTitle(""); setText(""); setImageUrl(undefined); setVideoUrl(undefined); setSelectedCategory(null)
       setIsSubmitting(false)
       toast({ title: "게시 완료", description: "HR 지성이 한 층 더 쌓였습니다." })
     }, 400)
@@ -136,16 +157,28 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
             </div>
           )}
 
+          {videoUrl && (
+            <div className="relative w-full rounded-2xl overflow-hidden border border-primary/10 max-w-lg mx-auto">
+              <video src={videoUrl} controls className="w-full max-h-[300px]" />
+              <button type="button" className="absolute top-2 right-2 bg-black/50 text-white p-1.5 rounded-full" onClick={() => setVideoUrl(undefined)}><X className="h-4 w-4" /></button>
+            </div>
+          )}
+
           <Separator className="bg-primary/5" />
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={handleImageChange} />
+              <input type="file" accept="video/*" className="hidden" ref={videoInputRef} onChange={handleVideoChange} />
               <Button type="button" variant="ghost" size="sm" className="text-primary/40 rounded-xl" onClick={() => fileInputRef.current?.click()}>
                 <ImageIcon className="w-4 h-4 mr-2 text-emerald-500" />
                 <span className="font-black text-[12px]">이미지</span>
               </Button>
+              <Button type="button" variant="ghost" size="sm" className="text-primary/40 rounded-xl" onClick={() => videoInputRef.current?.click()}>
+                <Video className="w-4 h-4 mr-2 text-blue-500" />
+                <span className="font-black text-[12px]">영상</span>
+              </Button>
             </div>
-            <Button type="submit" disabled={isSubmitting || !text.trim()} className="bg-primary text-accent font-black h-11 px-8 rounded-xl shadow-lg">
+            <Button type="submit" disabled={isSubmitting || !text.trim()} className="bg-primary text-accent font-black h-11 px-8 rounded-xl shadow-lg transition-transform hover:scale-105 active:scale-95">
               {isSubmitting ? "전송 중..." : "게시하기"}
               <Send className="w-4 h-4 ml-2" />
             </Button>
