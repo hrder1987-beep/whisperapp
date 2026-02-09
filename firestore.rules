@@ -15,12 +15,15 @@ service cloud.firestore {
     }
 
     function isAdmin() {
-      return isSignedIn() && 
-        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      // 마스터 관리자 이메일 또는 DB상 admin 역할 확인
+      return isSignedIn() && (
+        request.auth.token.email == 'forum@khrd.co.kr' ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin')
+      );
     }
 
-    // 기본 설정 및 카테고리 정보
+    // 기본 설정 및 사이트 구성 정보 (공개 읽기)
     match /admin_configuration/{configId} {
       allow read: if true;
       allow write: if isAdmin(); 
@@ -29,7 +32,7 @@ service cloud.firestore {
     // 사용자 프로필
     match /users/{userId} {
       allow get: if isSignedIn();
-      allow list: if isSignedIn(); 
+      allow list: if isAdmin(); 
       allow create: if isOwner(userId);
       allow update: if isOwner(userId) || isAdmin();
       allow delete: if isAdmin();
@@ -84,7 +87,7 @@ service cloud.firestore {
       allow update, delete: if isSignedIn() && resource.data.userId == request.auth.uid;
     }
 
-    // 피드 및 댓글 (공개 읽기 권장)
+    // 지식 피드 및 답변 (공개 읽기 허용)
     match /questions/{questionId} {
       allow read: if true;
       allow create: if isSignedIn();
