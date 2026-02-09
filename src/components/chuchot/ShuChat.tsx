@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState } from "react"
@@ -15,7 +16,7 @@ interface Message {
 
 export function AldiChat() {
   const [messages, setMessages] = useState<Message[]>([
-    { role: "bot", text: "반가워요! Whisper의 HR 인텔리전스 가이드 '알디(ALDI)'입니다. 어떤 고민을 함께 나눠볼까요?" }
+    { role: "bot", text: "반가워요! Whisper의 HR 인텔리전스 가이드 '알디'입니다. 어떤 고민을 함께 나눠볼까요?" }
   ])
   const [input, setInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
@@ -46,8 +47,8 @@ export function AldiChat() {
             <Sparkles className="w-5 h-5 text-accent animate-pulse" />
           </div>
           <div>
-            <CardTitle className="text-white text-lg font-black">AI 알디(ALDI)</CardTitle>
-            <p className="text-[10px] text-accent/80 font-bold">Whisper Intelligence Guide</p>
+            <CardTitle className="text-white text-lg font-black">알디</CardTitle>
+            <p className="text-[10px] text-accent/80 font-bold">HR전문 AI챗봇 알디입니다</p>
           </div>
         </div>
       </CardHeader>
@@ -109,7 +110,7 @@ export function AldiChat() {
           </Button>
         </div>
         <p className="text-[9px] text-center text-primary/20 mt-2 font-bold tracking-tighter">
-          *알디는 Whisper의 HR 전문가 DB를 기반으로 답변합니다.
+          HR전문 AI챗봇 알디입니다
         </p>
       </div>
     </Card>
