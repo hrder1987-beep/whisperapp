@@ -34,7 +34,6 @@ export default function InstructorsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  // New instructor form state
   const [name, setName] = useState("")
   const [specialty, setSpecialty] = useState("")
   const [bio, setBio] = useState("")

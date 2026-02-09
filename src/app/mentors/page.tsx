@@ -1,7 +1,7 @@
 
 "use client"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { Header } from "@/components/chuchot/Header"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -12,20 +12,23 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase"
 import { collection, query, orderBy, addDoc } from "firebase/firestore"
 import { Instructor } from "@/lib/types"
-import { Plus, Star, Award, Briefcase, MessageSquare, Crown } from "lucide-react"
+import { Plus, Star, Award, Briefcase, MessageSquare, Crown, Camera, X } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
 export default function MentorsPage() {
   const { user } = useUser()
   const db = useFirestore()
   const { toast } = useToast()
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
   const [searchQuery, setSearchQuery] = useState("")
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const [name, setName] = useState("")
   const [specialty, setSpecialty] = useState("")
   const [bio, setBio] = useState("")
-  const [profilePictureUrl, setProfilePictureUrl] = useState("")
+  const [profilePictureUrl, setProfilePictureUrl] = useState<string | null>(null)
 
   const mentorsQuery = useMemoFirebase(() => {
     if (!db) return null
@@ -40,6 +43,15 @@ export default function MentorsPage() {
     m.specialty.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onloadend = () => setProfilePictureUrl(reader.result as string)
+      reader.readAsDataURL(file)
+    }
+  }
+
   const handleAddMentor = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!user) {
@@ -47,6 +59,7 @@ export default function MentorsPage() {
       return
     }
 
+    setIsSubmitting(true)
     try {
       await addDoc(collection(db, "mentors"), {
         name,
@@ -59,9 +72,11 @@ export default function MentorsPage() {
       })
       toast({ title: "신청 완료", description: "멘토 프로필이 등록되었습니다. 관리자 승인 후 뱃지가 부여됩니다." })
       setIsDialogOpen(false)
-      setName(""); setSpecialty(""); setBio(""); setProfilePictureUrl("")
+      setName(""); setSpecialty(""); setBio(""); setProfilePictureUrl(null)
     } catch (error) {
       toast({ title: "오류 발생", description: "등록 중 문제가 발생했습니다.", variant: "destructive" })
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -83,11 +98,28 @@ export default function MentorsPage() {
                 멘토 신청하기
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-xl bg-white border-none rounded-[2.5rem] p-8">
+            <DialogContent className="max-w-xl bg-white border-none rounded-[2.5rem] p-8 shadow-2xl">
               <DialogHeader>
                 <DialogTitle className="text-2xl font-black text-primary mb-6">Whisper HR 멘토 등록</DialogTitle>
               </DialogHeader>
               <form onSubmit={handleAddMentor} className="space-y-6">
+                <div className="flex flex-col items-center mb-4">
+                  <div 
+                    onClick={() => fileInputRef.current?.click()}
+                    className="relative w-32 h-32 rounded-[2rem] bg-primary/5 border-2 border-dashed border-primary/10 flex flex-col items-center justify-center cursor-pointer hover:border-accent transition-all overflow-hidden"
+                  >
+                    {profilePictureUrl ? (
+                      <img src={profilePictureUrl} alt="preview" className="w-full h-full object-cover" />
+                    ) : (
+                      <>
+                        <Camera className="w-8 h-8 text-primary/20 mb-1" />
+                        <p className="text-[10px] text-primary/40 font-black">프로필 사진</p>
+                      </>
+                    )}
+                  </div>
+                  <input type="file" ref={fileInputRef} onChange={handleImageChange} accept="image/*" className="hidden" />
+                </div>
+
                 <div className="space-y-2">
                   <label className="text-xs font-black text-primary/40 ml-1">성함</label>
                   <Input value={name} onChange={e => setName(e.target.value)} required placeholder="성함" className="h-12 bg-primary/5 border-none rounded-xl" />
@@ -100,11 +132,9 @@ export default function MentorsPage() {
                   <label className="text-xs font-black text-primary/40 ml-1">소개 및 핵심 역량</label>
                   <Textarea value={bio} onChange={e => setBio(e.target.value)} required placeholder="동료 HR 전문가들에게 전하고 싶은 가치와 경력을 입력하세요" className="bg-primary/5 border-none rounded-xl min-h-[150px]" />
                 </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-black text-primary/40 ml-1">프로필 이미지 URL</label>
-                  <Input value={profilePictureUrl} onChange={e => setProfilePictureUrl(e.target.value)} placeholder="https://..." className="h-12 bg-primary/5 border-none rounded-xl" />
-                </div>
-                <Button type="submit" className="w-full h-14 bg-primary text-accent font-black rounded-2xl shadow-lg mt-4">멘토 프로필 등록</Button>
+                <Button type="submit" disabled={isSubmitting} className="w-full h-14 bg-primary text-accent font-black rounded-2xl shadow-lg mt-4">
+                  {isSubmitting ? "등록 중..." : "멘토 프로필 등록"}
+                </Button>
               </form>
             </DialogContent>
           </Dialog>
