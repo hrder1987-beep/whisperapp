@@ -30,13 +30,6 @@ const nextConfig: NextConfig = {
         pathname: '/**',
       },
     ],
-  },
-  experimental: {
-    // Cloud Workstations 환경에서 HMR 및 Fast Refresh가 정상 작동하도록 허용된 도메인 추가
-    allowedDevOrigins: [
-      '*.cloudworkstations.dev',
-      'localhost:9002'
-    ]
   }
 };
 
