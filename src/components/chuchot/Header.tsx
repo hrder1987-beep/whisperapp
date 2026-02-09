@@ -17,10 +17,15 @@ import { Badge } from "@/components/ui/badge"
 
 interface HeaderProps {
   onSearch?: (query: string) => void
+  isAdminMode?: boolean
+  isCMSActive?: boolean
+  onToggleCMS?: () => void
+  onExitAdmin?: () => void
+  onOpenAdminAuth?: () => void
 }
 
 export function Header({ 
-  onSearch, 
+  onSearch,
 }: HeaderProps) {
   const pathname = usePathname()
   const router = useRouter()
