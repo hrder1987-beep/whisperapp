@@ -19,15 +19,29 @@ import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
 
 const INSTRUCTOR_CATEGORIES = [
-  "전체보기", "HRD/교육공학", "리더십/코칭", "조직문화/개발", "채용/면접관", "인사전략/HRM", "DX/AI 활용", "비즈니스 스킬", "공공/법정의무", "심리/힐링"
+  "전체보기", 
+  "HRD", 
+  "리더십", 
+  "신입사원", 
+  "비즈니스 스킬", 
+  "변화관리", 
+  "공통역량", 
+  "영업/CS", 
+  "공공조직 맞춤교육", 
+  "조직문화/조직개발", 
+  "커리어컨설팅", 
+  "조직활성화", 
+  "어학교육", 
+  "법정의무교육", 
+  "기타"
 ]
 
 const MOCK_INSTRUCTORS: Instructor[] = [
   {
     id: "inst-1",
     name: "최영희",
-    specialty: "비즈니스 커뮤니케이션",
-    bio: "국내 대기업 및 공공기관 500회 이상의 출강 경력을 보유하고 있습니다. 갈등 관리와 비즈니스 매너, 세대 간 소통 전문가로서 실질적인 변화를 이끌어냅니다.",
+    specialty: "비즈니스 스킬",
+    bio: "커뮤니케이션 및 갈등 관리 전문가. 국내 대기업 및 공공기관 500회 이상의 출강 경력을 보유하고 있으며, 실질적인 조직 내 관계 개선 솔루션을 제안합니다.",
     profilePictureUrl: "https://picsum.photos/seed/inst1/400/400",
     userId: "mock-i1",
     createdAt: Date.now()
@@ -35,8 +49,8 @@ const MOCK_INSTRUCTORS: Instructor[] = [
   {
     id: "inst-2",
     name: "정성진",
-    specialty: "DX/AI 활용 실무",
-    bio: "HR 테크와 AI 도입 전략 전문가입니다. 생성형 AI를 활용한 업무 자동화 및 HR 데이터 분석 강의를 통해 조직의 디지털 전환을 돕고 있습니다.",
+    specialty: "리더십",
+    bio: "팀장 리더십 개발 및 코칭 전문가. 신임 팀장들을 위한 성과 관리와 팀워크 구축 프로세스를 데이터 기반으로 강의합니다.",
     profilePictureUrl: "https://picsum.photos/seed/inst2/400/400",
     userId: "mock-i2",
     createdAt: Date.now()
@@ -44,8 +58,8 @@ const MOCK_INSTRUCTORS: Instructor[] = [
   {
     id: "inst-3",
     name: "강수진",
-    specialty: "기획력 및 문서작성",
-    bio: "논리적 사고 기반의 기획서 작성 및 프레젠테이션 스킬을 전수합니다. 한 장의 보고서로 의사결정권자를 설득하는 압도적인 노하우를 공유합니다.",
+    specialty: "HRD",
+    bio: "교육과정개발 및 사내강사 양성 전문가. ADDIE 모델 기반의 실무 워크숍을 통해 기업 내 교육 전문가를 육성합니다.",
     profilePictureUrl: "https://picsum.photos/seed/inst3/400/400",
     userId: "mock-i3",
     createdAt: Date.now()
@@ -87,7 +101,7 @@ export default function InstructorsPage() {
       const matchesSearch = i.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           i.specialty.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           i.bio.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesCategory = selectedCategory === "전체보기" || i.specialty.includes(selectedCategory);
+      const matchesCategory = selectedCategory === "전체보기" || i.specialty === selectedCategory;
       return matchesSearch && matchesCategory;
     });
   }, [instructors, searchQuery, selectedCategory]);
@@ -146,7 +160,7 @@ export default function InstructorsPage() {
               <span className="text-xs font-black text-accent uppercase tracking-[0.2em]">Instructor PR Center</span>
             </div>
             <h1 className="text-4xl md:text-5xl font-black text-primary tracking-tighter">강사 정보</h1>
-            <p className="text-lg font-bold text-primary/30 max-w-2xl">압도적인 전문성과 검증된 강의력을 갖춘 최고의 HR 파트너들을 소개합니다.</p>
+            <p className="text-lg font-bold text-primary/30 max-w-2xl">각 분야별 최고의 전문 강사진을 만나보세요.</p>
             
             <div className="relative max-w-xl group pt-4">
               <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-primary/30 group-focus-within:text-accent transition-colors" />
@@ -198,9 +212,9 @@ export default function InstructorsPage() {
                   <Input value={name} onChange={e => setName(e.target.value)} required placeholder="강사 성함" className="h-12 bg-primary/5 border-none rounded-xl" />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-xs font-black text-primary/40 ml-2">전문 분야</label>
+                  <label className="text-xs font-black text-primary/40 ml-2">주요 카테고리</label>
                   <Select onValueChange={setSpecialty} required>
-                    <SelectTrigger className="h-12 bg-primary/5 border-none rounded-xl"><SelectValue placeholder="주요 분야 선택" /></SelectTrigger>
+                    <SelectTrigger className="h-12 bg-primary/5 border-none rounded-xl"><SelectValue placeholder="카테고리 선택" /></SelectTrigger>
                     <SelectContent>
                       {INSTRUCTOR_CATEGORIES.filter(c => c !== "전체보기").map(c => (
                         <SelectItem key={c} value={c}>{c}</SelectItem>
@@ -209,8 +223,8 @@ export default function InstructorsPage() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-xs font-black text-primary/40 ml-2">자기 소개 및 주요 경력</label>
-                  <Textarea value={bio} onChange={e => setBio(e.target.value)} required placeholder="주요 출강 기관 및 대표 강의 주제를 설명해주세요" className="bg-primary/5 border-none rounded-xl min-h-[150px]" />
+                  <label className="text-xs font-black text-primary/40 ml-2">상세 분야 및 약력</label>
+                  <Textarea value={bio} onChange={e => setBio(e.target.value)} required placeholder="세부 전공 주제와 대표 경력을 입력해주세요" className="bg-primary/5 border-none rounded-xl min-h-[150px]" />
                 </div>
                 <Button type="submit" disabled={isSubmitting} className="w-full h-14 bg-primary text-accent font-black rounded-2xl shadow-lg mt-6">
                   {isSubmitting ? "등록 중..." : "강사 프로필 게시하기"}
@@ -220,15 +234,15 @@ export default function InstructorsPage() {
           </Dialog>
         </div>
 
-        <div className="flex flex-wrap gap-3 mb-16">
+        <div className="flex flex-wrap gap-2 mb-16">
           {INSTRUCTOR_CATEGORIES.map((cat) => (
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
               className={cn(
-                "px-6 py-3 rounded-2xl text-[15px] font-black transition-all border-2",
+                "px-5 py-2.5 rounded-full text-xs font-black transition-all border-2",
                 selectedCategory === cat 
-                  ? "bg-primary text-accent border-primary shadow-xl scale-105" 
+                  ? "bg-primary text-accent border-primary shadow-lg scale-105" 
                   : "bg-white text-primary/30 border-primary/5 hover:border-accent/30 hover:text-primary"
               )}
             >
@@ -249,14 +263,14 @@ export default function InstructorsPage() {
                     <div className="relative w-44 h-44 rounded-[3rem] overflow-hidden border-4 border-white shadow-2xl">
                        <img src={i.profilePictureUrl} alt={i.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                     </div>
-                    <Badge className="absolute -bottom-3 right-0 bg-primary text-accent font-black border-none px-5 py-2 rounded-xl shadow-2xl flex gap-1.5 items-center animate-pulse">
+                    <Badge className="absolute -bottom-3 right-0 bg-primary text-accent font-black border-none px-5 py-2 rounded-xl shadow-2xl flex gap-1.5 items-center">
                       <Check className="w-4 h-4" /> VERIFIED
                     </Badge>
                   </div>
                   
                   <div className="space-y-1.5 mb-8">
                     <h3 className="text-2xl font-black text-primary group-hover:text-accent transition-colors">{i.name} 강사</h3>
-                    <p className="text-accent font-black text-xs uppercase tracking-[0.25em]">#{i.specialty}</p>
+                    <Badge variant="outline" className="border-accent/20 text-accent font-black text-[10px] px-3 py-0.5">#{i.specialty}</Badge>
                   </div>
                   
                   <div className="w-16 h-1.5 bg-primary/5 rounded-full mb-8 group-hover:w-28 group-hover:bg-accent transition-all duration-500"></div>
