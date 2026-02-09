@@ -4,14 +4,16 @@
 import { Logo } from "./Logo"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Search, User as UserIcon, LogOut, LayoutDashboard, Menu, X } from "lucide-react"
+import { Search, User as UserIcon, LogOut, LayoutDashboard, Menu, X, Mail } from "lucide-react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { useUser, useAuth } from "@/firebase"
+import { useUser, useAuth, useCollection, useMemoFirebase } from "@/firebase"
 import { signOut } from "firebase/auth"
+import { collection, query, where } from "firebase/firestore"
 import { cn } from "@/lib/utils"
 import { useState } from "react"
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet"
+import { Badge } from "@/components/ui/badge"
 
 interface HeaderProps {
   onSearch?: (query: string) => void
@@ -36,6 +38,16 @@ export function Header({
   const auth = useAuth()
   const [searchQuery, setSearchQuery] = useState("")
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+
+  const unreadMessagesQuery = useMemoFirebase(() => {
+    if (!user) return null
+    return query(
+      collection(user.firestore, "messages"),
+      where("receiverId", "==", user.uid),
+      where("isRead", "==", false)
+    )
+  }, [user])
+  const { data: unreadMessages } = useCollection(unreadMessagesQuery)
 
   const handleLogout = () => {
     signOut(auth)
@@ -151,6 +163,19 @@ export function Header({
               <LayoutDashboard className="w-3.5 h-3.5" />
               CMS EDIT
             </Button>
+          )}
+
+          {user && (
+            <Link href="/messages" className="relative group">
+              <Button variant="ghost" size="icon" className="text-white hover:text-accent hover:bg-white/5 rounded-full">
+                <Mail className="w-5 h-5" />
+                {unreadMessages && unreadMessages.length > 0 && (
+                  <Badge className="absolute -top-1 -right-1 bg-accent text-primary border-none text-[8px] h-4 w-4 flex items-center justify-center p-0 rounded-full animate-bounce">
+                    {unreadMessages.length}
+                  </Badge>
+                )}
+              </Button>
+            </Link>
           )}
 
           {user ? (

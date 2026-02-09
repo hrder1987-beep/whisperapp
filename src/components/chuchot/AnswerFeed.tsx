@@ -1,15 +1,18 @@
 
 "use client"
 
+import { useState } from "react"
 import { Answer } from "@/lib/types"
 import { Card, CardContent } from "@/components/ui/card"
 import { formatDistanceToNow } from "date-fns"
 import { ko } from "date-fns/locale"
-import { Clock, Trash2, Award, Crown } from "lucide-react"
+import { Clock, Trash2, Award, Crown, Mail } from "lucide-react"
 import { AvatarIcon } from "./AvatarIcon"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { MessageDialog } from "./MessageDialog"
 import { cn } from "@/lib/utils"
+import { useUser } from "@/firebase"
 
 interface AnswerFeedProps {
   answers: Answer[]
@@ -18,6 +21,8 @@ interface AnswerFeedProps {
 }
 
 export function AnswerFeed({ answers, isAdminMode = false, onDeleteAnswer }: AnswerFeedProps) {
+  const { user } = useUser()
+  const [messageTarget, setMessageTarget] = useState<{ id: string, nickname: string } | null>(null)
   const sortedAnswers = [...answers].sort((a, b) => b.createdAt - a.createdAt)
 
   return (
@@ -52,15 +57,28 @@ export function AnswerFeed({ answers, isAdminMode = false, onDeleteAnswer }: Ans
                         </div>
                       )}
                     </div>
-                    <span className={cn(
-                      "font-bold text-sm",
-                      isMentor ? "text-accent" : "text-primary"
-                    )}>
-                      @{a.nickname}
-                    </span>
-                    {isMentor && (
-                      <Badge className="bg-accent text-primary text-[9px] font-black border-none px-1.5 py-0">WHISPERER</Badge>
-                    )}
+                    <div className="flex items-center gap-1.5">
+                      <span className={cn(
+                        "font-bold text-sm",
+                        isMentor ? "text-accent" : "text-primary"
+                      )}>
+                        @{a.nickname}
+                      </span>
+                      {isMentor && (
+                        <Badge className="bg-accent text-primary text-[9px] font-black border-none px-1.5 py-0">WHISPERER</Badge>
+                      )}
+                      {user && user.uid !== a.userId && (
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setMessageTarget({ id: a.userId, nickname: a.nickname });
+                          }}
+                          className="p-1 text-primary/20 hover:text-accent transition-colors bg-primary/5 rounded-full"
+                        >
+                          <Mail className="w-2.5 h-2.5" />
+                        </button>
+                      )}
+                    </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-muted-foreground flex items-center gap-1 text-[10px]">
@@ -86,6 +104,15 @@ export function AnswerFeed({ answers, isAdminMode = false, onDeleteAnswer }: Ans
             </Card>
           )
         })
+      )}
+
+      {messageTarget && (
+        <MessageDialog 
+          isOpen={!!messageTarget}
+          onClose={() => setMessageTarget(null)}
+          receiverId={messageTarget.id}
+          receiverNickname={messageTarget.nickname}
+        />
       )}
     </div>
   )

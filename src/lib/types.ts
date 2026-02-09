@@ -81,3 +81,14 @@ export interface JobListing {
   createdAt: number;
   userId: string;
 }
+
+export interface PrivateMessage {
+  id: string;
+  senderId: string;
+  senderNickname: string;
+  receiverId: string;
+  receiverNickname: string;
+  content: string;
+  createdAt: number;
+  isRead: boolean;
+}

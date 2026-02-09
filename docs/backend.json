@@ -61,6 +61,23 @@
         "userId": { "type": "string" }
       },
       "required": ["id", "companyName", "title", "location", "deadline", "createdAt"]
+    },
+    "PrivateMessage": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "PrivateMessage",
+      "type": "object",
+      "description": "사용자 간 1:1 개인 쪽지",
+      "properties": {
+        "id": { "type": "string" },
+        "senderId": { "type": "string" },
+        "senderNickname": { "type": "string" },
+        "receiverId": { "type": "string" },
+        "receiverNickname": { "type": "string" },
+        "content": { "type": "string" },
+        "createdAt": { "type": "number" },
+        "isRead": { "type": "boolean" }
+      },
+      "required": ["senderId", "receiverId", "content", "createdAt"]
     }
   },
   "auth": {
@@ -78,6 +95,10 @@
     "/jobs/{jobId}": {
       "schema": { "$ref": "#/entities/JobListing" },
       "description": "HR 채용 정보 데이터베이스"
+    },
+    "/messages/{messageId}": {
+      "schema": { "$ref": "#/entities/PrivateMessage" },
+      "description": "1:1 개인 쪽지 데이터"
     },
     "/admin_configuration/site_settings": {
       "schema": { "type": "object" },

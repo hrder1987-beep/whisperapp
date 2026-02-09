@@ -1,9 +1,10 @@
 
 "use client"
 
+import { useState } from "react"
 import { Question, Answer } from "@/lib/types"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
-import { MessageCircle, Eye, Clock, Bookmark, ChevronDown, ChevronUp, Trash2, Crown } from "lucide-react"
+import { MessageCircle, Eye, Clock, Bookmark, ChevronDown, ChevronUp, Trash2, Crown, Mail } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 import { ko } from "date-fns/locale"
 import { Button } from "@/components/ui/button"
@@ -12,7 +13,9 @@ import { AvatarIcon } from "./AvatarIcon"
 import { Badge } from "@/components/ui/badge"
 import { AnswerFeed } from "./AnswerFeed"
 import { SubmissionForm } from "./SubmissionForm"
+import { MessageDialog } from "./MessageDialog"
 import { cn } from "@/lib/utils"
+import { useUser } from "@/firebase"
 
 interface QuestionFeedProps {
   questions: Question[]
@@ -39,6 +42,9 @@ export function QuestionFeed({
   onDeleteQuestion,
   onDeleteAnswer
 }: QuestionFeedProps) {
+  const { user } = useUser()
+  const [messageTarget, setMessageTarget] = useState<{ id: string, nickname: string } | null>(null)
+
   return (
     <div className="space-y-4 md:space-y-6">
       <div className="flex items-center justify-between mb-2 overflow-x-auto pb-2 scrollbar-hide px-1">
@@ -120,6 +126,17 @@ export function QuestionFeed({
                           <Badge className="bg-accent text-primary text-[8px] md:text-[9px] font-black border-none px-1.5 py-0 md:px-2 md:py-0.5 rounded-md">WHISPERER</Badge>
                         ) : (
                           <Badge variant="secondary" className="bg-primary/5 text-[8px] md:text-[9px] text-primary/40 font-black border-none px-1.5 py-0 md:px-2 md:py-0.5 rounded-md tracking-tighter">PRO</Badge>
+                        )}
+                        {user && user.uid !== q.userId && (
+                          <button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setMessageTarget({ id: q.userId, nickname: q.nickname });
+                            }}
+                            className="p-1.5 text-primary/20 hover:text-accent transition-colors bg-primary/5 rounded-full"
+                          >
+                            <Mail className="w-3 h-3 md:w-3.5 md:h-3.5" />
+                          </button>
                         )}
                       </div>
                       <span className="text-[10px] md:text-[11px] font-bold text-primary/30 flex items-center gap-1">
@@ -225,6 +242,15 @@ export function QuestionFeed({
             </Card>
           )
         })
+      )}
+
+      {messageTarget && (
+        <MessageDialog 
+          isOpen={!!messageTarget}
+          onClose={() => setMessageTarget(null)}
+          receiverId={messageTarget.id}
+          receiverNickname={messageTarget.nickname}
+        />
       )}
     </div>
   )
