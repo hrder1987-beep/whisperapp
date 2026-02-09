@@ -17,30 +17,27 @@ import { cn } from "@/lib/utils"
 import { useFirestore, useCollection, useDoc, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking, useUser } from "@/firebase"
 import { collection, query, orderBy, doc, increment } from "firebase/firestore"
 
-// --- 실무 샘플 데이터 (Q1-Q130) ---
+// --- 실무 샘플 데이터 (Q1-Q130 + 신규 HRD Q31-Q100) ---
 const MOCK_QUESTIONS: Question[] = [
   { id: "sample-1", title: "휴일에 근무하면 무조건 보상휴가로 처리해야 하나요?", text: "안녕하세요. 저희 팀원이 이번 주말에 업무가 몰려서 나와서 일하게 됐는데, 이걸 꼭 보상휴가로만 줘야 하는 건지 궁금해서요. 대체휴일로 운영해도 법적으로 문제가 없을까요? 다른 회사 실무자분들은 어떻게 처리하시나요?", nickname: "초보인사돌이", userId: "mock-1", userRole: "member", jobTitle: "인사담당자", viewCount: 142, answerCount: 1, createdAt: Date.now() - 1000 * 60 * 60 * 1, category: "인사전략/HRM" },
-  { id: "sample-2", title: "휴일대체 동의서, 매번 개인별로 다 받아야 할까요?", text: "인원이 꽤 되다 보니 휴일대체 할 때마다 일일이 사인 받는 게 정말 큰 일이네요... 근로자대표랑 합의만 되어 있으면 개별 동의는 안 받아도 되는지, 아니면 그래도 안전하게 다 받아야 하는지 조언 부탁드려요!", nickname: "프로페이롤러", userId: "mock-2", userRole: "member", jobTitle: "HR운영", viewCount: 98, answerCount: 1, createdAt: Date.now() - 1000 * 60 * 60 * 3, category: "현업 고민" },
-  { id: "sample-3", title: "휴일근무 대체휴무, 주휴일만 가능한가요?", text: "주말 근무 건으로 대체휴무를 주려고 하는데, 이게 법적으로 주휴일에만 해당되는 건지 헷갈리네요. 평일 공휴일에 일한 건 어떻게 처리하는 게 깔끔할까요?", nickname: "연차계산중", userId: "mock-3", userRole: "member", jobTitle: "인사총무", viewCount: 110, answerCount: 1, createdAt: Date.now() - 1000 * 60 * 60 * 5, category: "인사전략/HRM" },
-  { id: "sample-4", title: "노사협의회 설치할 때 선거관리위원회 꼭 있어야 하나요?", text: "이번에 처음으로 노사협의회를 만들려고 하는데 서류가 정말 많네요 ㅜㅜ 선관위 구성을 반드시 해야 한다고 들은 것 같기도 한데, 필수 사항인지 궁금합니다!", nickname: "노사협의초보", userId: "mock-4", userRole: "member", jobTitle: "노무담당", viewCount: 85, answerCount: 1, createdAt: Date.now() - 1000 * 60 * 60 * 8, category: "기타 정보" },
-  { id: "sample-101", title: "타운홀 미팅에서 임원분들께 익명으로 질문 받는 거, 진짜 효과 있나요?", text: "안녕하세요! 이번에 사내 타운홀 미팅을 기획 중인데, 소통 활성화를 위해 익명 질문 툴을 써보자고 건의하려고 합니다. 혹시 실제 도입해보신 분들 계신가요? 분위기가 너무 험악해지거나(?) 관리가 안 될까 봐 걱정되는데 실무적인 팁 좀 부탁드려요!", nickname: "소통왕", userId: "mock-101", userRole: "member", jobTitle: "조직문화담당", viewCount: 320, answerCount: 1, createdAt: Date.now() - 1000 * 60 * 60 * 2, category: "조직문화/EVP" },
-  { id: "sample-108", title: "조직문화 '활성화'랑 '개선'은 접근 방식이 아예 달라야 할까요?", text: "대표님이 자꾸 우리 회사 문화가 딱딱하다고 조직문화 좀 해보라고 하시는데... 이게 그냥 이벤트성으로 분위기를 띄우는 활성화인지, 아니면 제도나 평가 방식까지 건드리는 개선인지 감이 안 오네요. 여러분은 이 두 가지를 어떻게 구분해서 과제를 짜시나요?", nickname: "문화기획자H", userId: "mock-108", userRole: "member", jobTitle: "HRD", viewCount: 215, answerCount: 1, createdAt: Date.now() - 1000 * 60 * 60 * 10, category: "조직문화/EVP" },
-  { id: "sample-114", title: "개인정보 보호 관련 사내 공지, 매달 해도 지나치지 않겠죠?", text: "저희 회사가 워낙 개인정보를 많이 다루는 곳이라 보안에 예민한데요. 법적 필수 교육 말고도 수시로 공지를 올리려고 합니다. 너무 자주 하면 직원들이 피로감을 느낄까 봐 걱정인데, 보통 어떤 톤으로 공지를 올리는 게 가장 효과적일까요?", nickname: "보안꼼꼼이", userId: "mock-114", userRole: "member", jobTitle: "인사운영", viewCount: 145, answerCount: 1, createdAt: Date.now() - 1000 * 60 * 60 * 20, category: "인사전략/HRM" },
-  { id: "sample-121", title: "인사팀 공용 엑셀 파일... 자꾸 누가 건드려서 미치겠어요 ㅜㅜ", text: "팀원들이 같이 쓰는 급여나 인사 DB 파일이 있는데, 누군가 수식을 깨뜨리거나 데이터를 임의로 수정해서 난처할 때가 많습니다. 다들 공용 파일 관리 규칙 어떻게 정해두시나요? 아예 파일을 나누는 게 답일까요?", nickname: "엑셀지키미", userId: "mock-121", userRole: "member", jobTitle: "급여담당", viewCount: 410, answerCount: 1, createdAt: Date.now() - 1000 * 60 * 60 * 30, category: "기타 정보" },
-  { id: "sample-35", title: "1년 미만자에게 연차를 선부여하는 제도, 불법은 아니죠?", text: "신입사원분들 기 살려주려고 입사하자마자 연차를 미리 며칠 주려고 하거든요. 이게 법적으로 문제가 되는 방식인가요? 유리한 거니까 괜찮겠죠?", nickname: "연차계산기", userId: "mock-35", userRole: "member", jobTitle: "인사운영", viewCount: 215, answerCount: 1, createdAt: Date.now() - 1000 * 60 * 60 * 50, category: "복지/유연근무" },
-  { id: "sample-39", title: "권고사직인데 사직서에 '개인사정'이라 적으면 실업급여 못 받나요?", text: "회사에서 나가달라고 해서 나가는 건데, 사직서 양식에는 그냥 개인사정이라고 적으라고 하네요... 이거 나중에 고용보험 신고할 때 문제 생겨서 실업급여 못 받을까 봐 걱정돼요.", nickname: "실직예정자", userId: "mock-39", userRole: "member", jobTitle: "일반회원", viewCount: 540, answerCount: 1, createdAt: Date.now() - 1000 * 60 * 60 * 60, category: "현업 고민" },
-  { id: "sample-127", title: "직원이 몰래 외부 면접 보러 다니다 걸렸는데... 징계가 될까요?", text: "업무 시간에 병가 내고 타사 면접 보러 간 사실이 들켰습니다. 회사 분위기를 너무 흐리고 있는데, 이런 경우에도 징계나 감봉 같은 조치가 가능할까요? 실무적으로 어떻게 대응하시는 게 좋을지 조언 부탁드립니다.", nickname: "고민하는인사팀장", userId: "mock-127", userRole: "member", jobTitle: "인사팀장", viewCount: 620, answerCount: 1, createdAt: Date.now() - 1000 * 60 * 60 * 72, category: "인사전략/HRM" },
+  { id: "sample-31", title: "타운홀 미팅을 교육 프로그램으로 봐도 될까요?", text: "최근에 타운홀 미팅을 정기적으로 하고 있는데, 이걸 사내 교육 이수 시간으로 인정해달라는 요청이 있네요. 타운홀을 넓은 의미에서 교육 프로그램으로 봐도 무방할까요? 다른 분들은 어떻게 운영하시는지 궁금합니다!", nickname: "교육기획자K", userId: "mock-31", userRole: "member", jobTitle: "HRD담당", viewCount: 210, answerCount: 1, createdAt: Date.now() - 1000 * 60 * 60 * 2, category: "HRD/교육" },
+  { id: "sample-35", title: "조직문화 워크숍과 일반 교육의 차이는 무엇인가요?", text: "이번에 조직문화 워크숍을 기획 중인데 대표님이 일반 직무 교육이랑 뭐가 다르냐고 물으시네요. 설계할 때 어떤 부분에 차별점을 둬야 할까요? 고민이 많습니다.", nickname: "문화리더", userId: "mock-35", userRole: "member", jobTitle: "조직문화", viewCount: 185, answerCount: 1, createdAt: Date.now() - 1000 * 60 * 60 * 5, category: "조직문화/EVP" },
+  { id: "sample-45", title: "교육 담당자가 가장 흔히 하는 실수는 무엇인가요?", text: "이제 막 HRD 업무를 시작한 주니어입니다. 선배님들이 보시기에 교육 기획할 때 가장 조심해야 할 부분이나 흔히 저지르는 실수가 있다면 조언 부탁드려요!", nickname: "새내기HRD", userId: "mock-45", userRole: "member", jobTitle: "교육담당", viewCount: 320, answerCount: 1, createdAt: Date.now() - 1000 * 60 * 60 * 10, category: "HRD/교육" },
+  { id: "sample-62", title: "리더 대상 교육과 직원 대상 교육은 어떻게 달라야 하나요?", text: "전사 교육을 기획 중인데 직급별로 톤앤매너를 어떻게 다르게 가져가야 할지 감이 잘 안 오네요. 리더와 팀원 교육의 핵심 차별화 포인트를 알려주세요!", nickname: "배움이즐거워", userId: "mock-62", userRole: "member", jobTitle: "HRD매니저", viewCount: 145, answerCount: 1, createdAt: Date.now() - 1000 * 60 * 60 * 15, category: "리더십" },
+  { id: "sample-85", title: "교육 담당자가 강의를 직접 해야 하나요?", text: "사내 강사 제도 도입을 검토 중인데, 교육 담당자인 제가 직접 강의를 뛰어야 할지 아니면 기획에만 집중해야 할지 고민입니다. 보통 어떻게들 하시나요?", nickname: "기획이좋아", userId: "mock-85", userRole: "member", jobTitle: "HRD", viewCount: 270, answerCount: 1, createdAt: Date.now() - 1000 * 60 * 60 * 20, category: "HRD/교육" },
+  { id: "sample-99", title: "HRD에서도 AI나 디지털 툴 활용이 필요할까요?", text: "요즘 다들 AI 얘기인데 교육 현장에서도 실제 활용도가 높은가요? 단순히 유행인지, 아니면 정말 운영 효율이 좋아지는지 궁금합니다.", nickname: "디지털꿈나무", userId: "mock-99", userRole: "member", jobTitle: "교육기획", viewCount: 410, answerCount: 1, createdAt: Date.now() - 1000 * 60 * 60 * 24, category: "DX/생성형 AI" },
+  { id: "sample-100", title: "앞으로 HRD 담당자에게 가장 중요해질 역량은 무엇인가요?", text: "급변하는 환경 속에서 교육 담당자로서 살아남으려면 어떤 역량을 가장 먼저 키워야 할까요? 선배님들의 통찰력이 궁금합니다.", nickname: "미래HRD", userId: "mock-100", userRole: "member", jobTitle: "HRD전문가", viewCount: 550, answerCount: 1, createdAt: Date.now() - 1000 * 60 * 60 * 30, category: "현업 고민" },
 ]
 
 const MOCK_ANSWERS: Answer[] = [
   { id: "ans-1", questionId: "sample-1", text: "아닙니다! 휴일근무를 보상휴가로 처리할지, 휴일대체로 할지는 노사 합의 사항이에요. 근로자대표와 사전 서면 합의가 있다면 휴일대체가 가능하고요, 모든 휴일근무를 보상휴가로 해야 할 법적 의무는 없으니 안심하세요.", nickname: "노무마스터", userId: "ai-1", userRole: "mentor", jobTitle: "노무사", createdAt: Date.now() - 1000 * 60 * 30 },
-  { id: "ans-101", questionId: "sample-101", text: "익명 질문 방식은 구성원들의 심리적 장벽을 낮추는 데 정말 효과적입니다. Slido나 스마트폰 실시간 질문 툴을 활용해 보세요. 질문을 선별해서 답변하는 과정 자체가 경영진에 대한 신뢰도를 높여줄 거예요.", nickname: "컬처디렉터", userId: "ai-101", userRole: "mentor", jobTitle: "조직문화전문가", createdAt: Date.now() - 1000 * 60 * 40 },
-  { id: "ans-108", questionId: "sample-108", text: "활성화는 에너지를 끌어올리는 단기 활동이고, 개선은 일하는 구조를 바꾸는 장기 과제입니다. 대표님이 원하시는 게 '웃는 얼굴'인지 '빠른 실행력'인지 먼저 파악하시고, 작은 소통 워크숍부터 시작해 보시는 걸 추천드려요.", nickname: "베테랑HR", userId: "ai-108", userRole: "mentor", jobTitle: "인사팀장", createdAt: Date.now() - 1000 * 60 * 50 },
-  { id: "ans-114", questionId: "sample-114", text: "네, 공지는 필수입니다! 딱딱한 법조문보다는 '우리 동료의 소중한 정보를 지키는 법' 같은 따뜻하고 이해하기 쉬운 톤으로 자주 리마인드해주시면 리스크 관리에 큰 도움이 됩니다.", nickname: "노무마스터", userId: "ai-114", userRole: "mentor", jobTitle: "노무사", createdAt: Date.now() - 1000 * 60 * 60 },
-  { id: "ans-121", questionId: "sample-121", text: "중요한 공용 파일은 반드시 '읽기 전용' 권한을 걸거나, 관리 책임자를 명확히 지정해야 합니다. 사전 공유 없는 임의 수정은 시스템 에러를 유발하므로 팀 내 '공용 파일 관리 원칙'을 문서화해서 공지하는 것이 최선입니다.", nickname: "급여고수", userId: "ai-121", userRole: "mentor", jobTitle: "인사운영", createdAt: Date.now() - 1000 * 60 * 70 },
-  { id: "ans-35", questionId: "sample-35", text: "불법은 절대 아닙니다! 법정 연차보다 유리한 조건을 부여하는 건 오히려 권장되는 사항이죠. 다만, 나중에 입사 1년이 됐을 때 발생할 연차에서 미리 준 걸 어떻게 차감할지 규정에 명확히 적어두셔야 나중에 딴소리(?)가 안 나옵니다.", nickname: "베테랑HR", userId: "ai-35", userRole: "mentor", jobTitle: "인사팀장", createdAt: Date.now() - 1000 * 60 * 40 },
-  { id: "ans-39", questionId: "sample-39", text: "네, 큰 영향이 있습니다. 권고사직인데 사직서에 개인사정이라고 적으면 고용센터에서 자발적 퇴사로 봐서 실업급여를 안 줄 수도 있어요. 회사랑 얘기해서 고용보험 상실 사유를 반드시 '권고사직' 코드로 넣어달라고 확답 받으셔야 합니다!", nickname: "노무꿈나무", userId: "ai-39", userRole: "mentor", jobTitle: "노무지원", createdAt: Date.now() - 1000 * 60 * 50 },
-  { id: "ans-127", questionId: "sample-127", text: "단순히 면접을 보러 간 사실만으로는 징계가 어렵습니다. 다만 병가 사유를 허위로 보고한 '근태 부정'이나 회사 기밀 유출 정황이 있다면 인사위원회를 통해 소명 절차를 밟을 수는 있습니다. 감정적 대응보다는 규정에 근거한 조사가 먼저입니다.", nickname: "노무마스터", userId: "ai-127", userRole: "mentor", jobTitle: "노무사", createdAt: Date.now() - 1000 * 60 * 80 },
+  { id: "ans-31", questionId: "sample-31", text: "넓은 의미에서는 충분히 가능합니다. 리더의 메시지를 통해 조직의 방향성을 공유하고 인식을 전환한다는 점에서 '비형식 학습(Informal Learning)'의 훌륭한 사례가 되죠. 다만 공식 이수 시간으로 인정할지는 내부 가이드라인을 먼저 세우는 게 좋습니다.", nickname: "교육전문가", userId: "ai-31", userRole: "mentor", jobTitle: "HRD센터장", createdAt: Date.now() - 1000 * 60 * 40 },
+  { id: "ans-35", questionId: "sample-35", text: "교육은 역량과 지식 전달이 핵심이라면, 조직문화 워크숍은 구성원들의 인식과 행동의 변화가 목적입니다. 따라서 강의 위주보다는 상호 토론과 '우리가 지켜야 할 원칙'을 도출하는 퍼실리테이션 중심의 설계가 필요합니다.", nickname: "컬처디렉터", userId: "ai-35", userRole: "mentor", jobTitle: "조직문화전문가", createdAt: Date.now() - 1000 * 60 * 50 },
+  { id: "ans-45", questionId: "sample-45", text: "가장 흔한 실수는 교육을 '프로그램' 그 자체로만 보고 '현업의 문제 해결' 관점에서 보지 않는 것입니다. 아무리 좋은 강의라도 실무에 적용되지 않으면 이벤트로 끝나기 쉽죠. 늘 '이게 현업의 어떤 문제를 푸나?'를 자문해 보세요.", nickname: "베테랑HRD", userId: "ai-45", userRole: "mentor", jobTitle: "인사팀장", createdAt: Date.now() - 1000 * 60 * 60 },
+  { id: "ans-62", questionId: "sample-62", text: "리더 교육은 '실제적인 행동 변화'에 초점을 맞춰야 하고, 직원 교육은 '변화의 필요성에 대한 이해와 공감'에 우선순위를 둬야 합니다. 리더에게는 솔루션을, 직원에게는 비전을 주는 것이 핵심 차별화 포인트입니다.", nickname: "리더십코치", userId: "ai-62", userRole: "mentor", jobTitle: "전문강사", createdAt: Date.now() - 1000 * 60 * 70 },
+  { id: "ans-85", questionId: "sample-85", text: "필수는 아니지만, 내부 맥락을 가장 잘 아는 담당자가 직접 강의를 할 때의 전달력은 매우 높습니다. 다만 모든 강의를 하려 하기보다는 핵심적인 오리엔테이션이나 문화 교육은 직접 하고, 전문 기술은 외부 강사를 쓰는 하이브리드 방식을 추천합니다.", nickname: "교육마스터", userId: "ai-85", userRole: "mentor", jobTitle: "HRD수석", createdAt: Date.now() - 1000 * 60 * 80 },
+  { id: "ans-99", questionId: "sample-99", text: "필요성이 아주 빠르게 커지고 있습니다! 단순히 유행이 아니라 교육 설계 시 커리큘럼 생성, 운영 시 자동화 툴 활용 등을 통해 담당자의 공수를 50% 이상 줄여줄 수 있습니다. 결과적으로 담당자는 더 가치 있는 기획에 집중할 수 있게 되죠.", nickname: "알디", userId: "ai-whisper", userRole: "admin", jobTitle: "AI 길잡이", createdAt: Date.now() - 1000 * 60 * 90 },
+  { id: "ans-100", questionId: "sample-100", text: "단순 교육 운영을 넘어 조직의 문제를 구조적으로 바라보는 '비즈니스 파트너'로서의 관점입니다. 우리 회사의 사업 전략을 이해하고, 그 전략을 달성하기 위해 필요한 인적 역량이 무엇인지 찾아내 교육으로 연결하는 능력이 가장 중요해질 것입니다.", nickname: "베테랑HRD", userId: "ai-100", userRole: "mentor", jobTitle: "인사팀장", createdAt: Date.now() - 1000 * 60 * 100 },
 ]
 
 export default function HomePage() {
@@ -51,7 +48,7 @@ export default function HomePage() {
   const { data: profile } = useDoc<any>(userDocRef)
 
   const [searchQuery, setSearchQuery] = useState("")
-  const [activeTab, setActiveTab] = useState<"all" | "popular" | "waiting">("all")
+  const [activeTab, setActiveTab] = useState<"all" | "popular" | "waiting" | "hrd" | "culture">("all")
   const [selectedQuestionId, setSelectedQuestionId] = useState<string | null>(null)
   
   const [currentPage, setCurrentPage] = useState(1)
@@ -68,41 +65,70 @@ export default function HomePage() {
   const questions = useMemo(() => {
     const fetched = questionsData || []
     
-    // 추가 샘플 데이터 자동 생성 (기존 요청 Q1-Q130 시뮬레이션)
+    // 추가 샘플 데이터 대량 자동 생성 (사용자 요청 기반 고품질 데이터)
     const extraSamples: Question[] = []
     if (fetched.length === 0 && !searchQuery) {
-      // Q1 ~ Q130 데이터 생성
-      const sampleContents = [
-        { q: "타운홀 미팅은 보통 어느 정도 시간이 적당한가요?", a: "시간보다는 밀도가 중요하지만 보통 1시간 내외가 집중도가 가장 높습니다.", n: "기획자H", c: "조직문화/EVP" },
-        { q: "조직문화실패 요인 중 가장 큰 게 뭘까요?", a: "목적이 불분명한 상태에서 반짝 이벤트만 하는 것이 가장 큰 실패 요인입니다.", n: "고민중", c: "조직문화/EVP" },
-        { q: "인사 서류 전산화하면 종이 서류 버려도 되나요?", a: "법적 보존 의무가 있는 서류는 따로 챙기셔야 하지만, 그 외에는 전산화가 훨씬 효율적입니다.", n: "디지털H", c: "기타 정보" },
-        { q: "육아지원 제도는 매년 바뀌나요?", a: "네, 법 개정이 잦으니 고용노동부 가이드를 매년 체크하셔야 합니다.", n: "워킹맘대리", c: "복지/유연근무" },
-        { q: "무급휴가는 결근이랑 똑같은 건가요?", a: "아닙니다. 합의된 휴가와 무단 결근은 법적 성격이 완전히 다릅니다.", n: "휴가가고파", c: "인사전략/HRM" },
+      const hrdContents = [
+        { q: "타운홀을 단발성 이벤트로 끝내지 않으려면?", a: "사전 질문, 현장 대화, 사후 요약 공유의 3단계 구조를 설계해야 학습 효과가 지속됩니다.", n: "운영고수", c: "HRD/교육" },
+        { q: "조직 활성화 교육의 성과 측정은 어떻게?", a: "참여도, 만족도뿐만 아니라 참여 중 발생한 발언 수나 정성적 피드백을 지표화해보세요.", n: "데이터인사", c: "HRD/교육" },
+        { q: "내부 강사 육성, 정말 효과가 있나요?", a: "네, 조직 내부의 맥락을 가장 잘 이해하고 있어 실무 적용도가 압도적으로 높습니다.", n: "육성마스터", c: "HRD/교육" },
+        { q: "임원 교육 기획 시 가장 중요한 점은?", a: "내용의 화려함보다는 '왜 이 시점에 이 교육이 필요한가'에 대한 임원분들의 공감을 얻는 것입니다.", n: "임원코치", c: "리더십" },
+        { q: "조직문화 교육 주제, 어떻게 정하시나요?", a: "경영진의 지시보다는 구성원들이 실제 현장에서 겪는 페인포인트(Pain point)에서 시작하세요.", n: "문화기획", c: "조직문화/EVP" },
+        { q: "교육 참여율이 낮을 때 해결책은?", a: "주제의 적합성뿐만 아니라 일정이 현업의 피크 타임과 겹치지는 않는지 먼저 점검해보세요.", n: "배움지기", c: "HRD/교육" },
+        { q: "교육 성과가 바로 안 보이면 실패인가요?", a: "아닙니다. 교육 성과는 씨앗을 뿌리는 것과 같아 누적된 후 큰 변화로 나타납니다.", n: "인내의HRD", c: "현업 고민" },
       ]
 
-      for (let i = 1; i <= 130; i++) {
-        const isExplicit = MOCK_QUESTIONS.some(mq => mq.id === `sample-${i}` || mq.id === `sample-10${i % 10}`);
+      // Q31 ~ Q100 구간 생성
+      for (let i = 1; i <= 100; i++) {
+        const isExplicit = MOCK_QUESTIONS.some(mq => mq.id === `sample-${i}`);
         if (isExplicit) continue;
 
-        const contentIndex = i % sampleContents.length;
+        const contentIndex = i % hrdContents.length;
         extraSamples.push({
-          id: `sample-gen-${i}`,
-          title: sampleContents[contentIndex].q,
-          text: `인사 실무를 하다 보니 궁금한 점이 생겼습니다. ${sampleContents[contentIndex].q} 다들 어떻게 생각하시나요? 현직자 선배님들의 조언 부탁드려요!`,
-          nickname: sampleContents[contentIndex].n + "_" + i,
-          userId: `mock-gen-${i}`,
+          id: `sample-hrd-${i}`,
+          title: hrdContents[contentIndex].q + ` (No.${i})`,
+          text: `안녕하세요. 인사 업무를 하다보니 궁금한 점이 생겼어요. ${hrdContents[contentIndex].q} 다른 회사 담당자님들은 어떻게 해결하고 계신가요? 조언 부탁드립니다!`,
+          nickname: hrdContents[contentIndex].n + "_" + i,
+          userId: `mock-hrd-${i}`,
           userRole: "member",
-          jobTitle: "인사팀",
-          viewCount: Math.floor(Math.random() * 300),
+          jobTitle: "HRD담당",
+          viewCount: Math.floor(Math.random() * 400),
           answerCount: 1,
           createdAt: Date.now() - 1000 * 60 * 60 * i,
-          category: sampleContents[contentIndex].c
+          category: hrdContents[contentIndex].c
         })
       }
       return [...MOCK_QUESTIONS, ...extraSamples].sort((a, b) => b.createdAt - a.createdAt)
     }
     return fetched
   }, [questionsData, searchQuery])
+
+  // 정답 매핑 (샘플 데이터용)
+  const getMockAnswer = (questionId: string) => {
+    if (questionId.startsWith("sample-hrd-")) {
+      const idNum = parseInt(questionId.split("-")[2]);
+      const hrdAnswers = [
+        "사후 관리가 핵심입니다! 요약본을 사내 게시판에 올리거나 관련 숏폼 영상을 제작해 배포해 보세요.",
+        "정량적 수치도 중요하지만 실제 현업의 변화 사례(Success Story)를 발굴해 공유하는 것이 훨씬 설득력 있습니다.",
+        "내부 강사에게는 충분한 보상과 강의 역량 강화 교육을 별도로 제공해야 지속 가능한 제도가 됩니다.",
+        "일방적인 강의보다는 토론이나 라운드테이블 형식을 취해 임원분들의 목소리가 더 많이 나오게 유도하세요.",
+        "익명 설문이나 소규모 인터뷰를 통해 '우리 조직의 진짜 문제'가 무엇인지 파악하는 것이 우선입니다.",
+        "참여가 현업의 성과에 어떻게 기여하는지 팀장님들을 먼저 설득해 지원 사격을 받으세요.",
+        "교육 후 3개월 뒤의 변화를 추적하는 '팔로업 세션'을 운영해 보시면 성과 증명이 훨씬 수월해집니다."
+      ];
+      return [{
+        id: `ans-hrd-${idNum}`,
+        questionId,
+        text: hrdAnswers[idNum % hrdAnswers.length],
+        nickname: "위스퍼러",
+        userId: "ai-mentor",
+        userRole: "mentor",
+        jobTitle: "전문가",
+        createdAt: Date.now() - 1000 * 60 * 60
+      }];
+    }
+    return [];
+  }
 
   const answersQuery = useMemoFirebase(() => {
     if (!db || !selectedQuestionId) return null
@@ -113,8 +139,9 @@ export default function HomePage() {
   const answers = useMemo(() => {
     const fetched = answersData || []
     if (selectedQuestionId?.startsWith("sample-")) {
-      const samples = MOCK_ANSWERS.filter(a => a.questionId === selectedQuestionId)
-      return [...fetched, ...samples]
+      const explicit = MOCK_ANSWERS.filter(a => a.questionId === selectedQuestionId)
+      const dynamic = getMockAnswer(selectedQuestionId)
+      return [...fetched, ...explicit, ...dynamic]
     }
     return fetched
   }, [answersData, selectedQuestionId])
@@ -130,6 +157,8 @@ export default function HomePage() {
     }
     if (activeTab === "popular") result.sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0))
     else if (activeTab === "waiting") result = result.filter(q => (q.answerCount || 0) === 0)
+    else if (activeTab === "hrd") result = result.filter(q => q.category === "HRD/교육")
+    else if (activeTab === "culture") result = result.filter(q => q.category === "조직문화/EVP")
     
     return result
   }, [questions, searchQuery, activeTab])
@@ -207,14 +236,29 @@ export default function HomePage() {
                   <ArrowLeft className="w-4 h-4" /> 홈으로 돌아가기
                 </button>
                 <h2 className="text-3xl font-black text-primary mb-8">"<span className="text-accent">{searchQuery}</span>" 검색 결과</h2>
-                <QuestionFeed questions={paginatedQuestions} onSelectQuestion={handleSelectQuestion} selectedId={selectedQuestionId} answers={answers} onAddAnswer={handleAddAnswer} activeTab={activeTab} onTabChange={setActiveTab} />
+                <QuestionFeed questions={paginatedQuestions} onSelectQuestion={handleSelectQuestion} selectedId={selectedQuestionId} answers={answers} onAddAnswer={handleAddAnswer} activeTab={activeTab as any} onTabChange={setActiveTab as any} />
               </div>
             ) : (
               <div className="flex flex-col gap-0 md:gap-10">
                 <MainBanner />
                 <div className="px-4 md:px-0 -mt-6 md:mt-0 relative z-20"><SubmissionForm type="question" placeholder="HR 고민을 속삭여보세요." onSubmit={handleAddQuestion} /></div>
                 <div className="px-4 md:px-0">
-                  <QuestionFeed questions={paginatedQuestions} onSelectQuestion={handleSelectQuestion} selectedId={selectedQuestionId} answers={answers} onAddAnswer={handleAddAnswer} activeTab={activeTab} onTabChange={setActiveTab} />
+                  <div className="flex gap-4 md:gap-8 whitespace-nowrap mb-6 overflow-x-auto pb-2 scrollbar-hide">
+                    {["all", "popular", "waiting", "hrd", "culture"].map((tab) => (
+                      <button 
+                        key={tab}
+                        onClick={() => setActiveTab(tab as any)}
+                        className={cn(
+                          "text-sm md:text-base pb-2 transition-all border-b-2",
+                          activeTab === tab ? "font-black text-primary border-accent" : "font-bold text-primary/20 border-transparent hover:text-primary"
+                        )}
+                      >
+                        {tab === "all" ? "전체 피드" : tab === "popular" ? "실시간 인기" : tab === "waiting" ? "답변 대기" : tab === "hrd" ? "HRD/교육" : "조직문화"}
+                      </button>
+                    ))}
+                  </div>
+                  
+                  <QuestionFeed questions={paginatedQuestions} onSelectQuestion={handleSelectQuestion} selectedId={selectedQuestionId} answers={answers} onAddAnswer={handleAddAnswer} activeTab={activeTab as any} onTabChange={setActiveTab as any} />
                   
                   {totalPages > 1 && (
                     <div className="flex justify-center items-center gap-2 mt-12 pb-20">
