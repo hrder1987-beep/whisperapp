@@ -103,3 +103,14 @@ export interface PrivateMessage {
   createdAt: number;
   isRead: boolean;
 }
+
+export interface AppNotification {
+  id: string;
+  userId: string;
+  type: 'new_answer';
+  questionId: string;
+  questionTitle: string;
+  senderNickname: string;
+  createdAt: number;
+  isRead: boolean;
+}

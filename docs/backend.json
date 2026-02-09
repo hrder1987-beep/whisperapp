@@ -1,4 +1,3 @@
-
 {
   "entities": {
     "UserProfile": {
@@ -37,7 +36,8 @@
         "viewCount": { "type": "number" },
         "answerCount": { "type": "number" },
         "createdAt": { "type": "number" },
-        "userProfilePicture": { "type": "string" }
+        "userProfilePicture": { "type": "string" },
+        "jobTitle": { "type": "string" }
       },
       "required": ["id", "title", "text", "userId", "nickname", "createdAt"]
     },
@@ -78,6 +78,23 @@
         "isRead": { "type": "boolean" }
       },
       "required": ["senderId", "receiverId", "content", "createdAt"]
+    },
+    "Notification": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Notification",
+      "type": "object",
+      "description": "사용자 알림 데이터",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "type": { "type": "string", "enum": ["new_answer"] },
+        "questionId": { "type": "string" },
+        "questionTitle": { "type": "string" },
+        "senderNickname": { "type": "string" },
+        "createdAt": { "type": "number" },
+        "isRead": { "type": "boolean" }
+      },
+      "required": ["userId", "type", "questionId", "senderNickname", "createdAt"]
     }
   },
   "auth": {
@@ -99,6 +116,10 @@
     "/messages/{messageId}": {
       "schema": { "$ref": "#/entities/PrivateMessage" },
       "description": "1:1 개인 쪽지 데이터"
+    },
+    "/notifications/{notifId}": {
+      "schema": { "$ref": "#/entities/Notification" },
+      "description": "개인 알림 센터"
     },
     "/admin_configuration/site_settings": {
       "schema": { "type": "object" },

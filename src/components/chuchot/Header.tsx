@@ -1,10 +1,9 @@
-
 "use client"
 
 import { Logo } from "./Logo"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Search, User as UserIcon, LogOut, LayoutDashboard, Menu, X, Mail } from "lucide-react"
+import { Search, User as UserIcon, LogOut, LayoutDashboard, Menu, X, Mail, Bell, FileText } from "lucide-react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useUser, useAuth, useCollection, useMemoFirebase, useFirestore } from "@/firebase"
@@ -54,6 +53,16 @@ export function Header({
   }, [db, user])
   
   const { data: unreadMessages } = useCollection(unreadMessagesQuery)
+
+  const notificationsQuery = useMemoFirebase(() => {
+    if (!db || !user) return null
+    return query(
+      collection(db, "notifications"),
+      where("userId", "==", user.uid),
+      where("isRead", "==", false)
+    )
+  }, [db, user])
+  const { data: unreadNotifications } = useCollection(notificationsQuery)
 
   const handleLogout = () => {
     signOut(auth)
@@ -177,16 +186,35 @@ export function Header({
           )}
 
           {user && (
-            <Link href="/messages" className="relative group">
-              <Button variant="ghost" size="icon" className="text-white hover:text-accent hover:bg-white/5 rounded-full">
-                <Mail className="w-5 h-5" />
-                {unreadMessages && unreadMessages.length > 0 && (
-                  <Badge className="absolute -top-1 -right-1 bg-accent text-primary border-none text-[8px] h-4 w-4 flex items-center justify-center p-0 rounded-full animate-bounce">
-                    {unreadMessages.length}
-                  </Badge>
-                )}
-              </Button>
-            </Link>
+            <div className="flex items-center gap-1">
+              <Link href="/notifications" className="relative group">
+                <Button variant="ghost" size="icon" className="text-white hover:text-accent hover:bg-white/5 rounded-full">
+                  <Bell className="w-5 h-5" />
+                  {unreadNotifications && unreadNotifications.length > 0 && (
+                    <Badge className="absolute -top-1 -right-1 bg-accent text-primary border-none text-[8px] h-4 w-4 flex items-center justify-center p-0 rounded-full animate-bounce">
+                      {unreadNotifications.length}
+                    </Badge>
+                  )}
+                </Button>
+              </Link>
+
+              <Link href="/my-posts" className="relative group">
+                <Button variant="ghost" size="icon" className="text-white hover:text-accent hover:bg-white/5 rounded-full">
+                  <FileText className="w-5 h-5" />
+                </Button>
+              </Link>
+
+              <Link href="/messages" className="relative group">
+                <Button variant="ghost" size="icon" className="text-white hover:text-accent hover:bg-white/5 rounded-full">
+                  <Mail className="w-5 h-5" />
+                  {unreadMessages && unreadMessages.length > 0 && (
+                    <Badge className="absolute -top-1 -right-1 bg-accent text-primary border-none text-[8px] h-4 w-4 flex items-center justify-center p-0 rounded-full animate-bounce">
+                      {unreadMessages.length}
+                    </Badge>
+                  )}
+                </Button>
+              </Link>
+            </div>
           )}
 
           {user ? (

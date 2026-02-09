@@ -10,7 +10,7 @@ import { AldiChat } from "@/components/chuchot/ShuChat"
 import { AdminCMS } from "@/components/chuchot/AdminCMS"
 import { Question, Answer, UserRole } from "@/lib/types"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, ExternalLink } from "lucide-react"
+import { ArrowLeft } from "lucide-react"
 import { 
   Dialog, 
   DialogContent, 
@@ -23,8 +23,6 @@ import { generateAiReply } from "@/ai/flows/generate-ai-reply-flow"
 import { cn } from "@/lib/utils"
 import { useFirestore, useCollection, useDoc, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking, useUser } from "@/firebase"
 import { collection, query, orderBy, doc, increment } from "firebase/firestore"
-import Image from "next/image"
-import { Badge } from "@/components/ui/badge"
 
 const MOCK_QUESTIONS: Question[] = [
   {
@@ -182,6 +180,9 @@ export default function HomePage() {
   const handleAddAnswer = (nickname: string, title: string, text: string) => {
     if (!db || !selectedQuestionId || !user) return
 
+    const selectedQuestion = questions.find(q => q.id === selectedQuestionId)
+    if (!selectedQuestion) return
+
     const answerData = {
       questionId: selectedQuestionId,
       text,
@@ -193,7 +194,21 @@ export default function HomePage() {
       createdAt: Date.now(),
     }
 
-    addDocumentNonBlocking(collection(db, "questions", selectedQuestionId, "answers"), answerData)
+    addDocumentNonBlocking(collection(db, "questions", selectedQuestionId, "answers"), answerData).then(() => {
+      // 본인이 본인 글에 답글 달 때는 알림 생성 안 함
+      if (selectedQuestion.userId !== user.uid) {
+        addDocumentNonBlocking(collection(db, "notifications"), {
+          userId: selectedQuestion.userId,
+          type: "new_answer",
+          questionId: selectedQuestionId,
+          questionTitle: selectedQuestion.title,
+          senderNickname: nickname,
+          createdAt: Date.now(),
+          isRead: false
+        })
+      }
+    })
+    
     updateDocumentNonBlocking(doc(db, "questions", selectedQuestionId), { answerCount: increment(1) })
   }
 

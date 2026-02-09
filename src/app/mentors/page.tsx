@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useRef, useMemo } from "react"
@@ -10,11 +9,12 @@ import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase"
-import { collection, query, orderBy, addDoc } from "firebase/firestore"
-import { Instructor } from "@/lib/types"
-import { Plus, Star, Award, Briefcase, MessageSquare, Crown, Camera, X, Sparkles, Search, Building2, User as UserIcon } from "lucide-react"
+import { collection, query, orderBy, addDoc, where } from "firebase/firestore"
+import { Instructor, Question } from "@/lib/types"
+import { Plus, Star, Award, Briefcase, MessageSquare, Crown, Camera, Sparkles, Search, Building2, User as UserIcon, FileText, X } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { MessageDialog } from "@/components/chuchot/MessageDialog"
+import { QuestionFeed } from "@/components/chuchot/QuestionFeed"
 
 const MOCK_MENTORS: Instructor[] = [
   {
@@ -40,32 +40,57 @@ const MOCK_MENTORS: Instructor[] = [
     userId: "mock-m2",
     role: "mentor",
     createdAt: Date.now()
-  },
-  {
-    id: "mentor-3",
-    name: "박지훈",
-    company: "Coupang",
-    jobTitle: "Senior L&D Manager",
-    specialty: "L&D 설계 및 운영",
-    bio: "단순 교육을 넘어 비즈니스 임팩트를 만드는 학습 여정을 설계합니다. 사내 강사 양성 과정 및 디지털 트랜스포메이션 역량 강화 교육 전문가입니다.",
-    profilePictureUrl: "https://picsum.photos/seed/mentor3/400/400",
-    userId: "mock-m3",
-    role: "mentor",
-    createdAt: Date.now()
-  },
-  {
-    id: "mentor-4",
-    name: "정혜원",
-    company: "Kakao",
-    jobTitle: "HR Strategy Specialist",
-    specialty: "인사 전략 및 노무",
-    bio: "변화하는 노동법 환경에 최적화된 유연근무제 설계와 갈등 관리 솔루션을 제공합니다. 실무에서 바로 쓰이는 인사 관리 규정 정비의 달인입니다.",
-    profilePictureUrl: "https://picsum.photos/seed/mentor4/400/400",
-    userId: "mock-m4",
-    role: "mentor",
-    createdAt: Date.now()
   }
 ]
+
+export function MentorPostsDialog({ userId, userName, isOpen, onClose }: { userId: string, userName: string, isOpen: boolean, onClose: () => void }) {
+  const db = useFirestore()
+  const postsQuery = useMemoFirebase(() => {
+    if (!db || !userId) return null
+    return query(collection(db, "questions"), where("userId", "==", userId), orderBy("createdAt", "desc"))
+  }, [db, userId])
+  const { data: posts, isLoading } = useCollection<Question>(postsQuery)
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-4xl bg-[#F8F9FA] border-none rounded-[3rem] p-8 shadow-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader className="mb-8">
+          <DialogTitle className="text-2xl font-black text-primary flex items-center gap-3">
+            <FileText className="w-7 h-7 text-accent" />
+            {userName} 위스퍼러의 속삭임 기록
+          </DialogTitle>
+        </DialogHeader>
+        
+        {isLoading ? (
+          <div className="flex justify-center py-20"><Sparkles className="w-10 h-10 animate-spin text-accent" /></div>
+        ) : !posts || posts.length === 0 ? (
+          <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-primary/10">
+            <p className="text-primary/20 font-black">아직 작성한 게시글이 없습니다.</p>
+          </div>
+        ) : (
+          <div className="space-y-6">
+            {posts.map(p => (
+              <Card key={p.id} className="bg-white border-primary/5 rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-all">
+                <CardContent className="p-6">
+                  <div className="flex justify-between items-start mb-2">
+                    <Badge className="bg-primary/5 text-primary/40 font-black border-none text-[9px]">#{p.category || "일반"}</Badge>
+                    <span className="text-[10px] font-bold text-primary/20">{new Date(p.createdAt).toLocaleDateString()}</span>
+                  </div>
+                  <h4 className="text-lg font-black text-primary mb-2">{p.title}</h4>
+                  <p className="text-sm text-primary/60 line-clamp-2 mb-4 leading-relaxed">{p.text}</p>
+                  <div className="flex items-center gap-4 text-[11px] font-black text-primary/30">
+                    <span>조회 {p.viewCount}</span>
+                    <span>답변 {p.answerCount}</span>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+      </DialogContent>
+    </Dialog>
+  )
+}
 
 export default function MentorsPage() {
   const { user } = useUser()
@@ -77,6 +102,7 @@ export default function MentorsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [messageTarget, setMessageTarget] = useState<{ id: string, nickname: string } | null>(null)
+  const [postViewTarget, setPostViewTarget] = useState<{ id: string, name: string } | null>(null)
 
   // Form states
   const [name, setName] = useState("")
@@ -162,7 +188,7 @@ export default function MentorsPage() {
 
   return (
     <div className="min-h-screen bg-[#F8F9FA]">
-      <Header onSearch={setSearchQuery} />
+      <Header />
       
       <main className="max-w-7xl mx-auto px-4 py-12">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-10 mb-16">
@@ -264,8 +290,8 @@ export default function MentorsPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
             {filteredMentors.map((m) => (
-              <Card key={m.id} className="group bg-white border-primary/5 rounded-[3rem] overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-3 transition-all duration-500">
-                <CardContent className="p-8 flex flex-col items-center text-center">
+              <Card key={m.id} className="group bg-white border-primary/5 rounded-[3rem] overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-3 transition-all duration-500 flex flex-col">
+                <CardContent className="p-8 flex flex-col items-center text-center flex-1">
                   <div className="relative mb-6">
                     <div className="absolute inset-0 bg-accent blur-3xl opacity-20 group-hover:opacity-40 transition-opacity"></div>
                     <div className="relative w-36 h-36 rounded-[2.5rem] overflow-hidden border-4 border-white shadow-2xl">
@@ -292,7 +318,14 @@ export default function MentorsPage() {
                     "{m.bio}"
                   </p>
 
-                  <div className="grid grid-cols-1 w-full gap-4 mt-auto">
+                  <div className="grid grid-cols-1 w-full gap-3 mt-auto">
+                    <Button 
+                      onClick={() => setPostViewTarget({ id: m.userId, name: m.name })}
+                      variant="ghost" 
+                      className="h-11 rounded-xl bg-primary/5 hover:bg-primary/10 text-primary/60 font-black gap-2 text-xs"
+                    >
+                      <FileText className="w-4 h-4" /> 작성한 속삭임 보기
+                    </Button>
                     <Button 
                       onClick={() => handleMessageClick(m)}
                       variant="outline" 
@@ -314,6 +347,15 @@ export default function MentorsPage() {
           onClose={() => setMessageTarget(null)}
           receiverId={messageTarget.id}
           receiverNickname={messageTarget.nickname}
+        />
+      )}
+
+      {postViewTarget && (
+        <MentorPostsDialog 
+          userId={postViewTarget.id}
+          userName={postViewTarget.name}
+          isOpen={!!postViewTarget}
+          onClose={() => setPostViewTarget(null)}
         />
       )}
     </div>
