@@ -1,7 +1,7 @@
 
 "use client"
 
-import { useState, useMemo, useRef } from "react"
+import { useState, useMemo, useRef, useEffect } from "react"
 import { Header } from "@/components/chuchot/Header"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase"
 import { collection, query, orderBy, addDoc } from "firebase/firestore"
 import { TrainingProgram } from "@/lib/types"
-import { Calendar, GraduationCap, Plus, ChevronRight, Search, Camera, Clock, Video, Building2, MessageSquare, Info, X, PlayCircle, BookOpen } from "lucide-react"
+import { Calendar, GraduationCap, Plus, ChevronRight, ChevronLeft, Search, Camera, Clock, Video, Building2, MessageSquare, Info, X, PlayCircle, BookOpen } from "lucide-react"
 import Image from "next/image"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
@@ -70,6 +70,10 @@ export default function ProgramsPage() {
   const [selectedProgram, setSelectedProgram] = useState<TrainingProgram | null>(null)
   const [messageTarget, setMessageTarget] = useState<{ id: string, nickname: string } | null>(null)
 
+  // 페이지네이션 상태
+  const [currentPage, setCurrentPage] = useState(1)
+  const ITEMS_PER_PAGE = 6
+
   // Form States
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
@@ -104,6 +108,19 @@ export default function ProgramsPage() {
       return matchesSearch && matchesCategory;
     });
   }, [programs, searchQuery, selectedCategory]);
+
+  // 페이지네이션 적용 데이터
+  const paginatedPrograms = useMemo(() => {
+    const start = (currentPage - 1) * ITEMS_PER_PAGE
+    return filteredPrograms.slice(start, start + ITEMS_PER_PAGE)
+  }, [filteredPrograms, currentPage])
+
+  const totalPages = Math.ceil(filteredPrograms.length / ITEMS_PER_PAGE)
+
+  // 카테고리나 검색어 변경 시 1페이지로 리셋
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [selectedCategory, searchQuery])
 
   const handleOpenDialog = () => {
     if (!user) {
@@ -188,7 +205,7 @@ export default function ProgramsPage() {
       <Header />
       
       <main className="max-w-7xl mx-auto px-4 py-8 md:py-12">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 md:gap-10 mb-8 md:mb-16">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 md:gap-10 mb-12">
           <div className="space-y-3 flex-1">
             <div className="flex items-center gap-3">
               <div className="h-1 w-12 bg-accent rounded-full"></div>
@@ -323,140 +340,118 @@ export default function ProgramsPage() {
           </Dialog>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
-          {/* Categories Aside (Desktop Only) */}
-          <aside className="hidden lg:block lg:col-span-3">
-            <div className="bg-white rounded-[2rem] p-8 shadow-sm border border-primary/5 sticky top-32">
-              <h3 className="text-xl font-black text-primary mb-6 flex items-center gap-2">
-                <Info className="w-5 h-5 text-accent" />
-                분야별 탐색
-              </h3>
-              <div className="flex flex-col gap-1.5">
-                {PROGRAM_CATEGORIES.map((cat) => (
-                  <button
-                    key={cat.id}
-                    onClick={() => setSelectedCategory(cat.id)}
-                    className={cn(
-                      "flex items-center justify-between px-5 py-3 rounded-xl transition-all font-black text-[14px]",
-                      selectedCategory === cat.id 
-                        ? "bg-primary text-accent shadow-lg translate-x-2" 
-                        : "text-primary/40 hover:bg-primary/5"
-                    )}
-                  >
-                    <span>{cat.name}</span>
-                    {selectedCategory === cat.id && <ChevronRight className="w-4 h-4" />}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </aside>
-
-          {/* Programs List */}
-          <div className="lg:col-span-9">
-            <div className="lg:hidden mb-8 overflow-x-auto pb-4 scrollbar-hide">
-              <div className="flex gap-2 whitespace-nowrap">
-                {PROGRAM_CATEGORIES.map((cat) => (
-                  <button
-                    key={cat.id}
-                    onClick={() => setSelectedCategory(cat.id)}
-                    className={cn(
-                      "px-5 py-2.5 rounded-full text-xs font-black transition-all",
-                      selectedCategory === cat.id 
-                        ? "bg-primary text-accent shadow-lg" 
-                        : "bg-white text-primary/40 border border-primary/5"
-                    )}
-                  >
-                    {cat.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {isLoading ? (
-              <div className="flex justify-center py-40"><Clock className="w-12 h-12 animate-spin text-accent" /></div>
-            ) : filteredPrograms.length === 0 ? (
-              <div className="py-40 text-center bg-white rounded-[2rem] border-2 border-dashed border-primary/5 px-6">
-                <p className="text-xl font-black text-primary/10">이 분야의 검증된 솔루션이 곧 찾아옵니다.</p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10">
-                {filteredPrograms.map((p) => {
-                  const catName = PROGRAM_CATEGORIES.find(c => c.id === p.category)?.name || "기타";
-                  return (
-                    <Card key={p.id} className="group bg-white border-primary/5 rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-2xl transition-all flex flex-col h-full">
-                      <div className="relative h-56 md:h-72 w-full overflow-hidden">
-                        <Image 
-                          src={p.imageUrl || "https://images.unsplash.com/photo-1524178232363-1fb2b075b655"} 
-                          alt={p.title} 
-                          fill 
-                          className="object-cover transition-transform duration-1000 group-hover:scale-110" 
-                          data-ai-hint="business workshop"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-                        <div className="absolute top-5 left-5">
-                          <Badge className="bg-accent text-primary font-black border-none px-4 py-1.5 rounded-full text-[10px] shadow-lg">#{catName}</Badge>
-                        </div>
-                        {p.videoUrl && (
-                          <div className="absolute bottom-5 right-5">
-                            <div className="bg-white/20 backdrop-blur-md p-2 rounded-full border border-white/30">
-                              <Video className="w-5 h-5 text-white" />
-                            </div>
-                          </div>
-                        )}
-                      </div>
-
-                      <CardContent className="p-8 flex-1 flex flex-col">
-                        <div className="space-y-4 mb-8">
-                          <h3 className="text-xl md:text-2xl font-black text-primary leading-tight group-hover:text-accent transition-colors">
-                            {p.title}
-                          </h3>
-                          <div className="flex items-center gap-2">
-                            <div className="p-1.5 bg-primary/5 rounded-lg">
-                              <Building2 className="w-4 h-4 text-accent" />
-                            </div>
-                            <span className="text-sm font-black text-primary/60">{p.instructorName}</span>
-                          </div>
-                          <p className="text-sm font-medium text-primary/40 line-clamp-3 leading-relaxed">
-                            {p.description}
-                          </p>
-                        </div>
-
-                        <div className="space-y-2 py-4 border-y border-primary/5 mb-8">
-                          <div className="flex items-center justify-between text-[11px] font-black">
-                            <span className="text-primary/30 uppercase tracking-widest">일정</span>
-                            <span className="text-primary/60">{p.startDate} ~ {p.endDate}</span>
-                          </div>
-                          {p.subCategory && (
-                            <div className="flex items-center justify-between text-[11px] font-black">
-                              <span className="text-primary/30 uppercase tracking-widest">분야</span>
-                              <span className="text-accent">#{p.subCategory}</span>
-                            </div>
-                          )}
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4 mt-auto">
-                          <Button 
-                            onClick={() => setSelectedProgram(p)}
-                            className="h-12 md:h-14 bg-primary/5 hover:bg-primary text-primary hover:text-accent font-black rounded-xl transition-all text-xs md:text-sm"
-                          >
-                            상세 정보
-                          </Button>
-                          <Button 
-                            onClick={() => handleInquireClick(p)}
-                            className="h-12 md:h-14 bg-accent text-primary font-black rounded-xl shadow-lg hover:scale-105 active:scale-95 transition-all text-xs md:text-sm gap-2"
-                          >
-                            <MessageSquare className="w-4 h-4" />
-                            문의하기
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  )
-                })}
-              </div>
-            )}
-          </div>
+        {/* 카테고리 상단 배치 */}
+        <div className="flex flex-wrap gap-2 mb-12">
+          {PROGRAM_CATEGORIES.map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => setSelectedCategory(cat.id)}
+              className={cn(
+                "px-5 py-2.5 rounded-full text-xs font-black transition-all border-2",
+                selectedCategory === cat.id 
+                  ? "bg-primary text-accent border-primary shadow-lg scale-105" 
+                  : "bg-white text-primary/30 border-primary/5 hover:border-accent/30 hover:text-primary"
+              )}
+            >
+              {cat.name}
+            </button>
+          ))}
         </div>
+
+        {isLoading ? (
+          <div className="flex justify-center py-40"><Clock className="w-12 h-12 animate-spin text-accent" /></div>
+        ) : filteredPrograms.length === 0 ? (
+          <div className="py-40 text-center bg-white rounded-[2rem] border-2 border-dashed border-primary/5 px-6">
+            <p className="text-xl font-black text-primary/10">이 분야의 검증된 솔루션이 곧 찾아옵니다.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
+            {paginatedPrograms.map((p) => {
+              const catName = PROGRAM_CATEGORIES.find(c => c.id === p.category)?.name || "기타";
+              return (
+                <Card key={p.id} className="group bg-white border-primary/5 rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-2xl transition-all flex flex-col h-full">
+                  <div className="relative h-56 w-full overflow-hidden">
+                    <Image 
+                      src={p.imageUrl || "https://images.unsplash.com/photo-1524178232363-1fb2b075b655"} 
+                      alt={p.title} 
+                      fill 
+                      className="object-cover transition-transform duration-1000 group-hover:scale-110" 
+                      data-ai-hint="business workshop"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                    <div className="absolute top-5 left-5">
+                      <Badge className="bg-accent text-primary font-black border-none px-4 py-1.5 rounded-full text-[10px] shadow-lg">#{catName}</Badge>
+                    </div>
+                    {p.videoUrl && (
+                      <div className="absolute bottom-5 right-5">
+                        <div className="bg-white/20 backdrop-blur-md p-2 rounded-full border border-white/30">
+                          <Video className="w-5 h-5 text-white" />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <CardContent className="p-8 flex-1 flex flex-col">
+                    <div className="space-y-4 mb-8">
+                      <h3 className="text-xl font-black text-primary leading-tight group-hover:text-accent transition-colors line-clamp-2 min-h-[3.5rem]">
+                        {p.title}
+                      </h3>
+                      <div className="flex items-center gap-2">
+                        <div className="p-1.5 bg-primary/5 rounded-lg">
+                          <Building2 className="w-4 h-4 text-accent" />
+                        </div>
+                        <span className="text-sm font-black text-primary/60 truncate">{p.instructorName}</span>
+                      </div>
+                      <p className="text-sm font-medium text-primary/40 line-clamp-3 leading-relaxed">
+                        {p.description}
+                      </p>
+                    </div>
+
+                    <div className="space-y-2 py-4 border-y border-primary/5 mb-8">
+                      <div className="flex items-center justify-between text-[11px] font-black">
+                        <span className="text-primary/30 uppercase tracking-widest">일정</span>
+                        <span className="text-primary/60">{p.startDate} ~ {p.endDate}</span>
+                      </div>
+                      {p.subCategory && (
+                        <div className="flex items-center justify-between text-[11px] font-black">
+                          <span className="text-primary/30 uppercase tracking-widest">분야</span>
+                          <span className="text-accent">#{p.subCategory}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4 mt-auto">
+                      <Button 
+                        onClick={() => setSelectedProgram(p)}
+                        className="h-12 bg-primary/5 hover:bg-primary text-primary hover:text-accent font-black rounded-xl transition-all text-xs"
+                      >
+                        상세 정보
+                      </Button>
+                      <Button 
+                        onClick={() => handleInquireClick(p)}
+                        className="h-12 bg-accent text-primary font-black rounded-xl shadow-lg hover:scale-105 active:scale-95 transition-all text-xs gap-2"
+                      >
+                        <MessageSquare className="w-4 h-4" />
+                        문의하기
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              )
+            })}
+          </div>
+        )}
+
+        {/* 페이지네이션 UI */}
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center gap-2 mt-16 pb-20">
+            <Button variant="ghost" size="icon" disabled={currentPage === 1} onClick={() => setCurrentPage(p => Math.max(1, p - 1))} className="rounded-xl text-primary/40"><ChevronLeft className="w-5 h-5" /></Button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+              <Button key={page} onClick={() => setCurrentPage(page)} className={cn("w-10 h-10 rounded-xl font-black text-sm transition-all", currentPage === page ? "bg-primary text-accent shadow-lg" : "bg-white text-primary/20 hover:bg-primary/5 shadow-sm")}>{page}</Button>
+            ))}
+            <Button variant="ghost" size="icon" disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} className="rounded-xl text-primary/40"><ChevronRight className="w-5 h-5" /></Button>
+          </div>
+        )}
       </main>
 
       {/* Program Detail Dialog */}
