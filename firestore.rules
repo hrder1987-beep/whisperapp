@@ -16,8 +16,9 @@ service cloud.firestore {
     }
 
     function hasRole(role) {
+      // .get()을 사용하여 필드가 없을 경우의 예외 상황 방지
       return isSignedIn() && 
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == role;
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('role', 'member') == role;
     }
 
     function isAdmin() {
@@ -26,14 +27,14 @@ service cloud.firestore {
 
     match /admin_configuration/{configId} {
       allow read: if true;
-      allow write: if isSignedIn(); 
+      allow write: if isAdmin(); 
     }
 
     match /users/{userId} {
       allow get: if isOwner(userId) || isAdmin();
       allow list: if isSignedIn(); 
       allow create: if isSignedIn() && request.auth.uid == userId;
-      allow update: if isOwner(userId) && (request.resource.data.role == resource.data.role || isAdmin());
+      allow update: if isOwner(userId) && (request.resource.data.get('role', 'member') == resource.data.get('role', 'member') || isAdmin());
       allow delete: if isAdmin();
     }
 
@@ -58,10 +59,13 @@ service cloud.firestore {
     }
 
     match /messages/{messageId} {
-      allow read: if isSignedIn() && (resource.data.senderId == request.auth.uid || resource.data.receiverId == request.auth.uid);
+      // 단일 문서 조회 및 쿼리 요청에 대한 명시적 허용
+      allow get: if isSignedIn() && (resource.data.senderId == request.auth.uid || resource.data.receiverId == request.auth.uid || isAdmin());
+      allow list: if isSignedIn() && (resource.data.senderId == request.auth.uid || resource.data.receiverId == request.auth.uid || isAdmin());
+      
       allow create: if isSignedIn() && request.resource.data.senderId == request.auth.uid;
-      allow update: if isSignedIn() && resource.data.receiverId == request.auth.uid;
-      allow delete: if isSignedIn() && (resource.data.senderId == request.auth.uid || resource.data.receiverId == request.auth.uid);
+      allow update: if isSignedIn() && (resource.data.receiverId == request.auth.uid || isAdmin());
+      allow delete: if isSignedIn() && (resource.data.senderId == request.auth.uid || resource.data.receiverId == request.auth.uid || isAdmin());
     }
 
     match /questions/{questionId} {

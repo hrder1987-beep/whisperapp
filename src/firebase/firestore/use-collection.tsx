@@ -89,9 +89,12 @@ export function useCollection<T = any>(
         // This logic extracts the path from either a ref or a query safely
         let path: string = 'unknown';
         try {
-          path = memoizedTargetRefOrQuery.type === 'collection'
-            ? (memoizedTargetRefOrQuery as CollectionReference).path
-            : (memoizedTargetRefOrQuery as unknown as InternalQuery)._query?.path.canonicalString() || 'query';
+          if (memoizedTargetRefOrQuery.type === 'collection') {
+            path = (memoizedTargetRefOrQuery as CollectionReference).path;
+          } else {
+            const internal = memoizedTargetRefOrQuery as unknown as InternalQuery;
+            path = internal._query?.path?.canonicalString() || 'query';
+          }
         } catch (e) {
           // ignore path extraction error
         }
