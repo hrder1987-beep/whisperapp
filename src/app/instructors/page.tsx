@@ -165,11 +165,10 @@ export default function InstructorsPage() {
         curriculumPdfUrl: curriculumPdfUrl || null,
         userId: user.uid,
         createdAt: Date.now(),
-        isVerified: false // 기본적으로 미인증 상태로 등록
+        isVerified: false 
       })
       toast({ title: "등록 완료", description: "강사 프로필이 성공적으로 생성되었습니다. 관리자 확인 후 인증 마크가 부여됩니다." })
       setIsDialogOpen(false)
-      // Reset form
       setName(""); setSpecialty(""); setBio(""); setPhone(""); setEmail(""); setWebsite(""); setReferences(""); setProfilePictureUrl(null); setCurriculumPdfUrl(null);
     } catch (error) {
       toast({ title: "오류 발생", description: "등록 중 문제가 발생했습니다.", variant: "destructive" })
@@ -211,7 +210,6 @@ export default function InstructorsPage() {
             강사 프로필 등록하기
           </Button>
 
-          {/* Registration Dialog */}
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogContent className="max-w-3xl bg-white border-none rounded-[3rem] p-10 shadow-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
@@ -388,6 +386,10 @@ export default function InstructorsPage() {
       {/* Instructor Detail Dialog */}
       <Dialog open={!!viewTarget} onOpenChange={() => setViewTarget(null)}>
         <DialogContent className="max-w-2xl bg-white border-none rounded-[3rem] p-0 overflow-hidden shadow-2xl">
+          <DialogHeader className="sr-only">
+            <DialogTitle>{viewTarget?.name || "강사 상세 프로필"}</DialogTitle>
+          </DialogHeader>
+          
           {viewTarget && (
             <div className="flex flex-col max-h-[90vh]">
               <div className="premium-gradient p-10 flex items-center gap-8 shrink-0">

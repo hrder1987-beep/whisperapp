@@ -33,16 +33,14 @@ function MemberDetailDialog({ user, isOpen, onClose }: UserDetailProps) {
   )
   const { data: userQuestions } = useCollection<Question>(questionsQuery)
 
-  // 회원이 작성한 답변들 가져오기 (비용 효율을 위해 개수만 파악하거나 상위 질문 하위의 답변을 찾아야 하지만 여기선 단순화)
-  // 실제 프로덕션에서는 별도의 통계 필드를 user 문서에 두는 것이 좋습니다.
+  // 회원이 작성한 답변들 가져오기
   const questionsCount = userQuestions?.length || 0
   
-  // 접속률 시뮬레이션 (가입일로부터 현재까지의 기간 대비 활동량으로 계산)
+  // 접속률 시뮬레이션
   const monthlyAccessRate = useMemo(() => {
     const regDate = new Date(user.registrationDate).getTime()
     const now = Date.now()
     const daysSinceReg = Math.max(1, Math.floor((now - regDate) / (1000 * 60 * 60 * 24)))
-    // 임의의 활성 점수 공식: (글수 * 5 + 10) / 경과일수 기반으로 0~100 사이 보정
     const score = Math.min(100, Math.floor(((questionsCount * 10) + 50) * (30 / daysSinceReg)))
     return score > 90 ? 90 + Math.floor(Math.random() * 10) : score
   }, [user.registrationDate, questionsCount])
@@ -50,6 +48,10 @@ function MemberDetailDialog({ user, isOpen, onClose }: UserDetailProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl bg-[#F8F9FA] border-none rounded-[3rem] p-0 overflow-hidden shadow-2xl max-h-[90vh] flex flex-col">
+        <DialogHeader className="sr-only">
+          <DialogTitle>회원 상세 정보: @{user.username}</DialogTitle>
+        </DialogHeader>
+        
         <div className="premium-gradient p-8 flex items-center gap-6 shrink-0">
           <AvatarIcon src={user.profilePictureUrl} seed={user.username} className="w-24 h-24 border-4 border-white/20 shadow-2xl" />
           <div className="text-white">

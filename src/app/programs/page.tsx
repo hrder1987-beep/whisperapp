@@ -462,6 +462,10 @@ export default function ProgramsPage() {
       {/* Program Detail Dialog */}
       <Dialog open={!!selectedProgram} onOpenChange={(open) => !open && setSelectedProgram(null)}>
         <DialogContent className="max-w-4xl bg-white border-none rounded-[3rem] p-0 overflow-hidden shadow-2xl max-h-[95vh] flex flex-col">
+          <DialogHeader className="sr-only">
+            <DialogTitle>{selectedProgram?.title || "프로그램 상세 정보"}</DialogTitle>
+          </DialogHeader>
+          
           {selectedProgram && (
             <>
               <div className="relative h-[250px] md:h-[400px] w-full shrink-0">
