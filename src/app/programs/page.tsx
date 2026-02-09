@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase"
 import { collection, query, orderBy, addDoc } from "firebase/firestore"
 import { TrainingProgram } from "@/lib/types"
-import { Calendar, GraduationCap, Plus, BookOpen, Clock, ChevronRight, Hash, Sparkles } from "lucide-react"
+import { Calendar, GraduationCap, Plus, BookOpen, Clock, ChevronRight, Hash, Sparkles, Search } from "lucide-react"
 import Image from "next/image"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
@@ -75,7 +75,7 @@ export default function ProgramsPage() {
   const handleAddProgram = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!user) {
-      toast({ title: "로그인 필요", description: "교육 프로그램을 등록하려면 로그인이 필요합니다.", variant: "destructive" })
+      toast({ title: "로그인 필요", description: "프로그램을 등록하려면 로그인이 필요합니다.", variant: "destructive" })
       return
     }
 
@@ -92,7 +92,7 @@ export default function ProgramsPage() {
         userId: user.uid,
         createdAt: Date.now()
       })
-      toast({ title: "등록 완료", description: "교육 프로그램이 성공적으로 등록되었습니다." })
+      toast({ title: "등록 완료", description: "프로그램 광고가 성공적으로 등록되었습니다." })
       setIsDialogOpen(false)
       setTitle(""); setDescription(""); setInstructorName(""); setCategory(""); setSubCategory(""); setStartDate(""); setEndDate(""); setImageUrl("")
     } catch (error) {
@@ -104,36 +104,47 @@ export default function ProgramsPage() {
 
   return (
     <div className="min-h-screen bg-[#F8F9FA]">
-      <Header onSearch={setSearchQuery} />
+      <Header />
       
       <main className="max-w-7xl mx-auto px-4 py-12">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-          <div>
-            <div className="flex items-center gap-2 mb-2">
+          <div className="space-y-4 flex-1">
+            <div className="flex items-center gap-2">
               <div className="h-1 w-12 bg-accent rounded-full"></div>
-              <span className="text-xs font-black text-accent uppercase tracking-widest">Education Library</span>
+              <span className="text-xs font-black text-accent uppercase tracking-widest">Library</span>
             </div>
-            <h1 className="text-4xl md:text-5xl font-black text-primary tracking-tighter mb-4">교육 프로그램</h1>
-            <p className="text-lg font-bold text-primary/30">대한민국 HR 전문가들이 엄선한 최고의 실무 커리큘럼</p>
+            <h1 className="text-4xl md:text-5xl font-black text-primary tracking-tighter">프로그램</h1>
+            <p className="text-lg font-bold text-primary/30">HR 전문가들이 엄선한 최고의 실무 커리큘럼</p>
+            
+            {/* Search Bar at Top */}
+            <div className="relative max-w-xl group">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-primary/30 group-focus-within:text-accent transition-colors" />
+              <Input 
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                placeholder="찾으시는 프로그램명이나 강사명을 입력하세요..." 
+                className="h-14 pl-12 pr-4 bg-white border-none rounded-2xl shadow-sm focus-visible:ring-accent/50 text-sm font-bold placeholder:text-primary/20"
+              />
+            </div>
           </div>
 
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button className="gold-gradient text-primary font-black h-14 px-10 rounded-[1.5rem] shadow-xl hover:scale-105 active:scale-95 transition-all gap-3">
                 <Plus className="w-6 h-6" />
-                프로그램 직접 제안하기
+                프로그램 등록하기
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-2xl bg-white border-none rounded-[2.5rem] p-8 max-h-[90vh] overflow-y-auto shadow-2xl">
               <DialogHeader>
                 <DialogTitle className="text-2xl font-black text-primary mb-6 flex items-center gap-2">
                   <Sparkles className="w-6 h-6 text-accent" />
-                  새로운 교육 과정 등록
+                  새로운 프로그램 광고 등록
                 </DialogTitle>
               </DialogHeader>
               <form onSubmit={handleAddProgram} className="space-y-6">
                 <div className="space-y-2">
-                  <label className="text-xs font-black text-primary/40 ml-1">과정명</label>
+                  <label className="text-xs font-black text-primary/40 ml-1">프로그램명</label>
                   <Input value={title} onChange={e => setTitle(e.target.value)} required placeholder="인사담당자가 한눈에 알 수 있는 제목" className="h-12 bg-primary/5 border-none rounded-xl" />
                 </div>
 
@@ -172,7 +183,7 @@ export default function ProgramsPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-xs font-black text-primary/40 ml-1">과정 상세 내용</label>
+                  <label className="text-xs font-black text-primary/40 ml-1">간단 부제 및 설명</label>
                   <Textarea value={description} onChange={e => setDescription(e.target.value)} required placeholder="과정의 핵심 목표와 특징을 300자 내외로 입력하세요" className="bg-primary/5 border-none rounded-xl min-h-[120px]" />
                 </div>
 
@@ -188,11 +199,11 @@ export default function ProgramsPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-xs font-black text-primary/40 ml-1">대표 이미지 URL (선택)</label>
+                  <label className="text-xs font-black text-primary/40 ml-1">광고 배너 이미지 URL</label>
                   <Input value={imageUrl} onChange={e => setImageUrl(e.target.value)} placeholder="https://..." className="h-12 bg-primary/5 border-none rounded-xl" />
                 </div>
                 
-                <Button type="submit" className="w-full h-14 bg-primary text-accent font-black rounded-2xl shadow-lg mt-4 text-lg">프로그램 등록 신청</Button>
+                <Button type="submit" className="w-full h-14 bg-primary text-accent font-black rounded-2xl shadow-lg mt-4 text-lg">프로그램 광고 신청</Button>
               </form>
             </DialogContent>
           </Dialog>
@@ -201,10 +212,10 @@ export default function ProgramsPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
           {/* Category Sidebar */}
           <aside className="lg:col-span-3 space-y-2">
-            <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-primary/5">
+            <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-primary/5 sticky top-28">
               <h3 className="text-lg font-black text-primary mb-6 flex items-center gap-2">
                 <Hash className="w-5 h-5 text-accent" />
-                카테고리 필터
+                카테고리
               </h3>
               <div className="flex flex-col gap-1">
                 {PROGRAM_CATEGORIES.map((cat) => (
@@ -212,7 +223,7 @@ export default function ProgramsPage() {
                     key={cat.id}
                     onClick={() => setSelectedCategory(cat.id)}
                     className={cn(
-                      "flex items-center justify-between px-4 py-3 rounded-xl transition-all font-bold text-sm",
+                      "flex items-center justify-between px-4 py-3 rounded-xl transition-all font-bold text-sm text-left",
                       selectedCategory === cat.id 
                         ? "bg-primary text-accent shadow-md translate-x-1" 
                         : "text-primary/40 hover:bg-primary/5 hover:text-primary"
@@ -232,36 +243,46 @@ export default function ProgramsPage() {
               <div className="flex justify-center py-20"><Clock className="w-10 h-10 animate-spin text-accent" /></div>
             ) : filteredPrograms.length === 0 ? (
               <div className="py-32 text-center bg-white rounded-[2.5rem] border-2 border-dashed border-primary/5">
-                <p className="text-xl font-bold text-primary/20">해당 카테고리에 등록된 프로그램이 없습니다.</p>
+                <p className="text-xl font-bold text-primary/20">해당 조건에 맞는 프로그램이 없습니다.</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {filteredPrograms.map((p) => {
                   const catName = PROGRAM_CATEGORIES.find(c => c.id === p.category)?.name || "기타";
                   return (
-                    <Card key={p.id} className="group bg-white border-primary/5 rounded-[2rem] overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
-                      <div className="relative h-56 w-full overflow-hidden">
-                        <Image src={p.imageUrl || "https://images.unsplash.com/photo-1524178232363-1fb2b075b655"} alt={p.title} fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                        <div className="absolute top-4 left-4 flex gap-2">
+                    <Card key={p.id} className="group bg-white border-primary/5 rounded-[2rem] overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 flex flex-col">
+                      <div className="relative h-60 w-full overflow-hidden">
+                        <Image 
+                          src={p.imageUrl || "https://images.unsplash.com/photo-1524178232363-1fb2b075b655"} 
+                          alt={p.title} 
+                          fill 
+                          className="object-cover transition-transform duration-700 group-hover:scale-105" 
+                          data-ai-hint="business meeting"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-primary/60 to-transparent"></div>
+                        <div className="absolute top-4 left-4 flex flex-wrap gap-2">
                           <Badge className="bg-accent text-primary font-black border-none px-3 py-1 rounded-full text-[10px] shadow-lg">#{catName}</Badge>
                           {(p as any).subCategory && (
                             <Badge className="bg-white/90 text-primary font-black border-none px-3 py-1 rounded-full text-[10px] shadow-lg">{(p as any).subCategory}</Badge>
                           )}
                         </div>
                       </div>
-                      <CardContent className="p-7">
-                        <h3 className="text-xl md:text-2xl font-black text-primary mb-4 line-clamp-2 group-hover:text-accent transition-colors leading-tight">{p.title}</h3>
-                        <div className="space-y-3 mb-6">
-                          <div className="flex items-center gap-2 text-primary/60 text-sm font-bold">
-                            <GraduationCap className="w-4 h-4 text-accent" /> {p.instructorName}
+                      <CardContent className="p-7 flex-1 flex flex-col">
+                        <h3 className="text-xl md:text-2xl font-black text-primary mb-3 line-clamp-2 group-hover:text-accent transition-colors leading-tight">
+                          {p.title}
+                        </h3>
+                        <div className="space-y-2 mb-4">
+                          <div className="flex items-center gap-2 text-primary/60 text-xs font-bold">
+                            <GraduationCap className="w-3.5 h-3.5 text-accent" /> {p.instructorName}
                           </div>
-                          <div className="flex items-center gap-2 text-primary/60 text-sm font-bold">
-                            <Calendar className="w-4 h-4 text-accent" /> {p.startDate} ~ {p.endDate}
+                          <div className="flex items-center gap-2 text-primary/60 text-xs font-bold">
+                            <Calendar className="w-3.5 h-3.5 text-accent" /> {p.startDate} ~ {p.endDate}
                           </div>
                         </div>
-                        <p className="text-sm text-primary/50 line-clamp-3 mb-8 font-medium leading-relaxed">{p.description}</p>
-                        <Button className="w-full h-12 bg-primary/5 hover:bg-primary text-primary hover:text-accent font-black rounded-xl transition-all gap-2">
+                        <p className="text-sm text-primary/40 line-clamp-3 mb-8 font-medium leading-relaxed italic">
+                          "{p.description}"
+                        </p>
+                        <Button className="w-full h-12 mt-auto bg-primary/5 hover:bg-primary text-primary hover:text-accent font-black rounded-xl transition-all gap-2">
                           과정 상세 보기
                           <ChevronRight className="w-4 h-4" />
                         </Button>

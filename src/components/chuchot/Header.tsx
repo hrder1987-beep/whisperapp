@@ -42,7 +42,7 @@ export function Header({
 
   const navLinks = [
     { name: "지식 속삭임", href: "/" },
-    { name: "교육 프로그램", href: "/programs" },
+    { name: "프로그램", href: "/programs" },
     { name: "HR 멘토", href: "/mentors" },
   ]
 
@@ -74,7 +74,7 @@ export function Header({
         <div className="hidden md:flex flex-1 max-w-md relative group">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50 group-focus-within:text-accent transition-colors" />
           <Input 
-            placeholder="검색어를 입력하세요..." 
+            placeholder="Whisper 지식 검색..." 
             className="pl-11 pr-10 bg-white/10 border-none focus-visible:ring-accent/50 h-10 rounded-full text-xs text-white placeholder:text-white/40"
             value={searchQuery}
             onChange={(e) => {
