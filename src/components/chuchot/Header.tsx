@@ -4,7 +4,7 @@
 import { Logo } from "./Logo"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Search, User as UserIcon, LogOut, Menu, Mail, Bell, FileText } from "lucide-react"
+import { Search, User as UserIcon, LogOut, Menu, Mail, Bell, FileText, ShieldCheck } from "lucide-react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useUser, useAuth, useCollection, useMemoFirebase, useFirestore, useDoc } from "@/firebase"
@@ -37,6 +37,8 @@ export function Header({
 
   const userDocRef = useMemoFirebase(() => (user && db) ? doc(db, "users", user.uid) : null, [user, db])
   const { data: profile } = useDoc<any>(userDocRef)
+
+  const isAdmin = user?.email === 'forum@khrd.co.kr' || profile?.role === 'admin'
 
   const unreadMessagesQuery = useMemoFirebase(() => {
     if (!db || typeof db !== 'object' || !user || !user.uid) return null
@@ -106,6 +108,15 @@ export function Header({
                       {link.name}
                     </Link>
                   ))}
+                  {isAdmin && (
+                    <Link 
+                      href="/admin"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="text-xl font-black text-accent flex items-center gap-2"
+                    >
+                      <ShieldCheck className="w-6 h-6" /> 관리자 센터
+                    </Link>
+                  )}
                 </nav>
                 <div className="mt-auto pb-10 flex flex-col gap-4">
                   {user ? (
@@ -166,6 +177,14 @@ export function Header({
         <div className="flex items-center gap-2">
           {user && (
             <div className="flex items-center gap-1">
+              {isAdmin && (
+                <Link href="/admin" className="relative group hidden sm:block">
+                  <Button variant="ghost" size="icon" className="text-accent hover:bg-white/5 rounded-full" title="관리자 센터">
+                    <ShieldCheck className="w-5 h-5" />
+                  </Button>
+                </Link>
+              )}
+
               <Link href="/notifications" className="relative group">
                 <Button variant="ghost" size="icon" className="text-white hover:text-accent hover:bg-white/5 rounded-full">
                   <Bell className="w-5 h-5" />

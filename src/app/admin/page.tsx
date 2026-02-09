@@ -1,7 +1,7 @@
 
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { Header } from "@/components/chuchot/Header"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -29,6 +29,13 @@ export default function AdminPage() {
 
   const userDocRef = useMemoFirebase(() => (user && db) ? doc(db, "users", user.uid) : null, [user, db])
   const { data: profile, isLoading: isProfileLoading } = useDoc<any>(userDocRef)
+
+  // 관리자 계정 이메일 자동 감지
+  useEffect(() => {
+    if (user?.email === 'forum@khrd.co.kr' && profile && profile.role !== 'admin') {
+      setAdminKeyInput("khrd9933-525") // 이메일이 일치하면 키 자동 입력
+    }
+  }, [user, profile])
 
   const configDocRef = useMemoFirebase(() => {
     if (!db) return null
@@ -82,30 +89,36 @@ export default function AdminPage() {
 
   // 관리자 권한 체크 및 인증 화면
   if (!user || profile?.role !== 'admin') {
+    const isMasterEmail = user?.email === 'forum@khrd.co.kr'
+    
     return (
       <div className="min-h-screen bg-[#F8F9FA] flex flex-col items-center justify-center p-4">
         <ShieldAlert className="w-20 h-20 text-red-500 mb-6" />
         <h1 className="text-3xl font-black text-primary mb-2">관리자 전용 구역</h1>
-        <p className="text-primary/40 font-bold mb-8 text-center max-w-sm">해당 페이지는 관리자만 접근 가능합니다. 인증 키를 입력하여 권한을 획득하세요.</p>
+        <p className="text-primary/40 font-bold mb-8 text-center max-w-sm">
+          {isMasterEmail ? "마스터 관리자님, 아래 버튼을 눌러 관리자 권한을 활성화하세요." : "해당 페이지는 관리자만 접근 가능합니다. 인증 키를 입력하여 권한을 획득하세요."}
+        </p>
         
         <div className="w-full max-w-sm space-y-4">
-          <div className="relative">
-            <Key className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-primary/20" />
-            <Input 
-              type="password" 
-              placeholder="ADMIN ACCESS KEY" 
-              value={adminKeyInput}
-              onChange={(e) => setAdminKeyInput(e.target.value)}
-              className="h-14 pl-12 bg-white border-none rounded-2xl text-center font-black text-lg focus:ring-accent shadow-sm"
-              onKeyDown={(e) => e.key === 'Enter' && handleAdminPromotion()}
-            />
-          </div>
+          {!isMasterEmail && (
+            <div className="relative">
+              <Key className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-primary/20" />
+              <Input 
+                type="password" 
+                placeholder="ADMIN ACCESS KEY" 
+                value={adminKeyInput}
+                onChange={(e) => setAdminKeyInput(e.target.value)}
+                className="h-14 pl-12 bg-white border-none rounded-2xl text-center font-black text-lg focus:ring-accent shadow-sm"
+                onKeyDown={(e) => e.key === 'Enter' && handleAdminPromotion()}
+              />
+            </div>
+          )}
           <Button 
             onClick={handleAdminPromotion} 
-            disabled={isPromoting || !adminKeyInput}
+            disabled={isPromoting || (!isMasterEmail && !adminKeyInput)}
             className="w-full h-14 bg-primary text-accent font-black rounded-2xl text-lg shadow-lg"
           >
-            {isPromoting ? "인증 중..." : "관리자 권한 획득"}
+            {isPromoting ? "인증 중..." : isMasterEmail ? "관리자 권한 즉시 획득" : "관리자 권한 획득"}
           </Button>
           <Button variant="ghost" onClick={() => router.push("/")} className="w-full text-primary/30 font-bold">홈으로 돌아가기</Button>
         </div>

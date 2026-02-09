@@ -40,7 +40,7 @@ export default function ProfilePage() {
     )
   }
 
-  const isAdmin = profile.role === 'admin'
+  const isAdmin = user?.email === 'forum@khrd.co.kr' || profile.role === 'admin'
 
   return (
     <div className="min-h-screen bg-[#F8F9FA]">
