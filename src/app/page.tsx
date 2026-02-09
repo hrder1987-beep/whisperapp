@@ -10,12 +10,13 @@ import { RankingList } from "@/components/chuchot/RankingList"
 import { AldiChat } from "@/components/chuchot/ShuChat"
 import { Question, Answer } from "@/lib/types"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react"
+import { ArrowLeft, ChevronLeft, ChevronRight, ExternalLink } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { generateAiReply } from "@/ai/flows/generate-ai-reply-flow"
 import { cn } from "@/lib/utils"
 import { useFirestore, useCollection, useDoc, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking, useUser } from "@/firebase"
 import { collection, query, orderBy, doc, increment } from "firebase/firestore"
+import { Badge } from "@/components/ui/badge"
 
 const MOCK_REF_TIME = 1739952000000;
 
@@ -185,7 +186,37 @@ export default function HomePage() {
           {!searchQuery && (
             <aside className="lg:col-span-4 space-y-8 hidden lg:block">
               <AldiChat />
-              <RankingList questions={questions.slice(0, 5)} onSelectQuestion={handleSelectQuestion} />
+              <RankingList questions={questions.slice(0, 3)} onSelectQuestion={handleSelectQuestion} />
+              
+              {/* 트리플 배너 광고란 */}
+              <div className="space-y-6">
+                <div className="relative group cursor-pointer overflow-hidden rounded-[2rem] shadow-xl border border-primary/5 transition-all hover:shadow-2xl">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10"></div>
+                  <img src="https://picsum.photos/seed/ad1/400/220" alt="광고 배너 1" className="w-full h-auto object-cover group-hover:scale-110 transition-transform duration-700" />
+                  <div className="absolute bottom-6 left-6 right-6 z-20">
+                    <Badge className="bg-accent text-primary font-black mb-2 text-[9px]">SPECIAL EVENT</Badge>
+                    <p className="text-white font-black text-lg leading-tight">HR 전문가를 위한<br/>커리어 엑셀러레이팅</p>
+                  </div>
+                </div>
+
+                <div className="relative group cursor-pointer overflow-hidden rounded-[2rem] shadow-xl border border-primary/5 transition-all hover:shadow-2xl">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10"></div>
+                  <img src="https://picsum.photos/seed/ad2/400/220" alt="광고 배너 2" className="w-full h-auto object-cover group-hover:scale-110 transition-transform duration-700" />
+                  <div className="absolute bottom-6 left-6 right-6 z-20">
+                    <Badge className="bg-emerald-500 text-white font-black mb-2 text-[9px]">PARTNER</Badge>
+                    <p className="text-white font-black text-lg leading-tight">조직문화 진단 툴킷<br/>무료 체험 신청하기</p>
+                  </div>
+                </div>
+
+                <div className="relative group cursor-pointer overflow-hidden rounded-[2rem] shadow-xl border border-primary/5 transition-all hover:shadow-2xl">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10"></div>
+                  <img src="https://picsum.photos/seed/ad3/400/220" alt="광고 배너 3" className="w-full h-auto object-cover group-hover:scale-110 transition-transform duration-700" />
+                  <div className="absolute bottom-6 left-6 right-6 z-20">
+                    <Badge className="bg-blue-500 text-white font-black mb-2 text-[9px]">NEW SOLUTION</Badge>
+                    <p className="text-white font-black text-lg leading-tight">AI 기반 자동 채용<br/>어시스턴트 도입 가이드</p>
+                  </div>
+                </div>
+              </div>
             </aside>
           )}
         </div>

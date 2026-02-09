@@ -21,6 +21,9 @@ export function RankingList({ questions, onSelectQuestion }: RankingListProps) {
     })
   }
 
+  // 상위 3개만 노출
+  const topQuestions = questions.slice(0, 3)
+
   return (
     <div className="bg-white rounded-[2rem] p-8 border border-primary/5 shadow-xl relative overflow-hidden">
       <div className="absolute top-0 right-0 -mr-6 -mt-6 opacity-[0.03]">
@@ -36,7 +39,7 @@ export function RankingList({ questions, onSelectQuestion }: RankingListProps) {
       </div>
       
       <div className="space-y-6 relative z-10">
-        {questions.map((q, idx) => (
+        {topQuestions.map((q, idx) => (
           <div 
             key={q.id}
             onClick={() => onSelectQuestion(q.id)}
@@ -44,13 +47,13 @@ export function RankingList({ questions, onSelectQuestion }: RankingListProps) {
           >
             <div className="relative flex-shrink-0 mt-1">
               <span className={cn(
-                "text-2xl font-black w-8 text-center leading-none inline-block transition-all group-hover:scale-110",
-                idx < 3 ? "text-accent" : "text-primary/20"
+                "text-3xl font-black w-10 text-center leading-none inline-block transition-all group-hover:scale-110",
+                idx === 0 ? "text-accent" : idx === 1 ? "text-primary/40" : "text-primary/20"
               )}>
                 {idx + 1}
               </span>
               {idx === 0 && (
-                <Crown className="absolute -top-4 -left-3 w-5 h-5 text-accent transform -rotate-12 drop-shadow-md" />
+                <Crown className="absolute -top-5 -left-3 w-6 h-6 text-accent transform -rotate-12 drop-shadow-md" />
               )}
             </div>
             
