@@ -42,14 +42,14 @@ const AldiEggIcon = ({ className }: { className?: string }) => (
     {/* 코 - 앙증맞은 포인트 */}
     <ellipse cx="50" cy="62" rx="2" ry="1.5" fill="white" fillOpacity="0.8" />
     
-    {/* 입 - 친절한 미소 (해요체 말투와 어울리는) */}
+    {/* 입 - 친절한 미소 */}
     <path d="M42 75C42 75 50 82 58 75" stroke="white" strokeWidth="3" strokeLinecap="round" />
     
-    {/* 볼터치 - 열정적인 가이드의 수줍음 */}
+    {/* 볼터치 */}
     <circle cx="28" cy="68" r="4" fill="white" fillOpacity="0.2" />
     <circle cx="72" cy="68" r="4" fill="white" fillOpacity="0.2" />
     
-    {/* 머리 위 지능 안테나/빛 */}
+    {/* 머리 위 지능 안테나 */}
     <circle cx="50" cy="18" r="4" fill="white" fillOpacity="0.6" />
     <path d="M50 18V10" stroke="white" strokeWidth="2" strokeLinecap="round" />
   </svg>
