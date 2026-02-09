@@ -18,34 +18,34 @@ import { cn } from "@/lib/utils"
 
 const AldiEggIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 100 120" className={cn("w-full h-full p-1", className)} fill="none" xmlns="http://www.w3.org/2000/svg">
-    {/* 몸체 */}
+    {/* 몸체 - 부드러운 에그 쉐입 */}
     <path
       d="M50 110C75 110 90 85 90 55C90 25 72 10 50 10C28 10 10 25 10 55C10 85 25 110 50 110Z"
       fill="currentColor"
     />
     
-    {/* 안경 */}
+    {/* 안경 - 지적인 HR 가이드의 상징 */}
     <circle cx="35" cy="52" r="10" stroke="white" strokeWidth="2.5" />
     <circle cx="65" cy="52" r="10" stroke="white" strokeWidth="2.5" />
     <path d="M45 52H55" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
     <path d="M25 52H20" stroke="white" strokeWidth="2" strokeLinecap="round" />
     <path d="M75 52H80" stroke="white" strokeWidth="2" strokeLinecap="round" />
 
-    {/* 눈 */}
+    {/* 눈 - 안경 너머로 반짝이는 눈 */}
     <circle cx="35" cy="52" r="3" fill="white" />
     <circle cx="65" cy="52" r="3" fill="white" />
     
-    {/* 코 */}
+    {/* 코 - 앙증맞은 코 */}
     <circle cx="50" cy="62" r="2" fill="white" fillOpacity="0.8" />
     
-    {/* 입 */}
+    {/* 입 - 친근한 미소 */}
     <path d="M44 72C44 72 50 78 56 72" stroke="white" strokeWidth="3" strokeLinecap="round" />
     
-    {/* 볼터치 */}
+    {/* 볼터치 - 수줍은 전문가의 열정 */}
     <circle cx="28" cy="68" r="4" fill="white" fillOpacity="0.3" />
     <circle cx="72" cy="68" r="4" fill="white" fillOpacity="0.3" />
     
-    {/* 머리 위 안테나/빛 */}
+    {/* 머리 위 안테나/빛 - AI 인텔리전스 상징 */}
     <circle cx="50" cy="18" r="4" fill="white" fillOpacity="0.6" />
     <path d="M50 18L50 12" stroke="white" strokeWidth="2" strokeLinecap="round" />
   </svg>
