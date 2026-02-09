@@ -1,3 +1,4 @@
+
 "use client"
 
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
@@ -21,17 +22,17 @@ export function MainBanner({ banners: propBanners }: MainBannerProps) {
   const defaultBanners: BannerData[] = [
     {
       id: 1,
-      title: "HRD 현직자들의\n성장을 위한 속삭임",
-      description: "과정 설계부터 L&D 전략까지.\n대한민국 HRD 담당자들의 익명 지식 공유 플랫폼.",
-      image: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxocmQlMjB0cmFpbmluZ3xlbnwwfHx8fDE3NzAyODE2MTd8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      badge: "실시간 트렌드"
+      title: "HR 전문가들의\n품격 있는 속삭임",
+      description: "채용부터 조직문화, 교육 설계까지.\n대한민국 모든 HR 실무자를 위한 집단지성 플랫폼 Whisper.",
+      image: "https://images.unsplash.com/photo-1521737711867-e3b97375f902?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxocm8lMjBtZWV0aW5nfGVufDB8fHx8MTc3MDI4MTYxN3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      badge: "Whisper Intelligence"
     },
     {
       id: 2,
-      title: "더 나은 학습 경험,\n품격 있는 커뮤니티",
-      description: "막막했던 교육 효과 측정부터 사내 이벤트 아이디어까지,\n동료 HRD 담당자들에게 직접 물어보세요.",
-      image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxjb3Jwb3JhdGUlMjBlZHVjYXRpb258ZW58MHx8fHwxNzcwMzU0Mzc3fDA&ixlib=rb-4.1.0&q=80&w=1080",
-      badge: "지식 공유"
+      title: "현직자의 고민,\n전문가의 해답",
+      description: "막막한 인사 전략부터 사내 이슈 해결까지,\n검증된 HR 동료들에게 직접 묻고 답을 찾으세요.",
+      image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxjb3Jwb3JhdGUlMjBtZWV0aW5nfGVufDB8fHx8MTc3MDM1NDM3N3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      badge: "HR Collective Intelligence"
     }
   ]
 
@@ -50,7 +51,7 @@ export function MainBanner({ banners: propBanners }: MainBannerProps) {
                   fill 
                   className="object-cover opacity-20 mix-blend-overlay transition-transform duration-1000 group-hover/carousel:scale-105"
                   priority
-                  data-ai-hint="hrd office"
+                  data-ai-hint="hr meeting office"
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary/80 to-transparent"></div>
                 <div className="absolute inset-0 flex flex-col justify-center px-8 md:px-24 max-w-4xl">

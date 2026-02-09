@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState } from "react"
@@ -15,7 +16,7 @@ interface Message {
 
 export function ShuChat() {
   const [messages, setMessages] = useState<Message[]>([
-    { role: "bot", text: "안녕! 나는 숲속의 요정 슈야. HRD에 대해 궁금한 게 있다면 뭐든 물어봐!" }
+    { role: "bot", text: "반가워요! 저는 Whisper의 HR 인텔리전스 가이드 '슈'입니다. 채용, 교육, 조직문화 등 무엇이든 물어보세요." }
   ])
   const [input, setInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
@@ -32,7 +33,7 @@ export function ShuChat() {
       const res = await chatShu({ message: userMessage })
       setMessages(prev => [...prev, { role: "bot", text: res.reply }])
     } catch (error) {
-      setMessages(prev => [...prev, { role: "bot", text: "미안해, 숲의 기운이 잠시 약해졌나 봐. 다시 한번 말해줄래?" }])
+      setMessages(prev => [...prev, { role: "bot", text: "미안해요, Whisper의 기운이 잠시 약해졌나 봐요. 다시 한번 말씀해주시겠어요?" }])
     } finally {
       setIsLoading(false)
     }
@@ -47,7 +48,7 @@ export function ShuChat() {
           </div>
           <div>
             <CardTitle className="text-white text-lg font-black">AI 슈(Shu)</CardTitle>
-            <p className="text-[10px] text-accent/80 font-bold">HRD 숲의 길잡이 요정</p>
+            <p className="text-[10px] text-accent/80 font-bold">Whisper Intelligence Guide</p>
           </div>
         </div>
       </CardHeader>
@@ -93,7 +94,7 @@ export function ShuChat() {
       <div className="p-4 bg-white border-t border-primary/5">
         <div className="relative group">
           <Input 
-            placeholder="AI 교육 추천해줘..." 
+            placeholder="인사 고충이나 채용 트렌드를 물어보세요..." 
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
@@ -109,7 +110,7 @@ export function ShuChat() {
           </Button>
         </div>
         <p className="text-[9px] text-center text-primary/20 mt-2 font-bold tracking-tighter">
-          *슈는 HRD DB를 기반으로 학습되었습니다.
+          *슈는 Whisper의 HR 전문가 DB를 기반으로 답변합니다.
         </p>
       </div>
     </Card>

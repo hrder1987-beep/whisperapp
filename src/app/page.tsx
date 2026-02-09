@@ -240,6 +240,12 @@ export default function HomePage() {
 
             {!isSearching && (
               <aside className="lg:col-span-4 space-y-8 hidden lg:block">
+                {/* 챗봇이 가장 상단으로 이동 */}
+                <ShuChat />
+                
+                {/* 실시간 Best 글 5개가 그 아래로 이동 */}
+                <RankingList questions={topQuestions} onSelectQuestion={handleSelectQuestion} />
+
                 <div className="bg-primary p-6 rounded-[2rem] text-white shadow-xl relative overflow-hidden">
                    <div className="relative z-10">
                      <div className="flex items-center gap-3 mb-4">
@@ -254,8 +260,6 @@ export default function HomePage() {
                      <Users className="w-32 h-32" />
                    </div>
                 </div>
-                <ShuChat />
-                <RankingList questions={topQuestions} onSelectQuestion={handleSelectQuestion} />
               </aside>
             )}
           </div>
