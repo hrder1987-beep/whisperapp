@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
+import { Label } from "@/components/ui/label"
 import { ImageIcon, X, Send, Video, Link as LinkIcon } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import Image from "next/image"
@@ -47,7 +48,6 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
 
   const nickname = profile?.username || "익명전문가"
 
-  // 자동 높이 조절 로직
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto"
@@ -125,39 +125,40 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
   const isYoutube = videoUrl?.includes("youtube.com") || videoUrl?.includes("youtu.be")
 
   return (
-    <Card className="bg-white border border-primary/10 mb-8 overflow-hidden shadow-xl rounded-[3rem]">
-      <div className="h-2 w-full gold-gradient"></div>
-      <CardContent className="p-8 md:p-12">
-        <form onSubmit={handleSubmit} className="space-y-8">
-          <div className="flex items-start gap-6">
-            <div className="flex-shrink-0">
-              <AvatarIcon seed={nickname} className="w-14 h-14 shadow-lg border-2 border-white" />
+    <Card className="bg-white border border-primary/10 mb-8 overflow-hidden shadow-lg rounded-[2.5rem]">
+      <div className="h-1.5 w-full gold-gradient"></div>
+      <CardContent className="p-6 md:p-8">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="flex items-start gap-4">
+            <div className="flex-shrink-0 mt-1">
+              <AvatarIcon seed={nickname} className="w-11 h-11 shadow-md border border-white" />
             </div>
-            <div className="flex-1 space-y-6 overflow-hidden">
+            <div className="flex-1 space-y-4">
               <div className="flex items-center gap-2">
-                <span className="text-[16px] font-black text-primary">@{nickname}</span>
-                <span className="text-[10px] bg-primary/5 text-primary/40 px-3 py-1 rounded-full font-black uppercase tracking-widest">HR SPECIALIST</span>
+                <span className="text-sm font-black text-primary">@{nickname}</span>
+                <span className="text-[9px] bg-primary/5 text-primary/40 px-2 py-0.5 rounded-full font-black uppercase tracking-widest">HR PRO</span>
               </div>
 
-              <div className="space-y-6">
+              <div className="space-y-5">
                 {type === "question" && (
-                  <div className="space-y-5">
+                  <div className="space-y-2">
+                    <Label className="text-[11px] font-black text-primary/40 ml-1 uppercase">제목</Label>
                     <Input
-                      placeholder="공유하고 싶은 HR 주제 제목을 입력하세요."
+                      placeholder="주제를 간단히 입력해주세요"
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
-                      className="bg-transparent border-none p-0 h-auto focus-visible:ring-0 text-2xl md:text-3xl font-black text-primary placeholder:text-primary/10 tracking-tight"
+                      className="bg-primary/5 border-none h-11 rounded-xl text-[15px] font-black text-primary placeholder:text-primary/20 focus-visible:ring-accent/30"
                     />
-                    <div className="flex flex-wrap gap-2.5">
+                    <div className="flex flex-wrap gap-1.5 pt-1">
                       {HR_CATEGORIES.map((cat) => (
                         <button
                           key={cat}
                           type="button"
                           onClick={() => setSelectedCategory(cat)}
                           className={cn(
-                            "px-4 py-2 rounded-full text-[13px] font-black transition-all border",
+                            "px-3 py-1.5 rounded-full text-[11px] font-black transition-all border",
                             selectedCategory === cat 
-                              ? "bg-primary text-accent border-primary shadow-md scale-105" 
+                              ? "bg-primary text-accent border-primary shadow-sm scale-105" 
                               : "bg-primary/5 text-primary/40 border-transparent hover:bg-primary/10"
                           )}
                         >
@@ -167,29 +168,35 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
                     </div>
                   </div>
                 )}
-                <Textarea
-                  ref={textareaRef}
-                  placeholder={type === "question" ? "채용, 교육, 조직문화 등 현업의 고민과 정보를 자유롭게 속삭여보세요." : "동료 HR 전문가에게 따뜻한 조언이나 노하우를 공유해주세요."}
-                  value={text}
-                  onChange={(e) => setText(e.target.value)}
-                  className="min-h-[140px] bg-transparent border-none p-0 focus-visible:ring-0 resize-none text-lg md:text-xl leading-relaxed text-primary/80 font-medium placeholder:text-primary/10 overflow-hidden"
-                />
+                
+                <div className="space-y-2">
+                  <Label className="text-[11px] font-black text-primary/40 ml-1 uppercase">
+                    {type === "question" ? "피드 내용" : "답글 내용"}
+                  </Label>
+                  <Textarea
+                    ref={textareaRef}
+                    placeholder={type === "question" ? "HR 인사이트를 속삭여보세요" : "따뜻한 조언을 남겨주세요"}
+                    value={text}
+                    onChange={(e) => setText(e.target.value)}
+                    className="min-h-[80px] bg-primary/5 border-none rounded-xl p-4 focus-visible:ring-accent/30 text-[14px] leading-relaxed text-primary/80 font-medium placeholder:text-primary/20"
+                  />
+                </div>
               </div>
             </div>
           </div>
 
           {(imageUrl || videoUrl) && (
-            <div className="relative w-full rounded-[2.5rem] overflow-hidden border border-primary/10 mx-auto shadow-2xl bg-primary/5 animate-in fade-in zoom-in duration-500">
+            <div className="relative w-full rounded-2xl overflow-hidden border border-primary/10 shadow-md bg-primary/5 animate-in fade-in zoom-in duration-300">
               {imageUrl && (
-                <div className="p-2">
-                  <Image src={imageUrl} alt="미리보기" width={1200} height={675} className="w-full h-auto rounded-[2rem] object-contain max-h-[600px]" />
+                <div className="p-1">
+                  <Image src={imageUrl} alt="미리보기" width={800} height={450} className="w-full h-auto rounded-xl object-contain max-h-[400px]" />
                 </div>
               )}
 
               {videoUrl && (
-                <div className="p-2 bg-black">
+                <div className="p-1 bg-black">
                   {isYoutube ? (
-                    <div className="aspect-video w-full rounded-[2rem] overflow-hidden">
+                    <div className="aspect-video w-full rounded-xl overflow-hidden">
                       <iframe 
                         className="w-full h-full"
                         src={videoUrl.replace("watch?v=", "embed/").replace("youtu.be/", "youtube.com/embed/")} 
@@ -200,59 +207,57 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
                       ></iframe>
                     </div>
                   ) : (
-                    <video src={videoUrl} controls className="w-full h-auto rounded-[2rem] max-h-[600px]" />
+                    <video src={videoUrl} controls className="w-full h-auto rounded-xl max-h-[400px]" />
                   )}
                 </div>
               )}
               <button 
                 type="button" 
-                className="absolute top-6 right-6 bg-black/60 backdrop-blur-md text-white p-3 rounded-full hover:bg-red-500 transition-all shadow-2xl z-20 group"
+                className="absolute top-4 right-4 bg-black/60 backdrop-blur-md text-white p-2 rounded-full hover:bg-red-500 transition-all shadow-lg z-20 group"
                 onClick={() => { setImageUrl(undefined); setVideoUrl(undefined); }}
               >
-                <X className="h-6 w-6 group-hover:rotate-90 transition-transform" />
+                <X className="h-4 w-4 group-hover:rotate-90 transition-transform" />
               </button>
             </div>
           )}
 
           <Separator className="bg-primary/5" />
           
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-3 w-full sm:w-auto overflow-x-auto pb-2 sm:pb-0 scrollbar-hide">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1">
               <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={handleImageChange} />
               <input type="file" accept="video/*" className="hidden" ref={videoInputRef} onChange={handleVideoChange} />
               
-              <Button type="button" variant="ghost" size="sm" className="text-primary/40 rounded-2xl px-5 h-12 hover:bg-primary/5 shrink-0" onClick={() => fileInputRef.current?.click()}>
-                <ImageIcon className="w-5 h-5 mr-2 text-emerald-500" />
-                <span className="font-black text-[14px]">이미지</span>
+              <Button type="button" variant="ghost" size="sm" className="h-9 rounded-xl px-3 text-primary/50 hover:bg-primary/5" onClick={() => fileInputRef.current?.click()}>
+                <ImageIcon className="w-4 h-4 mr-1.5 text-emerald-500" />
+                <span className="font-black text-[11px]">이미지</span>
               </Button>
               
-              <Button type="button" variant="ghost" size="sm" className="text-primary/40 rounded-2xl px-5 h-12 hover:bg-primary/5 shrink-0" onClick={() => videoInputRef.current?.click()}>
-                <Video className="w-5 h-5 mr-2 text-blue-500" />
-                <span className="font-black text-[14px]">영상파일</span>
+              <Button type="button" variant="ghost" size="sm" className="h-9 rounded-xl px-3 text-primary/50 hover:bg-primary/5" onClick={() => videoInputRef.current?.click()}>
+                <Video className="w-4 h-4 mr-1.5 text-blue-500" />
+                <span className="font-black text-[11px]">영상</span>
               </Button>
 
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button type="button" variant="ghost" size="sm" className="text-primary/40 rounded-2xl px-5 h-12 hover:bg-primary/5 shrink-0">
-                    <LinkIcon className="w-5 h-5 mr-2 text-accent" />
-                    <span className="font-black text-[14px]">외부링크</span>
+                  <Button type="button" variant="ghost" size="sm" className="h-9 rounded-xl px-3 text-primary/50 hover:bg-primary/5">
+                    <LinkIcon className="w-4 h-4 mr-1.5 text-accent" />
+                    <span className="font-black text-[11px]">링크</span>
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-80 bg-white p-6 rounded-[2.5rem] shadow-2xl border-primary/10">
-                  <div className="space-y-4">
-                    <h4 className="font-black text-primary text-sm flex items-center gap-2">
-                      <LinkIcon className="w-4 h-4 text-accent" />
-                      유튜브/영상 URL 입력
+                <PopoverContent className="w-64 bg-white p-4 rounded-2xl shadow-xl border-primary/10">
+                  <div className="space-y-3">
+                    <h4 className="font-black text-primary text-[11px] flex items-center gap-1.5">
+                      <LinkIcon className="w-3 h-3 text-accent" />
+                      영상 URL 입력
                     </h4>
-                    <div className="flex flex-col gap-3">
-                      <Input 
-                        placeholder="https://youtube.com/..." 
-                        value={videoUrlInput}
-                        onChange={(e) => setVideoUrlInput(e.target.value)}
-                        className="h-12 bg-primary/5 border-none rounded-xl text-xs font-bold"
-                      />
-                      <Button onClick={handleVideoUrlSubmit} className="bg-primary text-accent font-black h-12 rounded-xl shadow-lg">연결하기</Button>
-                    </div>
+                    <Input 
+                      placeholder="https://youtube.com/..." 
+                      value={videoUrlInput}
+                      onChange={(e) => setVideoUrlInput(e.target.value)}
+                      className="h-9 bg-primary/5 border-none rounded-lg text-[10px] font-bold"
+                    />
+                    <Button onClick={handleVideoUrlSubmit} size="sm" className="w-full bg-primary text-accent font-black h-9 rounded-lg">연결</Button>
                   </div>
                 </PopoverContent>
               </Popover>
@@ -261,10 +266,10 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
             <Button 
               type="submit" 
               disabled={isSubmitting || !text.trim()} 
-              className="w-full sm:w-auto bg-primary text-accent font-black h-16 px-12 rounded-2xl shadow-2xl transition-all hover:scale-105 active:scale-95 disabled:opacity-30 flex items-center justify-center text-lg"
+              className="bg-primary text-accent font-black h-11 px-8 rounded-xl shadow-md transition-all hover:scale-105 active:scale-95 text-xs gap-2"
             >
-              {isSubmitting ? "전송 중..." : "지식 속삭이기"}
-              <Send className="w-5 h-5 ml-3" />
+              {isSubmitting ? "전송 중" : "속삭이기"}
+              <Send className="w-3.5 h-3.5" />
             </Button>
           </div>
         </form>
