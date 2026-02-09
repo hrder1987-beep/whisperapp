@@ -40,14 +40,14 @@ export function QuestionFeed({
   onDeleteAnswer
 }: QuestionFeedProps) {
   return (
-    <div className="space-y-8">
-      <div className="flex items-center justify-between mb-4 px-2">
-        <div className="flex gap-8">
+    <div className="space-y-6">
+      <div className="flex items-center justify-between mb-2 px-2">
+        <div className="flex gap-6">
           <button 
             onClick={() => onTabChange("all")}
             className={cn(
-              "text-[18px] pb-3 transition-all",
-              activeTab === "all" ? "font-black text-primary border-b-[4px] border-accent" : "font-bold text-primary/20 hover:text-primary"
+              "text-[16px] pb-2 transition-all",
+              activeTab === "all" ? "font-black text-primary border-b-[3px] border-accent" : "font-bold text-primary/20 hover:text-primary"
             )}
           >
             전체 피드
@@ -55,8 +55,8 @@ export function QuestionFeed({
           <button 
             onClick={() => onTabChange("popular")}
             className={cn(
-              "text-[18px] pb-3 transition-all",
-              activeTab === "popular" ? "font-black text-primary border-b-[4px] border-accent" : "font-bold text-primary/20 hover:text-primary"
+              "text-[16px] pb-2 transition-all",
+              activeTab === "popular" ? "font-black text-primary border-b-[3px] border-accent" : "font-bold text-primary/20 hover:text-primary"
             )}
           >
             실시간 인기
@@ -64,8 +64,8 @@ export function QuestionFeed({
           <button 
             onClick={() => onTabChange("waiting")}
             className={cn(
-              "text-[18px] pb-3 transition-all",
-              activeTab === "waiting" ? "font-black text-primary border-b-[4px] border-accent" : "font-bold text-primary/20 hover:text-primary"
+              "text-[16px] pb-2 transition-all",
+              activeTab === "waiting" ? "font-black text-primary border-b-[3px] border-accent" : "font-bold text-primary/20 hover:text-primary"
             )}
           >
             답변을 기다려요
@@ -74,8 +74,8 @@ export function QuestionFeed({
       </div>
       
       {questions.length === 0 ? (
-        <Card className="bg-white border-dashed border-primary/10 p-32 text-center rounded-[3rem]">
-          <p className="text-primary/20 font-black text-xl">해당 조건에 맞는 속삭임이 없습니다.</p>
+        <Card className="bg-white border-dashed border-primary/10 p-24 text-center rounded-[2.5rem]">
+          <p className="text-primary/20 font-black text-lg">해당 조건에 맞는 속삭임이 없습니다.</p>
         </Card>
       ) : (
         questions.map((q) => {
@@ -88,90 +88,90 @@ export function QuestionFeed({
             <Card 
               key={q.id} 
               className={cn(
-                "group bg-white border-primary/5 transition-all duration-500 cursor-pointer rounded-[2.5rem] overflow-hidden shadow-sm",
-                isExpanded ? "ring-4 ring-accent/10 shadow-2xl scale-[1.01]" : "hover:shadow-2xl hover:-translate-y-2"
+                "group bg-white border-primary/5 transition-all duration-500 cursor-pointer rounded-[2rem] overflow-hidden shadow-sm",
+                isExpanded ? "ring-4 ring-accent/10 shadow-xl scale-[1.005]" : "hover:shadow-lg hover:-translate-y-1"
               )}
               onClick={() => onSelectQuestion(q.id)}
             >
-              <CardContent className="p-8 md:p-12">
-                <div className="flex justify-between items-start mb-8">
-                  <div className="flex items-center gap-5">
+              <CardContent className="p-6 md:p-8">
+                <div className="flex justify-between items-start mb-4">
+                  <div className="flex items-center gap-3">
                     <div className="relative">
                       <AvatarIcon 
                         src={q.userProfilePicture}
                         seed={q.nickname} 
-                        className="w-14 h-14 shadow-lg border-2 border-white" 
+                        className="w-11 h-11 shadow-md border border-white" 
                       />
                       {isMentor && (
-                        <div className="absolute -top-1 -right-1 bg-accent p-1.5 rounded-full shadow-lg border-2 border-white">
-                          <Crown className="w-3.5 h-3.5 text-primary" />
+                        <div className="absolute -top-1 -right-1 bg-accent p-1 rounded-full shadow-lg border-2 border-white">
+                          <Crown className="w-3 h-3 text-primary" />
                         </div>
                       )}
                     </div>
-                    <div className="flex flex-col gap-1">
+                    <div className="flex flex-col gap-0.5">
                       <div className="flex items-center gap-2">
                         <span className={cn(
-                          "text-[16px] font-black",
+                          "text-[15px] font-black",
                           isMentor ? "text-accent" : "text-primary"
                         )}>
                           @{q.nickname}
                         </span>
                         {isMentor ? (
-                          <Badge className="bg-accent text-primary text-[10px] font-black border-none px-2.5 py-0.5 rounded-lg">WHISPERER</Badge>
+                          <Badge className="bg-accent text-primary text-[9px] font-black border-none px-2 py-0.5 rounded-md">WHISPERER</Badge>
                         ) : (
-                          <Badge variant="secondary" className="bg-primary/5 text-[10px] text-primary/40 font-black border-none px-2.5 py-0.5 rounded-lg uppercase tracking-tighter">HR PRO</Badge>
+                          <Badge variant="secondary" className="bg-primary/5 text-[9px] text-primary/40 font-black border-none px-2 py-0.5 rounded-md uppercase tracking-tighter">HR PRO</Badge>
                         )}
                       </div>
-                      <span className="text-[12px] font-bold text-primary/30 flex items-center gap-1.5 uppercase tracking-widest">
-                        <Clock className="w-3.5 h-3.5" />
+                      <span className="text-[11px] font-bold text-primary/30 flex items-center gap-1 uppercase tracking-widest">
+                        <Clock className="w-3 h-3" />
                         {formatDistanceToNow(q.createdAt, { addSuffix: true, locale: ko })}
                       </span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2">
                     {isAdminMode && (
                       <Button 
                         variant="ghost" 
                         size="icon" 
-                        className="text-red-300 hover:text-red-500 hover:bg-red-50 rounded-full"
+                        className="w-8 h-8 text-red-300 hover:text-red-500 hover:bg-red-50 rounded-full"
                         onClick={(e) => {
                           e.stopPropagation();
                           onDeleteQuestion?.(q.id);
                         }}
                       >
-                        <Trash2 className="w-5 h-5" />
+                        <Trash2 className="w-4 h-4" />
                       </Button>
                     )}
                     {q.category && (
-                      <Badge className="bg-primary/5 text-primary/60 font-black border-none px-4 py-1.5 rounded-full text-[11px] uppercase tracking-tighter">
+                      <Badge className="bg-primary/5 text-primary/60 font-black border-none px-3 py-1 rounded-full text-[10px] uppercase tracking-tighter">
                         #{q.category}
                       </Badge>
                     )}
                     <div className={cn(
-                      "p-2 rounded-full transition-colors",
+                      "p-1.5 rounded-full transition-colors",
                       isExpanded ? "bg-accent text-primary" : "bg-primary/5 text-primary/20 group-hover:bg-accent/10 group-hover:text-accent"
                     )}>
-                      {isExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+                      {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                     </div>
                   </div>
                 </div>
 
-                <div className="space-y-6">
+                <div className="space-y-3">
                   <h3 className={cn(
-                    "text-2xl md:text-[32px] font-black transition-colors leading-[1.25] tracking-tight",
+                    "text-xl md:text-2xl font-black transition-colors leading-[1.3] tracking-tight",
                     isExpanded ? "text-accent" : "text-primary group-hover:text-accent"
                   )}>
                     {q.title}
                   </h3>
                   <p className={cn(
-                    "text-base md:text-[19px] leading-relaxed text-primary/60 whitespace-pre-wrap break-words font-medium transition-all",
+                    "text-sm md:text-[15px] leading-relaxed text-primary/60 whitespace-pre-wrap break-words font-medium transition-all",
                     !isExpanded && "line-clamp-2"
                   )}>
                     {q.text}
                   </p>
                   
                   {isExpanded && q.imageUrl && (
-                    <div className="relative w-full h-[400px] md:h-[500px] rounded-[2.5rem] overflow-hidden border border-primary/5 bg-primary/5 mt-10 animate-in fade-in zoom-in duration-700 shadow-inner">
+                    <div className="relative w-full h-[300px] md:h-[400px] rounded-[1.5rem] overflow-hidden border border-primary/5 bg-primary/5 mt-6 animate-in fade-in zoom-in duration-500 shadow-inner">
                       <Image 
                         src={q.imageUrl} 
                         alt="속삭임 이미지" 
@@ -182,7 +182,7 @@ export function QuestionFeed({
                   )}
 
                   {isExpanded && q.videoUrl && (
-                    <div className="relative w-full rounded-[2.5rem] overflow-hidden border border-primary/5 bg-black mt-10 animate-in fade-in zoom-in duration-700 shadow-2xl">
+                    <div className="relative w-full rounded-[1.5rem] overflow-hidden border border-primary/5 bg-black mt-6 animate-in fade-in zoom-in duration-500 shadow-xl">
                       {isYoutube ? (
                         <div className="aspect-video w-full">
                           <iframe 
@@ -195,14 +195,14 @@ export function QuestionFeed({
                           ></iframe>
                         </div>
                       ) : (
-                        <video src={q.videoUrl} controls className="w-full max-h-[600px]" />
+                        <video src={q.videoUrl} controls className="w-full max-h-[500px]" />
                       )}
                     </div>
                   )}
                 </div>
 
                 {isExpanded && (
-                  <div className="mt-12 pt-12 border-t border-primary/5 animate-in slide-in-from-top-6 duration-700" onClick={(e) => e.stopPropagation()}>
+                  <div className="mt-8 pt-8 border-t border-primary/5 animate-in slide-in-from-top-4 duration-500" onClick={(e) => e.stopPropagation()}>
                     <SubmissionForm 
                       type="answer"
                       placeholder="동료 전문가들에게 따뜻한 조언이나 노하우를 공유해주세요."
@@ -214,25 +214,25 @@ export function QuestionFeed({
               </CardContent>
               
               {!isExpanded && (
-                <CardFooter className="px-8 md:px-12 py-8 border-t border-primary/5 flex items-center justify-between bg-primary/[0.01] group-hover:bg-primary/[0.02] transition-colors">
-                  <div className="flex gap-10">
-                    <div className="flex items-center gap-3 text-sm font-black text-primary/30 group-hover:text-accent transition-colors">
-                      <div className="p-2 rounded-xl bg-primary/5 group-hover:bg-accent/10 transition-colors">
-                        <MessageCircle className="w-5 h-5" />
+                <CardFooter className="px-6 md:px-8 py-4 border-t border-primary/5 flex items-center justify-between bg-primary/[0.005] group-hover:bg-primary/[0.015] transition-colors">
+                  <div className="flex gap-6">
+                    <div className="flex items-center gap-2 text-xs font-black text-primary/30 group-hover:text-accent transition-colors">
+                      <div className="p-1.5 rounded-lg bg-primary/5 group-hover:bg-accent/10 transition-colors">
+                        <MessageCircle className="w-4 h-4" />
                       </div>
                       <span className="text-primary/60 font-black">답변 {q.answerCount}</span>
                     </div>
-                    <div className="flex items-center gap-3 text-sm font-black text-primary/30">
-                      <div className="p-2 rounded-xl bg-primary/5">
-                        <Eye className="w-5 h-5" />
+                    <div className="flex items-center gap-2 text-xs font-black text-primary/30">
+                      <div className="p-1.5 rounded-lg bg-primary/5">
+                        <Eye className="w-4 h-4" />
                       </div>
                       <span className="text-primary/60 font-black">조회 {q.viewCount}</span>
                     </div>
                   </div>
-                  <Button variant="ghost" size="icon" className="h-12 w-12 rounded-2xl text-primary/20 hover:text-accent hover:bg-accent/10 transition-all" onClick={(e) => {
+                  <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl text-primary/20 hover:text-accent hover:bg-accent/10 transition-all" onClick={(e) => {
                     e.stopPropagation();
                   }}>
-                    <Bookmark className="w-6 h-6" />
+                    <Bookmark className="w-5 h-5" />
                   </Button>
                 </CardFooter>
               )}
