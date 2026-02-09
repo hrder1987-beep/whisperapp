@@ -15,9 +15,11 @@
         "department": { "type": "string", "description": "부서" },
         "jobTitle": { "type": "string", "description": "직함" },
         "phoneNumber": { "type": "string", "description": "휴대전화" },
-        "registrationDate": { "type": "string", "format": "date-time" }
+        "role": { "type": "string", "enum": ["member", "mentor", "admin"], "description": "사용자 권한" },
+        "registrationDate": { "type": "string", "format": "date-time" },
+        "profilePictureUrl": { "type": "string" }
       },
-      "required": ["id", "username", "email", "name", "company", "department", "jobTitle", "phoneNumber", "registrationDate"]
+      "required": ["id", "username", "email", "name", "company", "department", "jobTitle", "phoneNumber", "role", "registrationDate"]
     },
     "Question": {
       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -29,6 +31,7 @@
         "title": { "type": "string" },
         "content": { "type": "string" },
         "userId": { "type": "string" },
+        "userRole": { "type": "string" },
         "nickname": { "type": "string" },
         "category": { "type": "string" },
         "viewCount": { "type": "number" },

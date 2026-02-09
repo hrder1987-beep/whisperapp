@@ -4,7 +4,7 @@
 import { Logo } from "./Logo"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Search, User as UserIcon, LogOut, Settings, LayoutDashboard, Menu, X, Bell } from "lucide-react"
+import { Search, User as UserIcon, LogOut, Settings, LayoutDashboard } from "lucide-react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useUser, useAuth } from "@/firebase"
@@ -43,7 +43,7 @@ export function Header({
   const navLinks = [
     { name: "지식 속삭임", href: "/" },
     { name: "교육 프로그램", href: "/programs" },
-    { name: "강사 정보", href: "/instructors" },
+    { name: "HR 멘토", href: "/mentors" },
   ]
 
   return (

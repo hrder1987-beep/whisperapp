@@ -1,8 +1,9 @@
+
 "use client"
 
 import { Question, Answer } from "@/lib/types"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
-import { MessageCircle, Eye, Clock, Bookmark, ChevronDown, ChevronUp, Trash2 } from "lucide-react"
+import { MessageCircle, Eye, Clock, Bookmark, ChevronDown, ChevronUp, Trash2, Award, Crown } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 import { ko } from "date-fns/locale"
 import { Button } from "@/components/ui/button"
@@ -80,6 +81,7 @@ export function QuestionFeed({
         questions.map((q) => {
           const isExpanded = selectedId === q.id
           const questionAnswers = answers.filter(a => a.questionId === q.id)
+          const isMentor = q.userRole === 'mentor';
 
           return (
             <Card 
@@ -93,15 +95,31 @@ export function QuestionFeed({
               <CardContent className="p-7 md:p-9">
                 <div className="flex justify-between items-start mb-6">
                   <div className="flex items-center gap-4">
-                    <AvatarIcon 
-                      src={q.userProfilePicture}
-                      seed={q.nickname} 
-                      className="w-12 h-12 shadow-md border-2 border-primary/5" 
-                    />
+                    <div className="relative">
+                      <AvatarIcon 
+                        src={q.userProfilePicture}
+                        seed={q.nickname} 
+                        className="w-12 h-12 shadow-md border-2 border-primary/5" 
+                      />
+                      {isMentor && (
+                        <div className="absolute -top-1 -right-1 bg-accent p-1 rounded-full shadow-md border border-white">
+                          <Crown className="w-3 h-3 text-primary" />
+                        </div>
+                      )}
+                    </div>
                     <div className="flex flex-col gap-0.5">
                       <div className="flex items-center gap-2">
-                        <span className="text-[15px] font-black text-primary">@{q.nickname}</span>
-                        <Badge variant="secondary" className="bg-primary/5 text-[10px] text-primary/60 font-bold border-none px-2 py-0">HR Specialist</Badge>
+                        <span className={cn(
+                          "text-[15px] font-black",
+                          isMentor ? "text-accent" : "text-primary"
+                        )}>
+                          @{q.nickname}
+                        </span>
+                        {isMentor ? (
+                          <Badge className="bg-accent text-primary text-[10px] font-black border-none px-2 py-0">HR MENTOR</Badge>
+                        ) : (
+                          <Badge variant="secondary" className="bg-primary/5 text-[10px] text-primary/60 font-bold border-none px-2 py-0">HR Specialist</Badge>
+                        )}
                       </div>
                       <span className="text-[12px] font-medium text-primary/40 flex items-center gap-1.5">
                         <Clock className="w-3.5 h-3.5" />
@@ -134,8 +152,8 @@ export function QuestionFeed({
 
                 <div className="space-y-4">
                   <h3 className={cn(
-                    "text-2xl md:text-[26px] font-black text-primary transition-colors leading-[1.3] tracking-tight",
-                    isExpanded ? "text-accent" : "group-hover:text-accent"
+                    "text-2xl md:text-[26px] font-black transition-colors leading-[1.3] tracking-tight",
+                    isExpanded ? "text-accent" : "text-primary group-hover:text-accent"
                   )}>
                     {q.title}
                   </h3>

@@ -1,12 +1,15 @@
+
 "use client"
 
 import { Answer } from "@/lib/types"
 import { Card, CardContent } from "@/components/ui/card"
 import { formatDistanceToNow } from "date-fns"
 import { ko } from "date-fns/locale"
-import { Clock, Trash2 } from "lucide-react"
+import { Clock, Trash2, Award, Crown } from "lucide-react"
 import { AvatarIcon } from "./AvatarIcon"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { cn } from "@/lib/utils"
 
 interface AnswerFeedProps {
   answers: Answer[]
@@ -26,41 +29,63 @@ export function AnswerFeed({ answers, isAdminMode = false, onDeleteAnswer }: Ans
       {sortedAnswers.length === 0 ? (
         <p className="text-muted-foreground text-center py-8">이 속삭임에 첫 번째 답글을 남겨보세요.</p>
       ) : (
-        sortedAnswers.map((a) => (
-          <Card key={a.id} className="bg-card border-black/5 shadow-sm">
-            <CardContent className="p-4">
-              <div className="flex justify-between items-center mb-3">
-                <div className="flex items-center gap-2">
-                  <AvatarIcon 
-                    src={a.userProfilePicture}
-                    seed={a.nickname} 
-                    className="w-7 h-7" 
-                  />
-                  <span className="text-primary font-bold text-sm">@{a.nickname}</span>
+        sortedAnswers.map((a) => {
+          const isMentor = a.userRole === 'mentor';
+          
+          return (
+            <Card key={a.id} className={cn(
+              "bg-card border-black/5 shadow-sm",
+              isMentor && "border-accent/30 bg-accent/5"
+            )}>
+              <CardContent className="p-4">
+                <div className="flex justify-between items-center mb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="relative">
+                      <AvatarIcon 
+                        src={a.userProfilePicture}
+                        seed={a.nickname} 
+                        className="w-7 h-7" 
+                      />
+                      {isMentor && (
+                        <div className="absolute -top-1 -right-1 bg-accent p-0.5 rounded-full shadow-sm border border-white">
+                          <Crown className="w-2 h-2 text-primary" />
+                        </div>
+                      )}
+                    </div>
+                    <span className={cn(
+                      "font-bold text-sm",
+                      isMentor ? "text-accent" : "text-primary"
+                    )}>
+                      @{a.nickname}
+                    </span>
+                    {isMentor && (
+                      <Badge className="bg-accent text-primary text-[9px] font-black border-none px-1.5 py-0">MENTOR</Badge>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-muted-foreground flex items-center gap-1 text-[10px]">
+                      <Clock className="w-3 h-3" />
+                      {formatDistanceToNow(a.createdAt, { addSuffix: true, locale: ko })}
+                    </span>
+                    {isAdminMode && (
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="w-6 h-6 text-red-300 hover:text-red-500 hover:bg-red-50 rounded-full"
+                        onClick={() => onDeleteAnswer?.(a.id)}
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </Button>
+                    )}
+                  </div>
                 </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-muted-foreground flex items-center gap-1 text-[10px]">
-                    <Clock className="w-3 h-3" />
-                    {formatDistanceToNow(a.createdAt, { addSuffix: true, locale: ko })}
-                  </span>
-                  {isAdminMode && (
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="w-6 h-6 text-red-300 hover:text-red-500 hover:bg-red-50 rounded-full"
-                      onClick={() => onDeleteAnswer?.(a.id)}
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </Button>
-                  )}
-                </div>
-              </div>
-              <p className="text-base text-foreground/90 leading-relaxed pl-9">
-                {a.text}
-              </p>
-            </CardContent>
-          </Card>
-        ))
+                <p className="text-base text-foreground/90 leading-relaxed pl-9">
+                  {a.text}
+                </p>
+              </CardContent>
+            </Card>
+          )
+        })
       )}
     </div>
   )

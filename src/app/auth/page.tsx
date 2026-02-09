@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, Suspense, useRef } from "react"
@@ -12,7 +13,7 @@ import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "fire
 import { doc, setDoc } from "firebase/firestore"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
-import { Mail, Lock, UserPlus, LogIn, Sparkles, Building, Briefcase, Phone, User, Camera, X } from "lucide-react"
+import { LogIn, UserPlus, Camera, X, Sparkles } from "lucide-react"
 
 function AuthContent() {
   const searchParams = useSearchParams()
@@ -77,6 +78,7 @@ function AuthContent() {
         department,
         jobTitle,
         phoneNumber: phone,
+        role: "member", // 기본 역할은 일반 멤버
         registrationDate: new Date().toISOString(),
         profilePictureUrl: profilePicture || null
       })
@@ -124,7 +126,6 @@ function AuthContent() {
 
             <TabsContent value="signup">
               <form onSubmit={handleSignup} className="space-y-4">
-                {/* Profile Picture Upload */}
                 <div className="flex flex-col items-center mb-6">
                   <div className="relative group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
                     <div className="w-24 h-24 rounded-full bg-primary/5 border-2 border-dashed border-primary/20 flex items-center justify-center overflow-hidden transition-all group-hover:border-accent">
@@ -143,9 +144,6 @@ function AuthContent() {
                         <X className="w-3 h-3" />
                       </button>
                     )}
-                    <div className="absolute bottom-0 right-0 bg-accent p-1.5 rounded-full shadow-md">
-                      <Camera className="w-3 h-3 text-primary" />
-                    </div>
                   </div>
                   <span className="text-[10px] font-black text-primary/40 mt-2 uppercase tracking-tighter">프로필 사진 등록 (선택)</span>
                   <input type="file" ref={fileInputRef} onChange={handleImageChange} accept="image/*" className="hidden" />

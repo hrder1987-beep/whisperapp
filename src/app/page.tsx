@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo } from "react"
@@ -8,9 +9,9 @@ import { QuestionFeed } from "@/components/chuchot/QuestionFeed"
 import { RankingList } from "@/components/chuchot/RankingList"
 import { ShuChat } from "@/components/chuchot/ShuChat"
 import { AdminCMS } from "@/components/chuchot/AdminCMS"
-import { Question, Answer } from "@/lib/types"
+import { Question, Answer, UserRole } from "@/lib/types"
 import { Button } from "@/components/ui/button"
-import { Info, ArrowLeft, Users, BrainCircuit } from "lucide-react"
+import { ArrowLeft, Users, BrainCircuit } from "lucide-react"
 import { 
   Dialog, 
   DialogContent, 
@@ -39,7 +40,6 @@ export default function HomePage() {
   const { toast } = useToast()
   const db = useFirestore()
 
-  // Real-time questions
   const questionsQuery = useMemoFirebase(() => {
     if (!db) return null
     return query(collection(db, "questions"), orderBy("createdAt", "desc"))
@@ -47,7 +47,6 @@ export default function HomePage() {
   const { data: questionsData } = useCollection<Question>(questionsQuery)
   const questions = questionsData || []
 
-  // Real-time answers for selected question
   const answersQuery = useMemoFirebase(() => {
     if (!db || !selectedQuestionId) return null
     return query(collection(db, "questions", selectedQuestionId, "answers"), orderBy("createdAt", "desc"))
@@ -103,6 +102,7 @@ export default function HomePage() {
       text,
       nickname,
       userId: user.uid,
+      userRole: (profile?.role as UserRole) || "member",
       userProfilePicture: profile?.profilePictureUrl || null,
       imageUrl: imageUrl || null,
       category: category || null,
@@ -119,6 +119,7 @@ export default function HomePage() {
             text: res.replyText,
             nickname: "슈 (AI Whisper)",
             userId: "ai-whisper",
+            userRole: "admin",
             createdAt: Date.now(),
             userProfilePicture: null,
           }
@@ -137,6 +138,7 @@ export default function HomePage() {
       text,
       nickname,
       userId: user.uid,
+      userRole: (profile?.role as UserRole) || "member",
       userProfilePicture: profile?.profilePictureUrl || null,
       createdAt: Date.now(),
     }

@@ -1,3 +1,6 @@
+
+export type UserRole = 'member' | 'mentor' | 'admin';
+
 export interface UserProfile {
   id: string;
   username: string;
@@ -7,6 +10,7 @@ export interface UserProfile {
   department: string;
   jobTitle: string;
   phoneNumber: string;
+  role: UserRole;
   registrationDate: string;
   profilePictureUrl?: string;
 }
@@ -17,6 +21,7 @@ export interface Question {
   text: string;
   nickname: string;
   userId: string;
+  userRole?: UserRole;
   viewCount: number;
   answerCount: number;
   createdAt: number;
@@ -31,6 +36,7 @@ export interface Answer {
   text: string;
   nickname: string;
   userId: string;
+  userRole?: UserRole;
   createdAt: number;
   userProfilePicture?: string;
 }
@@ -55,5 +61,6 @@ export interface Instructor {
   bio: string;
   profilePictureUrl: string;
   userId: string;
+  role?: UserRole;
   createdAt: number;
 }
