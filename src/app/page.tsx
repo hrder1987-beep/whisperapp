@@ -11,7 +11,7 @@ import { AldiChat } from "@/components/chuchot/ShuChat"
 import { AdminCMS } from "@/components/chuchot/AdminCMS"
 import { Question, Answer, UserRole } from "@/lib/types"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, ExternalLink } from "lucide-react"
+import { ArrowLeft, ExternalLink, Sparkles } from "lucide-react"
 import { 
   Dialog, 
   DialogContent, 
@@ -26,6 +26,46 @@ import { useFirestore, useCollection, useDoc, useMemoFirebase, addDocumentNonBlo
 import { collection, query, orderBy, doc, increment } from "firebase/firestore"
 import Image from "next/image"
 import { Badge } from "@/components/ui/badge"
+
+const MOCK_QUESTIONS: Question[] = [
+  {
+    id: "sample-1",
+    title: "2024년 채용 트렌드: AI 역량 검사 어떻게 대비하시나요?",
+    text: "최근 많은 기업들이 AI 역량 검사를 도입하고 있는데, 지원자들의 거부감은 없는지 그리고 실제 변별력이 어느 정도라고 보시는지 궁금합니다. 도입을 검토 중인 담당자로서 실무진의 솔직한 의견이 필요합니다.",
+    nickname: "채용마스터",
+    userId: "mock-1",
+    userRole: "member",
+    viewCount: 1240,
+    answerCount: 8,
+    createdAt: Date.now() - 1000 * 60 * 60 * 2,
+    category: "채용/헤드헌팅"
+  },
+  {
+    id: "sample-2",
+    title: "MZ세대 온보딩 과정에서 가장 효과적이었던 활동 공유합니다.",
+    text: "저희 회사는 '버디 프로그램'과 '웰컴 키트' 외에도 '100일 미션'이라는 제도를 운영하고 있는데 반응이 매우 좋습니다. 다른 회사 담당자님들은 어떤 독특한 온보딩 경험을 설계하고 계신가요?",
+    nickname: "문화기획자",
+    userId: "mock-2",
+    userRole: "mentor",
+    viewCount: 850,
+    answerCount: 12,
+    createdAt: Date.now() - 1000 * 60 * 60 * 5,
+    category: "조직문화/EVP",
+    userProfilePicture: "https://picsum.photos/seed/culture/200/200"
+  },
+  {
+    id: "sample-3",
+    title: "인사평가 시즌... 피드백 스킬에 대한 고민이 많습니다.",
+    text: "팀장님들이 하부 조직원들에게 피드백할 때 너무 공격적이거나 혹은 너무 방어적이어서 평가의 본래 취지가 퇴색되는 경우가 많네요. 사내 피드백 교육을 기획 중인데 추천해주실 만한 사례가 있을까요?",
+    nickname: "HR러버",
+    userId: "mock-3",
+    userRole: "member",
+    viewCount: 320,
+    answerCount: 4,
+    createdAt: Date.now() - 1000 * 60 * 60 * 24,
+    category: "인사전략/HRM"
+  }
+]
 
 export default function HomePage() {
   const { user } = useUser()
@@ -47,7 +87,12 @@ export default function HomePage() {
     return query(collection(db, "questions"), orderBy("createdAt", "desc"))
   }, [db])
   const { data: questionsData } = useCollection<Question>(questionsQuery)
-  const questions = questionsData || []
+  
+  const questions = useMemo(() => {
+    const fetched = questionsData || []
+    if (fetched.length === 0 && !searchQuery) return MOCK_QUESTIONS
+    return fetched
+  }, [questionsData, searchQuery])
 
   const answersQuery = useMemoFirebase(() => {
     if (!db || !selectedQuestionId) return null
@@ -81,7 +126,12 @@ export default function HomePage() {
         return null
       }
     }
-    return null
+    // 기본 광고 데이터
+    return {
+      image: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxocm98ZW58MHx8fHwxNzcwMjgxNjE3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      link: "https://whisper.hr",
+      title: "HR 전문가를 위한\n프리미엄 채용 솔루션"
+    }
   }, [config])
 
   const isSearching = searchQuery.trim().length > 0
@@ -166,7 +216,7 @@ export default function HomePage() {
       setSelectedQuestionId(null)
     } else {
       setSelectedQuestionId(id)
-      if (db) {
+      if (db && !id.startsWith("sample-")) {
         updateDocumentNonBlocking(doc(db, "questions", id), { viewCount: increment(1) })
       }
     }
@@ -267,34 +317,28 @@ export default function HomePage() {
                 <AldiChat />
                 <RankingList questions={topQuestions} onSelectQuestion={handleSelectQuestion} />
 
-                {/* 수익형 광고 배너 */}
-                {sidebarAd ? (
+                {sidebarAd && (
                   <a href={sidebarAd.link} target="_blank" rel="noopener noreferrer" className="block group">
-                    <div className="relative w-full aspect-[4/5] rounded-[2.5rem] overflow-hidden shadow-2xl transition-all duration-500 hover:shadow-primary/20 hover:-translate-y-2">
+                    <div className="relative w-full aspect-[4/5] rounded-[3rem] overflow-hidden shadow-2xl transition-all duration-500 hover:shadow-primary/20 hover:-translate-y-2">
                       <Image 
                         src={sidebarAd.image} 
                         alt={sidebarAd.title} 
                         fill 
                         className="object-cover transition-transform duration-1000 group-hover:scale-110"
-                        data-ai-hint="vertical banner ad"
+                        data-ai-hint="business office"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
-                      <div className="absolute bottom-8 left-8 right-8">
+                      <div className="absolute bottom-10 left-8 right-8">
                         <Badge className="bg-accent text-primary font-black mb-3 px-3 py-1 text-[10px]">ADVERTISEMENT</Badge>
-                        <h3 className="text-white text-2xl font-black leading-tight drop-shadow-lg group-hover:text-accent transition-colors">
+                        <h3 className="text-white text-2xl font-black leading-tight drop-shadow-lg group-hover:text-accent transition-colors whitespace-pre-line">
                           {sidebarAd.title}
                         </h3>
-                        <div className="mt-4 flex items-center gap-2 text-white/50 text-xs font-bold uppercase tracking-widest">
+                        <div className="mt-6 flex items-center gap-2 text-white/50 text-xs font-bold uppercase tracking-widest">
                           자세히 보기 <ExternalLink className="w-3 h-3" />
                         </div>
                       </div>
                     </div>
                   </a>
-                ) : (
-                  <div className="bg-primary/5 border-2 border-dashed border-primary/10 p-12 rounded-[2.5rem] flex flex-col items-center justify-center text-center">
-                    <p className="text-primary/20 font-black text-sm uppercase tracking-widest">Ad Space</p>
-                    <p className="text-primary/10 text-xs mt-2 font-bold">광고 문의: admin@whisper.hr</p>
-                  </div>
                 )}
               </aside>
             )}
@@ -303,17 +347,17 @@ export default function HomePage() {
       </div>
 
       <Dialog open={showAdminDialog} onOpenChange={setShowAdminDialog}>
-        <DialogContent className="bg-white border-primary/20 rounded-[2rem] p-8">
+        <DialogContent className="bg-white border-primary/20 rounded-[3rem] p-10">
           <DialogHeader><DialogTitle className="text-2xl font-black text-primary">Whisper 관리자 인증</DialogTitle></DialogHeader>
-          <div className="py-6">
+          <div className="py-8">
             <input 
               type="password" placeholder="ADMIN ACCESS KEY" value={adminPassword}
               onChange={(e) => setAdminPassword(e.target.value)}
-              className="w-full bg-primary/5 border-none h-12 rounded-xl text-center font-black"
+              className="w-full bg-primary/5 border-none h-14 rounded-2xl text-center font-black text-lg focus:ring-accent"
               onKeyDown={(e) => e.key === 'Enter' && handleAdminAuth()}
             />
           </div>
-          <DialogFooter><Button onClick={handleAdminAuth} className="bg-primary text-accent font-black px-8">인증 완료</Button></DialogFooter>
+          <DialogFooter><Button onClick={handleAdminAuth} className="w-full h-14 bg-primary text-accent font-black text-lg rounded-2xl">인증 완료</Button></DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
