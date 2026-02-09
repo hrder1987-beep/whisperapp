@@ -243,7 +243,7 @@ export default function HomePage() {
         onOpenAdminAuth={() => setShowAdminDialog(true)}
       />
 
-      <div className="max-w-7xl mx-auto px-4 py-4 md:py-12">
+      <div className="max-w-7xl mx-auto px-0 md:px-4 py-0 md:py-12">
         {isCMSActive && isAdminMode ? (
           <AdminCMS 
             initialBanners={cmsBanners} 
@@ -253,11 +253,11 @@ export default function HomePage() {
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
             <main className={cn(
-              "space-y-6 md:space-y-10 transition-all duration-500",
+              "space-y-0 md:space-y-10 transition-all duration-500",
               isSearching ? "lg:col-span-12 max-w-4xl mx-auto w-full" : "lg:col-span-8"
             )}>
               {isSearching ? (
-                <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+                <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 px-4 md:px-0 mt-8">
                   <div className="flex flex-col gap-6 mb-12">
                     <button 
                       onClick={() => setSearchQuery("")} 
@@ -288,15 +288,19 @@ export default function HomePage() {
                   />
                 </div>
               ) : (
-                <>
-                  {/* 모바일 최적화 레이아웃: 배너 -> 작성란 -> 피드 */}
-                  <div className="flex flex-col gap-6 md:gap-10">
+                <div className="flex flex-col gap-0 md:gap-10">
+                  {/* 모바일 버전 요청 순서: 배너 광고 -> 작성란 -> 피드 */}
+                  <div className="w-full">
                     <MainBanner banners={cmsBanners} />
+                  </div>
+                  <div className="px-4 md:px-0 -mt-8 md:mt-0 relative z-20">
                     <SubmissionForm 
                       type="question"
                       placeholder="채용, 교육, 조직문화 등 HR 현업의 고민을 속삭여보세요."
                       onSubmit={handleAddQuestion}
                     />
+                  </div>
+                  <div className="px-4 md:px-0">
                     <QuestionFeed 
                       questions={filteredQuestions} 
                       onSelectQuestion={handleSelectQuestion}
@@ -308,7 +312,7 @@ export default function HomePage() {
                       isAdminMode={isAdminMode}
                     />
                   </div>
-                </>
+                </div>
               )}
             </main>
 
