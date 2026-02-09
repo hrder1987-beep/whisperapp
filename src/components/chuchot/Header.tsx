@@ -41,7 +41,6 @@ export function Header({
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const unreadMessagesQuery = useMemoFirebase(() => {
-    // db가 유효한 Firestore 인스턴스인지 엄격하게 확인
     if (!db || typeof db !== 'object' || !user || !user.uid) return null
     try {
       return query(
@@ -102,9 +101,14 @@ export function Header({
                 </nav>
                 <div className="mt-auto pb-10 flex flex-col gap-4">
                   {user ? (
-                    <Button variant="outline" className="border-white/20 text-white font-black rounded-xl" onClick={handleLogout}>
-                      로그아웃
-                    </Button>
+                    <div className="flex flex-col gap-3">
+                      <Link href="/profile" onClick={() => setIsMobileMenuOpen(false)}>
+                        <Button variant="outline" className="w-full border-white/20 text-white font-black rounded-xl">내 정보</Button>
+                      </Link>
+                      <Button variant="outline" className="w-full border-white/20 text-white font-black rounded-xl" onClick={handleLogout}>
+                        로그아웃
+                      </Button>
+                    </div>
                   ) : (
                     <Link href="/auth?mode=login" onClick={() => setIsMobileMenuOpen(false)}>
                       <Button className="w-full bg-accent text-primary font-black rounded-xl">로그인 / 가입</Button>
@@ -187,10 +191,12 @@ export function Header({
 
           {user ? (
             <div className="flex items-center gap-1 md:gap-2">
-              <Button variant="ghost" size="sm" className="text-white hover:text-accent hover:bg-white/5 font-bold gap-2 p-2 md:px-4">
-                <UserIcon className="w-4 h-4" />
-                <span className="hidden sm:inline text-xs">내 정보</span>
-              </Button>
+              <Link href="/profile">
+                <Button variant="ghost" size="sm" className="text-white hover:text-accent hover:bg-white/5 font-bold gap-2 p-2 md:px-4">
+                  <UserIcon className="w-4 h-4" />
+                  <span className="hidden sm:inline text-xs">내 정보</span>
+                </Button>
+              </Link>
               <Button variant="ghost" size="icon" onClick={handleLogout} className="text-white/70 hover:text-red-400 hidden sm:flex">
                 <LogOut className="w-5 h-5" />
               </Button>
