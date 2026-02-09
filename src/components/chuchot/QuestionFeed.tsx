@@ -82,6 +82,7 @@ export function QuestionFeed({
           const isExpanded = selectedId === q.id
           const questionAnswers = answers.filter(a => a.questionId === q.id)
           const isMentor = q.userRole === 'mentor';
+          const isYoutube = q.videoUrl?.includes("youtube.com") || q.videoUrl?.includes("youtu.be");
 
           return (
             <Card 
@@ -177,7 +178,20 @@ export function QuestionFeed({
 
                   {isExpanded && q.videoUrl && (
                     <div className="relative w-full rounded-2xl overflow-hidden border border-primary/5 bg-black mt-8 animate-in fade-in zoom-in duration-500">
-                      <video src={q.videoUrl} controls className="w-full max-h-[500px]" />
+                      {isYoutube ? (
+                        <div className="aspect-video w-full">
+                          <iframe 
+                            className="w-full h-full"
+                            src={q.videoUrl.replace("watch?v=", "embed/").replace("youtu.be/", "youtube.com/embed/")} 
+                            title="YouTube video player" 
+                            frameBorder="0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowFullScreen
+                          ></iframe>
+                        </div>
+                      ) : (
+                        <video src={q.videoUrl} controls className="w-full max-h-[500px]" />
+                      )}
                     </div>
                   )}
                 </div>

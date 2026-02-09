@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
-import { ImageIcon, X, Smile, Send, Hash, Video } from "lucide-react"
+import { ImageIcon, X, Smile, Send, Hash, Video, Link as LinkIcon } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import Image from "next/image"
 import { Separator } from "@/components/ui/separator"
@@ -15,6 +15,7 @@ import { containsProfanity } from "@/lib/utils"
 import { cn } from "@/lib/utils"
 import { useUser, useDoc, useMemoFirebase } from "@/firebase"
 import { doc } from "firebase/firestore"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 interface SubmissionFormProps {
   placeholder: string
@@ -35,6 +36,7 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
   const [text, setText] = useState("")
   const [imageUrl, setImageUrl] = useState<string | undefined>(undefined)
   const [videoUrl, setVideoUrl] = useState<string | undefined>(undefined)
+  const [videoUrlInput, setVideoUrlInput] = useState("")
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -53,7 +55,7 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
       const reader = new FileReader()
       reader.onloadend = () => {
         setImageUrl(reader.result as string)
-        setVideoUrl(undefined) // 이미지와 영상은 동시에 하나만
+        setVideoUrl(undefined)
       }
       reader.readAsDataURL(file)
     }
@@ -69,9 +71,18 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
       const reader = new FileReader()
       reader.onloadend = () => {
         setVideoUrl(reader.result as string)
-        setImageUrl(undefined) // 이미지와 영상은 동시에 하나만
+        setImageUrl(undefined)
       }
       reader.readAsDataURL(file)
+    }
+  }
+
+  const handleVideoUrlSubmit = () => {
+    if (videoUrlInput.trim()) {
+      setVideoUrl(videoUrlInput.trim())
+      setImageUrl(undefined)
+      setVideoUrlInput("")
+      toast({ title: "URL 등록 완료", description: "영상 링크가 성공적으로 연결되었습니다." })
     }
   }
 
@@ -95,11 +106,13 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
     setIsSubmitting(true)
     setTimeout(() => {
       onSubmit(nickname, title, text, imageUrl, videoUrl, selectedCategory || undefined)
-      setTitle(""); setText(""); setImageUrl(undefined); setVideoUrl(undefined); setSelectedCategory(null)
+      setTitle(""); setText(""); setImageUrl(undefined); setVideoUrl(undefined); setSelectedCategory(null); setVideoUrlInput("")
       setIsSubmitting(false)
       toast({ title: "게시 완료", description: "HR 지성이 한 층 더 쌓였습니다." })
     }, 400)
   }
+
+  const isYoutube = videoUrl?.includes("youtube.com") || videoUrl?.includes("youtu.be")
 
   return (
     <Card className="bg-white border border-primary/10 mb-8 overflow-hidden shadow-xl rounded-[2rem]">
@@ -159,25 +172,64 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
 
           {videoUrl && (
             <div className="relative w-full rounded-2xl overflow-hidden border border-primary/10 max-w-lg mx-auto">
-              <video src={videoUrl} controls className="w-full max-h-[300px]" />
-              <button type="button" className="absolute top-2 right-2 bg-black/50 text-white p-1.5 rounded-full" onClick={() => setVideoUrl(undefined)}><X className="h-4 w-4" /></button>
+              {isYoutube ? (
+                <div className="aspect-video w-full">
+                   <iframe 
+                    className="w-full h-full"
+                    src={videoUrl.replace("watch?v=", "embed/").replace("youtu.be/", "youtube.com/embed/")} 
+                    title="YouTube video player" 
+                    frameBorder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowFullScreen
+                  ></iframe>
+                </div>
+              ) : (
+                <video src={videoUrl} controls className="w-full max-h-[300px]" />
+              )}
+              <button type="button" className="absolute top-2 right-2 bg-black/50 text-white p-1.5 rounded-full z-10" onClick={() => setVideoUrl(undefined)}><X className="h-4 w-4" /></button>
             </div>
           )}
 
           <Separator className="bg-primary/5" />
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 md:gap-2">
               <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={handleImageChange} />
               <input type="file" accept="video/*" className="hidden" ref={videoInputRef} onChange={handleVideoChange} />
-              <Button type="button" variant="ghost" size="sm" className="text-primary/40 rounded-xl" onClick={() => fileInputRef.current?.click()}>
-                <ImageIcon className="w-4 h-4 mr-2 text-emerald-500" />
-                <span className="font-black text-[12px]">이미지</span>
+              
+              <Button type="button" variant="ghost" size="sm" className="text-primary/40 rounded-xl px-2 md:px-3" onClick={() => fileInputRef.current?.click()}>
+                <ImageIcon className="w-4 h-4 mr-1 md:mr-2 text-emerald-500" />
+                <span className="font-black text-[11px] md:text-[12px]">이미지</span>
               </Button>
-              <Button type="button" variant="ghost" size="sm" className="text-primary/40 rounded-xl" onClick={() => videoInputRef.current?.click()}>
-                <Video className="w-4 h-4 mr-2 text-blue-500" />
-                <span className="font-black text-[12px]">영상</span>
+              
+              <Button type="button" variant="ghost" size="sm" className="text-primary/40 rounded-xl px-2 md:px-3" onClick={() => videoInputRef.current?.click()}>
+                <Video className="w-4 h-4 mr-1 md:mr-2 text-blue-500" />
+                <span className="font-black text-[11px] md:text-[12px]">파일</span>
               </Button>
+
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button type="button" variant="ghost" size="sm" className="text-primary/40 rounded-xl px-2 md:px-3">
+                    <LinkIcon className="w-4 h-4 mr-1 md:mr-2 text-accent" />
+                    <span className="font-black text-[11px] md:text-[12px]">링크</span>
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80 bg-white p-4 rounded-2xl shadow-2xl border-primary/10">
+                  <div className="space-y-4">
+                    <h4 className="font-black text-primary text-sm">유튜브 등 영상 URL 입력</h4>
+                    <div className="flex gap-2">
+                      <Input 
+                        placeholder="https://youtube.com/..." 
+                        value={videoUrlInput}
+                        onChange={(e) => setVideoUrlInput(e.target.value)}
+                        className="h-9 bg-primary/5 border-none rounded-lg text-xs"
+                      />
+                      <Button size="sm" onClick={handleVideoUrlSubmit} className="bg-primary text-accent text-xs px-3">등록</Button>
+                    </div>
+                  </div>
+                </PopoverContent>
+              </Popover>
             </div>
+            
             <Button type="submit" disabled={isSubmitting || !text.trim()} className="bg-primary text-accent font-black h-11 px-8 rounded-xl shadow-lg transition-transform hover:scale-105 active:scale-95">
               {isSubmitting ? "전송 중..." : "게시하기"}
               <Send className="w-4 h-4 ml-2" />
