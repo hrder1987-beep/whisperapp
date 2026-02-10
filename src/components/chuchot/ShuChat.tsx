@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef, useEffect, useCallback, memo, useMemo } from "react"
+import { useState, useRef, useEffect, useCallback, memo } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,7 +10,7 @@ import {
   Maximize2, 
   Minimize2,
   BrainCircuit,
-  Lightbulb,
+  Settings2,
 } from "lucide-react"
 import { chatAldi } from "@/ai/flows/chat-shu-flow"
 import { cn } from "@/lib/utils"
@@ -21,22 +21,15 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { AvatarIcon } from "./AvatarIcon"
-import { useFirestore, useDoc, useMemoFirebase, useCollection } from "@/firebase"
-import { doc, collection, query, orderBy, limit } from "firebase/firestore"
-import { Question } from "@/lib/types"
+import { useFirestore, useDoc, useMemoFirebase } from "@/firebase"
+import { doc } from "firebase/firestore"
 
 interface Message {
   role: "user" | "bot"
   text: string
 }
 
-// 200개 전체 데이터 주제 요약 (알디 학습용)
-const GLOBAL_KNOWLEDGE_SUMMARY = `
-- 인사/총무(100건): 포괄임금제 도입 리스크, 1년 미만 연차 산정, 수습 해고 절차, 유연근무제 코어타임 설정, 징계위원회 구성, 퇴직금 중간정산 등.
-- HRD/조직문화(100건): 타운홀 미팅 익명 툴 활용, 신입사원 온보딩 루틴, 사내강사 보상 체계, 핵심가치 내재화 액티비티, 팀 내 심리적 안전감 질문 리스트, 에듀테크 도입 등.
-`;
-
-const ChatMessage = memo(({ msg, isLast }: { msg: Message, isLast: boolean }) => (
+const ChatMessage = memo(({ msg }: { msg: Message }) => (
   <div className={cn(
     "flex items-start gap-3 animate-in fade-in slide-in-from-bottom-1 duration-200",
     msg.role === "user" ? "flex-row-reverse" : "flex-row"
@@ -103,7 +96,7 @@ function ChatInterface({
           <AvatarIcon avatarId="aldi" className="w-12 h-12 shadow-2xl scale-110" />
           <div>
             <CardTitle className="text-white text-xl font-black tracking-tight">알디</CardTitle>
-            <p className="text-[11px] text-accent/80 font-black uppercase tracking-widest mt-0.5">HR Intelligence Guide</p>
+            <p className="text-[11px] text-accent/80 font-black uppercase tracking-widest mt-0.5">Expert Knowledge Hub</p>
           </div>
         </div>
         {!isExpanded && setIsFocused && (
@@ -126,19 +119,19 @@ function ChatInterface({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
             <div className="p-6 bg-primary/5 rounded-[2rem] border border-primary/5 space-y-3">
               <BrainCircuit className="w-6 h-6 text-accent" />
-              <h4 className="font-black text-primary">플랫폼 전체 지식 학습</h4>
-              <p className="text-xs text-primary/40 font-bold leading-relaxed">200건 이상의 인사/문화/교육 전문 지식을 모두 학습했습니다.</p>
+              <h4 className="font-black text-primary">전문가 주입 지식 기반</h4>
+              <p className="text-xs text-primary/40 font-bold leading-relaxed">전문가님이 직접 학습시킨 정제된 데이터만을 기반으로 답변합니다.</p>
             </div>
             <div className="p-6 bg-primary/5 rounded-[2rem] border border-primary/5 space-y-3">
-              <Lightbulb className="w-6 h-6 text-accent" />
-              <h4 className="font-black text-primary">실시간 커뮤니티 동향</h4>
-              <p className="text-xs text-primary/40 font-bold leading-relaxed">최근 동료 전문가들이 피드에 공유한 인사이트를 즉시 답변에 반영합니다.</p>
+              <Settings2 className="w-6 h-6 text-accent" />
+              <h4 className="font-black text-primary">신뢰할 수 있는 가이드</h4>
+              <p className="text-xs text-primary/40 font-bold leading-relaxed">출처가 불분명한 정보 대신, Whisper가 보증하는 전문 가이드를 제공합니다.</p>
             </div>
           </div>
         )}
 
         {messages.map((msg, idx) => (
-          <ChatMessage key={idx} msg={msg} isLast={idx === messages.length - 1} />
+          <ChatMessage key={idx} msg={msg} />
         ))}
         
         {isLoading && (
@@ -158,7 +151,7 @@ function ChatInterface({
       <div className="p-6 bg-white border-t border-primary/5 shrink-0">
         <div className="relative group max-w-4xl mx-auto">
           <Input 
-            placeholder="알디에게 전체 피드 지식을 물어보세요..." 
+            placeholder="전문가 주입 지식을 바탕으로 알디가 답변합니다..." 
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
@@ -189,17 +182,8 @@ export function AldiChat({ forceOpenTrigger, onTriggerClose }: { forceOpenTrigge
   const aldiDocRef = useMemoFirebase(() => db ? doc(db, "admin_configuration", "aldi_knowledge") : null, [db])
   const { data: aldiKnowledge } = useDoc<any>(aldiDocRef)
 
-  // 실시간 피드 학습 범위를 대폭 확대 (최신 30개)
-  const recentFeedQuery = useMemoFirebase(() => db ? query(collection(db, "questions"), orderBy("createdAt", "desc"), limit(30)) : null, [db])
-  const { data: recentFeed } = useCollection<Question>(recentFeedQuery)
-
-  const realtimeFeedContext = useMemo(() => {
-    if (!recentFeed || recentFeed.length === 0) return ""
-    return recentFeed.map(q => `- ${q.category}: ${q.title}`).join("\n")
-  }, [recentFeed])
-
   const [messages, setMessages] = useState<Message[]>([
-    { role: "bot", text: "안녕하세요! Whisper의 모든 전문 지식을 학습한 '알디'입니다. 200여 개의 실무 지식 베이스와 실시간 피드 내용을 바탕으로 최적의 가이드를 드릴게요." }
+    { role: "bot", text: "안녕하세요! 전문가님께서 주입해주신 전문 지식을 완벽하게 학습한 '알디'입니다. 궁금한 실무 내용을 물어보시면 정제된 데이터를 바탕으로 답변 드릴게요." }
   ])
   const [input, setInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
@@ -224,8 +208,6 @@ export function AldiChat({ forceOpenTrigger, onTriggerClose }: { forceOpenTrigge
       const res = await chatAldi({ 
         message: userMessage,
         knowledge: aldiKnowledge?.content,
-        fullFeedSummary: GLOBAL_KNOWLEDGE_SUMMARY, // 전체 200건 지식 요약 전달
-        realtimeFeedContext: realtimeFeedContext // 확장된 실시간 피드 전달
       })
       setMessages(prev => [...prev, { role: "bot", text: res.reply }])
     } catch (error) {
@@ -251,7 +233,7 @@ export function AldiChat({ forceOpenTrigger, onTriggerClose }: { forceOpenTrigge
       <Dialog open={isFocused} onOpenChange={setIsFocused}>
         <DialogContent className="max-w-5xl h-[90vh] md:h-[85vh] p-0 border-none bg-transparent shadow-none overflow-hidden outline-none">
           <DialogHeader className="sr-only">
-            <DialogTitle>알디와 대화하기 (전체 지식 학습 모드)</DialogTitle>
+            <DialogTitle>알디와 대화하기 (전문가 학습 데이터 모드)</DialogTitle>
           </DialogHeader>
           <div className="relative w-full h-full flex flex-col">
             <Button 
