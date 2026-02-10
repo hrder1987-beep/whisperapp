@@ -217,7 +217,7 @@ export default function ProgramsPage() {
                 프로그램 <span className="text-accent/40 font-light tracking-widest block md:inline md:ml-2 text-3xl md:text-5xl">Solutions</span>
               </h1>
               <p className="text-xl md:text-2xl font-medium text-primary/50 max-w-4xl leading-relaxed text-balance">
-                현직 HR 전문가들이 실무 경험을 바탕으로 제안하는 <br className="hidden md:block" />
+                교육기관 및 전문 파트너사가 제안하는 <br className="hidden md:block" />
                 최고의 <span className="text-primary font-black underline decoration-accent/30 underline-offset-4">교육 및 컨설팅 솔루션</span>을 만나보세요.
               </p>
             </div>
