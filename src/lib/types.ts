@@ -89,6 +89,7 @@ export interface JobListing {
   deadline: string;
   tags: string[];
   logoUrl?: string;
+  adImageUrl?: string;
   category?: string;
   createdAt: number;
   userId: string;
