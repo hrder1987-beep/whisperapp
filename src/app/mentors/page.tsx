@@ -1,7 +1,7 @@
 
 "use client"
 
-import { useState, useRef, useMemo } from "react"
+import { useState, useRef, useMemo, useEffect } from "react"
 import { Header } from "@/components/chuchot/Header"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -12,7 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase"
 import { collection, query, orderBy, addDoc, where } from "firebase/firestore"
 import { Instructor, Question } from "@/lib/types"
-import { Plus, Star, Award, Briefcase, MessageSquare, Crown, Camera, Sparkles, Search, Building2, User as UserIcon, FileText, X } from "lucide-react"
+import { Plus, Star, Award, Briefcase, MessageSquare, Crown, Camera, Sparkles, Search, Building2, User as UserIcon, FileText, X, Check } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { MessageDialog } from "@/components/chuchot/MessageDialog"
 
@@ -27,7 +27,8 @@ const MOCK_MENTORS: Instructor[] = [
     profilePictureUrl: "https://picsum.photos/seed/mentor1/400/400",
     userId: "mock-m1",
     role: "mentor",
-    createdAt: Date.now()
+    createdAt: Date.now(),
+    isVerified: true
   },
   {
     id: "mentor-2",
@@ -39,7 +40,8 @@ const MOCK_MENTORS: Instructor[] = [
     profilePictureUrl: "https://picsum.photos/seed/mentor2/400/400",
     userId: "mock-m2",
     role: "mentor",
-    createdAt: Date.now()
+    createdAt: Date.now(),
+    isVerified: true
   }
 ]
 
@@ -162,9 +164,10 @@ export default function MentorsPage() {
         profilePictureUrl: profilePictureUrl || `https://picsum.photos/seed/${name}/400/400`,
         userId: user.uid,
         role: "mentor",
-        createdAt: Date.now()
+        createdAt: Date.now(),
+        isVerified: false // 신청 시 기본값은 미인증 상태
       })
-      toast({ title: "신청 완료", description: "위스퍼러 프로필이 등록되었습니다. 관리자 승인 후 뱃지가 부여됩니다." })
+      toast({ title: "신청 완료", description: "위스퍼러 프로필이 등록되었습니다. 관리자 승인 후 공식 뱃지가 부여됩니다." })
       setIsDialogOpen(false)
       setName(""); setSpecialty(""); setBio(""); setCompany(""); setDepartment(""); setJobTitle(""); setPhone(""); setProfilePictureUrl(null)
     } catch (error) {
@@ -199,7 +202,7 @@ export default function MentorsPage() {
             </div>
             
             <div className="space-y-4">
-              <h1 className="text-5xl md:text-7xl font-black text-primary tracking-tighter leading-[0.9]">
+              <h1 className="text-5xl md:text-7xl font-black text-primary tracking-tighter leading-[0.9] text-balance">
                 위스퍼러 <span className="text-accent/40 font-light tracking-widest block md:inline md:ml-2 text-3xl md:text-5xl">Whisperer</span>
               </h1>
               <p className="text-xl md:text-2xl font-medium text-primary/50 max-w-4xl leading-relaxed text-balance">
@@ -286,7 +289,7 @@ export default function MentorsPage() {
                   <Textarea value={bio} onChange={e => setBio(e.target.value)} required placeholder="전문가들에게 전하고 싶은 가치를 입력하세요" className="bg-primary/5 border-none rounded-xl min-h-[120px]" />
                 </div>
                 <Button type="submit" disabled={isSubmitting} className="w-full h-14 bg-primary text-accent font-black rounded-2xl shadow-lg mt-6">
-                  {isSubmitting ? "등록 중..." : "위스퍼러 프로필 등록"}
+                  {isSubmitting ? "등록 중..." : "위스퍼러 프로필 등록 신청"}
                 </Button>
               </form>
             </DialogContent>
@@ -305,13 +308,18 @@ export default function MentorsPage() {
                     <div className="relative w-36 h-36 rounded-[2.5rem] overflow-hidden border-4 border-white shadow-2xl">
                        <img src={m.profilePictureUrl} alt={m.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                     </div>
-                    <Badge className="absolute -bottom-2 right-0 bg-primary text-accent font-black border-none px-3 py-1 rounded-xl flex gap-1.5 items-center animate-bounce shadow-xl text-[10px]">
-                      <Award className="w-3 h-3" /> WHISPERER
-                    </Badge>
+                    {m.isVerified && (
+                      <Badge className="absolute -bottom-2 right-0 bg-primary text-accent font-black border-none px-3 py-1 rounded-xl flex gap-1.5 items-center animate-bounce shadow-xl text-[10px]">
+                        <Award className="w-3 h-3" /> WHISPERER
+                      </Badge>
+                    )}
                   </div>
                   
                   <div className="space-y-1 mb-4">
-                    <h3 className="text-xl font-black text-primary group-hover:text-accent transition-colors">{m.name}</h3>
+                    <h3 className="text-xl font-black text-primary group-hover:text-accent transition-colors flex items-center gap-1.5 justify-center">
+                      {m.name}
+                      {m.isVerified && <Check className="w-4 h-4 text-emerald-500" />}
+                    </h3>
                     <div className="flex flex-col items-center gap-0.5">
                       <p className="text-primary/60 text-[11px] font-black uppercase flex items-center gap-1">
                         <Building2 className="w-3 h-3" /> {m.company || "전문가"}
