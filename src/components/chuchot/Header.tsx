@@ -4,7 +4,7 @@
 import { Logo } from "./Logo"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Search, User as UserIcon, LogOut, Menu, Mail, Bell, FileText } from "lucide-react"
+import { Search, User as UserIcon, LogOut, Menu, Mail, Bell, FileText, ShieldCheck } from "lucide-react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useUser, useAuth, useCollection, useMemoFirebase, useFirestore, useDoc } from "@/firebase"
@@ -20,7 +20,7 @@ interface HeaderProps {
 }
 
 export function Header({ onSearch }: HeaderProps) {
-  const pathname = usePathname()
+  const pathname = pathnameFromHook()
   const router = useRouter()
   const { user } = useUser()
   const auth = useAuth()
@@ -55,6 +55,8 @@ export function Header({ onSearch }: HeaderProps) {
       }
     }
   }
+
+  const isAdmin = user?.email === 'forum@khrd.co.kr' || profile?.role === 'admin'
 
   const navLinks = [
     { name: "지식 속삭임", href: "/" },
@@ -97,6 +99,12 @@ export function Header({ onSearch }: HeaderProps) {
                           {link.count ? <Badge className="bg-accent text-primary border-none ml-auto">{link.count}</Badge> : null}
                         </Link>
                       ))}
+                      {isAdmin && (
+                        <Link href="/admin" onClick={() => setIsMobileMenuOpen(false)} className={cn("text-lg font-black flex items-center gap-3 text-accent mt-4")}>
+                          <ShieldCheck className="w-5 h-5" />
+                          플랫폼 관리 센터
+                        </Link>
+                      )}
                     </>
                   )}
                 </nav>
@@ -136,6 +144,13 @@ export function Header({ onSearch }: HeaderProps) {
           {user ? (
             <div className="flex items-center gap-1 md:gap-3">
               <div className="hidden sm:flex items-center gap-1">
+                {isAdmin && (
+                  <Link href="/admin">
+                    <Button variant="ghost" size="icon" className="text-accent hover:bg-white/10 transition-colors" title="플랫폼 통합 관리">
+                      <ShieldCheck className="w-5 h-5" />
+                    </Button>
+                  </Link>
+                )}
                 <Link href="/notifications">
                   <Button variant="ghost" size="icon" className="relative text-white/70 hover:text-accent hover:bg-white/10 transition-colors">
                     <Bell className="w-5 h-5" />
@@ -185,4 +200,12 @@ export function Header({ onSearch }: HeaderProps) {
       </div>
     </header>
   )
+}
+
+function pathnameFromHook() {
+  try {
+    return usePathname()
+  } catch (e) {
+    return "/"
+  }
 }
