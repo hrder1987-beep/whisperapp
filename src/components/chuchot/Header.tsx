@@ -11,7 +11,7 @@ import { useUser, useAuth, useCollection, useMemoFirebase, useFirestore, useDoc 
 import { signOut } from "firebase/auth"
 import { collection, query, where, doc } from "firebase/firestore"
 import { cn } from "@/lib/utils"
-import { useState } from "react"
+import { useState, KeyboardEvent } from "react"
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { Badge } from "@/components/ui/badge"
 
@@ -33,6 +33,16 @@ export function Header({ onSearch }: HeaderProps) {
   const isAdmin = user?.email === 'forum@khrd.co.kr' || profile?.role === 'admin'
 
   const handleLogout = () => { signOut(auth); router.push("/"); }
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      if (pathname !== '/') {
+        router.push(`/?search=${encodeURIComponent(searchQuery)}`)
+      } else {
+        onSearch?.(searchQuery)
+      }
+    }
+  }
 
   const navLinks = [
     { name: "지식 속삭임", href: "/" },
@@ -81,8 +91,14 @@ export function Header({ onSearch }: HeaderProps) {
         </div>
 
         <div className="hidden md:flex flex-1 max-w-md relative group">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50 group-focus-within:text-accent" />
-          <Input placeholder="Whisper 지식 검색..." className="pl-11 bg-white/10 border-none h-10 rounded-full text-white" value={searchQuery} onChange={(e) => { setSearchQuery(e.target.value); onSearch?.(e.target.value); }} />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50 group-focus-within:text-accent transition-colors" />
+          <Input 
+            placeholder="키워드 입력 후 엔터를 누르세요..." 
+            className="pl-11 bg-white/10 border-none h-10 rounded-full text-white focus-visible:ring-accent/50" 
+            value={searchQuery} 
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={handleKeyDown}
+          />
         </div>
 
         <div className="flex items-center gap-2">
