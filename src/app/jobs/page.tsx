@@ -12,14 +12,21 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase"
 import { collection, query, orderBy, addDoc } from "firebase/firestore"
 import { JobListing } from "@/lib/types"
-import { Briefcase, MapPin, Calendar, Plus, Search, ChevronRight, Building2, Flame, Award, Clock, Sparkles } from "lucide-react"
-import Image from "next/image"
+import { Briefcase, MapPin, Calendar, Plus, Search, ChevronRight, Building2, Flame, Award, Clock, Sparkles, Check, Info, Target, Zap } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
 
 const JOB_CATEGORIES = [
   "전체보기", "인사기획/전략", "채용/리크루팅", "HRD/교육", "급여/보상/C&B", "조직문화/EVP", "노무/ER", "HR 애널리틱스"
+]
+
+const HR_SKILLS = [
+  "근로기준법", "급여아웃소싱", "SAP", "Workday", "인터뷰기법", "성과평가설계", "조직진단", "EVP수립", "데이터분석", "코칭", "퍼실리테이션"
+]
+
+const CORE_COMPETENCIES = [
+  "문제해결능력", "전략적 사고", "커뮤니케이션", "유연성", "공감능력", "윤리의식", "데이터 리터러시", "실행력"
 ]
 
 const MOCK_JOBS: JobListing[] = [
@@ -50,20 +57,6 @@ const MOCK_JOBS: JobListing[] = [
     category: "HRD/교육",
     createdAt: Date.now(),
     userId: "mock-j2"
-  },
-  {
-    id: "job-3",
-    companyName: "유니콘 모빌리티",
-    title: "Talent Acquisition (IT 채용 담당자)",
-    location: "서울 성동구",
-    experience: "경력 2-7년",
-    education: "무관",
-    deadline: "상시채용",
-    tags: ["커리어성장", "최신장비", "수평적문화"],
-    logoUrl: "https://picsum.photos/seed/company3/100/100",
-    category: "채용/리크루팅",
-    createdAt: Date.now(),
-    userId: "mock-j3"
   }
 ]
 
@@ -82,9 +75,12 @@ export default function JobsPage() {
   const [companyName, setCompanyName] = useState("")
   const [title, setTitle] = useState("")
   const [location, setLocation] = useState("")
-  const [experience, setExperience] = useState("")
+  const [experience, setExperience] = useState("경력")
+  const [employmentType, setEmploymentType] = useState("정규직")
   const [deadline, setDeadline] = useState("")
   const [category, setCategory] = useState("")
+  const [selectedSkills, setSelectedSkills] = useState<string[]>([])
+  const [selectedCompetencies, setSelectedCompetencies] = useState<string[]>([])
 
   const jobsQuery = useMemoFirebase(() => {
     if (!db) return null
@@ -108,12 +104,25 @@ export default function JobsPage() {
     });
   }, [jobs, searchQuery, selectedCategory]);
 
+  const toggleSkill = (skill: string) => {
+    setSelectedSkills(prev => prev.includes(skill) ? prev.filter(s => s !== skill) : [...prev, skill])
+  }
+
+  const toggleCompetency = (comp: string) => {
+    setSelectedCompetencies(prev => prev.includes(comp) ? prev.filter(c => c !== comp) : [...prev, comp])
+  }
+
   const handleAddJob = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!user) return
+    if (!user) {
+      toast({ title: "로그인 필요", description: "공고를 등록하려면 로그인이 필요합니다.", variant: "destructive" })
+      return
+    }
 
     setIsSubmitting(true)
     try {
+      const combinedTags = [...selectedSkills, ...selectedCompetencies, employmentType]
+      
       await addDoc(collection(db, "jobs"), {
         companyName,
         title,
@@ -121,15 +130,17 @@ export default function JobsPage() {
         experience,
         education: "대졸 이상",
         deadline,
-        tags: ["HR 전문", "Whisper 인증"],
+        tags: combinedTags,
         logoUrl: `https://picsum.photos/seed/${companyName}/100/100`,
         category,
         createdAt: Date.now(),
         userId: user.uid
       })
-      toast({ title: "공고 등록 완료", description: "성공적으로 게시되었습니다." })
+      toast({ title: "공고 등록 완료", description: "HR 인재를 위한 공고가 성공적으로 게시되었습니다." })
       setIsDialogOpen(false)
-      setCompanyName(""); setTitle(""); setLocation(""); setExperience(""); setDeadline(""); setCategory("");
+      // Reset form
+      setCompanyName(""); setTitle(""); setLocation(""); setDeadline(""); setCategory("");
+      setSelectedSkills([]); setSelectedCompetencies([]);
     } catch (error) {
       toast({ title: "오류 발생", description: "등록 중 문제가 발생했습니다.", variant: "destructive" })
     } finally {
@@ -146,16 +157,16 @@ export default function JobsPage() {
           <div className="space-y-8 flex-1">
             <div className="inline-flex items-center gap-2 bg-accent/10 px-4 py-2 rounded-full border border-accent/20">
               <Briefcase className="w-4 h-4 text-accent" />
-              <span className="text-[10px] font-black text-accent uppercase tracking-[0.2em]">HR HOT 100</span>
+              <span className="text-[10px] font-black text-accent uppercase tracking-[0.2em]">HR Special Careers</span>
             </div>
             
             <div className="space-y-4">
               <h1 className="text-5xl md:text-7xl font-black text-primary tracking-tighter leading-[0.9]">
-                채용 정보 <span className="text-accent/40 font-light tracking-widest block md:inline md:ml-2 text-3xl md:text-5xl">Careers</span>
+                채용 정보 <span className="text-accent/40 font-light tracking-widest block md:inline md:ml-2 text-3xl md:text-5xl text-pretty">Careers</span>
               </h1>
               <p className="text-xl md:text-2xl font-medium text-primary/50 max-w-4xl leading-relaxed text-balance">
                 대한민국 모든 <span className="text-primary font-black underline decoration-accent/30 underline-offset-4">HR 전문가</span>들의 커리어 성장을 지원합니다. <br className="hidden md:block" />
-                전문성이 검증된 포지션만을 엄선하여 제공합니다.
+                전문성이 검증된 HR 포지션만을 엄선하여 제공합니다.
               </p>
             </div>
             
@@ -177,53 +188,156 @@ export default function JobsPage() {
                 공고 등록하기
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-xl bg-white border-none rounded-[3rem] p-10 shadow-2xl">
-              <DialogHeader>
-                <DialogTitle className="text-2xl font-black text-primary mb-8 flex items-center gap-3">
+            <DialogContent className="max-w-3xl bg-white border-none rounded-[3rem] p-0 shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+              <DialogHeader className="premium-gradient p-10 shrink-0">
+                <DialogTitle className="text-3xl font-black text-white flex items-center gap-3">
                   <Briefcase className="w-8 h-8 text-accent" />
-                  채용 공고 등록
+                  어떤 포지션을 채용하시나요?
                 </DialogTitle>
+                <p className="text-accent/70 text-sm font-bold mt-2">HR 조직의 전문 인재를 찾기 위한 정보를 입력해 주세요.</p>
               </DialogHeader>
-              <form onSubmit={handleAddJob} className="space-y-5">
-                <div className="space-y-2">
-                  <label className="text-xs font-black text-primary/40 ml-1 uppercase">기업명</label>
-                  <Input value={companyName} onChange={e => setCompanyName(e.target.value)} required placeholder="회사명을 입력하세요" className="h-12 bg-primary/5 border-none rounded-xl" />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-black text-primary/40 ml-1 uppercase">공고 제목</label>
-                  <Input value={title} onChange={e => setTitle(e.target.value)} required placeholder="예: 시니어 채용 담당자 모집" className="h-12 bg-primary/5 border-none rounded-xl" />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-xs font-black text-primary/40 ml-1 uppercase">근무지</label>
-                    <Input value={location} onChange={e => setLocation(e.target.value)} required placeholder="서울 강남구 등" className="h-12 bg-primary/5 border-none rounded-xl" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-black text-primary/40 ml-1 uppercase">마감일</label>
-                    <Input value={deadline} onChange={e => setDeadline(e.target.value)} required placeholder="YYYY-MM-DD" className="h-12 bg-primary/5 border-none rounded-xl" />
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-xs font-black text-primary/40 ml-1 uppercase">경력사항</label>
-                    <Input value={experience} onChange={e => setExperience(e.target.value)} required placeholder="신입 / 경력 n년" className="h-12 bg-primary/5 border-none rounded-xl" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-black text-primary/40 ml-1 uppercase">직무 분류</label>
-                    <Select onValueChange={setCategory} required>
-                      <SelectTrigger className="h-12 bg-primary/5 border-none rounded-xl"><SelectValue placeholder="분류 선택" /></SelectTrigger>
-                      <SelectContent>
-                        {JOB_CATEGORIES.filter(c => c !== "전체보기").map(c => (
-                          <SelectItem key={c} value={c}>{c}</SelectItem>
+              
+              <div className="flex-1 overflow-y-auto p-10">
+                <form onSubmit={handleAddJob} className="space-y-10">
+                  <section className="space-y-6">
+                    <h4 className="text-xs font-black text-primary/30 uppercase tracking-widest flex items-center gap-2">
+                      <Target className="w-4 h-4 text-accent" /> 기본 포지션 정보
+                    </h4>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black text-primary/40 ml-1 uppercase">기업명</label>
+                        <Input value={companyName} onChange={e => setCompanyName(e.target.value)} required placeholder="예: (주)위스퍼" className="h-12 bg-primary/5 border-none rounded-xl font-bold" />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black text-primary/40 ml-1 uppercase">직무 분류</label>
+                        <Select onValueChange={setCategory} required>
+                          <SelectTrigger className="h-12 bg-primary/5 border-none rounded-xl font-bold"><SelectValue placeholder="카테고리 선택" /></SelectTrigger>
+                          <SelectContent>
+                            {JOB_CATEGORIES.filter(c => c !== "전체보기").map(c => (
+                              <SelectItem key={c} value={c}>{c}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black text-primary/40 ml-1 uppercase">공고 제목 (포지션)</label>
+                      <Input value={title} onChange={e => setTitle(e.target.value)} required placeholder="핵심 직무명을 포함하여 입력하세요 (예: 시니어 채용 담당자)" className="h-14 bg-primary/5 border-none rounded-xl text-lg font-black" />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black text-primary/40 ml-1 uppercase">근무지</label>
+                        <Input value={location} onChange={e => setLocation(e.target.value)} required placeholder="서울 강남구 / 재택 등" className="h-12 bg-primary/5 border-none rounded-xl font-bold" />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black text-primary/40 ml-1 uppercase">마감일</label>
+                        <Input value={deadline} onChange={e => setDeadline(e.target.value)} required placeholder="YYYY-MM-DD 또는 상시채용" className="h-12 bg-primary/5 border-none rounded-xl font-bold" />
+                      </div>
+                    </div>
+                  </section>
+
+                  <section className="space-y-6">
+                    <h4 className="text-xs font-black text-primary/30 uppercase tracking-widest flex items-center gap-2">
+                      <Zap className="w-4 h-4 text-accent" /> 상세 자격 요건
+                    </h4>
+
+                    <div className="space-y-4">
+                      <label className="text-[10px] font-black text-primary/40 ml-1 uppercase">필요 스킬 (중복 선택)</label>
+                      <div className="flex flex-wrap gap-2">
+                        {HR_SKILLS.map(skill => (
+                          <button
+                            key={skill}
+                            type="button"
+                            onClick={() => toggleSkill(skill)}
+                            className={cn(
+                              "px-4 py-2 rounded-xl text-xs font-black transition-all border-2",
+                              selectedSkills.includes(skill)
+                                ? "bg-primary text-accent border-primary"
+                                : "bg-white text-primary/30 border-primary/5 hover:border-accent/30"
+                            )}
+                          >
+                            {skill}
+                          </button>
                         ))}
-                      </SelectContent>
-                    </Select>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <label className="text-[10px] font-black text-primary/40 ml-1 uppercase">핵심 역량 (중복 선택)</label>
+                      <div className="flex flex-wrap gap-2">
+                        {CORE_COMPETENCIES.map(comp => (
+                          <button
+                            key={comp}
+                            type="button"
+                            onClick={() => toggleCompetency(comp)}
+                            className={cn(
+                              "px-4 py-2 rounded-xl text-xs font-black transition-all border-2",
+                              selectedCompetencies.includes(comp)
+                                ? "bg-accent text-primary border-accent"
+                                : "bg-white text-primary/30 border-primary/5 hover:border-accent/30"
+                            )}
+                          >
+                            {comp}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      <div className="space-y-4">
+                        <label className="text-[10px] font-black text-primary/40 ml-1 uppercase">경력 여부</label>
+                        <div className="flex gap-2">
+                          {["신입", "경력", "경력무관"].map(exp => (
+                            <button
+                              key={exp}
+                              type="button"
+                              onClick={() => setExperience(exp)}
+                              className={cn(
+                                "flex-1 h-12 rounded-xl text-xs font-black border-2 transition-all",
+                                experience === exp ? "bg-primary text-accent border-primary" : "bg-white text-primary/20 border-primary/5"
+                              )}
+                            >
+                              {exp}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="space-y-4">
+                        <label className="text-[10px] font-black text-primary/40 ml-1 uppercase">고용 형태</label>
+                        <div className="flex gap-2">
+                          {["정규직", "계약직", "인턴"].map(type => (
+                            <button
+                              key={type}
+                              type="button"
+                              onClick={() => setEmploymentType(type)}
+                              className={cn(
+                                "flex-1 h-12 rounded-xl text-xs font-black border-2 transition-all",
+                                employmentType === type ? "bg-primary text-accent border-primary" : "bg-white text-primary/20 border-primary/5"
+                              )}
+                            >
+                              {type}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+
+                  <div className="bg-accent/10 p-6 rounded-2xl flex items-start gap-3">
+                    <Info className="w-5 h-5 text-accent shrink-0 mt-0.5" />
+                    <p className="text-[11px] text-primary/60 font-bold leading-relaxed">
+                      본 플랫폼은 HR 전문가 전용 커뮤니티입니다. 허위 공고나 부적절한 내용은 관리자에 의해 무통보 삭제될 수 있습니다. 연봉 정보는 구직자와의 협의를 위해 입력 항목에서 제외되었습니다.
+                    </p>
                   </div>
-                </div>
-                <Button type="submit" disabled={isSubmitting} className="w-full h-14 bg-primary text-accent font-black rounded-2xl shadow-lg mt-6">
-                  {isSubmitting ? "등록 중..." : "채용 공고 게시하기"}
-                </Button>
-              </form>
+
+                  <Button type="submit" disabled={isSubmitting} className="w-full h-16 bg-primary text-accent font-black rounded-2xl shadow-xl text-lg hover:scale-[1.02] transition-all">
+                    {isSubmitting ? "공고 등록 중..." : "HR 채용 공고 게시하기"}
+                  </Button>
+                </form>
+              </div>
             </DialogContent>
           </Dialog>
         </div>
@@ -274,7 +388,7 @@ export default function JobsPage() {
                       </h3>
                     </div>
                     <div className="flex flex-wrap gap-1.5 mb-8">
-                      {job.tags.slice(0, 2).map(tag => (
+                      {job.tags?.slice(0, 3).map(tag => (
                         <Badge key={tag} variant="outline" className="border-primary/10 text-primary/40 font-bold text-[10px] px-2 py-0">#{tag}</Badge>
                       ))}
                     </div>
