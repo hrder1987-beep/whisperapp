@@ -30,7 +30,7 @@ export default function AdminPage() {
   const userDocRef = useMemoFirebase(() => (user && db) ? doc(db, "users", user.uid) : null, [user, db])
   const { data: profile, isLoading: isProfileLoading } = useDoc<any>(userDocRef)
 
-  // 관리자 계정 이메일 자동 감지
+  // 관리자 계정 이메일 자동 감지 및 키 자동 입력
   useEffect(() => {
     if (user?.email === 'forum@khrd.co.kr' && profile && profile.role !== 'admin') {
       setAdminKeyInput("khrd9933-525")

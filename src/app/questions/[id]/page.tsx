@@ -8,16 +8,17 @@ type Props = {
 }
 
 /**
- * 도메인 설정 상수 - 실제 도메인이 연결되면 여기를 수정하세요.
+ * [런칭 전 확인!] 실제 구매하신 도메인 주소로 변경해 주세요.
+ * 예: "https://www.chuchot.kr"
  */
-const SITE_URL = "https://whisper-hr.vercel.app"; // 실제 도메인(예: https://www.chuchot.kr)으로 변경 권장
+const SITE_URL = "https://whisper-hr.vercel.app"; 
 
 /**
  * 동적 메타데이터 생성을 위해 Firestore REST API를 사용하여 질문 데이터를 가져옵니다.
  */
 async function getQuestionData(id: string) {
   try {
-    // 프로젝트 ID는 firebaseConfig에서 가져옵니다.
+    // 프로젝트 ID는 firebase/config.ts의 projectId와 동일해야 합니다.
     const projectId = "studio-1249189958-2be09";
     const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/questions/${id}`;
     
