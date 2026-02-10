@@ -1,7 +1,6 @@
-
 "use client"
 
-import { useState, useRef, useEffect, useCallback, memo } from "react"
+import { useState, useRef, useEffect, useCallback, memo, useMemo } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -22,15 +21,15 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { AvatarIcon } from "./AvatarIcon"
-import { useFirestore, useDoc, useMemoFirebase } from "@/firebase"
-import { doc } from "firebase/firestore"
+import { useFirestore, useDoc, useMemoFirebase, useCollection } from "@/firebase"
+import { doc, collection, query, orderBy, limit } from "firebase/firestore"
+import { Question } from "@/lib/types"
 
 interface Message {
   role: "user" | "bot"
   text: string
 }
 
-// 개별 메시지 컴포넌트 메모이제이션으로 최적화
 const ChatMessage = memo(({ msg, isLast }: { msg: Message, isLast: boolean }) => (
   <div className={cn(
     "flex items-start gap-3 animate-in fade-in slide-in-from-bottom-1 duration-200",
@@ -122,12 +121,12 @@ function ChatInterface({
             <div className="p-6 bg-primary/5 rounded-[2rem] border border-primary/5 space-y-3">
               <BrainCircuit className="w-6 h-6 text-accent" />
               <h4 className="font-black text-primary">채용/인사 실무 지원</h4>
-              <p className="text-xs text-primary/40 font-bold leading-relaxed">직무기술서(JD) 초안 작성 및 면접 질문 리스트 생성을 도와드립니다.</p>
+              <p className="text-xs text-primary/40 font-bold leading-relaxed">커뮤니티의 최신 답변을 학습하여 실질적인 도움을 드립니다.</p>
             </div>
             <div className="p-6 bg-primary/5 rounded-[2rem] border border-primary/5 space-y-3">
               <Lightbulb className="w-6 h-6 text-accent" />
-              <h4 className="font-black text-primary">조직문화/기획 아이디어</h4>
-              <p className="text-xs text-primary/40 font-bold leading-relaxed">임직원 몰입도를 높이는 이벤트와 핵심가치 내재화 프로그램을 제안합니다.</p>
+              <h4 className="font-black text-primary">트렌드 기반 아이디어</h4>
+              <p className="text-xs text-primary/40 font-bold leading-relaxed">최근 동료 전문가들이 공유한 인사이트를 답변에 반영합니다.</p>
             </div>
           </div>
         )}
@@ -184,8 +183,17 @@ export function AldiChat({ forceOpenTrigger, onTriggerClose }: { forceOpenTrigge
   const aldiDocRef = useMemoFirebase(() => db ? doc(db, "admin_configuration", "aldi_knowledge") : null, [db])
   const { data: aldiKnowledge } = useDoc<any>(aldiDocRef)
 
+  // 실시간 피드 학습을 위한 최신 질문 10개 조회
+  const recentFeedQuery = useMemoFirebase(() => db ? query(collection(db, "questions"), orderBy("createdAt", "desc"), limit(10)) : null, [db])
+  const { data: recentFeed } = useCollection<Question>(recentFeedQuery)
+
+  const feedContext = useMemo(() => {
+    if (!recentFeed || recentFeed.length === 0) return ""
+    return recentFeed.map(q => `- 주제: ${q.title} (카테고리: ${q.category || '기타'})\n  내용요약: ${q.text.substring(0, 50)}...`).join("\n")
+  }, [recentFeed])
+
   const [messages, setMessages] = useState<Message[]>([
-    { role: "bot", text: "반가워요! Whisper의 HR 인텔리전스 가이드 '알디'입니다. 채용 전략, 조직문화, 교육 설계부터 실무 노하우까지 무엇이든 물어보세요." }
+    { role: "bot", text: "반가워요! Whisper의 실시간 학습형 가이드 '알디'입니다. 커뮤니티의 최신 인사이트를 바탕으로 실무 고민을 해결해 드릴게요." }
   ])
   const [input, setInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
@@ -209,7 +217,8 @@ export function AldiChat({ forceOpenTrigger, onTriggerClose }: { forceOpenTrigge
     try {
       const res = await chatAldi({ 
         message: userMessage,
-        knowledge: aldiKnowledge?.content 
+        knowledge: aldiKnowledge?.content,
+        feedContext: feedContext // 실시간 피드 지식 전달
       })
       setMessages(prev => [...prev, { role: "bot", text: res.reply }])
     } catch (error) {
