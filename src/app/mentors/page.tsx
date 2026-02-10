@@ -203,7 +203,7 @@ export default function MentorsPage() {
                 위스퍼러 <span className="text-accent/40 font-light tracking-widest block md:inline md:ml-2 text-3xl md:text-5xl">Whisperer</span>
               </h1>
               <p className="text-xl md:text-2xl font-medium text-primary/50 max-w-4xl leading-relaxed text-balance">
-                침묵을 깨는 지혜의 목소리, Whisper가 인증한 <br className="hidden md:block" />
+                침묵을 깨는 지혜의 목소리, Whisper와 함께하는 <br className="hidden md:block" />
                 각 분야 최고의 <span className="text-primary font-black underline decoration-accent/30 underline-offset-4">HR 인사이트 파트너</span>들을 소개합니다.
               </p>
             </div>
