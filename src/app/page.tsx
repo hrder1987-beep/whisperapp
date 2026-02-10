@@ -10,7 +10,7 @@ import { RankingList } from "@/components/chuchot/RankingList"
 import { AldiChat } from "@/components/chuchot/ShuChat"
 import { Question, Answer, PremiumAd } from "@/lib/types"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react"
+import { ChevronLeft, ChevronRight, Sparkles, ChevronsLeft, ChevronsRight } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { generateAiReply } from "@/ai/flows/generate-ai-reply-flow"
 import { cn } from "@/lib/utils"
@@ -25,34 +25,32 @@ const ITEMS_PER_PAGE = 7
 const generateFullMockQuestions = () => {
   const fullList: Question[] = [];
   
-  // 1. 인사/총무 (HRM) 100건 생성
+  // 1. 인사/총무 (HRM) 100건 생성 (hr-q1 ~ hr-q100)
   for (let i = 1; i <= 100; i++) {
-    const existing = (mockData.questions as any[]).find(q => q.id === `hr-q${i}`);
     fullList.push({
       id: `hr-q${i}`,
-      title: existing?.title || `인사/총무 실무 지식 속삭임 #${i}`,
-      text: existing?.text || `인사 및 노무 실무에서 발생하는 전문가들의 고민 #${i}에 대한 조언을 구합니다.`,
-      nickname: existing?.nickname || `인사전문가_${i}`,
+      title: `인사/총무 실무 지식 속삭임 #${i}`,
+      text: `인사 및 노무 실무에서 발생하는 전문가들의 고민 #${i}에 대한 조언을 구합니다. 법적 리스크 관리와 효율적인 인사 행정 프로세스에 대한 인사이트를 공유해 주세요.`,
+      nickname: `인사전문가_${i}`,
       userId: `mock-u${i}`,
       userRole: "member",
-      viewCount: 300 - i,
+      viewCount: Math.floor(Math.random() * 500) + 100,
       answerCount: 1,
       createdAt: 1714521600000 - i * 3600000,
       category: "인사전략/HRM"
     });
   }
 
-  // 2. HRD/조직문화 100건 생성
+  // 2. HRD/조직문화 100건 생성 (cul-q1 ~ cul-q100)
   for (let i = 1; i <= 100; i++) {
-    const existing = (mockData.questions as any[]).find(q => q.id === `cul-q${i}`);
     fullList.push({
       id: `cul-q${i}`,
-      title: existing?.title || `HRD 및 조직문화 전략 질문 #${i}`,
-      text: existing?.text || `구성원 몰입과 교육 설계 #${i}에 대한 실무 노하우를 공유해 주세요.`,
-      nickname: existing?.nickname || `문화리더_${i}`,
+      title: i % 2 === 0 ? `조직문화 및 EVP 강화 전략 #${i}` : `HRD 커리큘럼 설계 및 교육 평가 #${i}`,
+      text: `구성원 몰입도 향상과 핵심가치 내재화 #${i}에 대한 실무 노하우를 공유해 주세요. 최신 트렌드를 반영한 교육 솔루션 제안도 환영합니다.`,
+      nickname: `문화리더_${i}`,
       userId: `mock-c${i}`,
       userRole: "member",
-      viewCount: 200 + i,
+      viewCount: Math.floor(Math.random() * 400) + 200,
       answerCount: 1,
       createdAt: 1714881600000 - i * 3600000,
       category: i % 2 === 0 ? "조직문화/EVP" : "HRD/교육"
@@ -106,9 +104,18 @@ export default function HomePage() {
   const { data: questionsData } = useCollection<Question>(questionsQuery)
   
   const questions = useMemo(() => {
-    // Firestore 데이터가 없거나 로딩 중일 때 MOCK 데이터를 즉시 노출하도록 수정 (100% 복구 보장)
-    if (!questionsData || questionsData.length === 0) return MOCK_QUESTIONS;
-    return questionsData;
+    // Firestore 데이터와 Mock 데이터를 병합하여 100% 복구 보장
+    const dbData = questionsData || [];
+    const merged = [...dbData];
+    
+    // 중복 방지 로직: DB에 없는 Mock 데이터만 추가
+    MOCK_QUESTIONS.forEach(mq => {
+      if (!merged.some(dq => dq.id === mq.id)) {
+        merged.push(mq);
+      }
+    });
+
+    return merged.sort((a, b) => b.createdAt - a.createdAt);
   }, [questionsData])
 
   const answersQuery = useMemoFirebase(() => {
@@ -203,11 +210,11 @@ export default function HomePage() {
               <div className="flex gap-4 md:gap-8 whitespace-nowrap mb-6 overflow-x-auto pb-2 scrollbar-hide border-b border-primary/5">
                 {[
                   { id: "all", label: "전체 피드" },
-                  { id: "popular", label: "실시간 인기" },
-                  { id: "waiting", label: "답변 대기" },
                   { id: "hrm", label: "인사/총무" },
                   { id: "hrd", label: "HRD/교육" },
-                  { id: "culture", label: "조직문화" }
+                  { id: "culture", label: "조직문화" },
+                  { id: "popular", label: "실시간 인기" },
+                  { id: "waiting", label: "답변 대기" }
                 ].map(tab => (
                   <button 
                     key={tab.id} 
@@ -248,12 +255,32 @@ export default function HomePage() {
               )}
 
               {totalPages > 1 && (
-                <div className="flex justify-center items-center gap-2 mt-12 pb-20">
-                  <Button variant="ghost" size="icon" disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)} className="rounded-xl text-primary/40"><ChevronLeft className="w-5 h-5" /></Button>
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).slice(Math.max(0, currentPage - 3), Math.min(totalPages, currentPage + 2)).map(page => (
-                    <Button key={page} onClick={() => setCurrentPage(page)} className={cn("w-10 h-10 rounded-xl font-black text-sm transition-all", currentPage === page ? "bg-primary text-accent shadow-lg" : "bg-white text-primary/20 shadow-sm")}>{page}</Button>
-                  ))}
-                  <Button variant="ghost" size="icon" disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)} className="rounded-xl text-primary/40"><ChevronRight className="w-5 h-5" /></Button>
+                <div className="flex flex-col items-center gap-6 mt-12 pb-20">
+                  <div className="flex justify-center items-center gap-1">
+                    <Button variant="ghost" size="icon" disabled={currentPage === 1} onClick={() => setCurrentPage(1)} className="rounded-xl text-primary/40"><ChevronsLeft className="w-4 h-4" /></Button>
+                    <Button variant="ghost" size="icon" disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)} className="rounded-xl text-primary/40"><ChevronLeft className="w-5 h-5" /></Button>
+                    
+                    {Array.from({ length: totalPages }, (_, i) => i + 1)
+                      .filter(page => page >= currentPage - 2 && page <= currentPage + 2)
+                      .map(page => (
+                        <Button 
+                          key={page} 
+                          onClick={() => setCurrentPage(page)} 
+                          className={cn(
+                            "w-10 h-10 rounded-xl font-black text-sm transition-all", 
+                            currentPage === page ? "bg-primary text-accent shadow-lg scale-110" : "bg-white text-primary/20 shadow-sm hover:bg-primary/5"
+                          )}
+                        >
+                          {page}
+                        </Button>
+                      ))}
+                    
+                    <Button variant="ghost" size="icon" disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)} className="rounded-xl text-primary/40"><ChevronRight className="w-5 h-5" /></Button>
+                    <Button variant="ghost" size="icon" disabled={currentPage === totalPages} onClick={() => setCurrentPage(totalPages)} className="rounded-xl text-primary/40"><ChevronsRight className="w-4 h-4" /></Button>
+                  </div>
+                  <p className="text-[10px] font-black text-primary/20 uppercase tracking-widest">
+                    Page {currentPage} of {totalPages} — Total {filteredQuestions.length} Insights
+                  </p>
                 </div>
               )}
             </div>
