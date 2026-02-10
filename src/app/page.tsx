@@ -103,7 +103,7 @@ export default function HomePage() {
       {
         id: "def-2",
         title: "고민을 나누고,\n함께 성장하자",
-        description: "우리의 작은 속삭임이 모여\n내일을 바꾸는 큰 울림으로 돌아옵니다.",
+        description: "전문가님의 작은 속삭임이 모여\n내일을 바꾸는 큰 울림으로 돌아옵니다.",
         image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=1080",
         badge: "교학상장의 장"
       }
@@ -197,8 +197,8 @@ export default function HomePage() {
                     <Search className="w-8 h-8" />
                   </div>
                   <div>
-                    <h2 className="text-3xl font-black text-primary">'<span className="text-accent">{deferredSearchQuery}</span>' 통합 검색 결과</h2>
-                    <p className="text-primary/40 font-bold">Whisper 플랫폼 전체 영역에서 지식을 찾았습니다.</p>
+                    <h2 className="text-3xl font-black text-primary text-balance">'<span className="text-accent">{deferredSearchQuery}</span>' 통합 검색 결과</h2>
+                    <p className="text-primary/40 font-bold text-balance">Whisper 플랫폼 전체 영역에서 지식을 찾았습니다.</p>
                   </div>
                 </div>
 

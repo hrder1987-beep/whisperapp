@@ -235,7 +235,7 @@ export default function ProgramsPage() {
 
           <Button 
             onClick={handleOpenDialog}
-            className="gold-gradient text-primary font-black h-20 px-12 rounded-[2.5rem] shadow-2xl hover:scale-105 active:scale-95 transition-all gap-2 text-lg shrink-0"
+            className="hidden md:flex gold-gradient text-primary font-black h-20 px-12 rounded-[2.5rem] shadow-2xl hover:scale-105 active:scale-95 transition-all gap-2 text-lg shrink-0"
           >
             <Plus className="w-6 h-6" />
             무료 프로그램 등록
@@ -489,7 +489,7 @@ export default function ProgramsPage() {
                    <Badge className="bg-accent text-primary font-black mb-4 px-4 py-1.5 rounded-full text-[10px]">
                       #{PROGRAM_CATEGORIES.find(c => c.id === selectedProgram.category)?.name || "기타"}
                    </Badge>
-                   <h2 className="text-3xl md:text-5xl font-black text-white leading-tight tracking-tighter drop-shadow-lg">
+                   <h2 className="text-3xl md:text-5xl font-black text-white leading-tight tracking-tighter drop-shadow-lg text-balance">
                       {selectedProgram.title}
                    </h2>
                 </div>

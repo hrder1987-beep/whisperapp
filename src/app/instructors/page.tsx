@@ -194,7 +194,7 @@ export default function InstructorsPage() {
                 강사 정보 <span className="text-accent/40 font-light tracking-widest block md:inline md:ml-2 text-3xl md:text-5xl">Expert Pool</span>
               </h1>
               <p className="text-xl md:text-2xl font-medium text-primary/50 max-w-4xl leading-relaxed text-balance">
-                최고의 전문 강사진과 함께 <span className="text-primary font-black">조직의 성장</span>을 도모하세요. <br className="hidden md:block" />
+                최고의 전문 강사진과 함께 <span className="text-primary font-black underline decoration-accent/30 underline-offset-4">조직의 성장</span>을 도모하세요. <br className="hidden md:block" />
                 현업의 지혜가 담긴 각 분야 최고의 강사진을 한눈에 확인하실 수 있습니다.
               </p>
             </div>
@@ -212,7 +212,7 @@ export default function InstructorsPage() {
 
           <Button 
             onClick={handleOpenDialog}
-            className="gold-gradient text-primary font-black h-20 px-12 rounded-[2.5rem] shadow-2xl hover:scale-105 active:scale-95 transition-all gap-3 text-lg shrink-0"
+            className="hidden md:flex gold-gradient text-primary font-black h-20 px-12 rounded-[2.5rem] shadow-2xl hover:scale-105 active:scale-95 transition-all gap-3 text-lg shrink-0"
           >
             <Plus className="w-6 h-6" />
             강사 프로필 등록하기

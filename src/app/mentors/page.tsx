@@ -78,7 +78,7 @@ export function MentorPostsDialog({ userId, userName, isOpen, onClose }: { userI
                     <Badge className="bg-primary/5 text-primary/40 font-black border-none text-[9px]">#{p.category || "일반"}</Badge>
                     <span className="text-[10px] font-bold text-primary/20">{new Date(p.createdAt).toLocaleDateString()}</span>
                   </div>
-                  <h4 className="text-lg font-black text-primary mb-2">{p.title}</h4>
+                  <h4 className="text-lg font-black text-primary mb-2 text-balance">{p.title}</h4>
                   <p className="text-sm text-primary/60 line-clamp-2 mb-4 leading-relaxed">{p.text}</p>
                   <div className="flex items-center gap-4 text-[11px] font-black text-primary/30">
                     <span>조회 {p.viewCount}</span>
@@ -165,7 +165,7 @@ export default function MentorsPage() {
         userId: user.uid,
         role: "mentor",
         createdAt: Date.now(),
-        isVerified: false // 신청 시 기본값은 미인증 상태
+        isVerified: false 
       })
       toast({ title: "신청 완료", description: "위스퍼러 프로필이 등록되었습니다. 관리자 승인 후 공식 뱃지가 부여됩니다." })
       setIsDialogOpen(false)
@@ -224,7 +224,7 @@ export default function MentorsPage() {
 
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="gold-gradient text-primary font-black h-20 px-12 rounded-[2.5rem] shadow-2xl hover:scale-105 active:scale-95 transition-all gap-3 text-lg shrink-0">
+              <Button className="hidden md:flex gold-gradient text-primary font-black h-20 px-12 rounded-[2.5rem] shadow-2xl hover:scale-105 active:scale-95 transition-all gap-3 text-lg shrink-0">
                 <Crown className="w-6 h-6" />
                 위스퍼러 신청하기
               </Button>
@@ -321,10 +321,10 @@ export default function MentorsPage() {
                       {m.isVerified && <Check className="w-4 h-4 text-emerald-500" />}
                     </h3>
                     <div className="flex flex-col items-center gap-0.5">
-                      <p className="text-primary/60 text-[11px] font-black uppercase flex items-center gap-1">
+                      <p className="text-primary/60 text-[11px] font-black uppercase flex items-center gap-1 text-balance">
                         <Building2 className="w-3 h-3" /> {m.company || "전문가"}
                       </p>
-                      <p className="text-primary/30 text-[10px] font-bold">{m.jobTitle || "HR Consultant"}</p>
+                      <p className="text-primary/30 text-[10px] font-bold text-balance">{m.jobTitle || "HR Consultant"}</p>
                     </div>
                   </div>
 

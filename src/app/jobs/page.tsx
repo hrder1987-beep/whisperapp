@@ -203,7 +203,7 @@ export default function JobsPage() {
 
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="gold-gradient text-primary font-black h-20 px-12 rounded-[2.5rem] shadow-2xl hover:scale-105 active:scale-95 transition-all gap-3 text-lg shrink-0">
+              <Button className="hidden md:flex gold-gradient text-primary font-black h-20 px-12 rounded-[2.5rem] shadow-2xl hover:scale-105 active:scale-95 transition-all gap-3 text-lg shrink-0">
                 <Plus className="w-6 h-6" />
                 공고 등록하기
               </Button>
@@ -362,7 +362,7 @@ export default function JobsPage() {
                     </div>
                     <div className="space-y-1 mb-6">
                       <p className="text-xs font-black text-primary/40 uppercase tracking-tighter">{job.companyName}</p>
-                      <h3 className="text-xl font-black text-primary group-hover:text-accent transition-colors leading-snug line-clamp-2">
+                      <h3 className="text-xl font-black text-primary group-hover:text-accent transition-colors leading-snug line-clamp-2 text-balance">
                         {job.title}
                       </h3>
                     </div>
@@ -406,7 +406,7 @@ export default function JobsPage() {
                 
                 <div className="flex-1 space-y-2">
                   <p className="text-sm font-black text-primary/40">{job.companyName}</p>
-                  <h3 className="text-xl font-black text-primary group-hover:text-accent transition-colors leading-tight">{job.title}</h3>
+                  <h3 className="text-xl font-black text-primary group-hover:text-accent transition-colors leading-tight text-balance">{job.title}</h3>
                   <div className="flex flex-wrap items-center gap-4 text-xs font-bold text-primary/50 pt-1">
                     <span className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5 text-accent" /> {job.location}</span>
                     <span className="flex items-center gap-1.5"><Award className="w-3.5 h-3.5 text-accent" /> {job.experience}</span>
@@ -438,7 +438,7 @@ export default function JobsPage() {
               <div className="premium-gradient p-8 md:p-12 flex flex-col md:flex-row md:items-center justify-between gap-6 shrink-0">
                 <div className="space-y-2">
                   <Badge className="bg-accent text-primary font-black border-none px-3 py-1 rounded-lg text-[10px]">PREMIUM HIRING</Badge>
-                  <h2 className="text-2xl md:text-4xl font-black text-white leading-tight">{viewJob.title}</h2>
+                  <h2 className="text-2xl md:text-4xl font-black text-white leading-tight text-balance">{viewJob.title}</h2>
                   <p className="text-accent/80 font-bold text-sm flex items-center gap-2">
                     <Building2 className="w-4 h-4" /> {viewJob.companyName}
                   </p>
