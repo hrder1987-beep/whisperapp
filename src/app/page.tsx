@@ -92,13 +92,22 @@ export default function HomePage() {
     if (config?.bannerSettings) {
       try { return JSON.parse(config.bannerSettings) as BannerData[] } catch (e) { return [] }
     }
-    return [{
-      id: "def-1",
-      title: "HR실무자들의\n품격 있는 속삭임",
-      description: "교육부터 조직문화 인사전략까지\nHR실무자를 위한 지식 허브 Whisper",
-      image: "https://images.unsplash.com/photo-1521737711867-e3b97375f902?q=80&w=1080",
-      badge: "집단 지성의 힘"
-    }]
+    return [
+      {
+        id: "def-1",
+        title: "HR실무자들의\n품격 있는 속삭임",
+        description: "교육부터 조직문화 인사전략까지\nHR실무자를 위한 지식 허브 Whisper",
+        image: "https://images.unsplash.com/photo-1521737711867-e3b97375f902?q=80&w=1080",
+        badge: "집단 지성의 힘"
+      },
+      {
+        id: "def-2",
+        title: "고민을 나누고,\n함께 성장하자",
+        description: "우리의 작은 속삭임이 모여\n내일을 바꾸는 큰 울림으로 돌아옵니다.",
+        image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=1080",
+        badge: "교학상장의 장"
+      }
+    ]
   }, [config])
 
   const questions = useMemo(() => {
@@ -255,7 +264,7 @@ export default function HomePage() {
                               </div>
                               <ArrowRight className="w-4 h-4 text-primary/10" />
                             </CardContent>
-                          </Card>
+  </Card>
                         </Link>
                       ))}
                       {searchResults?.instructors.length === 0 && <p className="text-xs text-primary/20 py-4">검색 결과 없음</p>}

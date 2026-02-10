@@ -29,10 +29,10 @@ export function MainBanner({ banners: propBanners }: MainBannerProps) {
     },
     {
       id: 2,
-      title: "현직자의 고민,\n전문가의 해답",
-      description: "인사 전략부터 사내 이슈 해결까지,\n검증된 동료들에게 직접 묻고 답을 찾으세요.",
+      title: "고민을 나누고,\n함께 성장하자",
+      description: "우리의 작은 속삭임이 모여\n내일을 바꾸는 큰 울림으로 돌아옵니다.",
       image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxjb3Jwb3JhdGUlMjBtZWV0aW5nfGVufDB8fHx8MTc3MDM1NDM3N3ww&ixlib=rb-4.1.0&q=80&w=1080",
-      badge: "HR Collective Intelligence"
+      badge: "교학상장의 장"
     }
   ]
 
