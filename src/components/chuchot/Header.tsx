@@ -4,7 +4,7 @@
 import { Logo } from "./Logo"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Search, User as UserIcon, LogOut, Menu, Mail, Bell, FileText, ShieldCheck } from "lucide-react"
+import { Search, User as UserIcon, LogOut, Menu, Mail, Bell, FileText } from "lucide-react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useUser, useAuth, useCollection, useMemoFirebase, useFirestore, useDoc } from "@/firebase"
@@ -76,7 +76,7 @@ export function Header({ onSearch }: HeaderProps) {
         <div className="flex items-center gap-4 md:gap-8">
           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="lg:hidden text-white"><Menu className="w-6 h-6" /></Button>
+              <Button variant="ghost" size="icon" className="lg:hidden text-white hover:bg-white/10"><Menu className="w-6 h-6" /></Button>
             </SheetTrigger>
             <SheetContent side="left" className="bg-primary border-none p-0 w-72">
               <SheetHeader className="sr-only"><SheetTitle>메뉴</SheetTitle></SheetHeader>
@@ -102,10 +102,10 @@ export function Header({ onSearch }: HeaderProps) {
                 </nav>
                 <div className="mt-auto pb-10 flex flex-col gap-4">
                   {user ? (
-                    <Button variant="outline" className="border-white/20 text-white font-black" onClick={handleLogout}>로그아웃</Button>
+                    <Button variant="outline" className="border-white/20 text-white font-black hover:bg-white/10" onClick={handleLogout}>로그아웃</Button>
                   ) : (
                     <div className="flex flex-col gap-3">
-                      <Link href="/auth?mode=login" onClick={() => setIsMobileMenuOpen(false)}><Button variant="ghost" className="w-full text-white font-black">로그인</Button></Link>
+                      <Link href="/auth?mode=login" onClick={() => setIsMobileMenuOpen(false)}><Button variant="ghost" className="w-full text-white font-black hover:bg-white/10">로그인</Button></Link>
                       <Link href="/auth?mode=signup" onClick={() => setIsMobileMenuOpen(false)}><Button className="w-full bg-accent text-primary font-black">회원가입</Button></Link>
                     </div>
                   )}
@@ -135,10 +135,9 @@ export function Header({ onSearch }: HeaderProps) {
         <div className="flex items-center gap-2">
           {user ? (
             <div className="flex items-center gap-1 md:gap-3">
-              {/* 알림 및 쪽지 아이콘 (데스크탑 우선 노출) */}
               <div className="hidden sm:flex items-center gap-1">
                 <Link href="/notifications">
-                  <Button variant="ghost" size="icon" className="relative text-white/70 hover:text-accent">
+                  <Button variant="ghost" size="icon" className="relative text-white/70 hover:text-accent hover:bg-white/10 transition-colors">
                     <Bell className="w-5 h-5" />
                     {unreadNotifs && unreadNotifs.length > 0 && (
                       <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-primary"></span>
@@ -146,7 +145,7 @@ export function Header({ onSearch }: HeaderProps) {
                   </Button>
                 </Link>
                 <Link href="/messages">
-                  <Button variant="ghost" size="icon" className="relative text-white/70 hover:text-accent">
+                  <Button variant="ghost" size="icon" className="relative text-white/70 hover:text-accent hover:bg-white/10 transition-colors">
                     <Mail className="w-5 h-5" />
                     {unreadMessages && unreadMessages.length > 0 && (
                       <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-primary"></span>
@@ -154,7 +153,7 @@ export function Header({ onSearch }: HeaderProps) {
                   </Button>
                 </Link>
                 <Link href="/my-posts">
-                  <Button variant="ghost" size="icon" className="text-white/70 hover:text-accent">
+                  <Button variant="ghost" size="icon" className="text-white/70 hover:text-accent hover:bg-white/10 transition-colors">
                     <FileText className="w-5 h-5" />
                   </Button>
                 </Link>
@@ -162,12 +161,23 @@ export function Header({ onSearch }: HeaderProps) {
 
               <div className="h-6 w-px bg-white/10 mx-1 hidden sm:block"></div>
 
-              <Link href="/profile"><Button variant="ghost" size="sm" className="text-white font-bold gap-2 hover:text-accent"><UserIcon className="w-4 h-4" /> 내 정보</Button></Link>
-              <Button variant="ghost" size="icon" onClick={handleLogout} className="text-white/70 hover:text-red-400"><LogOut className="w-5 h-5" /></Button>
+              <Link href="/profile">
+                <Button variant="ghost" size="sm" className="text-white font-bold gap-2 hover:text-accent hover:bg-white/10 transition-colors">
+                  <UserIcon className="w-4 h-4" /> 내 정보
+                </Button>
+              </Link>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={handleLogout} 
+                className="text-white/70 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+              >
+                <LogOut className="w-5 h-5" />
+              </Button>
             </div>
           ) : (
             <div className="flex items-center gap-2">
-              <Link href="/auth?mode=login" className="hidden sm:block"><Button variant="ghost" size="sm" className="text-white font-black">로그인</Button></Link>
+              <Link href="/auth?mode=login" className="hidden sm:block"><Button variant="ghost" size="sm" className="text-white font-black hover:bg-white/10">로그인</Button></Link>
               <Link href="/auth?mode=signup"><Button size="sm" className="bg-accent text-primary font-black rounded-xl px-5 h-10 transition-all hover:scale-105">회원가입</Button></Link>
             </div>
           )}
