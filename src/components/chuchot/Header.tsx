@@ -17,11 +17,6 @@ import { Badge } from "@/components/ui/badge"
 
 interface HeaderProps {
   onSearch?: (query: string) => void
-  isAdminMode?: boolean
-  isCMSActive?: boolean
-  onToggleCMS?: () => void
-  onExitAdmin?: () => void
-  onOpenAdminAuth?: () => void
 }
 
 export function Header({ 
@@ -41,28 +36,24 @@ export function Header({
   const isAdmin = user?.email === 'forum@khrd.co.kr' || profile?.role === 'admin'
 
   const unreadMessagesQuery = useMemoFirebase(() => {
-    if (!db || typeof db !== 'object' || !user || !user.uid) return null
-    try {
-      return query(
-        collection(db, "messages"),
-        where("receiverId", "==", user.uid),
-        where("isRead", "==", false)
-      )
-    } catch (e) {
-      return null
-    }
-  }, [db, user])
+    if (!db || !user?.uid) return null
+    return query(
+      collection(db, "messages"),
+      where("receiverId", "==", user.uid),
+      where("isRead", "==", false)
+    )
+  }, [db, user?.uid])
   
   const { data: unreadMessages } = useCollection(unreadMessagesQuery)
 
   const notificationsQuery = useMemoFirebase(() => {
-    if (!db || !user) return null
+    if (!db || !user?.uid) return null
     return query(
       collection(db, "notifications"),
       where("userId", "==", user.uid),
       where("isRead", "==", false)
     )
-  }, [db, user])
+  }, [db, user?.uid])
   const { data: unreadNotifications } = useCollection(notificationsQuery)
 
   const handleLogout = () => {

@@ -1,6 +1,7 @@
+
 "use client"
 
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, useCallback, memo } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -29,15 +30,32 @@ interface Message {
   text: string
 }
 
-interface ChatContentProps {
-  messages: Message[]
-  input: string
-  setInput: (val: string) => void
-  isLoading: boolean
-  handleSend: () => void
-  isExpanded?: boolean
-  setIsFocused?: (val: boolean) => void
-}
+// 개별 메시지 컴포넌트 메모이제이션으로 최적화
+const ChatMessage = memo(({ msg, isLast }: { msg: Message, isLast: boolean }) => (
+  <div className={cn(
+    "flex items-start gap-3 animate-in fade-in slide-in-from-bottom-1 duration-200",
+    msg.role === "user" ? "flex-row-reverse" : "flex-row"
+  )}>
+    <div className="shrink-0">
+      {msg.role === "user" ? (
+        <div className="p-2.5 bg-primary/10 rounded-2xl">
+          <User className="w-4 h-4 text-primary/60" />
+        </div>
+      ) : (
+        <AvatarIcon avatarId="aldi" className="w-9 h-9" />
+      )}
+    </div>
+    <div className={cn(
+      "max-w-[85%] p-4 rounded-[1.5rem] text-[14px] leading-relaxed shadow-sm",
+      msg.role === "user" 
+        ? "bg-primary text-white rounded-tr-none" 
+        : "bg-white border border-primary/5 text-primary/80 rounded-tl-none font-medium"
+    )}>
+      {msg.text}
+    </div>
+  </div>
+));
+ChatMessage.displayName = "ChatMessage";
 
 function ChatInterface({ 
   messages, 
@@ -47,19 +65,34 @@ function ChatInterface({
   handleSend, 
   isExpanded = false,
   setIsFocused 
-}: ChatContentProps) {
+}: {
+  messages: Message[]
+  input: string
+  setInput: (val: string) => void
+  isLoading: boolean
+  handleSend: () => void
+  isExpanded?: boolean
+  setIsFocused?: (val: boolean) => void
+}) {
   const scrollRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
+  const scrollToBottom = useCallback(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight
+      scrollRef.current.scrollTo({
+        top: scrollRef.current.scrollHeight,
+        behavior: 'smooth'
+      });
     }
-  }, [messages, isLoading])
+  }, []);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, isLoading, scrollToBottom]);
 
   return (
     <div className={cn("flex flex-col h-full bg-white", isExpanded ? "rounded-[3rem]" : "")}>
       <CardHeader className={cn(
-        "p-6 flex flex-row items-center justify-between space-y-0 premium-gradient"
+        "p-6 flex flex-row items-center justify-between space-y-0 premium-gradient shrink-0"
       )}>
         <div className="flex items-center gap-4">
           <AvatarIcon avatarId="aldi" className="w-12 h-12 shadow-2xl scale-110" />
@@ -86,12 +119,12 @@ function ChatInterface({
       >
         {isExpanded && messages.length === 1 && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-            <div className="p-6 bg-primary/5 rounded-[2rem] border border-primary/5 space-y-3 animate-in fade-in slide-in-from-top-4 duration-500">
+            <div className="p-6 bg-primary/5 rounded-[2rem] border border-primary/5 space-y-3">
               <BrainCircuit className="w-6 h-6 text-accent" />
               <h4 className="font-black text-primary">채용/인사 실무 지원</h4>
               <p className="text-xs text-primary/40 font-bold leading-relaxed">직무기술서(JD) 초안 작성 및 면접 질문 리스트 생성을 도와드립니다.</p>
             </div>
-            <div className="p-6 bg-primary/5 rounded-[2rem] border border-primary/5 space-y-3 animate-in fade-in slide-in-from-top-4 duration-700">
+            <div className="p-6 bg-primary/5 rounded-[2rem] border border-primary/5 space-y-3">
               <Lightbulb className="w-6 h-6 text-accent" />
               <h4 className="font-black text-primary">조직문화/기획 아이디어</h4>
               <p className="text-xs text-primary/40 font-bold leading-relaxed">임직원 몰입도를 높이는 이벤트와 핵심가치 내재화 프로그램을 제안합니다.</p>
@@ -100,29 +133,9 @@ function ChatInterface({
         )}
 
         {messages.map((msg, idx) => (
-          <div key={idx} className={cn(
-            "flex items-start gap-3 animate-in fade-in slide-in-from-bottom-2 duration-300",
-            msg.role === "user" ? "flex-row-reverse" : "flex-row"
-          )}>
-            <div className="shrink-0">
-              {msg.role === "user" ? (
-                <div className="p-2.5 bg-primary/10 rounded-2xl">
-                  <User className="w-4 h-4 text-primary/60" />
-                </div>
-              ) : (
-                <AvatarIcon avatarId="aldi" className="w-9 h-9" />
-              )}
-            </div>
-            <div className={cn(
-              "max-w-[85%] p-4 rounded-[1.5rem] text-[14px] leading-relaxed shadow-sm",
-              msg.role === "user" 
-                ? "bg-primary text-white rounded-tr-none" 
-                : "bg-white border border-primary/5 text-primary/80 rounded-tl-none font-medium"
-            )}>
-              {msg.text}
-            </div>
-          </div>
+          <ChatMessage key={idx} msg={msg} isLast={idx === messages.length - 1} />
         ))}
+        
         {isLoading && (
           <div className="flex items-start gap-3">
             <AvatarIcon avatarId="aldi" className="w-9 h-9" />
@@ -137,7 +150,7 @@ function ChatInterface({
         )}
       </CardContent>
 
-      <div className="p-6 bg-white border-t border-primary/5">
+      <div className="p-6 bg-white border-t border-primary/5 shrink-0">
         <div className="relative group max-w-4xl mx-auto">
           <Input 
             placeholder="알디에게 HR 고민을 속삭여보세요..." 
@@ -161,20 +174,12 @@ function ChatInterface({
             <Send className="w-5 h-5" />
           </Button>
         </div>
-        <p className="text-[10px] text-center text-primary/20 mt-3 font-black tracking-widest uppercase">
-          HR전문 AI챗봇 알디입니다
-        </p>
       </div>
     </div>
   )
 }
 
-interface AldiChatProps {
-  forceOpenTrigger?: boolean
-  onTriggerClose?: () => void
-}
-
-export function AldiChat({ forceOpenTrigger, onTriggerClose }: AldiChatProps) {
+export function AldiChat({ forceOpenTrigger, onTriggerClose }: { forceOpenTrigger?: boolean, onTriggerClose?: () => void }) {
   const db = useFirestore()
   const aldiDocRef = useMemoFirebase(() => db ? doc(db, "admin_configuration", "aldi_knowledge") : null, [db])
   const { data: aldiKnowledge } = useDoc<any>(aldiDocRef)
@@ -232,7 +237,7 @@ export function AldiChat({ forceOpenTrigger, onTriggerClose }: AldiChatProps) {
           <DialogHeader className="sr-only">
             <DialogTitle>알디와 대화하기 (확대 모드)</DialogTitle>
           </DialogHeader>
-          <div className="relative w-full h-full flex flex-col animate-in zoom-in-95 duration-300">
+          <div className="relative w-full h-full flex flex-col">
             <Button 
               variant="ghost" 
               size="icon" 

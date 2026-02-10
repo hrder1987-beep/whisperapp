@@ -21,6 +21,7 @@ import mockData from "@/lib/mock-data.json"
 
 const ITEMS_PER_PAGE = 7
 
+// 전문가가 제공한 30가지 실무 주제 정의 (중복 제거 및 숫자 제거용)
 const HRM_TOPICS = [
   { title: "포괄임금제 도입 시 반드시 포함해야 할 항목", text: "계약서에 연장/야간/휴일수당을 각각 몇 시간분인지 명시해야 실무적으로 안전한가요?" },
   { title: "1년 미만 신입사원의 연차 발생 기준", text: "매달 개근 시 발생하는 1일의 휴가와 1년 시점의 15개 발생 시점이 헷갈리네요." },
@@ -59,10 +60,12 @@ const HRD_TOPICS = [
 
 const EXPERT_NICKNAMES = ["인사마스터", "노무의신", "컬처디렉터", "HRBP", "교육전문가", "채용빌런", "보상전문가", "조직심리사", "인사전략가", "피플팀장"];
 
+// 200개 샘플 데이터 생성 (컴포넌트 외부에서 실행하여 성능 확보)
 const generateFullMockQuestions = () => {
   const fullList: Question[] = [];
   const mockAnswerIds = new Set((mockData.answers as any[]).map(a => a.questionId));
   
+  // 1. HRM/인사 100개
   for (let i = 1; i <= 100; i++) {
     const id = `hr-q${i}`;
     const topic = HRM_TOPICS[(i - 1) % HRM_TOPICS.length];
@@ -81,6 +84,7 @@ const generateFullMockQuestions = () => {
     });
   }
 
+  // 2. HRD/조직문화 100개
   for (let i = 1; i <= 100; i++) {
     const id = `cul-q${i}`;
     const topic = HRD_TOPICS[(i - 1) % HRD_TOPICS.length];
@@ -153,6 +157,7 @@ export default function HomePage() {
   const questionsQuery = useMemoFirebase(() => db ? query(collection(db, "questions"), orderBy("createdAt", "desc")) : null, [db])
   const { data: questionsData } = useCollection<Question>(questionsQuery)
   
+  // Firestore 데이터와 샘플 데이터를 100% 병합하여 로드
   const questions = useMemo(() => {
     const dbData = questionsData || [];
     const merged = [...dbData];
@@ -287,21 +292,6 @@ export default function HomePage() {
                 onTabChange={setActiveTab as any} 
               />
               
-              {!searchQuery && (
-                <div className="lg:hidden space-y-6 mt-12 mb-12">
-                  {premiumAds.map((ad) => (
-                    <div key={ad.id} onClick={() => window.open(ad.link, '_blank')} className="relative group cursor-pointer overflow-hidden rounded-[2rem] shadow-xl border border-primary/5 transition-all aspect-[16/9]">
-                      <img src={ad.mobileImage} alt={ad.title} className="w-full h-full object-cover" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
-                      <div className="absolute bottom-6 left-6 right-6">
-                        <Badge className="bg-accent text-primary font-black mb-2 text-[10px]">{ad.badge}</Badge>
-                        <p className="text-white font-black text-xl leading-tight whitespace-pre-line">{ad.title}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-
               {totalPages > 1 && (
                 <div className="flex flex-col items-center gap-6 mt-12 pb-20">
                   <div className="flex justify-center items-center gap-1">
