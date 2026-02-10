@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo, useEffect, useDeferredValue } from "react"
@@ -27,7 +26,6 @@ const generateMocks = () => {
   const list: Question[] = [];
   const mockAnswerIds = new Set((mockData.answers as any[]).map(a => a.questionId));
   
-  // To keep it simple, we use a fixed set of topics for the mock generation
   const HRM_TOPICS = [
     { title: "포괄임금제 도입 시 필수 항목", text: "연장/야간/휴일수당을 계약서에 어떻게 명시해야 리스크가 없을까요?" },
     { title: "1년 미만 사원 연차 발생 기준", text: "매달 개근 시 1일과 1년 시점 15개가 합산되는 과정이 궁금합니다." }
@@ -74,7 +72,6 @@ export default function HomePage() {
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
 
-  // 데이터 통합 검색을 위한 모든 컬렉션 로드
   const questionsQuery = useMemoFirebase(() => db ? query(collection(db, "questions"), orderBy("createdAt", "desc")) : null, [db])
   const programsQuery = useMemoFirebase(() => db ? query(collection(db, "trainingPrograms"), orderBy("createdAt", "desc")) : null, [db])
   const instructorsQuery = useMemoFirebase(() => db ? query(collection(db, "instructors"), orderBy("createdAt", "desc")) : null, [db])
@@ -87,6 +84,10 @@ export default function HomePage() {
 
   const configDocRef = useMemoFirebase(() => db ? doc(db, "admin_configuration", "site_settings") : null, [db])
   const { data: config } = useDoc<any>(configDocRef)
+
+  // AI 자동 답변 지침 가져오기
+  const aldiDocRef = useMemoFirebase(() => db ? doc(db, "admin_configuration", "aldi_knowledge") : null, [db])
+  const { data: aldiConfig } = useDoc<any>(aldiDocRef)
 
   const banners = useMemo(() => {
     if (config?.bannerSettings) {
@@ -103,7 +104,7 @@ export default function HomePage() {
       {
         id: "def-2",
         title: "고민을 나누고,\n함께 성장하자",
-        description: "전문가님의 작은 속삭임이 모여\n내일을 바꾸는 큰 울림으로 돌아옵니다.",
+        description: "우리의 작은 속삭임이 모여\n내일을 바꾸는 큰 울림으로 돌아옵니다.",
         image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=1080",
         badge: "교학상장의 장"
       }
@@ -126,7 +127,6 @@ export default function HomePage() {
     return dbAnswers?.length ? dbAnswers : (mockData.answers as any[]).filter(a => a.questionId === selectedId);
   }, [dbAnswers, selectedId])
 
-  // 통합 검색 결과 로직
   const searchResults = useMemo(() => {
     if (!deferredSearchQuery) return null;
     const q = deferredSearchQuery.toLowerCase();
@@ -166,12 +166,19 @@ export default function HomePage() {
       title, text, nickname, userId: user.uid, category: category || "기타",
       viewCount: 0, answerCount: 0, createdAt: Date.now()
     }).then(ref => {
-      if (ref) generateAiReply({ title, text }).then(res => {
-        addDocumentNonBlocking(collection(db, "questions", ref.id, "answers"), {
-          questionId: ref.id, text: res.replyText, nickname: "알디", userId: "ai", createdAt: Date.now()
+      if (ref) {
+        // 관리자가 설정한 동적 답변 지침(Prompt)을 Flow에 전달
+        generateAiReply({ 
+          title, 
+          text, 
+          instruction: aldiConfig?.autoReplyInstruction 
+        }).then(res => {
+          addDocumentNonBlocking(collection(db, "questions", ref.id, "answers"), {
+            questionId: ref.id, text: res.replyText, nickname: "알디", userId: "ai", createdAt: Date.now()
+          });
+          updateDocumentNonBlocking(doc(db, "questions", ref.id), { answerCount: 1 });
         });
-        updateDocumentNonBlocking(doc(db, "questions", ref.id), { answerCount: 1 });
-      });
+      }
     });
   }
 
@@ -202,7 +209,6 @@ export default function HomePage() {
                   </div>
                 </div>
 
-                {/* 지식 피드 결과 */}
                 <section className="space-y-6">
                   <h3 className="text-xl font-black text-primary flex items-center gap-2">
                     <FileText className="w-5 h-5 text-accent" /> 지식 속삭임 ({searchResults?.questions.length})
@@ -220,7 +226,6 @@ export default function HomePage() {
                 </section>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {/* 프로그램 결과 */}
                   <section className="space-y-4">
                     <h3 className="text-lg font-black text-primary flex items-center gap-2">
                       <GraduationCap className="w-5 h-5 text-accent" /> 프로그램 ({searchResults?.programs.length})
@@ -243,7 +248,6 @@ export default function HomePage() {
                     </div>
                   </section>
 
-                  {/* 강사 결과 */}
                   <section className="space-y-4">
                     <h3 className="text-lg font-black text-primary flex items-center gap-2">
                       <User className="w-5 h-5 text-accent" /> 강사 정보 ({searchResults?.instructors.length})
@@ -264,14 +268,13 @@ export default function HomePage() {
                               </div>
                               <ArrowRight className="w-4 h-4 text-primary/10" />
                             </CardContent>
-  </Card>
+                          </Card>
                         </Link>
                       ))}
                       {searchResults?.instructors.length === 0 && <p className="text-xs text-primary/20 py-4">검색 결과 없음</p>}
                     </div>
                   </section>
 
-                  {/* 채용 결과 */}
                   <section className="space-y-4">
                     <h3 className="text-lg font-black text-primary flex items-center gap-2">
                       <Briefcase className="w-5 h-5 text-accent" /> 채용 공고 ({searchResults?.jobs.length})

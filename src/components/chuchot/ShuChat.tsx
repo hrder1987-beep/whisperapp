@@ -208,6 +208,7 @@ export function AldiChat({ forceOpenTrigger, onTriggerClose }: { forceOpenTrigge
       const res = await chatAldi({ 
         message: userMessage,
         knowledge: aldiKnowledge?.content,
+        persona: aldiKnowledge?.persona, // 관리자가 설정한 동적 페르소나 주입
       })
       setMessages(prev => [...prev, { role: "bot", text: res.reply }])
     } catch (error) {

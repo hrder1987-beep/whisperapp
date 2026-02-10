@@ -129,5 +129,7 @@ export interface PremiumAd {
 
 export interface AldiKnowledge {
   content: string;
+  persona?: string;
+  autoReplyInstruction?: string;
   updatedAt: string;
 }
