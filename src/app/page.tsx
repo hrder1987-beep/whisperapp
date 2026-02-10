@@ -1,33 +1,41 @@
 
 "use client"
 
-import { useState, useMemo, useEffect } from "react"
+import { useState, useMemo, useEffect, useDeferredValue } from "react"
 import { Header } from "@/components/chuchot/Header"
 import { MainBanner, BannerData } from "@/components/chuchot/MainBanner"
 import { SubmissionForm } from "@/components/chuchot/SubmissionForm"
 import { QuestionFeed } from "@/components/chuchot/QuestionFeed"
 import { RankingList } from "@/components/chuchot/RankingList"
 import { AldiChat } from "@/components/chuchot/ShuChat"
-import { Question, Answer, PremiumAd } from "@/lib/types"
+import { Question, Answer } from "@/lib/types"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight, Sparkles, ChevronsLeft, ChevronsRight } from "lucide-react"
+import { Sparkles, ChevronsLeft, ChevronsRight } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { generateAiReply } from "@/ai/flows/generate-ai-reply-flow"
 import { cn } from "@/lib/utils"
 import { useFirestore, useCollection, useDoc, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking, useUser } from "@/firebase"
 import { collection, query, orderBy, doc, increment } from "firebase/firestore"
-import { Badge } from "@/components/ui/badge"
 import mockData from "@/lib/mock-data.json"
 
 const ITEMS_PER_PAGE = 7
 
-// 전문가 데이터 최적화 (메모리 효율을 위해 컴포넌트 외부에서 1회만 생성)
 const HRM_TOPICS = [
   { title: "포괄임금제 도입 시 필수 항목", text: "연장/야간/휴일수당을 계약서에 어떻게 명시해야 리스크가 없을까요?" },
   { title: "1년 미만 사원 연차 발생 기준", text: "매달 개근 시 1일과 1년 시점 15개가 합산되는 과정이 궁금합니다." },
   { title: "수습기간 당일 해고 통보 리스크", text: "3개월 미만이면 해고예고 예외라는데, 부당해고 신청은 가능한가요?" },
   { title: "휴일 근무 보상휴가제 도입 절차", text: "현금 대신 휴가로 대체 시 근로자대표 합의만으로 충분한가요?" },
-  { title: "유연근무제 근태 관리 노하우", text: "시차출퇴근제 도입 시 협업을 위한 코어타임은 다들 어떻게 잡으시나요?" }
+  { title: "유연근무제 근태 관리 노하우", text: "시차출퇴근제 도입 시 협업을 위한 코어타임은 다들 어떻게 잡으시나요?" },
+  { title: "퇴직금 중간정산 사유 확인", text: "무주택자의 주택 구입 외에 다른 정당한 사유들이 궁금합니다." },
+  { title: "취업규칙 변경 신고 절차", text: "근로자에게 불이익한 변경일 경우 동의를 받는 가장 안전한 방법은?" },
+  { title: "직장 내 괴롭힘 조사 위원회 구성", text: "외부 위원을 반드시 포함해야 하나요? 공정성 확보 방안이 궁금합니다." },
+  { title: "계약직 만료 전 갱신 기대권", text: "반복 갱신된 계약직의 경우 정규직 전환 거절 시 리스크는?" },
+  { title: "연장근로 한도 위반 주의사항", text: "주 52시간제 하에서 특별연장근로 인가를 받는 절차와 요건." },
+  { title: "급여 명세서 필수 기재 항목", text: "수당 계산 방법 등을 명시하지 않았을 때 과태료 수준은?" },
+  { title: "재택근무 시 근태 관리 방안", text: "접속 기록만으로 근태를 인정해도 될까요? 다들 어떻게 관리하시나요?" },
+  { title: "연차 유급휴가 대체 공휴일", text: "공휴일 유급휴가 의무화 이후 연차 대체가 불가능해진 부분 확인." },
+  { title: "선택적 근로시간제 정산 기간", text: "정산 기간을 3개월로 늘릴 때 근로자대표 서면 합의서 양식 공유 부탁드려요." },
+  { title: "출산휴가 및 육아휴직 급여", text: "사후지급금 제도 변경 사항과 기업이 부담해야 하는 비용 정리." }
 ];
 
 const HRD_TOPICS = [
@@ -35,10 +43,20 @@ const HRD_TOPICS = [
   { title: "신입사원 온보딩 소속감 강화 활동", text: "조기 퇴사를 막기 위한 우리 회사만의 특별한 루틴을 추천해주세요." },
   { title: "사내 강사 양성 및 보상 체계", text: "실무자를 강사로 세울 때 강의료 외에 어떤 동기부여를 하시나요?" },
   { title: "핵심가치 내재화 워크숍 아이디어", text: "지루하지 않게 가치를 체득할 수 있는 액티비티가 궁금합니다." },
-  { title: "팀 내 심리적 안전감 구축 루틴", text: "회의 시작 전 가볍게 던질 수 있는 체크인 질문 리스트가 있을까요?" }
+  { title: "팀 내 심리적 안전감 구축 루틴", text: "회의 시작 전 가볍게 던질 수 있는 체크인 질문 리스트가 있을까요?" },
+  { title: "에듀테크 기반 학습 플랫폼 도입", text: "LXP 도입 시 가장 고려해야 할 핵심 기능과 실패 사례가 궁금합니다." },
+  { title: "MZ세대 리더십 교육 커리큘럼", text: "요즘 팀장들이 가장 힘들어하는 부분과 이를 해결할 교육 주제 추천." },
+  { title: "멘토링 프로그램 매칭 알고리즘", text: "강제 매칭보다 자율 매칭이 좋을까요? 성공적인 운영 노하우 공유 바랍니다." },
+  { title: "IDP(개인개발계획) 실효성 확보", text: "작성만 하고 끝나는 계획이 아니라 실제 성과로 이어지게 하는 법." },
+  { title: "직무 교육 OJT 매뉴얼화", text: "선배마다 가르치는 방식이 다른데, 이를 표준화하는 가장 빠른 방법." },
+  { title: "다면평가 피드백 수용도 제고", text: "평가 결과 통보 시 리더들의 거부감을 줄이는 커뮤니케이션 스킬." },
+  { title: "조직 진단 설문지 문항 설계", text: "문화 진단 시 꼭 포함되어야 하는 핵심 5가지 영역 추천." },
+  { title: "사내 북클럽 운영 및 도서 지원", text: "자발적 참여를 이끌어내는 북클럽 운영 팁과 보상 제도." },
+  { title: "디지털 리터러시 전사 교육", text: "비IT 직군 임직원들의 AI 활용 능력을 높이기 위한 교육 단계." },
+  { title: "리트릿 프로그램 장소 및 프로그램", text: "서울 근교에서 팀워크를 다지기 좋은 장소와 힐링 프로그램 추천." }
 ];
 
-const EXPERT_NICKNAMES = ["인사마스터", "노무의신", "컬처디렉터", "HRBP", "교육전문가", "채용빌런", "보상전문가"];
+const EXPERT_NICKNAMES = ["인사마스터", "노무의신", "컬처디렉터", "HRBP", "교육전문가", "채용빌런", "보상전문가", "인사전략가", "피플팀장", "열정HR"];
 
 const generateMocks = () => {
   const list: Question[] = [];
@@ -74,6 +92,9 @@ export default function HomePage() {
   const { toast } = useToast()
   
   const [searchQuery, setSearchQuery] = useState("")
+  // 입력 지연을 해결하기 위해 useDeferredValue 적용 (대규모 데이터 필터링 시 UI 멈춤 방지)
+  const deferredSearchQuery = useDeferredValue(searchQuery)
+  
   const [activeTab, setActiveTab] = useState<"all" | "hrm" | "hrd" | "culture" | "popular" | "waiting">("all")
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
@@ -115,14 +136,18 @@ export default function HomePage() {
 
   const filtered = useMemo(() => {
     let res = [...questions]
-    if (searchQuery) res = res.filter(q => q.title.includes(searchQuery) || q.text.includes(searchQuery));
+    // 지연된 검색어를 사용하여 검색 시 화면 버벅거림 제거
+    if (deferredSearchQuery) {
+      const lowerQuery = deferredSearchQuery.toLowerCase();
+      res = res.filter(q => q.title.toLowerCase().includes(lowerQuery) || q.text.toLowerCase().includes(lowerQuery));
+    }
     if (activeTab === "hrm") res = res.filter(q => q.category === "인사전략/HRM");
     if (activeTab === "hrd") res = res.filter(q => q.category === "HRD/교육");
     if (activeTab === "culture") res = res.filter(q => q.category === "조직문화/EVP");
     if (activeTab === "popular") res.sort((a, b) => b.viewCount - a.viewCount);
     if (activeTab === "waiting") res = res.filter(q => q.answerCount === 0);
     return res
-  }, [questions, searchQuery, activeTab])
+  }, [questions, deferredSearchQuery, activeTab])
 
   const paginated = useMemo(() => {
     const start = (currentPage - 1) * ITEMS_PER_PAGE
@@ -131,7 +156,7 @@ export default function HomePage() {
 
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE)
 
-  useEffect(() => { setCurrentPage(1); setSelectedId(null); }, [searchQuery, activeTab])
+  useEffect(() => { setCurrentPage(1); setSelectedId(null); }, [deferredSearchQuery, activeTab])
 
   const handleAddQuestion = (nickname: string, title: string, text: string, category?: string) => {
     if (!db || !user) return;
