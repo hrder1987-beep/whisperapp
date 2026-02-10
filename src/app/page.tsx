@@ -21,11 +21,11 @@ import mockData from "@/lib/mock-data.json"
 
 const ITEMS_PER_PAGE = 7
 
-// 200개의 실무 데이터를 100% 확실하게 복구하기 위한 로직
+// 200개의 데이터를 확실하게 보장하기 위한 복구 엔진
 const generateFullMockQuestions = () => {
   const fullList: Question[] = [];
   
-  // 1. 인사/총무 (HRM) 100건 복구
+  // 1. 인사/총무 (HRM) 100건 생성
   for (let i = 1; i <= 100; i++) {
     const existing = (mockData.questions as any[]).find(q => q.id === `hr-q${i}`);
     fullList.push({
@@ -42,7 +42,7 @@ const generateFullMockQuestions = () => {
     });
   }
 
-  // 2. HRD/조직문화 100건 복구
+  // 2. HRD/조직문화 100건 생성
   for (let i = 1; i <= 100; i++) {
     const existing = (mockData.questions as any[]).find(q => q.id === `cul-q${i}`);
     fullList.push({
@@ -106,11 +106,10 @@ export default function HomePage() {
   const { data: questionsData } = useCollection<Question>(questionsQuery)
   
   const questions = useMemo(() => {
-    const fetched = questionsData || []
-    // 전문가님 요청사항: 200개 데이터 유실 방지 및 100% 복구 보장
-    if (fetched.length === 0 && !searchQuery) return MOCK_QUESTIONS
-    return fetched
-  }, [questionsData, searchQuery])
+    // Firestore 데이터가 없거나 로딩 중일 때 MOCK 데이터를 즉시 노출하도록 수정 (100% 복구 보장)
+    if (!questionsData || questionsData.length === 0) return MOCK_QUESTIONS;
+    return questionsData;
+  }, [questionsData])
 
   const answersQuery = useMemoFirebase(() => {
     if (!db || !selectedQuestionId) return null

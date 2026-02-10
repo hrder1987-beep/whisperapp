@@ -25,7 +25,7 @@ interface SubmissionFormProps {
 }
 
 const HR_CATEGORIES = [
-  "L&D/교육설계", "채용/헤드헌팅", "조직문화/EVP", "인사전략/HRM", "복지/유연근무", "강의/컨설팅", "현업 고민", "기타 정보"
+  "인사전략/HRM", "HRD/교육", "조직문화/EVP", "채용/헤드헌팅", "복지/유연근무", "강의/컨설팅", "현업 고민", "기타 정보"
 ]
 
 export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
