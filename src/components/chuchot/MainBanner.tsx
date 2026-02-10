@@ -22,10 +22,10 @@ export function MainBanner({ banners: propBanners }: MainBannerProps) {
   const defaultBanners: BannerData[] = [
     {
       id: 1,
-      title: "HR 전문가들의\n품격 있는 속삭임",
-      description: "채용부터 조직문화, 교육 설계까지.\n모든 HR 실무자를 위한 지식 허브 Whisper.",
+      title: "HR실무자들의\n품격 있는 속삭임",
+      description: "교육부터 조직문화 인사전략까지\nHR실무자를 위한 지식 허브 Whisper",
       image: "https://images.unsplash.com/photo-1521737711867-e3b97375f902?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxocm8lMjBtZWV0aW5nfGVufDB8fHx8MTc3MDI4MTYxN3ww&ixlib=rb-4.1.0&q=80&w=1080",
-      badge: "Whisper Intelligence"
+      badge: "집단 지성의 힘"
     },
     {
       id: 2,
