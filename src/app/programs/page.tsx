@@ -204,32 +204,40 @@ export default function ProgramsPage() {
     <div className="min-h-screen bg-[#F8F9FA]">
       <Header />
       
-      <main className="max-w-7xl mx-auto px-4 py-8 md:py-12">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 md:gap-10 mb-12">
-          <div className="space-y-3 flex-1">
-            <div className="flex items-center gap-3">
-              <div className="h-1 w-12 bg-accent rounded-full"></div>
+      <main className="max-w-7xl mx-auto px-4 py-12 md:py-20">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-12 mb-20">
+          <div className="space-y-8 flex-1">
+            <div className="inline-flex items-center gap-2 bg-accent/10 px-4 py-2 rounded-full border border-accent/20">
+              <GraduationCap className="w-4 h-4 text-accent" />
               <span className="text-[10px] font-black text-accent uppercase tracking-[0.2em]">Partner Solutions</span>
             </div>
-            <h1 className="text-3xl md:text-5xl font-black text-primary tracking-tighter">프로그램</h1>
-            <p className="text-sm md:text-lg font-bold text-primary/30">현직 HR 전문가들이 직접 검증하고 제안하는 최고의 교육/컨설팅 솔루션</p>
             
-            <div className="relative max-w-xl group pt-2">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/30 group-focus-within:text-accent transition-colors" />
+            <div className="space-y-4">
+              <h1 className="text-5xl md:text-7xl font-black text-primary tracking-tighter leading-[0.9]">
+                프로그램 <span className="text-accent/40 font-light tracking-widest block md:inline md:ml-2 text-3xl md:text-5xl">Solutions</span>
+              </h1>
+              <p className="text-xl md:text-2xl font-medium text-primary/50 max-w-4xl leading-relaxed text-balance">
+                현직 HR 전문가들이 직접 검증하고 제안하는 <br className="hidden md:block" />
+                최고의 <span className="text-primary font-black underline decoration-accent/30 underline-offset-4">교육 및 컨설팅 솔루션</span>을 만나보세요.
+              </p>
+            </div>
+            
+            <div className="relative max-w-2xl group">
+              <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-6 h-6 text-primary/20 group-focus-within:text-accent transition-colors" />
               <Input 
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 placeholder="찾으시는 주제나 교육기관을 검색하세요..." 
-                className="h-12 pl-12 pr-6 bg-white border-none rounded-xl shadow-sm focus-visible:ring-accent/50 text-xs font-bold"
+                className="h-16 pl-16 pr-8 bg-white border-none rounded-[2rem] shadow-xl focus-visible:ring-accent/50 text-base font-bold placeholder:text-primary/20"
               />
             </div>
           </div>
 
           <Button 
             onClick={handleOpenDialog}
-            className="gold-gradient text-primary font-black h-12 md:h-16 px-8 md:px-12 rounded-xl md:rounded-[2rem] shadow-xl hover:scale-105 active:scale-95 transition-all gap-2 text-sm"
+            className="gold-gradient text-primary font-black h-20 px-12 rounded-[2.5rem] shadow-2xl hover:scale-105 active:scale-95 transition-all gap-2 text-lg shrink-0"
           >
-            <Plus className="w-5 h-5" />
+            <Plus className="w-6 h-6" />
             무료 프로그램 등록
           </Button>
 

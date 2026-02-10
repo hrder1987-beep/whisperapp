@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useRef, useMemo } from "react"
@@ -189,30 +190,38 @@ export default function MentorsPage() {
     <div className="min-h-screen bg-[#F8F9FA]">
       <Header />
       
-      <main className="max-w-7xl mx-auto px-4 py-12">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-10 mb-16">
-          <div className="space-y-4 flex-1">
-            <div className="flex items-center gap-3">
-              <Sparkles className="w-6 h-6 text-accent animate-pulse" />
-              <span className="text-xs font-black text-accent uppercase tracking-[0.2em]">Voices of Wisdom</span>
+      <main className="max-w-7xl mx-auto px-4 py-12 md:py-20">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-12 mb-20">
+          <div className="space-y-8 flex-1">
+            <div className="inline-flex items-center gap-2 bg-accent/10 px-4 py-2 rounded-full border border-accent/20">
+              <Sparkles className="w-4 h-4 text-accent animate-pulse" />
+              <span className="text-[10px] font-black text-accent uppercase tracking-[0.2em]">Voices of Wisdom</span>
             </div>
-            <h1 className="text-4xl md:text-5xl font-black text-primary tracking-tighter">위스퍼러 (Whisperer)</h1>
-            <p className="text-lg font-bold text-primary/30 max-w-2xl">침묵을 깨는 지혜의 목소리, Whisper가 인증한 각 분야 최고의 HR 인사이트 파트너들을 소개합니다.</p>
             
-            <div className="relative max-w-xl group pt-4">
-              <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-primary/30 group-focus-within:text-accent transition-colors" />
+            <div className="space-y-4">
+              <h1 className="text-5xl md:text-7xl font-black text-primary tracking-tighter leading-[0.9]">
+                위스퍼러 <span className="text-accent/40 font-light tracking-widest block md:inline md:ml-2 text-3xl md:text-5xl">Whisperer</span>
+              </h1>
+              <p className="text-xl md:text-2xl font-medium text-primary/50 max-w-4xl leading-relaxed text-balance">
+                침묵을 깨는 지혜의 목소리, Whisper가 인증한 <br className="hidden md:block" />
+                각 분야 최고의 <span className="text-primary font-black underline decoration-accent/30 underline-offset-4">HR 인사이트 파트너</span>들을 소개합니다.
+              </p>
+            </div>
+            
+            <div className="relative max-w-2xl group">
+              <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-6 h-6 text-primary/20 group-focus-within:text-accent transition-colors" />
               <Input 
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 placeholder="전문 위스퍼러의 성함, 기업명, 분야를 검색하세요..." 
-                className="h-14 pl-14 pr-6 bg-white border-none rounded-2xl shadow-sm focus-visible:ring-accent/50 text-sm font-bold placeholder:text-primary/20"
+                className="h-16 pl-16 pr-8 bg-white border-none rounded-[2rem] shadow-xl focus-visible:ring-accent/50 text-base font-bold placeholder:text-primary/20"
               />
             </div>
           </div>
 
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="gold-gradient text-primary font-black h-16 px-10 rounded-[2rem] shadow-2xl hover:scale-105 active:scale-95 transition-all gap-3">
+              <Button className="gold-gradient text-primary font-black h-20 px-12 rounded-[2.5rem] shadow-2xl hover:scale-105 active:scale-95 transition-all gap-3 text-lg shrink-0">
                 <Crown className="w-6 h-6" />
                 위스퍼러 신청하기
               </Button>

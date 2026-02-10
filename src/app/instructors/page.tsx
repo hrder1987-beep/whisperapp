@@ -181,30 +181,38 @@ export default function InstructorsPage() {
     <div className="min-h-screen bg-[#F8F9FA]">
       <Header />
       
-      <main className="max-w-7xl mx-auto px-4 py-12">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 mb-16">
-          <div className="space-y-4 flex-1">
-            <div className="flex items-center gap-3">
-              <div className="h-1.5 w-16 bg-accent rounded-full"></div>
-              <span className="text-xs font-black text-accent uppercase tracking-[0.2em]">Instructor PR Center</span>
+      <main className="max-w-7xl mx-auto px-4 py-12 md:py-20">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-12 mb-20">
+          <div className="space-y-8 flex-1">
+            <div className="inline-flex items-center gap-2 bg-accent/10 px-4 py-2 rounded-full border border-accent/20">
+              <Star className="w-4 h-4 text-accent" />
+              <span className="text-[10px] font-black text-accent uppercase tracking-[0.2em]">Instructor PR Center</span>
             </div>
-            <h1 className="text-4xl md:text-5xl font-black text-primary tracking-tighter">강사 정보</h1>
-            <p className="text-lg font-bold text-primary/30 max-w-2xl">최고의 전문 강사진과 함께 조직의 성장을 도모하세요.</p>
             
-            <div className="relative max-w-xl group pt-4">
-              <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-primary/30 group-focus-within:text-accent transition-colors" />
+            <div className="space-y-4">
+              <h1 className="text-5xl md:text-7xl font-black text-primary tracking-tighter leading-[0.9]">
+                강사 정보 <span className="text-accent/40 font-light tracking-widest block md:inline md:ml-2 text-3xl md:text-5xl">Expert Pool</span>
+              </h1>
+              <p className="text-xl md:text-2xl font-medium text-primary/50 max-w-4xl leading-relaxed text-balance">
+                최고의 전문 강사진과 함께 <span className="text-primary font-black">조직의 성장</span>을 도모하세요. <br className="hidden md:block" />
+                현업이 검증한 각 분야 최고의 강사진을 한눈에 확인하실 수 있습니다.
+              </p>
+            </div>
+            
+            <div className="relative max-w-2xl group">
+              <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-6 h-6 text-primary/20 group-focus-within:text-accent transition-colors" />
               <Input 
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 placeholder="강사명 또는 전문 강의 주제를 검색하세요..." 
-                className="h-14 pl-14 pr-6 bg-white border-none rounded-2xl shadow-sm focus-visible:ring-accent/50 text-sm font-bold placeholder:text-primary/20"
+                className="h-16 pl-16 pr-8 bg-white border-none rounded-[2rem] shadow-xl focus-visible:ring-accent/50 text-base font-bold placeholder:text-primary/20"
               />
             </div>
           </div>
 
           <Button 
             onClick={handleOpenDialog}
-            className="gold-gradient text-primary font-black h-16 px-10 rounded-[2rem] shadow-2xl hover:scale-105 active:scale-95 transition-all gap-3"
+            className="gold-gradient text-primary font-black h-20 px-12 rounded-[2.5rem] shadow-2xl hover:scale-105 active:scale-95 transition-all gap-3 text-lg shrink-0"
           >
             <Plus className="w-6 h-6" />
             강사 프로필 등록하기

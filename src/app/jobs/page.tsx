@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase"
 import { collection, query, orderBy, addDoc } from "firebase/firestore"
 import { JobListing } from "@/lib/types"
-import { Briefcase, MapPin, Calendar, Plus, Search, ChevronRight, Building2, Flame, Award, Clock } from "lucide-react"
+import { Briefcase, MapPin, Calendar, Plus, Search, ChevronRight, Building2, Flame, Award, Clock, Sparkles } from "lucide-react"
 import Image from "next/image"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
@@ -141,30 +141,38 @@ export default function JobsPage() {
     <div className="min-h-screen bg-[#F8F9FA]">
       <Header />
       
-      <main className="max-w-7xl mx-auto px-4 py-8 md:py-12">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-          <div className="space-y-4 flex-1">
-            <div className="flex items-center gap-3">
-              <div className="h-1.5 w-12 bg-accent rounded-full"></div>
-              <span className="text-xs font-black text-accent uppercase tracking-widest">HR HOT 100</span>
+      <main className="max-w-7xl mx-auto px-4 py-12 md:py-20">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-12 mb-20">
+          <div className="space-y-8 flex-1">
+            <div className="inline-flex items-center gap-2 bg-accent/10 px-4 py-2 rounded-full border border-accent/20">
+              <Briefcase className="w-4 h-4 text-accent" />
+              <span className="text-[10px] font-black text-accent uppercase tracking-[0.2em]">HR HOT 100</span>
             </div>
-            <h1 className="text-4xl md:text-5xl font-black text-primary tracking-tighter">채용 정보</h1>
-            <p className="text-lg font-bold text-primary/30">대한민국 모든 HR 전문가들의 커리어 성장을 지원합니다.</p>
             
-            <div className="relative max-w-xl group pt-4">
-              <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-primary/30 group-focus-within:text-accent transition-colors" />
+            <div className="space-y-4">
+              <h1 className="text-5xl md:text-7xl font-black text-primary tracking-tighter leading-[0.9]">
+                채용 정보 <span className="text-accent/40 font-light tracking-widest block md:inline md:ml-2 text-3xl md:text-5xl">Careers</span>
+              </h1>
+              <p className="text-xl md:text-2xl font-medium text-primary/50 max-w-4xl leading-relaxed text-balance">
+                대한민국 모든 <span className="text-primary font-black underline decoration-accent/30 underline-offset-4">HR 전문가</span>들의 커리어 성장을 지원합니다. <br className="hidden md:block" />
+                전문성이 검증된 포지션만을 엄선하여 제공합니다.
+              </p>
+            </div>
+            
+            <div className="relative max-w-2xl group">
+              <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-6 h-6 text-primary/20 group-focus-within:text-accent transition-colors" />
               <Input 
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 placeholder="기업명 또는 직무를 검색하세요..." 
-                className="h-14 pl-14 pr-6 bg-white border-none rounded-2xl shadow-sm focus-visible:ring-accent/50 text-sm font-bold"
+                className="h-16 pl-16 pr-8 bg-white border-none rounded-[2rem] shadow-xl focus-visible:ring-accent/50 text-base font-bold placeholder:text-primary/20"
               />
             </div>
           </div>
 
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="gold-gradient text-primary font-black h-16 px-10 rounded-3xl shadow-2xl hover:scale-105 active:scale-95 transition-all gap-3">
+              <Button className="gold-gradient text-primary font-black h-20 px-12 rounded-[2.5rem] shadow-2xl hover:scale-105 active:scale-95 transition-all gap-3 text-lg shrink-0">
                 <Plus className="w-6 h-6" />
                 공고 등록하기
               </Button>
