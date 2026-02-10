@@ -21,24 +21,46 @@ import mockData from "@/lib/mock-data.json"
 
 const ITEMS_PER_PAGE = 7
 
-// 200개의 데이터를 확실하게 보장하기 위한 복구 엔진
+// 실무 느낌을 주는 다양한 주제 리스트
+const HRM_TOPICS = [
+  { title: "포괄임금제 도입 시 반드시 포함해야 할 항목이 있나요?", text: "이번에 포괄임금제를 도입하려고 하는데, 계약서에 연장/야간/휴일수당을 각각 몇 시간분인지 명시해야 하는지 궁금합니다." },
+  { title: "1년 미만 신입사원의 연차 발생 기준이 헷갈려요.", text: "입사하고 11개월 동안은 매달 개근 시 1일씩 생기는 건 알겠는데, 1년이 되는 시점에는 총 몇 개가 되는 건가요?" },
+  { title: "수습기간 중 해고 통보, 당일 통보도 가능한가요?", text: "수습 기간에는 3개월 안됐으면 당일 해고해도 법적으로 문제가 없다는 말이 있던데, 실무적으로 리스크는 없는지 궁금합니다." },
+  { title: "휴일에 근무하면 무조건 보상휴가로 처리해야 하나요?", text: "저희 회사는 이번에 휴일 근무가 좀 잦아질 것 같은데, 이걸 다 보상휴가로만 줘야 하는지 현금 지급은 안 되는 건가요?" },
+  { title: "유연근무제(시차출퇴근) 도입 시 근태 체크 방법", text: "시차출퇴근제를 전사 도입하려고 합니다. 근태 관리 솔루션 없이 엑셀로만 관리하기엔 한계가 있는데 다들 어떻게 하시나요?" },
+  { title: "징계위원회 절차 준수 시 유의사항", text: "중대한 과실을 저지른 직원에 대해 징계위원회를 열려고 합니다. 소명 기회 부여 등 절차상 하자 방지를 위한 팁이 있을까요?" },
+  { title: "임금명세서 의무화 이후 소규모 기업 대응", text: "소규모 스타트업인데 임금명세서 교부가 의무화되면서 업무량이 너무 늘었습니다. 효율적인 자동화 툴이 있을까요?" },
+  { title: "퇴직금 정산 및 DC형 전환 시기", text: "DB형에서 DC형으로 전환하려는 직원이 많습니다. 퇴직금 중간정산 이슈와 겹치는데 어떤 시점이 가장 유리할까요?" },
+  { title: "중대재해처벌법 대비 총무 가이드", text: "인사팀에서 총무 업무를 겸하고 있는데 중대재해처벌법 관련해서 사무직 위주 사업장도 챙겨야 할 서류가 많나요?" },
+  { title: "법정의무교육 미이수자 독촉 방법", text: "매년 법정의무교육 이수율 때문에 스트레스네요. 메일로만 독촉하는 것 외에 효과적인 방법이 있을까요?" }
+];
+
+const HRD_TOPICS = [
+  { title: "임원과의 타운홀 미팅에서 익명 질문 방식이 효과적인가요?", text: "이번에 대표님이랑 소통 시간 가지려는데, 익명 툴 쓰면 분위기 좀 살까요? 다들 어떤 툴 쓰시는지 궁금해요." },
+  { title: "신입사원 온보딩 프로그램 구성 제언", text: "MZ세대 신입사원들이 조기 퇴사하는 경우가 잦아 온보딩을 전면 개편하려고 합니다. '소속감'을 높이는 핵심 활동은 뭐가 있을까요?" },
+  { title: "사내 강사 양성 과정, 어떻게 운영하시나요?", text: "외부 강사료 부담이 커서 사내 전문가를 양성하려 합니다. 강의 스킬 외에 어떤 보상을 주는 것이 가장 효과적일까요?" },
+  { title: "핵심가치 내재화 워크숍 아이디어 공유", text: "기존의 주입식 교육에서 벗어나 재미있게 핵심가치를 공유할 수 있는 게임이나 워크숍 프로그램 추천 부탁드립니다." },
+  { title: "심리적 안전감(Psychological Safety) 구축 사례", text: "팀 내에서 자유로운 의견 공유가 안 되는 것 같습니다. 리더들이 실천할 수 있는 가벼운 루틴이 있을까요?" },
+  { title: "교육 ROI(투자 대비 효과) 측정의 한계", text: "교육을 해도 현업 적용도가 낮은 것 같아 고민입니다. 단순 설문 외에 실무 성과를 측정할 수 있는 지표가 있을까요?" },
+  { title: "리더십 역량 모델링 최신 트렌드", text: "기존의 리더십 역량이 너무 고루해서 새로 정의하려 합니다. 최근에는 '코칭'과 '데이터' 중 어디에 더 비중을 두시나요?" },
+  { title: "사내 독서 모임이나 학습 동아리 지원 제도", text: "자발적 학습 문화를 만들고 싶은데, 지원금 외에 동기부여가 될 만한 장치가 뭐가 있을까요?" },
+  { title: "직무 기술서(JD) 기반 역량 평가 도입", text: "직무별로 평가 항목을 세분화하려고 합니다. JD 업데이트 주기를 어떻게 가져가야 실효성이 있을까요?" },
+  { title: "에듀테크 도입 시 유의할 점", text: "LMS 고도화나 AI 튜터 도입을 검토 중입니다. 기술적인 부분 외에 실제 구성원들의 사용률을 높이는 전략이 궁금합니다." }
+];
+
 const generateFullMockQuestions = () => {
   const fullList: Question[] = [];
   const mockAnswerIds = new Set((mockData.answers as any[]).map(a => a.questionId));
   
-  // 1. 인사/총무 (HRM) 100건 생성 (hr-q1 ~ hr-q100)
+  // 1. 인사/총무 (HRM) 100건 생성
   for (let i = 1; i <= 100; i++) {
     const id = `hr-q${i}`;
+    const topic = HRM_TOPICS[(i - 1) % HRM_TOPICS.length];
     fullList.push({
       id,
-      title: i === 1 ? "휴일에 근무하면 무조건 보상휴가로 처리해야 하나요?" : 
-             i === 2 ? "휴일대체 동의서를 근로자 개인별로 매번 받아야 하나요?" :
-             i === 3 ? "1년 미만 신입사원의 연차 발생 기준이 헷갈려요." :
-             i === 4 ? "수습기간 중 해고 통보, 당일 통보도 가능한가요?" :
-             i === 5 ? "포괄임금제 도입 시 반드시 포함해야 할 항목이 있나요?" :
-             `인사/총무 실무 지식 속삭임 #${i}`,
-      text: `인사 및 노무 실무에서 발생하는 전문가들의 고민 #${i}에 대한 조언을 구합니다. 법적 리스크 관리와 효율적인 인사 행정 프로세스에 대한 인사이트를 공유해 주세요.`,
-      nickname: `인사전문가_${i}`,
+      title: topic.title,
+      text: topic.text,
+      nickname: `인사전문가`,
       userId: `mock-u${i}`,
       userRole: "member",
       viewCount: Math.floor(Math.random() * 500) + 100,
@@ -48,16 +70,15 @@ const generateFullMockQuestions = () => {
     });
   }
 
-  // 2. HRD/조직문화 100건 생성 (cul-q1 ~ cul-q100)
+  // 2. HRD/조직문화 100건 생성
   for (let i = 1; i <= 100; i++) {
     const id = `cul-q${i}`;
+    const topic = HRD_TOPICS[(i - 1) % HRD_TOPICS.length];
     fullList.push({
       id,
-      title: i === 1 ? "임원과의 타운홀 미팅에서 익명 질문 방식이 효과적인가요?" :
-             i === 100 ? "앞으로 HRD 담당자에게 가장 중요해질 역량은 무엇인가요?" :
-             i % 2 === 0 ? `조직문화 및 EVP 강화 전략 #${i}` : `HRD 커리큘럼 설계 및 교육 평가 #${i}`,
-      text: `구성원 몰입도 향상과 핵심가치 내재화 #${i}에 대한 실무 노하우를 공유해 주세요. 최신 트렌드를 반영한 교육 솔루션 제안도 환영합니다.`,
-      nickname: `문화리더_${i}`,
+      title: topic.title,
+      text: topic.text,
+      nickname: `문화리더`,
       userId: `mock-c${i}`,
       userRole: "member",
       viewCount: Math.floor(Math.random() * 400) + 200,
@@ -96,7 +117,15 @@ export default function HomePage() {
     if (config?.bannerSettings) {
       try { return JSON.parse(config.bannerSettings) as BannerData[] } catch (e) { return [] }
     }
-    return []
+    return [
+      {
+        id: "default-1",
+        title: "HR실무자들의\n품격 있는 속삭임",
+        description: "교육부터 조직문화 인사전략까지\nHR실무자를 위한 지식 허브 Whisper",
+        image: "https://images.unsplash.com/photo-1521737711867-e3b97375f902?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
+        badge: "집단 지성의 힘"
+      }
+    ]
   }, [config])
 
   const premiumAds = useMemo((): PremiumAd[] => {
@@ -269,19 +298,28 @@ export default function HomePage() {
                     <Button variant="ghost" size="icon" disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)} className="rounded-xl text-primary/40"><ChevronLeft className="w-5 h-5" /></Button>
                     
                     {Array.from({ length: totalPages }, (_, i) => i + 1)
-                      .filter(page => page >= currentPage - 2 && page <= currentPage + 2)
-                      .map(page => (
-                        <Button 
-                          key={page} 
-                          onClick={() => setCurrentPage(page)} 
-                          className={cn(
-                            "w-10 h-10 rounded-xl font-black text-sm transition-all", 
-                            currentPage === page ? "bg-primary text-accent shadow-lg scale-110" : "bg-white text-primary/20 shadow-sm hover:bg-primary/5"
-                          )}
-                        >
-                          {page}
-                        </Button>
-                      ))}
+                      .filter(page => {
+                        // 페이지네이션 숫자 노출 로직 개선 (1 2 3 ... 29)
+                        if (page === 1 || page === totalPages) return true;
+                        return page >= currentPage - 2 && page <= currentPage + 2;
+                      })
+                      .map((page, idx, arr) => {
+                        const showEllipsis = idx > 0 && page !== arr[idx - 1] + 1;
+                        return (
+                          <div key={page} className="flex items-center">
+                            {showEllipsis && <span className="px-2 text-primary/20">...</span>}
+                            <Button 
+                              onClick={() => setCurrentPage(page)} 
+                              className={cn(
+                                "w-10 h-10 rounded-xl font-black text-sm transition-all", 
+                                currentPage === page ? "bg-primary text-accent shadow-lg scale-110" : "bg-white text-primary/20 shadow-sm hover:bg-primary/5"
+                              )}
+                            >
+                              {page}
+                            </Button>
+                          </div>
+                        );
+                      })}
                     
                     <Button variant="ghost" size="icon" disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)} className="rounded-xl text-primary/40"><ChevronRight className="w-5 h-5" /></Button>
                     <Button variant="ghost" size="icon" disabled={currentPage === totalPages} onClick={() => setCurrentPage(totalPages)} className="rounded-xl text-primary/40"><ChevronsRight className="w-4 h-4" /></Button>
