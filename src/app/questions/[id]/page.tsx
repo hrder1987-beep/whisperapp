@@ -8,12 +8,15 @@ type Props = {
 }
 
 /**
+ * 도메인 설정 상수 - 실제 도메인이 연결되면 여기를 수정하세요.
+ */
+const SITE_URL = "https://whisper-hr.vercel.app"; // 실제 도메인(예: https://www.chuchot.kr)으로 변경 권장
+
+/**
  * 동적 메타데이터 생성을 위해 Firestore REST API를 사용하여 질문 데이터를 가져옵니다.
- * 이 작업은 서버 사이드에서 실행되어 검색 엔진 및 SNS 스크래퍼(카카오톡 등)에게 정보를 전달합니다.
  */
 async function getQuestionData(id: string) {
   try {
-    // Firestore REST API를 직접 호출하여 서버 사이드에서 데이터를 가져옵니다.
     // 프로젝트 ID는 firebaseConfig에서 가져옵니다.
     const projectId = "studio-1249189958-2be09";
     const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/questions/${id}`;
@@ -57,7 +60,7 @@ export async function generateMetadata(
     openGraph: {
       title: question.title,
       description: question.text.substring(0, 160),
-      url: `https://whisper-hr.vercel.app/questions/${id}`, // 실제 배포 URL로 변경 필요
+      url: `${SITE_URL}/questions/${id}`,
       siteName: 'Whisper (위스퍼) - HR Intelligence Hub',
       images: [
         {
