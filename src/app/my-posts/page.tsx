@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo } from "react"
@@ -14,12 +15,18 @@ export default function MyPostsPage() {
   const db = useFirestore()
   const [selectedId, setSelectedId] = useState<string | null>(null)
 
+  // 복합 인덱스 에러 방지를 위해 orderBy를 제거하고 클라이언트에서 정렬합니다.
   const myPostsQuery = useMemoFirebase(() => {
     if (!db || !user) return null
-    return query(collection(db, "questions"), where("userId", "==", user.uid), orderBy("createdAt", "desc"))
+    return query(collection(db, "questions"), where("userId", "==", user.uid))
   }, [db, user])
 
-  const { data: posts, isLoading } = useCollection<Question>(myPostsQuery)
+  const { data: postsData, isLoading } = useCollection<Question>(myPostsQuery)
+
+  // 클라이언트 사이드 정렬
+  const posts = useMemo(() => {
+    return (postsData || []).sort((a, b) => b.createdAt - a.createdAt)
+  }, [postsData])
 
   const answersQuery = useMemoFirebase(() => {
     if (!db || !selectedId) return null
@@ -32,7 +39,9 @@ export default function MyPostsPage() {
     if (selectedId === id) setSelectedId(null)
     else {
       setSelectedId(id)
-      updateDocumentNonBlocking(doc(db, "questions", id), { viewCount: increment(1) })
+      if (db) {
+        updateDocumentNonBlocking(doc(db, "questions", id), { viewCount: increment(1) })
+      }
     }
   }
 

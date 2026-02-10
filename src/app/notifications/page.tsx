@@ -1,15 +1,16 @@
+
 "use client"
 
+import { useMemo } from "react"
 import { useUser, useFirestore, useCollection, useMemoFirebase, updateDocumentNonBlocking } from "@/firebase"
-import { collection, query, where, orderBy, doc } from "firebase/firestore"
+import { collection, query, where, doc } from "firebase/firestore"
 import { Header } from "@/components/chuchot/Header"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { AppNotification } from "@/lib/types"
-import { Bell, Sparkles, MessageSquare, Clock, ArrowLeft, CheckCircle2 } from "lucide-react"
+import { Bell, Sparkles, MessageSquare, Clock, CheckCircle2 } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 import { ko } from "date-fns/locale"
-import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 
@@ -18,12 +19,18 @@ export default function NotificationsPage() {
   const db = useFirestore()
   const router = useRouter()
 
+  // 복합 인덱스 에러 방지를 위해 orderBy를 제거하고 클라이언트에서 정렬합니다.
   const notifQuery = useMemoFirebase(() => {
     if (!db || !user) return null
-    return query(collection(db, "notifications"), where("userId", "==", user.uid), orderBy("createdAt", "desc"))
+    return query(collection(db, "notifications"), where("userId", "==", user.uid))
   }, [db, user])
 
-  const { data: notifications, isLoading } = useCollection<AppNotification>(notifQuery)
+  const { data: notificationsData, isLoading } = useCollection<AppNotification>(notifQuery)
+
+  // 클라이언트 사이드 정렬
+  const notifications = useMemo(() => {
+    return (notificationsData || []).sort((a, b) => b.createdAt - a.createdAt)
+  }, [notificationsData])
 
   const handleNotifClick = (notif: AppNotification) => {
     if (db && !notif.isRead) {
