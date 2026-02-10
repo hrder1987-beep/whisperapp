@@ -21,24 +21,18 @@ import mockData from "@/lib/mock-data.json"
 
 const ITEMS_PER_PAGE = 7
 
-/**
- * 200개의 고품질 실무 데이터를 100% 확실하게 생성하는 로직
- * 데이터베이스가 비어있을 때 사용자의 학습 환경을 보장합니다.
- */
+// 200개의 실무 데이터를 100% 확실하게 복구하기 위한 로직
 const generateFullMockQuestions = () => {
   const fullList: Question[] = [];
   
-  // 1. 인사/총무 (HRM) 100건 - 전문가님 요청 반영
+  // 1. 인사/총무 (HRM) 100건 복구
   for (let i = 1; i <= 100; i++) {
+    const existing = (mockData.questions as any[]).find(q => q.id === `hr-q${i}`);
     fullList.push({
       id: `hr-q${i}`,
-      title: i === 1 ? "휴일에 근무하면 무조건 보상휴가로 처리해야 하나요?" : 
-             i === 2 ? "휴일대체 동의서를 근로자 개인별로 매번 받아야 하나요?" :
-             `인사/총무 실무 지식 속삭임 #${i}`,
-      text: i === 1 ? "저희 회사는 이번에 휴일 근무가 좀 잦아질 것 같은데, 이걸 다 보상휴가로만 줘야 하는지 궁금해요. 현금 지급은 안 되는 건가요?" :
-            i === 2 ? "근로자대표랑 합의가 있으면 개별 동의는 생략 가능하다는데, 그래도 혹시 몰라서 다 받아야 할까요? 다들 어떻게 하시나요?" :
-            `인사 및 노무 실무에서 발생하는 전문가들의 고민 #${i}에 대한 조언을 구합니다.`,
-      nickname: `인사전문가_${i}`,
+      title: existing?.title || `인사/총무 실무 지식 속삭임 #${i}`,
+      text: existing?.text || `인사 및 노무 실무에서 발생하는 전문가들의 고민 #${i}에 대한 조언을 구합니다.`,
+      nickname: existing?.nickname || `인사전문가_${i}`,
       userId: `mock-u${i}`,
       userRole: "member",
       viewCount: 300 - i,
@@ -48,17 +42,14 @@ const generateFullMockQuestions = () => {
     });
   }
 
-  // 2. HRD/조직문화 100건
+  // 2. HRD/조직문화 100건 복구
   for (let i = 1; i <= 100; i++) {
+    const existing = (mockData.questions as any[]).find(q => q.id === `cul-q${i}`);
     fullList.push({
       id: `cul-q${i}`,
-      title: i === 1 ? "타운홀 미팅을 교육 프로그램으로 봐도 될까요?" : 
-             i === 2 ? "조직문화 워크숍과 교육의 차이는 무엇인가요?" :
-             `HRD 및 조직문화 전략 질문 #${i}`,
-      text: i === 1 ? "리더의 메시지를 통해 조직 방향을 공유하고 인식을 전환한다는 점에서 비형식 학습의 형태로 볼 수 있을까요?" :
-            i === 2 ? "교육은 역량 지식 전달이 목적이고 워크숍은 인식 행동 변화가 목적이라는데 설계 방식이 어떻게 달라야 할까요?" :
-            `구성원 몰입과 교육 설계 #${i}에 대한 실무 노하우를 공유해 주세요.`,
-      nickname: `문화리더_${i}`,
+      title: existing?.title || `HRD 및 조직문화 전략 질문 #${i}`,
+      text: existing?.text || `구성원 몰입과 교육 설계 #${i}에 대한 실무 노하우를 공유해 주세요.`,
+      nickname: existing?.nickname || `문화리더_${i}`,
       userId: `mock-c${i}`,
       userRole: "member",
       viewCount: 200 + i,
@@ -89,7 +80,6 @@ export default function HomePage() {
   const { data: config } = useDoc<any>(configDocRef)
 
   const [searchQuery, setSearchQuery] = useState("")
-  // 카테고리에 hrm(인사/총무) 추가
   const [activeTab, setActiveTab] = useState<"all" | "popular" | "waiting" | "hrm" | "hrd" | "culture">("all")
   const [selectedQuestionId, setSelectedQuestionId] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
@@ -117,7 +107,7 @@ export default function HomePage() {
   
   const questions = useMemo(() => {
     const fetched = questionsData || []
-    // 전문가님 요청사항: 200개 데이터 100% 복구 보장
+    // 전문가님 요청사항: 200개 데이터 유실 방지 및 100% 복구 보장
     if (fetched.length === 0 && !searchQuery) return MOCK_QUESTIONS
     return fetched
   }, [questionsData, searchQuery])
@@ -131,7 +121,6 @@ export default function HomePage() {
   const answers = useMemo(() => {
     const fetched = answersData || []
     if (fetched.length === 0) {
-      // 샘플 데이터용 답변 매칭
       return MOCK_ANSWERS.filter(a => a.questionId === selectedQuestionId) || []
     }
     return fetched
@@ -144,7 +133,6 @@ export default function HomePage() {
       result = result.filter(q => q.title.toLowerCase().includes(kw) || q.text.toLowerCase().includes(kw));
     }
     
-    // 카테고리 필터링 로직 강화
     if (activeTab === "popular") result.sort((a, b) => b.viewCount - a.viewCount);
     else if (activeTab === "waiting") result = result.filter(q => q.answerCount === 0);
     else if (activeTab === "hrm") result = result.filter(q => q.category === "인사전략/HRM");
@@ -197,7 +185,6 @@ export default function HomePage() {
     if (selectedQuestionId === id) setSelectedQuestionId(null);
     else {
       setSelectedQuestionId(id);
-      // 샘플 데이터가 아닌 실제 DB 데이터인 경우에만 조회수 증가
       if (db && !id.startsWith("hr-") && !id.startsWith("cul-")) {
         updateDocumentNonBlocking(doc(db, "questions", id), { viewCount: increment(1) });
       }
@@ -214,7 +201,6 @@ export default function HomePage() {
             <div className="px-4 md:px-0">
               <SubmissionForm type="question" placeholder="HR 고민을 속삭여보세요." onSubmit={handleAddQuestion} />
               
-              {/* 카테고리 탭 UI - 인사/총무 추가됨 */}
               <div className="flex gap-4 md:gap-8 whitespace-nowrap mb-6 overflow-x-auto pb-2 scrollbar-hide border-b border-primary/5">
                 {[
                   { id: "all", label: "전체 피드" },
@@ -262,14 +248,13 @@ export default function HomePage() {
                 </div>
               )}
 
-              {/* 페이지네이션 UI - 200개 데이터 대응 */}
               {totalPages > 1 && (
                 <div className="flex justify-center items-center gap-2 mt-12 pb-20">
-                  <Button variant="ghost" size="icon" disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)} className="rounded-xl"><ChevronLeft className="w-5 h-5" /></Button>
+                  <Button variant="ghost" size="icon" disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)} className="rounded-xl text-primary/40"><ChevronLeft className="w-5 h-5" /></Button>
                   {Array.from({ length: totalPages }, (_, i) => i + 1).slice(Math.max(0, currentPage - 3), Math.min(totalPages, currentPage + 2)).map(page => (
                     <Button key={page} onClick={() => setCurrentPage(page)} className={cn("w-10 h-10 rounded-xl font-black text-sm transition-all", currentPage === page ? "bg-primary text-accent shadow-lg" : "bg-white text-primary/20 shadow-sm")}>{page}</Button>
                   ))}
-                  <Button variant="ghost" size="icon" disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)} className="rounded-xl"><ChevronRight className="w-5 h-5" /></Button>
+                  <Button variant="ghost" size="icon" disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)} className="rounded-xl text-primary/40"><ChevronRight className="w-5 h-5" /></Button>
                 </div>
               )}
             </div>
