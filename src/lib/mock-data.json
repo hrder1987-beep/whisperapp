@@ -12,6 +12,11 @@
   ],
   "answers": [
     { "id": "ans-hr-q1", "questionId": "hr-q1", "text": "보상휴가제는 근로자대표와의 서면합의가 있어야 합니다. 합의가 없다면 가산수당을 포함한 현금을 지급해야 하는 것이 원칙입니다.", "nickname": "위스퍼러", "userId": "mock-mentor", "userRole": "mentor", "createdAt": 1714525200000 },
-    { "id": "ans-cul-q1", "questionId": "cul-q1", "text": "익명 질문 방식은 임원과 구성원 간 심리적 장벽을 낮추는 데 매우 효과적입니다. 특히 스마트폰을 활용한 실시간 참여를 유도해 보세요.", "nickname": "위스퍼러", "userId": "mock-mentor", "userRole": "mentor", "createdAt": 1714885200000 }
+    { "id": "ans-hr-q2", "questionId": "hr-q2", "text": "판례에 따르면 유효한 근로자대표와의 합의가 있다면 개별 동의는 필요하지 않으나, 현업에서는 분쟁 방지를 위해 공지 및 이의 제기 절차를 두는 편입니다.", "nickname": "노무마스터", "userId": "mock-mentor-2", "userRole": "mentor", "createdAt": 1714526200000 },
+    { "id": "ans-hr-q3", "questionId": "hr-q3", "text": "11개월 개근 시 11개, 1년이 되는 날(입사 1주년)에 전년도 출근율 80% 이상이라면 15개가 한꺼번에 발생하여 총 26개가 됩니다.", "nickname": "인사도사", "userId": "mock-mentor-3", "userRole": "mentor", "createdAt": 1714530000000 },
+    { "id": "ans-hr-q4", "questionId": "hr-q4", "text": "수습 시작 3개월 이내라면 해고예고 예외 규정이 적용되어 즉시 해고가 가능하나, '정당한 사유'는 반드시 있어야 부당해고 리스크를 피할 수 있습니다.", "nickname": "리스크전문가", "userId": "mock-mentor-4", "userRole": "mentor", "createdAt": 1714534000000 },
+    { "id": "ans-hr-q5", "questionId": "hr-q5", "text": "네, 고용노동부 지침에 따라 기본급과 별도로 수당별 시간과 금액을 구체적으로 명시해야 포괄임금제로서의 효력을 온전히 인정받을 수 있습니다.", "nickname": "급여장인", "userId": "mock-mentor-5", "userRole": "mentor", "createdAt": 1714538000000 },
+    { "id": "ans-cul-q1", "questionId": "cul-q1", "text": "익명 질문 방식은 임원과 구성원 간 심리적 장벽을 낮추는 데 매우 효과적입니다. Slido나 Mentimeter 같은 툴을 활용해 실시간 참여를 유도해 보세요.", "nickname": "위스퍼러", "userId": "mock-mentor", "userRole": "mentor", "createdAt": 1714885200000 },
+    { "id": "ans-cul-q100", "questionId": "cul-q100", "text": "단순한 지식 전달자가 아닌, '성과를 지원하는 비즈니스 파트너'로서의 역할이 중요해질 것입니다. 특히 데이터 리터러시 역량을 꼭 키우시길 권장합니다.", "nickname": "전략멘토", "userId": "mock-mentor-6", "userRole": "mentor", "createdAt": 1714905000000 }
   ]
 }

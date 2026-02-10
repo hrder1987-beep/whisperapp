@@ -24,18 +24,25 @@ const ITEMS_PER_PAGE = 7
 // 200개의 데이터를 확실하게 보장하기 위한 복구 엔진
 const generateFullMockQuestions = () => {
   const fullList: Question[] = [];
+  const mockAnswerIds = new Set((mockData.answers as any[]).map(a => a.questionId));
   
   // 1. 인사/총무 (HRM) 100건 생성 (hr-q1 ~ hr-q100)
   for (let i = 1; i <= 100; i++) {
+    const id = `hr-q${i}`;
     fullList.push({
-      id: `hr-q${i}`,
-      title: `인사/총무 실무 지식 속삭임 #${i}`,
+      id,
+      title: i === 1 ? "휴일에 근무하면 무조건 보상휴가로 처리해야 하나요?" : 
+             i === 2 ? "휴일대체 동의서를 근로자 개인별로 매번 받아야 하나요?" :
+             i === 3 ? "1년 미만 신입사원의 연차 발생 기준이 헷갈려요." :
+             i === 4 ? "수습기간 중 해고 통보, 당일 통보도 가능한가요?" :
+             i === 5 ? "포괄임금제 도입 시 반드시 포함해야 할 항목이 있나요?" :
+             `인사/총무 실무 지식 속삭임 #${i}`,
       text: `인사 및 노무 실무에서 발생하는 전문가들의 고민 #${i}에 대한 조언을 구합니다. 법적 리스크 관리와 효율적인 인사 행정 프로세스에 대한 인사이트를 공유해 주세요.`,
       nickname: `인사전문가_${i}`,
       userId: `mock-u${i}`,
       userRole: "member",
       viewCount: Math.floor(Math.random() * 500) + 100,
-      answerCount: 1,
+      answerCount: mockAnswerIds.has(id) ? 1 : 0,
       createdAt: 1714521600000 - i * 3600000,
       category: "인사전략/HRM"
     });
@@ -43,15 +50,18 @@ const generateFullMockQuestions = () => {
 
   // 2. HRD/조직문화 100건 생성 (cul-q1 ~ cul-q100)
   for (let i = 1; i <= 100; i++) {
+    const id = `cul-q${i}`;
     fullList.push({
-      id: `cul-q${i}`,
-      title: i % 2 === 0 ? `조직문화 및 EVP 강화 전략 #${i}` : `HRD 커리큘럼 설계 및 교육 평가 #${i}`,
+      id,
+      title: i === 1 ? "임원과의 타운홀 미팅에서 익명 질문 방식이 효과적인가요?" :
+             i === 100 ? "앞으로 HRD 담당자에게 가장 중요해질 역량은 무엇인가요?" :
+             i % 2 === 0 ? `조직문화 및 EVP 강화 전략 #${i}` : `HRD 커리큘럼 설계 및 교육 평가 #${i}`,
       text: `구성원 몰입도 향상과 핵심가치 내재화 #${i}에 대한 실무 노하우를 공유해 주세요. 최신 트렌드를 반영한 교육 솔루션 제안도 환영합니다.`,
       nickname: `문화리더_${i}`,
       userId: `mock-c${i}`,
       userRole: "member",
       viewCount: Math.floor(Math.random() * 400) + 200,
-      answerCount: 1,
+      answerCount: mockAnswerIds.has(id) ? 1 : 0,
       createdAt: 1714881600000 - i * 3600000,
       category: i % 2 === 0 ? "조직문화/EVP" : "HRD/교육"
     });
@@ -78,7 +88,7 @@ export default function HomePage() {
   const { data: config } = useDoc<any>(configDocRef)
 
   const [searchQuery, setSearchQuery] = useState("")
-  const [activeTab, setActiveTab] = useState<"all" | "popular" | "waiting" | "hrm" | "hrd" | "culture">("all")
+  const [activeTab, setActiveTab] = useState<"all" | "hrm" | "hrd" | "culture" | "popular" | "waiting">("all")
   const [selectedQuestionId, setSelectedQuestionId] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
 
@@ -104,11 +114,9 @@ export default function HomePage() {
   const { data: questionsData } = useCollection<Question>(questionsQuery)
   
   const questions = useMemo(() => {
-    // Firestore 데이터와 Mock 데이터를 병합하여 100% 복구 보장
     const dbData = questionsData || [];
     const merged = [...dbData];
     
-    // 중복 방지 로직: DB에 없는 Mock 데이터만 추가
     MOCK_QUESTIONS.forEach(mq => {
       if (!merged.some(dq => dq.id === mq.id)) {
         merged.push(mq);
