@@ -186,7 +186,7 @@ export default function JobsPage() {
               </h1>
               <p className="text-xl md:text-2xl font-medium text-primary/50 max-w-4xl leading-relaxed text-balance">
                 대한민국 모든 <span className="text-primary font-black underline decoration-accent/30 underline-offset-4">HR 전문가</span>들의 커리어 성장을 지원합니다. <br className="hidden md:block" />
-                전문성이 검증된 HR 포지션만을 엄선하여 제공합니다.
+                HR 전문가들의 새로운 도약을 위한 다양한 커리어 기회를 연결합니다.
               </p>
             </div>
             
