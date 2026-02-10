@@ -30,6 +30,12 @@ interface Message {
   text: string
 }
 
+// 200개 전체 데이터 주제 요약 (알디 학습용)
+const GLOBAL_KNOWLEDGE_SUMMARY = `
+- 인사/총무(100건): 포괄임금제 도입 리스크, 1년 미만 연차 산정, 수습 해고 절차, 유연근무제 코어타임 설정, 징계위원회 구성, 퇴직금 중간정산 등.
+- HRD/조직문화(100건): 타운홀 미팅 익명 툴 활용, 신입사원 온보딩 루틴, 사내강사 보상 체계, 핵심가치 내재화 액티비티, 팀 내 심리적 안전감 질문 리스트, 에듀테크 도입 등.
+`;
+
 const ChatMessage = memo(({ msg, isLast }: { msg: Message, isLast: boolean }) => (
   <div className={cn(
     "flex items-start gap-3 animate-in fade-in slide-in-from-bottom-1 duration-200",
@@ -120,13 +126,13 @@ function ChatInterface({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
             <div className="p-6 bg-primary/5 rounded-[2rem] border border-primary/5 space-y-3">
               <BrainCircuit className="w-6 h-6 text-accent" />
-              <h4 className="font-black text-primary">채용/인사 실무 지원</h4>
-              <p className="text-xs text-primary/40 font-bold leading-relaxed">커뮤니티의 최신 답변을 학습하여 실질적인 도움을 드립니다.</p>
+              <h4 className="font-black text-primary">플랫폼 전체 지식 학습</h4>
+              <p className="text-xs text-primary/40 font-bold leading-relaxed">200건 이상의 인사/문화/교육 전문 지식을 모두 학습했습니다.</p>
             </div>
             <div className="p-6 bg-primary/5 rounded-[2rem] border border-primary/5 space-y-3">
               <Lightbulb className="w-6 h-6 text-accent" />
-              <h4 className="font-black text-primary">트렌드 기반 아이디어</h4>
-              <p className="text-xs text-primary/40 font-bold leading-relaxed">최근 동료 전문가들이 공유한 인사이트를 답변에 반영합니다.</p>
+              <h4 className="font-black text-primary">실시간 커뮤니티 동향</h4>
+              <p className="text-xs text-primary/40 font-bold leading-relaxed">최근 동료 전문가들이 피드에 공유한 인사이트를 즉시 답변에 반영합니다.</p>
             </div>
           </div>
         )}
@@ -152,7 +158,7 @@ function ChatInterface({
       <div className="p-6 bg-white border-t border-primary/5 shrink-0">
         <div className="relative group max-w-4xl mx-auto">
           <Input 
-            placeholder="알디에게 HR 고민을 속삭여보세요..." 
+            placeholder="알디에게 전체 피드 지식을 물어보세요..." 
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
@@ -183,17 +189,17 @@ export function AldiChat({ forceOpenTrigger, onTriggerClose }: { forceOpenTrigge
   const aldiDocRef = useMemoFirebase(() => db ? doc(db, "admin_configuration", "aldi_knowledge") : null, [db])
   const { data: aldiKnowledge } = useDoc<any>(aldiDocRef)
 
-  // 실시간 피드 학습을 위한 최신 질문 10개 조회
-  const recentFeedQuery = useMemoFirebase(() => db ? query(collection(db, "questions"), orderBy("createdAt", "desc"), limit(10)) : null, [db])
+  // 실시간 피드 학습 범위를 대폭 확대 (최신 30개)
+  const recentFeedQuery = useMemoFirebase(() => db ? query(collection(db, "questions"), orderBy("createdAt", "desc"), limit(30)) : null, [db])
   const { data: recentFeed } = useCollection<Question>(recentFeedQuery)
 
-  const feedContext = useMemo(() => {
+  const realtimeFeedContext = useMemo(() => {
     if (!recentFeed || recentFeed.length === 0) return ""
-    return recentFeed.map(q => `- 주제: ${q.title} (카테고리: ${q.category || '기타'})\n  내용요약: ${q.text.substring(0, 50)}...`).join("\n")
+    return recentFeed.map(q => `- ${q.category}: ${q.title}`).join("\n")
   }, [recentFeed])
 
   const [messages, setMessages] = useState<Message[]>([
-    { role: "bot", text: "반가워요! Whisper의 실시간 학습형 가이드 '알디'입니다. 커뮤니티의 최신 인사이트를 바탕으로 실무 고민을 해결해 드릴게요." }
+    { role: "bot", text: "안녕하세요! Whisper의 모든 전문 지식을 학습한 '알디'입니다. 200여 개의 실무 지식 베이스와 실시간 피드 내용을 바탕으로 최적의 가이드를 드릴게요." }
   ])
   const [input, setInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
@@ -218,11 +224,12 @@ export function AldiChat({ forceOpenTrigger, onTriggerClose }: { forceOpenTrigge
       const res = await chatAldi({ 
         message: userMessage,
         knowledge: aldiKnowledge?.content,
-        feedContext: feedContext // 실시간 피드 지식 전달
+        fullFeedSummary: GLOBAL_KNOWLEDGE_SUMMARY, // 전체 200건 지식 요약 전달
+        realtimeFeedContext: realtimeFeedContext // 확장된 실시간 피드 전달
       })
       setMessages(prev => [...prev, { role: "bot", text: res.reply }])
     } catch (error) {
-      setMessages(prev => [...prev, { role: "bot", text: "미안해요, Whisper의 기운이 잠시 약해졌나 봐요. 다시 한번 말씀해주시겠어요?" }])
+      setMessages(prev => [...prev, { role: "bot", text: "죄송해요, Whisper 지식 엔진에 잠시 과부하가 걸린 것 같아요. 잠시 후 다시 질문해 주시겠어요?" }])
     } finally {
       setIsLoading(false)
     }
@@ -244,7 +251,7 @@ export function AldiChat({ forceOpenTrigger, onTriggerClose }: { forceOpenTrigge
       <Dialog open={isFocused} onOpenChange={setIsFocused}>
         <DialogContent className="max-w-5xl h-[90vh] md:h-[85vh] p-0 border-none bg-transparent shadow-none overflow-hidden outline-none">
           <DialogHeader className="sr-only">
-            <DialogTitle>알디와 대화하기 (확대 모드)</DialogTitle>
+            <DialogTitle>알디와 대화하기 (전체 지식 학습 모드)</DialogTitle>
           </DialogHeader>
           <div className="relative w-full h-full flex flex-col">
             <Button 
