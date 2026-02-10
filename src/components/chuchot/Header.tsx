@@ -129,9 +129,14 @@ export function Header({
                       </Button>
                     </div>
                   ) : (
-                    <Link href="/auth?mode=login" onClick={() => setIsMobileMenuOpen(false)}>
-                      <Button className="w-full bg-accent text-primary font-black rounded-xl">로그인 / 가입</Button>
-                    </Link>
+                    <div className="flex flex-col gap-3">
+                      <Link href="/auth?mode=login" onClick={() => setIsMobileMenuOpen(false)}>
+                        <Button variant="ghost" className="w-full text-white font-black rounded-xl">로그인</Button>
+                      </Link>
+                      <Link href="/auth?mode=signup" onClick={() => setIsMobileMenuOpen(false)}>
+                        <Button className="w-full bg-accent text-primary font-black rounded-xl shadow-lg">회원가입</Button>
+                      </Link>
+                    </div>
                   )}
                 </div>
               </div>
@@ -236,7 +241,7 @@ export function Header({
               </Link>
               <Link href="/auth?mode=signup">
                 <Button size="sm" className="bg-accent text-primary font-black hover:bg-accent/90 rounded-xl px-4 md:px-5 h-8 md:h-10 text-xs transition-all shadow-lg hover:scale-105 active:scale-95">
-                  시작하기
+                  회원가입
                 </Button>
               </Link>
             </div>
