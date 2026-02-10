@@ -24,31 +24,87 @@ const JOB_CATEGORIES = [
 const MOCK_JOBS: JobListing[] = [
   {
     id: "job-1",
-    companyName: "위스퍼 테크놀로지",
-    title: "시니어 HR 매니저 (인사전략 및 조직문화)",
-    location: "서울 강남구",
-    experience: "경력 7-12년",
+    companyName: "토스 (Viva Republica)",
+    title: "Head of Talent Acquisition (채용 총괄 리더)",
+    location: "서울 강남구 (역삼)",
+    experience: "경력 10년 이상",
     education: "대졸 이상",
-    deadline: "2024-05-30",
-    tags: ["HR전략", "조직문화"],
-    logoUrl: "https://picsum.photos/seed/company1/100/100",
-    category: "인사기획/전략",
-    createdAt: Date.now(),
+    deadline: "2024-06-30",
+    tags: ["채용브랜딩", "조직성장"],
+    logoUrl: "https://images.unsplash.com/photo-1551288049-bbbda536339a?q=80&w=200",
+    category: "채용/리크루팅",
+    createdAt: Date.now() - 100000,
     userId: "mock-j1"
   },
   {
     id: "job-2",
-    companyName: "글로벌 에듀그룹",
-    title: "HRD 교육 컨텐츠 설계 담당자 채용",
-    location: "서울 서초구",
-    experience: "경력 3-5년",
+    companyName: "우아한형제들 (배달의민족)",
+    title: "조직문화 및 EVP 강화 담당자 (Culture Lead)",
+    location: "서울 송파구 (잠실)",
+    experience: "경력 5-8년",
     education: "대졸 이상",
-    deadline: "2024-06-15",
-    tags: ["HRD", "컨텐츠기획"],
-    logoUrl: "https://picsum.photos/seed/company2/100/100",
-    category: "HRD/교육",
-    createdAt: Date.now(),
+    deadline: "2024-07-15",
+    tags: ["조직문화", "심리적안전감"],
+    logoUrl: "https://images.unsplash.com/photo-1521737711867-e3b97375f902?q=80&w=200",
+    category: "조직문화/EVP",
+    createdAt: Date.now() - 200000,
     userId: "mock-j2"
+  },
+  {
+    id: "job-3",
+    companyName: "카카오 (Kakao)",
+    title: "HR 데이터 사이언티스트 (People Analytics)",
+    location: "경기도 성남시 (판교)",
+    experience: "경력 3-7년",
+    education: "대졸 이상",
+    deadline: "상시채용",
+    tags: ["데이터분석", "인사통계"],
+    logoUrl: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=200",
+    category: "HR 애널리틱스",
+    createdAt: Date.now() - 300000,
+    userId: "mock-j3"
+  },
+  {
+    id: "job-4",
+    companyName: "쿠팡 (Coupang)",
+    title: "Labor Relations Manager (노사관계 전문 매니저)",
+    location: "서울 송파구",
+    experience: "경력 7년 이상",
+    education: "대졸 이상",
+    deadline: "2024-06-25",
+    tags: ["단체교섭", "노동법"],
+    logoUrl: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=200",
+    category: "노무/ER",
+    createdAt: Date.now() - 400000,
+    userId: "mock-j4"
+  },
+  {
+    id: "job-5",
+    companyName: "삼성전자 (Samsung)",
+    title: "Global HRD 교육 설계 전문가",
+    location: "서울 서초구",
+    experience: "경력 5년 이상",
+    education: "대졸 이상",
+    deadline: "2024-07-05",
+    tags: ["리더십교육", "글로벌HRD"],
+    logoUrl: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=200",
+    category: "HRD/교육",
+    createdAt: Date.now() - 500000,
+    userId: "mock-j5"
+  },
+  {
+    id: "job-6",
+    companyName: "하이퍼커넥트 (Azar)",
+    title: "Compensation & Benefits Specialist (보상 전문가)",
+    location: "서울 강남구",
+    experience: "경력 4-9년",
+    education: "대졸 이상",
+    deadline: "상시채용",
+    tags: ["급여설계", "스톡옵션"],
+    logoUrl: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?q=80&w=200",
+    category: "급여/보상/C&B",
+    createdAt: Date.now() - 600000,
+    userId: "mock-j6"
   }
 ]
 
@@ -82,9 +138,12 @@ export default function JobsPage() {
   
   const jobs = useMemo(() => {
     const fetched = jobsData || []
-    if (fetched.length === 0 && !searchQuery) return MOCK_JOBS
-    return fetched
-  }, [jobsData, searchQuery])
+    const merged = [...fetched]
+    MOCK_JOBS.forEach(mj => {
+      if (!merged.some(j => j.id === mj.id)) merged.push(mj)
+    })
+    return merged.sort((a, b) => b.createdAt - a.createdAt)
+  }, [jobsData])
 
   const filteredJobs = useMemo(() => {
     return jobs.filter(j => {
