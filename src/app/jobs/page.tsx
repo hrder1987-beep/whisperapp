@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase"
 import { collection, query, orderBy, addDoc } from "firebase/firestore"
 import { JobListing } from "@/lib/types"
-import { Briefcase, MapPin, Calendar, Plus, Search, Building2, Flame, Award, Clock, Camera, Target, Info, X } from "lucide-react"
+import { Briefcase, MapPin, Calendar, Plus, Search, Building2, Flame, Award, Clock, Camera, Target, Info, X, ExternalLink } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
@@ -24,7 +24,7 @@ const JOB_CATEGORIES = [
 const MOCK_JOBS: JobListing[] = [
   {
     id: "job-1",
-    companyName: "토스 (Viva Republica)",
+    companyName: "(주)위스퍼랩스",
     title: "Head of Talent Acquisition (채용 총괄 리더)",
     location: "서울 강남구 (역삼)",
     experience: "경력 10년 이상",
@@ -32,13 +32,14 @@ const MOCK_JOBS: JobListing[] = [
     deadline: "2024-06-30",
     tags: ["채용브랜딩", "조직성장"],
     logoUrl: "https://images.unsplash.com/photo-1551288049-bbbda536339a?q=80&w=200",
+    adImageUrl: "https://images.unsplash.com/photo-1551288049-bbbda536339a?q=80&w=1080",
     category: "채용/리크루팅",
     createdAt: Date.now() - 100000,
     userId: "mock-j1"
   },
   {
     id: "job-2",
-    companyName: "우아한형제들 (배달의민족)",
+    companyName: "피플앤컬처 그룹",
     title: "조직문화 및 EVP 강화 담당자 (Culture Lead)",
     location: "서울 송파구 (잠실)",
     experience: "경력 5-8년",
@@ -46,13 +47,14 @@ const MOCK_JOBS: JobListing[] = [
     deadline: "2024-07-15",
     tags: ["조직문화", "심리적안전감"],
     logoUrl: "https://images.unsplash.com/photo-1521737711867-e3b97375f902?q=80&w=200",
+    adImageUrl: "https://images.unsplash.com/photo-1521737711867-e3b97375f902?q=80&w=1080",
     category: "조직문화/EVP",
     createdAt: Date.now() - 200000,
     userId: "mock-j2"
   },
   {
     id: "job-3",
-    companyName: "카카오 (Kakao)",
+    companyName: "테크인사이드",
     title: "HR 데이터 사이언티스트 (People Analytics)",
     location: "경기도 성남시 (판교)",
     experience: "경력 3-7년",
@@ -60,13 +62,14 @@ const MOCK_JOBS: JobListing[] = [
     deadline: "상시채용",
     tags: ["데이터분석", "인사통계"],
     logoUrl: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=200",
+    adImageUrl: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1080",
     category: "HR 애널리틱스",
     createdAt: Date.now() - 300000,
     userId: "mock-j3"
   },
   {
     id: "job-4",
-    companyName: "쿠팡 (Coupang)",
+    companyName: "로지스피플 코리아",
     title: "Labor Relations Manager (노사관계 전문 매니저)",
     location: "서울 송파구",
     experience: "경력 7년 이상",
@@ -74,13 +77,14 @@ const MOCK_JOBS: JobListing[] = [
     deadline: "2024-06-25",
     tags: ["단체교섭", "노동법"],
     logoUrl: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=200",
+    adImageUrl: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=1080",
     category: "노무/ER",
     createdAt: Date.now() - 400000,
     userId: "mock-j4"
   },
   {
     id: "job-5",
-    companyName: "삼성전자 (Samsung)",
+    companyName: "에듀웍스 홀딩스",
     title: "Global HRD 교육 설계 전문가",
     location: "서울 서초구",
     experience: "경력 5년 이상",
@@ -88,13 +92,14 @@ const MOCK_JOBS: JobListing[] = [
     deadline: "2024-07-05",
     tags: ["리더십교육", "글로벌HRD"],
     logoUrl: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=200",
+    adImageUrl: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=1080",
     category: "HRD/교육",
     createdAt: Date.now() - 500000,
     userId: "mock-j5"
   },
   {
     id: "job-6",
-    companyName: "하이퍼커넥트 (Azar)",
+    companyName: "글로벌커넥트 (Global Connect)",
     title: "Compensation & Benefits Specialist (보상 전문가)",
     location: "서울 강남구",
     experience: "경력 4-9년",
@@ -102,6 +107,7 @@ const MOCK_JOBS: JobListing[] = [
     deadline: "상시채용",
     tags: ["급여설계", "스톡옵션"],
     logoUrl: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?q=80&w=200",
+    adImageUrl: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?q=80&w=1080",
     category: "급여/보상/C&B",
     createdAt: Date.now() - 600000,
     userId: "mock-j6"
@@ -119,6 +125,7 @@ export default function JobsPage() {
   const [selectedCategory, setSelectedCategory] = useState("전체보기")
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [viewJob, setViewJob] = useState<JobListing | null>(null)
 
   // Registration Form States
   const [companyName, setCompanyName] = useState("")
@@ -188,7 +195,6 @@ export default function JobsPage() {
       })
       toast({ title: "공고 등록 완료", description: "HR 인재를 위한 공고가 성공적으로 게시되었습니다." })
       setIsDialogOpen(false)
-      // Reset form
       setCompanyName(""); setTitle(""); setLocation(""); setDeadline(""); setCategory(""); setAdImageUrl(null);
     } catch (error) {
       toast({ title: "오류 발생", description: "등록 중 문제가 발생했습니다.", variant: "destructive" })
@@ -211,7 +217,7 @@ export default function JobsPage() {
             
             <div className="space-y-4">
               <h1 className="text-5xl md:text-7xl font-black text-primary tracking-tighter leading-[0.9]">
-                채용 정보 <span className="text-accent/40 font-light tracking-widest block md:inline md:ml-2 text-3xl md:text-5xl text-pretty">Careers</span>
+                채용 정보 <span className="text-accent/40 font-light tracking-widest block md:inline md:ml-2 text-3xl md:text-5xl">Careers</span>
               </h1>
               <p className="text-xl md:text-2xl font-medium text-primary/50 max-w-4xl leading-relaxed text-balance">
                 대한민국 모든 <span className="text-primary font-black underline decoration-accent/30 underline-offset-4">HR 전문가</span>들의 커리어 성장을 지원합니다. <br className="hidden md:block" />
@@ -284,7 +290,7 @@ export default function JobsPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
                         <label className="text-[10px] font-black text-primary/40 ml-1 uppercase">기업명</label>
-                        <Input value={companyName} onChange={e => setCompanyName(e.target.value)} required placeholder="예: (주)위스퍼" className="h-12 bg-primary/5 border-none rounded-xl font-bold" />
+                        <Input value={companyName} onChange={e => setCompanyName(e.target.value)} required placeholder="예: (주)인사피플" className="h-12 bg-primary/5 border-none rounded-xl font-bold" />
                       </div>
                       <div className="space-y-2">
                         <label className="text-[10px] font-black text-primary/40 ml-1 uppercase">직무 분류</label>
@@ -344,7 +350,6 @@ export default function JobsPage() {
           </Dialog>
         </div>
 
-        {/* Categories Bar */}
         <div className="flex overflow-x-auto gap-3 mb-12 scrollbar-hide pb-2">
           {JOB_CATEGORIES.map((cat) => (
             <button
@@ -362,7 +367,6 @@ export default function JobsPage() {
           ))}
         </div>
 
-        {/* Hot Picks Section */}
         {!searchQuery && selectedCategory === "전체보기" && (
           <div className="mb-16">
             <div className="flex items-center gap-2 mb-6">
@@ -395,7 +399,7 @@ export default function JobsPage() {
                         <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> {job.location}</span>
                         <span className="flex items-center gap-1"><Award className="w-3 h-3" /> {job.experience}</span>
                       </div>
-                      <span className="text-red-400">D-{job.deadline.includes("-") ? "Day" : job.deadline}</span>
+                      <Button onClick={() => setViewJob(job)} variant="ghost" size="sm" className="text-accent hover:text-accent font-black h-8 p-0">상세보기</Button>
                     </div>
                   </CardContent>
                 </Card>
@@ -404,7 +408,6 @@ export default function JobsPage() {
           </div>
         )}
 
-        {/* Regular Listings */}
         <div className="bg-white rounded-[3rem] shadow-sm border border-primary/5 overflow-hidden">
           <div className="p-8 border-b border-primary/5 flex items-center justify-between">
             <h2 className="text-xl font-black text-primary">전체 채용 리스트 <span className="text-accent ml-2">{filteredJobs.length}</span></h2>
@@ -438,7 +441,7 @@ export default function JobsPage() {
                   <Badge className="bg-primary/5 text-primary/40 font-black border-none px-3 py-1 rounded-full text-[10px] w-fit">
                     #{job.category}
                   </Badge>
-                  <Button className="h-12 px-8 rounded-xl bg-primary/5 hover:bg-primary text-primary hover:text-accent font-black transition-all">
+                  <Button onClick={() => setViewJob(job)} className="h-12 px-8 rounded-xl bg-primary/5 hover:bg-primary text-primary hover:text-accent font-black transition-all">
                     상세보기
                   </Button>
                 </div>
@@ -447,6 +450,76 @@ export default function JobsPage() {
           </div>
         </div>
       </main>
+
+      <Dialog open={!!viewJob} onOpenChange={(open) => !open && setViewJob(null)}>
+        <DialogContent className="max-w-4xl bg-white border-none rounded-[3rem] p-0 overflow-hidden shadow-2xl max-h-[90vh] flex flex-col">
+          <DialogHeader className="sr-only">
+            <DialogTitle>{viewJob?.title || "채용 상세"}</DialogTitle>
+          </DialogHeader>
+          {viewJob && (
+            <>
+              <div className="premium-gradient p-8 md:p-12 flex flex-col md:flex-row md:items-center justify-between gap-6 shrink-0">
+                <div className="space-y-2">
+                  <Badge className="bg-accent text-primary font-black border-none px-3 py-1 rounded-lg text-[10px]">PREMIUM HIRING</Badge>
+                  <h2 className="text-2xl md:text-4xl font-black text-white leading-tight">{viewJob.title}</h2>
+                  <p className="text-accent/80 font-bold text-sm flex items-center gap-2">
+                    <Building2 className="w-4 h-4" /> {viewJob.companyName}
+                  </p>
+                </div>
+                <Button onClick={() => setViewJob(null)} variant="ghost" className="text-white/40 hover:text-white p-0 h-auto w-fit hidden md:block">
+                  <X className="w-8 h-8" />
+                </Button>
+              </div>
+              
+              <div className="flex-1 overflow-y-auto bg-[#F8F9FA] p-6 md:p-10">
+                <div className="max-w-3xl mx-auto space-y-10">
+                  <div className="bg-white rounded-[2rem] overflow-hidden shadow-xl border border-primary/5">
+                    {viewJob.adImageUrl ? (
+                      <img src={viewJob.adImageUrl} alt="job poster" className="w-full h-auto" />
+                    ) : (
+                      <div className="aspect-[4/5] flex flex-col items-center justify-center text-primary/10">
+                        <Camera className="w-20 h-20 mb-4" />
+                        <p className="font-black text-xl">상세 이미지가 없습니다.</p>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-10">
+                    <div className="bg-white p-8 rounded-3xl shadow-sm border border-primary/5 space-y-4">
+                      <h4 className="text-xs font-black text-primary/30 uppercase tracking-widest flex items-center gap-2">
+                        <Target className="w-4 h-4 text-accent" /> 포지션 핵심 정보
+                      </h4>
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-center text-sm">
+                          <span className="font-bold text-primary/40">근무지</span>
+                          <span className="font-black text-primary">{viewJob.location}</span>
+                        </div>
+                        <div className="flex justify-between items-center text-sm">
+                          <span className="font-bold text-primary/40">경력조건</span>
+                          <span className="font-black text-primary">{viewJob.experience}</span>
+                        </div>
+                        <div className="flex justify-between items-center text-sm">
+                          <span className="font-bold text-primary/40">지원마감</span>
+                          <span className="font-black text-red-500">{viewJob.deadline}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="bg-primary text-accent p-8 rounded-3xl shadow-xl space-y-6 flex flex-col justify-center">
+                      <div className="text-center space-y-2">
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-60">Interested in this role?</p>
+                        <p className="text-lg font-black leading-tight">지금 동료 전문가들에게<br/>기업 정보를 물어보세요!</p>
+                      </div>
+                      <Button className="w-full h-12 bg-accent text-primary font-black rounded-xl gap-2 hover:scale-105 transition-all">
+                        <ExternalLink className="w-4 h-4" /> 지원하기 / 문의하기
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
