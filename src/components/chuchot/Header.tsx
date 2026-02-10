@@ -30,7 +30,19 @@ export function Header({ onSearch }: HeaderProps) {
 
   const userDocRef = useMemoFirebase(() => (user && db) ? doc(db, "users", user.uid) : null, [user, db])
   const { data: profile } = useDoc<any>(userDocRef)
-  const isAdmin = user?.email === 'forum@khrd.co.kr' || profile?.role === 'admin'
+  
+  // 실시간 읽지 않은 쪽지 및 알림 수 체크
+  const unreadMessagesQuery = useMemoFirebase(() => 
+    (user && db) ? query(collection(db, "messages"), where("receiverId", "==", user.uid), where("isRead", "==", false)) : null,
+    [db, user]
+  )
+  const unreadNotifQuery = useMemoFirebase(() => 
+    (user && db) ? query(collection(db, "notifications"), where("userId", "==", user.uid), where("isRead", "==", false)) : null,
+    [db, user]
+  )
+
+  const { data: unreadMessages } = useCollection(unreadMessagesQuery)
+  const { data: unreadNotifs } = useCollection(unreadNotifQuery)
 
   const handleLogout = () => { signOut(auth); router.push("/"); }
 
@@ -52,6 +64,12 @@ export function Header({ onSearch }: HeaderProps) {
     { name: "채용 정보", href: "/jobs" },
   ]
 
+  const personalLinks = [
+    { name: "알림 센터", href: "/notifications", icon: Bell, count: unreadNotifs?.length },
+    { name: "쪽지함", href: "/messages", icon: Mail, count: unreadMessages?.length },
+    { name: "내가 쓴 속삭임", href: "/my-posts", icon: FileText },
+  ]
+
   return (
     <header className="sticky top-0 z-50 w-full premium-gradient border-b border-white/10 shadow-xl">
       <div className="max-w-7xl mx-auto px-4 h-16 md:h-20 flex items-center justify-between gap-4">
@@ -68,6 +86,19 @@ export function Header({ onSearch }: HeaderProps) {
                   {navLinks.map((link) => (
                     <Link key={link.href} href={link.href} onClick={() => setIsMobileMenuOpen(false)} className={cn("text-xl font-black transition-all", pathname === link.href ? "text-accent" : "text-white/70")}>{link.name}</Link>
                   ))}
+                  
+                  {user && (
+                    <>
+                      <div className="h-px bg-white/10 my-2"></div>
+                      {personalLinks.map((link) => (
+                        <Link key={link.href} href={link.href} onClick={() => setIsMobileMenuOpen(false)} className={cn("text-lg font-bold flex items-center gap-3", pathname === link.href ? "text-accent" : "text-white/50")}>
+                          <link.icon className="w-5 h-5" />
+                          {link.name}
+                          {link.count ? <Badge className="bg-accent text-primary border-none ml-auto">{link.count}</Badge> : null}
+                        </Link>
+                      ))}
+                    </>
+                  )}
                 </nav>
                 <div className="mt-auto pb-10 flex flex-col gap-4">
                   {user ? (
@@ -93,7 +124,7 @@ export function Header({ onSearch }: HeaderProps) {
         <div className="hidden md:flex flex-1 max-w-md relative group">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50 group-focus-within:text-accent transition-colors" />
           <Input 
-            placeholder="키워드 입력 후 엔터를 누르세요..." 
+            placeholder="통합 검색 (키워드 + 엔터)" 
             className="pl-11 bg-white/10 border-none h-10 rounded-full text-white focus-visible:ring-accent/50" 
             value={searchQuery} 
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -103,9 +134,36 @@ export function Header({ onSearch }: HeaderProps) {
 
         <div className="flex items-center gap-2">
           {user ? (
-            <div className="flex items-center gap-2">
-              <Link href="/profile"><Button variant="ghost" size="sm" className="text-white font-bold gap-2"><UserIcon className="w-4 h-4" /> 내 정보</Button></Link>
-              <Button variant="ghost" size="icon" onClick={handleLogout} className="text-white/70"><LogOut className="w-5 h-5" /></Button>
+            <div className="flex items-center gap-1 md:gap-3">
+              {/* 알림 및 쪽지 아이콘 (데스크탑 우선 노출) */}
+              <div className="hidden sm:flex items-center gap-1">
+                <Link href="/notifications">
+                  <Button variant="ghost" size="icon" className="relative text-white/70 hover:text-accent">
+                    <Bell className="w-5 h-5" />
+                    {unreadNotifs && unreadNotifs.length > 0 && (
+                      <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-primary"></span>
+                    )}
+                  </Button>
+                </Link>
+                <Link href="/messages">
+                  <Button variant="ghost" size="icon" className="relative text-white/70 hover:text-accent">
+                    <Mail className="w-5 h-5" />
+                    {unreadMessages && unreadMessages.length > 0 && (
+                      <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-primary"></span>
+                    )}
+                  </Button>
+                </Link>
+                <Link href="/my-posts">
+                  <Button variant="ghost" size="icon" className="text-white/70 hover:text-accent">
+                    <FileText className="w-5 h-5" />
+                  </Button>
+                </Link>
+              </div>
+
+              <div className="h-6 w-px bg-white/10 mx-1 hidden sm:block"></div>
+
+              <Link href="/profile"><Button variant="ghost" size="sm" className="text-white font-bold gap-2 hover:text-accent"><UserIcon className="w-4 h-4" /> 내 정보</Button></Link>
+              <Button variant="ghost" size="icon" onClick={handleLogout} className="text-white/70 hover:text-red-400"><LogOut className="w-5 h-5" /></Button>
             </div>
           ) : (
             <div className="flex items-center gap-2">
