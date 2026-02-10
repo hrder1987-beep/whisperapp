@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
-import { ImageIcon, X, Send, Video, Link as LinkIcon, Info } from "lucide-react"
+import { ImageIcon, X, Send, Video, Link as LinkIcon, Info, ChevronDown } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import Image from "next/image"
 import { Separator } from "@/components/ui/separator"
@@ -17,6 +17,13 @@ import { cn } from "@/lib/utils"
 import { useUser, useDoc, useMemoFirebase, useFirestore } from "@/firebase"
 import { doc } from "firebase/firestore"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 interface SubmissionFormProps {
   placeholder: string
@@ -143,30 +150,57 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
 
               <div className="space-y-5">
                 {type === "question" && (
-                  <div className="space-y-2">
-                    <Label className="text-[11px] font-black text-primary/40 ml-1 uppercase">제목</Label>
-                    <Input
-                      placeholder="주제를 간단히 입력해주세요"
-                      value={title}
-                      onChange={(e) => setTitle(e.target.value)}
-                      className="bg-primary/5 border-none h-11 rounded-xl text-[15px] font-black text-primary placeholder:text-primary/20 focus-visible:ring-accent/30"
-                    />
-                    <div className="flex flex-wrap gap-1.5 pt-1">
-                      {HR_CATEGORIES.map((cat) => (
-                        <button
-                          key={cat}
-                          type="button"
-                          onClick={() => setSelectedCategory(cat)}
-                          className={cn(
-                            "px-3 py-1.5 rounded-full text-[11px] font-black transition-all border",
-                            selectedCategory === cat 
-                              ? "bg-primary text-accent border-primary shadow-sm scale-105" 
-                              : "bg-primary/5 text-primary/40 border-transparent hover:bg-primary/10"
-                          )}
+                  <div className="space-y-3">
+                    <div className="space-y-2">
+                      <Label className="text-[11px] font-black text-primary/40 ml-1 uppercase">제목</Label>
+                      <Input
+                        placeholder="주제를 간단히 입력해주세요"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        className="bg-primary/5 border-none h-11 rounded-xl text-[15px] font-black text-primary placeholder:text-primary/20 focus-visible:ring-accent/30"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-[11px] font-black text-primary/40 ml-1 uppercase">카테고리</Label>
+                      
+                      {/* 웹 버전: 기존 버튼 리스트 (768px 이상에서 노출) */}
+                      <div className="hidden md:flex flex-wrap gap-1.5 pt-1">
+                        {HR_CATEGORIES.map((cat) => (
+                          <button
+                            key={cat}
+                            type="button"
+                            onClick={() => setSelectedCategory(cat)}
+                            className={cn(
+                              "px-3 py-1.5 rounded-full text-[11px] font-black transition-all border",
+                              selectedCategory === cat 
+                                ? "bg-primary text-accent border-primary shadow-sm scale-105" 
+                                : "bg-primary/5 text-primary/40 border-transparent hover:bg-primary/10"
+                            )}
+                          >
+                            #{cat}
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* 모바일 버전: 드롭다운 선택창 (768px 미만에서 노출) */}
+                      <div className="md:hidden pt-1">
+                        <Select 
+                          value={selectedCategory || ""} 
+                          onValueChange={(val) => setSelectedCategory(val)}
                         >
-                          #{cat}
-                        </button>
-                      ))}
+                          <SelectTrigger className="w-full bg-primary/5 border-none h-11 rounded-xl text-xs font-black text-primary/60 focus:ring-accent/30">
+                            <SelectValue placeholder="카테고리를 선택해 주세요" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-white border-primary/5 rounded-xl">
+                            {HR_CATEGORIES.map((cat) => (
+                              <SelectItem key={cat} value={cat} className="text-xs font-bold text-primary/70">
+                                #{cat}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
                     </div>
                   </div>
                 )}
