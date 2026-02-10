@@ -91,6 +91,7 @@ export interface JobListing {
   logoUrl?: string;
   adImageUrl?: string;
   category?: string;
+  contactEmail?: string;
   createdAt: number;
   userId: string;
 }

@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase"
 import { collection, query, orderBy, addDoc } from "firebase/firestore"
 import { JobListing } from "@/lib/types"
-import { Briefcase, MapPin, Calendar, Plus, Search, Building2, Flame, Award, Clock, Camera, Target, Info, X, ExternalLink } from "lucide-react"
+import { Briefcase, MapPin, Calendar, Plus, Search, Building2, Flame, Award, Clock, Camera, Target, Info, X, ExternalLink, Mail } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
@@ -34,6 +34,7 @@ const MOCK_JOBS: JobListing[] = [
     logoUrl: "https://images.unsplash.com/photo-1551288049-bbbda536339a?q=80&w=200",
     adImageUrl: "https://images.unsplash.com/photo-1551288049-bbbda536339a?q=80&w=1080",
     category: "채용/리크루팅",
+    contactEmail: "recruit@whisperlabs.io",
     createdAt: Date.now() - 100000,
     userId: "mock-j1"
   },
@@ -49,6 +50,7 @@ const MOCK_JOBS: JobListing[] = [
     logoUrl: "https://images.unsplash.com/photo-1521737711867-e3b97375f902?q=80&w=200",
     adImageUrl: "https://images.unsplash.com/photo-1521737711867-e3b97375f902?q=80&w=1080",
     category: "조직문화/EVP",
+    contactEmail: "hr@peopleandculture.com",
     createdAt: Date.now() - 200000,
     userId: "mock-j2"
   },
@@ -64,53 +66,9 @@ const MOCK_JOBS: JobListing[] = [
     logoUrl: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=200",
     adImageUrl: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1080",
     category: "HR 애널리틱스",
+    contactEmail: "careers@techinside.kr",
     createdAt: Date.now() - 300000,
     userId: "mock-j3"
-  },
-  {
-    id: "job-4",
-    companyName: "로지스피플 코리아",
-    title: "Labor Relations Manager (노사관계 전문 매니저)",
-    location: "서울 송파구",
-    experience: "경력 7년 이상",
-    education: "대졸 이상",
-    deadline: "2024-06-25",
-    tags: ["단체교섭", "노동법"],
-    logoUrl: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=200",
-    adImageUrl: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=1080",
-    category: "노무/ER",
-    createdAt: Date.now() - 400000,
-    userId: "mock-j4"
-  },
-  {
-    id: "job-5",
-    companyName: "에듀웍스 홀딩스",
-    title: "Global HRD 교육 설계 전문가",
-    location: "서울 서초구",
-    experience: "경력 5년 이상",
-    education: "대졸 이상",
-    deadline: "2024-07-05",
-    tags: ["리더십교육", "글로벌HRD"],
-    logoUrl: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=200",
-    adImageUrl: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=1080",
-    category: "HRD/교육",
-    createdAt: Date.now() - 500000,
-    userId: "mock-j5"
-  },
-  {
-    id: "job-6",
-    companyName: "글로벌커넥트 (Global Connect)",
-    title: "Compensation & Benefits Specialist (보상 전문가)",
-    location: "서울 강남구",
-    experience: "경력 4-9년",
-    education: "대졸 이상",
-    deadline: "상시채용",
-    tags: ["급여설계", "스톡옵션"],
-    logoUrl: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?q=80&w=200",
-    adImageUrl: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?q=80&w=1080",
-    category: "급여/보상/C&B",
-    createdAt: Date.now() - 600000,
-    userId: "mock-j6"
   }
 ]
 
@@ -134,6 +92,7 @@ export default function JobsPage() {
   const [experience, setExperience] = useState("경력")
   const [deadline, setDeadline] = useState("")
   const [category, setCategory] = useState("")
+  const [contactEmail, setContactEmail] = useState("")
   const [adImageUrl, setAdImageUrl] = useState<string | null>(null)
 
   const jobsQuery = useMemoFirebase(() => {
@@ -177,6 +136,11 @@ export default function JobsPage() {
       return
     }
 
+    if (!contactEmail.includes("@")) {
+      toast({ title: "이메일 형식 오류", description: "올바른 이메일 주소를 입력해주세요.", variant: "destructive" })
+      return
+    }
+
     setIsSubmitting(true)
     try {
       await addDoc(collection(db, "jobs"), {
@@ -190,12 +154,13 @@ export default function JobsPage() {
         logoUrl: adImageUrl || `https://picsum.photos/seed/${companyName}/100/100`,
         adImageUrl: adImageUrl || null,
         category,
+        contactEmail,
         createdAt: Date.now(),
         userId: user.uid
       })
       toast({ title: "공고 등록 완료", description: "HR 인재를 위한 공고가 성공적으로 게시되었습니다." })
       setIsDialogOpen(false)
-      setCompanyName(""); setTitle(""); setLocation(""); setDeadline(""); setCategory(""); setAdImageUrl(null);
+      setCompanyName(""); setTitle(""); setLocation(""); setDeadline(""); setCategory(""); setContactEmail(""); setAdImageUrl(null);
     } catch (error) {
       toast({ title: "오류 발생", description: "등록 중 문제가 발생했습니다.", variant: "destructive" })
     } finally {
@@ -249,7 +214,7 @@ export default function JobsPage() {
                   <Briefcase className="w-8 h-8 text-accent" />
                   HR 채용공고 등록
                 </DialogTitle>
-                <p className="text-accent/70 text-sm font-bold mt-2">이미 준비된 공고 이미지를 업로드하고 핵심 정보만 입력하세요.</p>
+                <p className="text-accent/70 text-sm font-bold mt-2">공고 포스터 이미지를 업로드하고 핵심 정보와 지원처를 입력하세요.</p>
               </DialogHeader>
               
               <div className="flex-1 overflow-y-auto p-10">
@@ -319,6 +284,18 @@ export default function JobsPage() {
                         <label className="text-[10px] font-black text-primary/40 ml-1 uppercase">마감일</label>
                         <Input value={deadline} onChange={e => setDeadline(e.target.value)} required placeholder="YYYY-MM-DD 또는 상시채용" className="h-12 bg-primary/5 border-none rounded-xl font-bold" />
                       </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black text-primary/40 ml-1 uppercase">지원받을 이메일 주소 (필수)</label>
+                      <Input 
+                        type="email" 
+                        value={contactEmail} 
+                        onChange={e => setContactEmail(e.target.value)} 
+                        required 
+                        placeholder="recruit@company.com" 
+                        className="h-12 bg-primary/5 border-none rounded-xl font-bold" 
+                      />
                     </div>
 
                     <div className="space-y-4">
@@ -504,14 +481,15 @@ export default function JobsPage() {
                         </div>
                       </div>
                     </div>
-                    <div className="bg-primary text-accent p-8 rounded-3xl shadow-xl space-y-6 flex flex-col justify-center">
+                    <div className="bg-primary text-accent p-8 rounded-3xl shadow-xl space-y-4 flex flex-col justify-center">
                       <div className="text-center space-y-2">
-                        <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-60">Interested in this role?</p>
-                        <p className="text-lg font-black leading-tight">지금 동료 전문가들에게<br/>기업 정보를 물어보세요!</p>
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-60">How to Apply</p>
+                        <p className="text-lg font-black leading-tight">아래 연락처로 지원 서류를<br/>보내주시기 바랍니다.</p>
                       </div>
-                      <Button className="w-full h-12 bg-accent text-primary font-black rounded-xl gap-2 hover:scale-105 transition-all">
-                        <ExternalLink className="w-4 h-4" /> 지원하기 / 문의하기
-                      </Button>
+                      <div className="bg-white/10 p-4 rounded-xl flex items-center gap-3">
+                        <Mail className="w-5 h-5 text-accent" />
+                        <span className="font-black text-sm truncate">{viewJob.contactEmail || "포스터 참조"}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
