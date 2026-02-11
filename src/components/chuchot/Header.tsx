@@ -132,7 +132,7 @@ export function Header({ onSearch }: HeaderProps) {
         <div className="hidden md:flex flex-1 max-w-md relative group">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50 group-focus-within:text-accent transition-colors" />
           <Input 
-            placeholder="통합 검색 (키워드 + 엔터)" 
+            placeholder="검색어를 입력하세요" 
             className="pl-11 bg-white/10 border-none h-10 rounded-full text-white focus-visible:ring-accent/50" 
             value={searchQuery} 
             onChange={(e) => setSearchQuery(e.target.value)}
