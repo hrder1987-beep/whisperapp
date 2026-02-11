@@ -55,7 +55,7 @@ export function MainBanner({ banners: propBanners }: MainBannerProps) {
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary/80 to-transparent"></div>
                 <div className="absolute inset-0 flex flex-col justify-center px-6 md:px-24 max-w-4xl">
-                  <Badge className="w-fit mb-4 md:mb-8 bg-accent text-primary font-black tracking-widest px-3 md:px-5 py-1 md:py-2 rounded-full border-none shadow-lg text-[10px] md:text-xs">
+                  <Badge className="w-fit mb-4 md:mb-8 bg-accent text-primary font-black tracking-widest px-3 md:px-5 py-1 md:py-2 rounded-full border border-white/20 shadow-xl text-[10px] md:text-xs transition-all hover:scale-105 hover:brightness-110 whitespace-nowrap">
                     <Sparkles className="w-3 md:w-3.5 h-3 md:h-3.5 mr-1.5 md:mr-2" />
                     {banner.badge}
                   </Badge>

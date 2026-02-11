@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useRef, useEffect, useCallback, memo } from "react"
@@ -152,9 +153,9 @@ function ChatInterface({
             <AvatarIcon avatarId="aldi" className="w-8 h-8 md:w-9 md:h-9" />
             <div className="bg-white border border-primary/5 p-3 md:p-4 rounded-[1.2rem] md:rounded-[1.5rem] rounded-tl-none shadow-sm">
               <span className="flex gap-1.5">
-                <span className="w-1.2 h-1.2 md:w-1.5 md:h-1.5 bg-accent/40 rounded-full animate-bounce"></span>
-                <span className="w-1.2 h-1.2 md:w-1.5 md:h-1.5 bg-accent/40 rounded-full animate-bounce [animation-delay:0.2s]"></span>
-                <span className="w-1.2 h-1.2 md:w-1.5 md:h-1.5 bg-accent/40 rounded-full animate-bounce [animation-delay:0.4s]"></span>
+                <span className="w-1.5 h-1.5 bg-accent/40 rounded-full animate-bounce"></span>
+                <span className="w-1.5 h-1.5 bg-accent/40 rounded-full animate-bounce [animation-delay:0.2s]"></span>
+                <span className="w-1.5 h-1.5 bg-accent/40 rounded-full animate-bounce [animation-delay:0.4s]"></span>
               </span>
             </div>
           </div>

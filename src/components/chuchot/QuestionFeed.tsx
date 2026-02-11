@@ -23,8 +23,8 @@ interface QuestionFeedProps {
   selectedId: string | null
   answers: Answer[]
   onAddAnswer: (nickname: string, title: string, text: string) => void
-  activeTab: "all" | "popular" | "waiting" | "hrd" | "culture"
-  onTabChange: (tab: "all" | "popular" | "waiting" | "hrd" | "culture") => void
+  activeTab: "all" | "popular" | "waiting" | "hrd" | "culture" | "hrm"
+  onTabChange: (tab: "all" | "popular" | "waiting" | "hrd" | "culture" | "hrm") => void
   isAdminMode?: boolean
   onDeleteQuestion?: (id: string) => void
   onDeleteAnswer?: (id: string) => void
@@ -109,15 +109,15 @@ export function QuestionFeed({
                     </div>
                     <div className="flex flex-col">
                       <div className="flex items-center gap-1.5 md:gap-2">
-                        <span className={cn("text-xs md:text-[15px] font-black", isMentor ? "text-accent" : "text-primary")}>@{q.nickname}</span>
-                        {q.jobTitle && <span className="text-[10px] md:text-[12px] font-bold text-accent bg-accent/5 px-2 py-0.5 rounded-lg border border-accent/10">#{q.jobTitle}</span>}
+                        <span className={cn("text-xs md:text-[15px] font-black whitespace-nowrap", isMentor ? "text-accent" : "text-primary")}>@{q.nickname}</span>
+                        {q.jobTitle && <span className="text-[10px] md:text-[12px] font-bold text-accent bg-accent/5 px-2 py-0.5 rounded-lg border border-accent/10 whitespace-nowrap">#{q.jobTitle}</span>}
                         {isMentor ? (
-                          <Badge className="bg-accent text-primary text-[8px] md:text-[9px] font-black border-none px-1.5 py-0 md:px-2 md:py-0.5 rounded-md">WHISPERER</Badge>
+                          <Badge className="bg-accent text-primary text-[8px] md:text-[9px] font-black border-none px-1.5 py-0 md:px-2 md:py-0.5 rounded-md whitespace-nowrap">WHISPERER</Badge>
                         ) : (
-                          <Badge variant="secondary" className="bg-primary/5 text-[8px] md:text-[9px] text-primary/40 font-black border-none px-1.5 py-0 md:px-2 md:py-0.5 rounded-md tracking-tighter">PRO</Badge>
+                          <Badge variant="secondary" className="bg-primary/5 text-[8px] md:text-[9px] text-primary/40 font-black border-none px-1.5 py-0 md:px-2 md:py-0.5 rounded-md tracking-tighter whitespace-nowrap">PRO</Badge>
                         )}
                         {user && user.uid !== q.userId && (
-                          <button onClick={(e) => { e.stopPropagation(); setMessageTarget({ id: q.userId, nickname: q.nickname }); }} className="p-1.5 text-primary/20 hover:text-accent transition-colors bg-primary/5 rounded-full" title="쪽지 보내기">
+                          <button onClick={(e) => { e.stopPropagation(); setMessageTarget({ id: q.userId, nickname: q.nickname }); }} className="p-1.5 text-primary/20 hover:text-accent transition-colors bg-primary/5 rounded-full shrink-0" title="쪽지 보내기">
                             <Mail className="w-3 h-3 md:w-3.5 md:h-3.5" />
                           </button>
                         )}
@@ -138,7 +138,7 @@ export function QuestionFeed({
                       </Button>
                     )}
                     {q.category && (
-                      <Badge className="bg-primary/5 text-primary/60 font-black border-none px-2 py-0.5 md:px-3 md:py-1 rounded-full text-[9px] md:text-[10px] tracking-tighter">#{q.category}</Badge>
+                      <Badge className="bg-primary/5 text-primary/60 font-black border-none px-2 py-0.5 md:px-3 md:py-1 rounded-full text-[9px] md:text-[10px] tracking-tighter whitespace-nowrap">#{q.category}</Badge>
                     )}
                   </div>
                 </div>
