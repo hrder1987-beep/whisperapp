@@ -320,7 +320,7 @@ export default function HomePage() {
                 <MainBanner banners={banners} />
                 <SubmissionForm type="question" placeholder="HR 고민을 속삭여보세요." onSubmit={handleAddQuestion} />
                 
-                <div className="flex gap-6 overflow-x-auto pb-2 border-b border-primary/5">
+                <div className="flex gap-6 overflow-x-auto pb-2 border-b border-primary/5 scrollbar-hide">
                   {[
                     { id: "all", label: "전체 피드" },
                     { id: "hrm", label: "인사/총무" },
@@ -329,7 +329,14 @@ export default function HomePage() {
                     { id: "popular", label: "인기" },
                     { id: "waiting", label: "대기" }
                   ].map(t => (
-                    <button key={t.id} onClick={() => setActiveTab(t.id as any)} className={cn("pb-3 text-sm transition-all border-b-2", activeTab === t.id ? "font-black text-primary border-accent" : "font-bold text-primary/20 border-transparent")}>
+                    <button 
+                      key={t.id} 
+                      onClick={() => setActiveTab(t.id as any)} 
+                      className={cn(
+                        "pb-3 text-sm transition-all border-b-2 whitespace-nowrap shrink-0", 
+                        activeTab === t.id ? "font-black text-primary border-accent" : "font-bold text-primary/20 border-transparent"
+                      )}
+                    >
                       {t.label}
                     </button>
                   ))}

@@ -172,7 +172,7 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
                             type="button"
                             onClick={() => setSelectedCategory(cat)}
                             className={cn(
-                              "px-3 py-1.5 rounded-full text-[11px] font-black transition-all border",
+                              "px-3 py-1.5 rounded-full text-[11px] font-black transition-all border whitespace-nowrap",
                               selectedCategory === cat 
                                 ? "bg-primary text-accent border-primary shadow-sm scale-105" 
                                 : "bg-primary/5 text-primary/40 border-transparent hover:bg-primary/10"
@@ -264,23 +264,21 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
               <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={handleImageChange} />
               <input type="file" accept="video/*" className="hidden" ref={videoInputRef} onChange={handleVideoChange} />
               
-              <Button type="button" variant="ghost" size="sm" className="h-9 rounded-xl px-3 text-primary/50 hover:bg-primary/5" onClick={() => fileInputRef.current?.click()}>
-                <ImageIcon className="w-4 h-4 mr-1.5 text-emerald-500" />
-                <div className="flex flex-col items-start leading-none">
-                  <span className="font-black text-[11px]">이미지</span>
-                </div>
+              <Button type="button" variant="ghost" size="sm" className="h-9 rounded-xl px-2 md:px-3 text-primary/50 hover:bg-primary/5" onClick={() => fileInputRef.current?.click()}>
+                <ImageIcon className="w-4 h-4 mr-1 md:mr-1.5 text-emerald-500" />
+                <span className="font-black text-[11px] whitespace-nowrap">이미지</span>
               </Button>
               
-              <Button type="button" variant="ghost" size="sm" className="h-9 rounded-xl px-3 text-primary/50 hover:bg-primary/5" onClick={() => videoInputRef.current?.click()}>
-                <Video className="w-4 h-4 mr-1.5 text-blue-500" />
-                <span className="font-black text-[11px]">영상</span>
+              <Button type="button" variant="ghost" size="sm" className="h-9 rounded-xl px-2 md:px-3 text-primary/50 hover:bg-primary/5" onClick={() => videoInputRef.current?.click()}>
+                <Video className="w-4 h-4 mr-1 md:mr-1.5 text-blue-500" />
+                <span className="font-black text-[11px] whitespace-nowrap">영상</span>
               </Button>
 
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button type="button" variant="ghost" size="sm" className="h-9 rounded-xl px-3 text-primary/50 hover:bg-primary/5">
-                    <LinkIcon className="w-4 h-4 mr-1.5 text-accent" />
-                    <span className="font-black text-[11px]">링크</span>
+                  <Button type="button" variant="ghost" size="sm" className="h-9 rounded-xl px-2 md:px-3 text-primary/50 hover:bg-primary/5">
+                    <LinkIcon className="w-4 h-4 mr-1 md:mr-1.5 text-accent" />
+                    <span className="font-black text-[11px] whitespace-nowrap">링크</span>
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-64 bg-white p-4 rounded-2xl shadow-xl border-primary/10">
@@ -304,10 +302,10 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
             <Button 
               type="submit" 
               disabled={isSubmitting || !text.trim()} 
-              className="bg-primary text-accent font-black h-11 px-8 rounded-xl shadow-md transition-all hover:scale-105 active:scale-95 text-xs gap-2"
+              className="bg-primary text-accent font-black h-11 px-4 md:px-8 rounded-xl shadow-md transition-all hover:scale-105 active:scale-95 text-xs gap-2 whitespace-nowrap"
             >
               {isSubmitting ? "전송 중" : "속삭이기"}
-              <Send className="w-3.5 h-3.5" />
+              <Send className="w-3.5 h-3.5 shrink-0" />
             </Button>
           </div>
         </form>

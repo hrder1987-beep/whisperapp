@@ -355,7 +355,7 @@ export default function ProgramsPage() {
               key={cat.id}
               onClick={() => setSelectedCategory(cat.id)}
               className={cn(
-                "px-5 py-2.5 rounded-full text-xs font-black transition-all border-2",
+                "px-5 py-2.5 rounded-full text-xs font-black transition-all border-2 whitespace-nowrap",
                 selectedCategory === cat.id 
                   ? "bg-primary text-accent border-primary shadow-lg scale-105" 
                   : "bg-white text-primary/30 border-primary/5 hover:border-accent/30 hover:text-primary"
