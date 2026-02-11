@@ -48,7 +48,7 @@ const MOCK_MENTORS: Instructor[] = [
 export function MentorPostsDialog({ userId, userName, isOpen, onClose }: { userId: string, userName: string, isOpen: boolean, onClose: () => void }) {
   const db = useFirestore()
   
-  // 복합 인덱스 오류 방지를 위해 orderBy를 제거하고 클라이언트에서 정렬합니다.
+  // 복합 인덱스 오류 방지를 위해 서버 정렬 제거 후 클라이언트 정렬
   const postsQuery = useMemoFirebase(() => {
     if (!db || !userId) return null
     return query(collection(db, "questions"), where("userId", "==", userId))
@@ -133,8 +133,11 @@ export default function MentorsPage() {
   
   const mentors = useMemo(() => {
     const fetched = mentorsData || []
-    if (fetched.length === 0 && !searchQuery) return MOCK_MENTORS
-    return fetched
+    // 관리자가 승인한 위스퍼러만 필터링 (isVerified: true)
+    const verified = fetched.filter(m => m.isVerified === true)
+    
+    if (verified.length === 0 && !searchQuery) return MOCK_MENTORS
+    return verified
   }, [mentorsData, searchQuery])
 
   const filteredMentors = mentors.filter(m => 
@@ -173,9 +176,9 @@ export default function MentorsPage() {
         userId: user.uid,
         role: "mentor",
         createdAt: Date.now(),
-        isVerified: false 
+        isVerified: false // 신청 시에는 미인증 상태
       })
-      toast({ title: "신청 완료", description: "위스퍼러 프로필이 등록되었습니다. 관리자 승인 후 공식 뱃지가 부여됩니다." })
+      toast({ title: "신청 완료", description: "위스퍼러 프로필이 등록되었습니다. 관리자 승인 후 공식 뱃지가 부여되고 목록에 노출됩니다." })
       setIsDialogOpen(false)
       setName(""); setSpecialty(""); setBio(""); setCompany(""); setDepartment(""); setJobTitle(""); setPhone(""); setProfilePictureUrl(null)
     } catch (error) {
@@ -230,6 +233,7 @@ export default function MentorsPage() {
             </div>
           </div>
 
+          {/* 모바일에서는 등록 버튼 숨김 (웹 전용 정책 반영) */}
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button className="hidden md:flex gold-gradient text-primary font-black h-20 px-12 rounded-[2.5rem] shadow-2xl hover:scale-105 active:scale-95 transition-all gap-3 text-lg shrink-0">

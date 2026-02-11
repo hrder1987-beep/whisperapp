@@ -3,7 +3,7 @@
 
 import { useState, useMemo } from "react"
 import { useFirestore, useCollection, useMemoFirebase, updateDocumentNonBlocking } from "@/firebase"
-import { collection, query, orderBy, doc, where } from "firebase/firestore"
+import { collection, query, doc, where } from "firebase/firestore"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button"
 import { AvatarIcon } from "@/components/chuchot/AvatarIcon"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { UserProfile, UserRole, Question, Answer } from "@/lib/types"
+import { UserProfile, UserRole, Question } from "@/lib/types"
 import { Sparkles, Search, Mail, Phone, Building2, Briefcase, Calendar, BarChart3, FileText, MessageSquare, ExternalLink, User } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
@@ -26,7 +26,7 @@ interface UserDetailProps {
 function MemberDetailDialog({ user, isOpen, onClose }: UserDetailProps) {
   const db = useFirestore()
   
-  // 복합 인덱스 오류 방지를 위해 orderBy를 제거하고 클라이언트에서 정렬합니다.
+  // 복합 인덱스 오류 방지를 위해 서버 정렬 제거
   const questionsQuery = useMemoFirebase(() => 
     db ? query(collection(db, "questions"), where("userId", "==", user.id)) : null, 
     [db, user.id]
@@ -40,7 +40,6 @@ function MemberDetailDialog({ user, isOpen, onClose }: UserDetailProps) {
 
   const questionsCount = userQuestions.length
   
-  // 접속률 및 지수 시뮬레이션
   const monthlyAccessRate = useMemo(() => {
     if (!user.registrationDate) return 0
     const regDate = new Date(user.registrationDate).getTime()
@@ -170,12 +169,22 @@ export function MemberManager() {
   const [search, setSearch] = useState("")
   const [selectedUser, setSelectedUser] = useState<UserProfile | null>(null)
 
+  // 회원 목록 조회 (복합 인덱스 에러 방지를 위해 서버 정렬 제거 후 클라이언트 정렬)
   const usersQuery = useMemoFirebase(() => {
     if (!db) return null
-    return query(collection(db, "users"), orderBy("registrationDate", "desc"))
+    return collection(db, "users")
   }, [db])
 
-  const { data: users, isLoading } = useCollection<UserProfile>(usersQuery)
+  const { data: usersData, isLoading } = useCollection<UserProfile>(usersQuery)
+
+  const users = useMemo(() => {
+    if (!usersData) return []
+    return [...usersData].sort((a, b) => {
+      const dateA = a.registrationDate ? new Date(a.registrationDate).getTime() : 0
+      const dateB = b.registrationDate ? new Date(b.registrationDate).getTime() : 0
+      return dateB - dateA
+    })
+  }, [usersData])
 
   const filteredUsers = (users || []).filter(u => 
     u.username.toLowerCase().includes(search.toLowerCase()) || 
@@ -188,10 +197,8 @@ export function MemberManager() {
     if (!db) return
     updateDocumentNonBlocking(doc(db, "users", userId), { role: newRole })
     
-    // 위스퍼러로 변경 시에는 위스퍼러 전용 승인 절차(ContentManager)를 거치는 것이 권장되나, 
-    // 편의를 위해 여기서 권한 변경 시 안내 문구를 추가합니다.
     const description = newRole === 'mentor' 
-      ? `사용자 권한이 위스퍼러로 변경되었습니다. 프로필이 목록에 나타나지 않는다면 '콘텐츠 관리'에서 신청 내역을 승인해 주세요.` 
+      ? `사용자 권한이 위스퍼러로 변경되었습니다. 공식 목록 노출을 위해서는 '콘텐츠 관리 > 위스퍼러 신청' 탭에서 프로필을 최종 승인해 주세요.` 
       : `사용자의 권한이 ${newRole}로 업데이트되었습니다.`;
 
     toast({ title: "권한 변경 완료", description })
