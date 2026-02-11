@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Building2, User as UserIcon, Phone, Briefcase, Calendar, Sparkles, Settings, ArrowRight, Edit3, Camera, Save, X, Trash2 } from "lucide-react"
+import { Building2, User as UserIcon, Phone, Briefcase, Calendar, Sparkles, Settings, ArrowRight, Edit3, Camera, Save, X } from "lucide-react"
 import Link from "next/link"
 import { useToast } from "@/hooks/use-toast"
 
@@ -22,7 +22,7 @@ export default function ProfilePage() {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const [isEditing, setIsEditing] = useState(false)
-  const [formData, setFormState] = useState<any>(null)
+  const [formData, setFormData] = useState<any>(null)
   const [isSaving, setIsSaving] = useState(false)
 
   const userDocRef = useMemoFirebase(() => (user && db) ? doc(db, "users", user.uid) : null, [user, db])
@@ -33,19 +33,14 @@ export default function ProfilePage() {
     (user && db) ? query(collection(db, "questions"), where("userId", "==", user.uid)) : null, 
     [user, db]
   )
-  const myAnswersQuery = useMemoFirebase(() => 
-    (user && db) ? query(collection(db, "messages"), where("senderId", "==", user.uid)) : null, // 실제로는 answers 컬렉션 조회가 필요하나 현재 구조상 messages/answers 혼용 확인 필요. 여기선 통계용으로 questions의 answers 서브컬렉션 대신 전역 검색 가능하도록 설계 가정
-    [user, db]
-  )
-  
   const { data: questions } = useCollection(myQuestionsQuery)
-  // 답변 수 조회를 위해 간단히 questions 내의 answerCount 합산 또는 별도 조회 로직 (MVP이므로 질문 수 + 추정치로 우선 표시)
+  
   const postCount = questions?.length || 0
   const answerCount = questions?.reduce((acc, q) => acc + (q.answerCount || 0), 0) || 0
 
   useEffect(() => {
     if (profile && !formData) {
-      setFormState({ ...profile })
+      setFormData({ ...profile })
     }
   }, [profile, formData])
 
@@ -97,7 +92,7 @@ export default function ProfilePage() {
     if (file) {
       const reader = new FileReader()
       reader.onloadend = () => {
-        setFormState({ ...formData, profilePictureUrl: reader.result as string })
+        setFormData({ ...formData, profilePictureUrl: reader.result as string })
       }
       reader.readAsDataURL(file)
     }
@@ -127,12 +122,12 @@ export default function ProfilePage() {
                 variant="ghost" 
                 className="rounded-full bg-primary/5 hover:bg-accent hover:text-primary text-primary/40 font-black gap-2 h-12 px-6"
               >
-                <Edit3 className="w-4 h-4" /> 프로필 수정
+                <Edit3 className="w-4 h-4" /> 정보 수정
               </Button>
             ) : (
               <div className="flex gap-2">
                 <Button 
-                  onClick={() => { setIsEditing(false); setFormState({ ...profile }); }}
+                  onClick={() => { setIsEditing(false); setFormData({ ...profile }); }}
                   variant="ghost" 
                   className="rounded-full bg-red-50 text-red-500 hover:bg-red-100 font-black h-12 w-12 p-0"
                 >
@@ -159,7 +154,10 @@ export default function ProfilePage() {
                   className="w-32 h-32 md:w-40 md:h-40 relative border-4 border-white shadow-xl" 
                 />
                 {isEditing && (
-                  <div className="absolute inset-0 bg-black/40 rounded-full flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" onClick={() => fileInputRef.current?.click()}>
+                  <div 
+                    className="absolute inset-0 bg-black/40 rounded-full flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" 
+                    onClick={() => fileInputRef.current?.click()}
+                  >
                     <Camera className="w-8 h-8 text-white mb-1" />
                     <span className="text-[10px] text-white font-black">변경하기</span>
                   </div>
@@ -176,10 +174,10 @@ export default function ProfilePage() {
             
             {isEditing ? (
               <div className="w-full max-w-xs space-y-2 text-center">
-                <Label className="text-[10px] font-black text-primary/30 uppercase">닉네임</Label>
+                <Label className="text-[10px] font-black text-primary/30 uppercase">아이디(닉네임)</Label>
                 <Input 
                   value={formData?.username || ""} 
-                  onChange={(e) => setFormState({ ...formData, username: e.target.value })}
+                  onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                   className="text-center bg-primary/5 border-none rounded-xl font-black text-xl h-12" 
                 />
               </div>
@@ -203,8 +201,8 @@ export default function ProfilePage() {
                     {isEditing ? (
                       <Input 
                         value={formData?.name || ""} 
-                        onChange={(e) => setFormState({ ...formData, name: e.target.value })}
-                        className="bg-transparent border-b border-primary/10 rounded-none h-8 px-0 focus-visible:ring-0" 
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        className="bg-transparent border-b border-primary/10 rounded-none h-8 px-0 focus-visible:ring-0 font-bold" 
                       />
                     ) : (
                       <p className="font-black text-primary">{profile.name}</p>
@@ -217,28 +215,39 @@ export default function ProfilePage() {
                     <Building2 className="w-5 h-5 text-accent" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-[10px] font-black text-primary/30 uppercase tracking-widest">소속 및 부서</p>
+                    <p className="text-[10px] font-black text-primary/30 uppercase tracking-widest">소속 회사</p>
                     {isEditing ? (
-                      <div className="flex gap-2">
-                        <Input 
-                          placeholder="회사"
-                          value={formData?.company || ""} 
-                          onChange={(e) => setFormState({ ...formData, company: e.target.value })}
-                          className="bg-transparent border-b border-primary/10 rounded-none h-8 px-0 focus-visible:ring-0" 
-                        />
-                        <Input 
-                          placeholder="부서"
-                          value={formData?.department || ""} 
-                          onChange={(e) => setFormState({ ...formData, department: e.target.value })}
-                          className="bg-transparent border-b border-primary/10 rounded-none h-8 px-0 focus-visible:ring-0" 
-                        />
-                      </div>
+                      <Input 
+                        value={formData?.company || ""} 
+                        onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                        className="bg-transparent border-b border-primary/10 rounded-none h-8 px-0 focus-visible:ring-0 font-bold" 
+                      />
                     ) : (
-                      <p className="font-black text-primary">{profile.company} ({profile.department})</p>
+                      <p className="font-black text-primary">{profile.company}</p>
                     )}
                   </div>
                 </div>
 
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-primary/5 rounded-2xl">
+                    <Building2 className="w-5 h-5 text-accent" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-[10px] font-black text-primary/30 uppercase tracking-widest">소속 부서</p>
+                    {isEditing ? (
+                      <Input 
+                        value={formData?.department || ""} 
+                        onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+                        className="bg-transparent border-b border-primary/10 rounded-none h-8 px-0 focus-visible:ring-0 font-bold" 
+                      />
+                    ) : (
+                      <p className="font-black text-primary">{profile.department}</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-6">
                 <div className="flex items-center gap-4">
                   <div className="p-3 bg-primary/5 rounded-2xl">
                     <Briefcase className="w-5 h-5 text-accent" />
@@ -248,17 +257,15 @@ export default function ProfilePage() {
                     {isEditing ? (
                       <Input 
                         value={formData?.jobTitle || ""} 
-                        onChange={(e) => setFormState({ ...formData, jobTitle: e.target.value })}
-                        className="bg-transparent border-b border-primary/10 rounded-none h-8 px-0 focus-visible:ring-0" 
+                        onChange={(e) => setFormData({ ...formData, jobTitle: e.target.value })}
+                        className="bg-transparent border-b border-primary/10 rounded-none h-8 px-0 focus-visible:ring-0 font-bold" 
                       />
                     ) : (
                       <p className="font-black text-primary">{profile.jobTitle}</p>
                     )}
                   </div>
                 </div>
-              </div>
 
-              <div className="space-y-6">
                 <div className="flex items-center gap-4">
                   <div className="p-3 bg-primary/5 rounded-2xl">
                     <Phone className="w-5 h-5 text-accent" />
@@ -268,30 +275,11 @@ export default function ProfilePage() {
                     {isEditing ? (
                       <Input 
                         value={formData?.phoneNumber || ""} 
-                        onChange={(e) => setFormState({ ...formData, phoneNumber: e.target.value })}
-                        className="bg-transparent border-b border-primary/10 rounded-none h-8 px-0 focus-visible:ring-0" 
+                        onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
+                        className="bg-transparent border-b border-primary/10 rounded-none h-8 px-0 focus-visible:ring-0 font-bold" 
                       />
                     ) : (
                       <p className="font-black text-primary">{profile.phoneNumber}</p>
-                    )}
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-4">
-                  <div className="p-3 bg-primary/5 rounded-2xl">
-                    <Edit3 className="w-5 h-5 text-accent" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-[10px] font-black text-primary/30 uppercase tracking-widest">이메일</p>
-                    {isEditing ? (
-                      <Input 
-                        type="email"
-                        value={formData?.email || ""} 
-                        onChange={(e) => setFormState({ ...formData, email: e.target.value })}
-                        className="bg-transparent border-b border-primary/10 rounded-none h-8 px-0 focus-visible:ring-0" 
-                      />
-                    ) : (
-                      <p className="font-black text-primary">{profile.email}</p>
                     )}
                   </div>
                 </div>
@@ -358,9 +346,6 @@ export default function ProfilePage() {
                 <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
               </Button>
             </Link>
-            <p className="text-center mt-4 text-[11px] font-bold text-primary/20 uppercase tracking-tighter">
-              위 버튼은 관리자 권한 계정(@{profile.username})에게만 노출됩니다.
-            </p>
           </div>
         )}
       </main>

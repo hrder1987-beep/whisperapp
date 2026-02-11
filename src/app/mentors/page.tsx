@@ -9,12 +9,13 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase"
-import { collection, query, orderBy, addDoc, where } from "firebase/firestore"
+import { useUser, useFirestore, useCollection, useMemoFirebase, useDoc } from "@/firebase"
+import { collection, query, orderBy, addDoc, where, doc } from "firebase/firestore"
 import { Instructor, Question } from "@/lib/types"
-import { Plus, Star, Award, Briefcase, MessageSquare, Crown, Camera, Sparkles, Search, Building2, User as UserIcon, FileText, X, Check } from "lucide-react"
+import { Plus, Star, Award, Briefcase, MessageSquare, Crown, Camera, Sparkles, Search, Building2, User as UserIcon, FileText, X, Check, Info } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { MessageDialog } from "@/components/chuchot/MessageDialog"
+import { useRouter } from "next/navigation"
 
 const MOCK_MENTORS: Instructor[] = [
   {
@@ -48,7 +49,6 @@ const MOCK_MENTORS: Instructor[] = [
 export function MentorPostsDialog({ userId, userName, isOpen, onClose }: { userId: string, userName: string, isOpen: boolean, onClose: () => void }) {
   const db = useFirestore()
   
-  // 복합 인덱스 오류 방지를 위해 서버 정렬 제거 후 클라이언트 정렬
   const postsQuery = useMemoFirebase(() => {
     if (!db || !userId) return null
     return query(collection(db, "questions"), where("userId", "==", userId))
@@ -106,6 +106,7 @@ export default function MentorsPage() {
   const { user } = useUser()
   const db = useFirestore()
   const { toast } = useToast()
+  const router = useRouter()
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const [searchQuery, setSearchQuery] = useState("")
@@ -114,30 +115,26 @@ export default function MentorsPage() {
   const [messageTarget, setMessageTarget] = useState<{ id: string, nickname: string } | null>(null)
   const [postViewTarget, setPostViewTarget] = useState<{ id: string, name: string } | null>(null)
 
-  // Form states
-  const [name, setName] = useState("")
+  // User Profile for Pre-filling
+  const userDocRef = useMemoFirebase(() => (user && db) ? doc(db, "users", user.uid) : null, [user, db])
+  const { data: profile } = useDoc<any>(userDocRef)
+
+  // Whisperer Specific Form states
   const [specialty, setSpecialty] = useState("")
   const [bio, setBio] = useState("")
-  const [company, setCompany] = useState("")
-  const [department, setDepartment] = useState("")
-  const [jobTitle, setJobTitle] = useState("")
-  const [phone, setPhone] = useState("")
-  const [profilePictureUrl, setProfilePictureUrl] = useState<string | null>(null)
+  const [mentorProfilePic, setMentorProfilePic] = useState<string | null>(null)
 
   const mentorsQuery = useMemoFirebase(() => {
     if (!db) return null
-    return query(collection(db, "mentors"), orderBy("createdAt", "desc"))
+    return query(collection(db, "mentors"), where("isVerified", "==", true))
   }, [db])
 
   const { data: mentorsData, isLoading } = useCollection<Instructor>(mentorsQuery)
   
   const mentors = useMemo(() => {
     const fetched = mentorsData || []
-    // 관리자가 승인한 위스퍼러만 필터링 (isVerified: true)
-    const verified = fetched.filter(m => m.isVerified === true)
-    
-    if (verified.length === 0 && !searchQuery) return MOCK_MENTORS
-    return verified
+    if (fetched.length === 0 && !searchQuery) return MOCK_MENTORS
+    return fetched
   }, [mentorsData, searchQuery])
 
   const filteredMentors = mentors.filter(m => 
@@ -150,37 +147,37 @@ export default function MentorsPage() {
     const file = e.target.files?.[0]
     if (file) {
       const reader = new FileReader()
-      reader.onloadend = () => setProfilePictureUrl(reader.result as string)
+      reader.onloadend = () => setMentorProfilePic(reader.result as string)
       reader.readAsDataURL(file)
     }
   }
 
   const handleAddMentor = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!user) {
+    if (!user || !profile) {
       toast({ title: "로그인 필요", description: "위스퍼러 신청을 하시려면 로그인이 필요합니다.", variant: "destructive" })
+      router.push("/auth?mode=login")
       return
     }
 
     setIsSubmitting(true)
     try {
       await addDoc(collection(db, "mentors"), {
-        name,
+        name: profile.name,
+        company: profile.company,
+        jobTitle: profile.jobTitle,
+        phoneNumber: profile.phoneNumber,
         specialty,
         bio,
-        company,
-        department,
-        jobTitle,
-        phoneNumber: phone,
-        profilePictureUrl: profilePictureUrl || `https://picsum.photos/seed/${name}/400/400`,
+        profilePictureUrl: mentorProfilePic || profile.profilePictureUrl || `https://picsum.photos/seed/${profile.name}/400/400`,
         userId: user.uid,
         role: "mentor",
         createdAt: Date.now(),
-        isVerified: false // 신청 시에는 미인증 상태
+        isVerified: false 
       })
-      toast({ title: "신청 완료", description: "위스퍼러 프로필이 등록되었습니다. 관리자 승인 후 공식 뱃지가 부여되고 목록에 노출됩니다." })
+      toast({ title: "신청 완료", description: "위스퍼러 프로필이 등록되었습니다. 관리자 승인 후 공식 뱃지가 부여됩니다." })
       setIsDialogOpen(false)
-      setName(""); setSpecialty(""); setBio(""); setCompany(""); setDepartment(""); setJobTitle(""); setPhone(""); setProfilePictureUrl(null)
+      setSpecialty(""); setBio(""); setMentorProfilePic(null)
     } catch (error) {
       toast({ title: "오류 발생", description: "등록 중 문제가 발생했습니다.", variant: "destructive" })
     } finally {
@@ -233,7 +230,6 @@ export default function MentorsPage() {
             </div>
           </div>
 
-          {/* 모바일에서는 등록 버튼 숨김 (웹 전용 정책 반영) */}
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button className="hidden md:flex gold-gradient text-primary font-black h-20 px-12 rounded-[2.5rem] shadow-2xl hover:scale-105 active:scale-95 transition-all gap-3 text-lg shrink-0">
@@ -243,67 +239,78 @@ export default function MentorsPage() {
             </DialogTrigger>
             <DialogContent className="max-w-xl bg-white border-none rounded-[3rem] p-10 shadow-2xl overflow-y-auto max-h-[90vh]">
               <DialogHeader>
-                <DialogTitle className="text-2xl font-black text-primary mb-6">Whisperer Profile Registration</DialogTitle>
+                <DialogTitle className="text-2xl font-black text-primary mb-2">Whisperer Registration</DialogTitle>
+                <p className="text-sm font-bold text-primary/40">전문가님의 지혜를 나눌 준비가 되셨나요?</p>
               </DialogHeader>
-              <form onSubmit={handleAddMentor} className="space-y-6">
-                <div className="flex flex-col items-center mb-4">
-                  <div 
-                    onClick={() => fileInputRef.current?.click()}
-                    className="relative w-36 h-36 rounded-[2.5rem] bg-primary/5 border-2 border-dashed border-primary/10 flex flex-col items-center justify-center cursor-pointer hover:border-accent transition-all overflow-hidden shadow-inner"
-                  >
-                    {profilePictureUrl ? (
-                      <img src={profilePictureUrl} alt="preview" className="w-full h-full object-cover" />
-                    ) : (
-                      <>
-                        <Camera className="w-10 h-10 text-primary/20 mb-2" />
-                        <p className="text-[11px] text-primary/40 font-black">프로필 사진</p>
-                      </>
-                    )}
+              
+              {profile ? (
+                <form onSubmit={handleAddMentor} className="space-y-8 mt-6">
+                  <div className="bg-primary/5 p-6 rounded-[2rem] space-y-4">
+                    <h4 className="text-[10px] font-black text-primary/30 uppercase tracking-widest flex items-center gap-2">
+                      <UserIcon className="w-3 h-3" /> 기본 정보 확인
+                    </h4>
+                    <div className="flex items-center gap-4">
+                      <AvatarIcon src={profile.profilePictureUrl} seed={profile.username} className="w-14 h-14" />
+                      <div className="space-y-0.5">
+                        <p className="font-black text-primary">{profile.name} 전문가</p>
+                        <p className="text-xs font-bold text-primary/40">{profile.company} · {profile.jobTitle}</p>
+                      </div>
+                    </div>
+                    <p className="text-[10px] text-accent font-bold">* 기본 정보는 마이페이지에서 수정 가능합니다.</p>
                   </div>
-                  <input type="file" ref={fileInputRef} onChange={handleImageChange} accept="image/*" className="hidden" />
-                </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-xs font-black text-primary/40 ml-2">성함</label>
-                    <Input value={name} onChange={e => setName(e.target.value)} required placeholder="성함" className="h-12 bg-primary/5 border-none rounded-xl" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-black text-primary/40 ml-2">휴대전화</label>
-                    <Input value={phone} onChange={e => setPhone(e.target.value)} required placeholder="010-0000-0000" className="h-12 bg-primary/5 border-none rounded-xl" />
-                  </div>
-                </div>
+                  <div className="space-y-6">
+                    <div className="flex flex-col items-center">
+                      <Label className="text-xs font-black text-primary/40 mb-3 uppercase tracking-tighter">위스퍼러용 프로필 사진 (선택)</Label>
+                      <div 
+                        onClick={() => fileInputRef.current?.click()}
+                        className="relative w-32 h-32 rounded-[2rem] bg-primary/5 border-2 border-dashed border-primary/10 flex flex-col items-center justify-center cursor-pointer hover:border-accent transition-all overflow-hidden"
+                      >
+                        {mentorProfilePic ? (
+                          <img src={mentorProfilePic} alt="preview" className="w-full h-full object-cover" />
+                        ) : (
+                          <>
+                            <Camera className="w-8 h-8 text-primary/20 mb-1" />
+                            <p className="text-[9px] text-primary/30 font-black">사진 업로드</p>
+                          </>
+                        )}
+                      </div>
+                      <input type="file" ref={fileInputRef} onChange={handleImageChange} accept="image/*" className="hidden" />
+                    </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-xs font-black text-primary/40 ml-2">소속(회사)</label>
-                    <Input value={company} onChange={e => setCompany(e.target.value)} required placeholder="회사명" className="h-12 bg-primary/5 border-none rounded-xl" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-black text-primary/40 ml-2">부서</label>
-                    <Input value={department} onChange={e => setDepartment(e.target.value)} required placeholder="부서명" className="h-12 bg-primary/5 border-none rounded-xl" />
-                  </div>
-                </div>
+                    <div className="space-y-2">
+                      <Label className="text-xs font-black text-primary/40 ml-2">전문 분야 (Expertise)</Label>
+                      <Input 
+                        value={specialty} 
+                        onChange={e => setSpecialty(e.target.value)} 
+                        required 
+                        placeholder="예: 채용 전략, 조직문화 설계, HR 애널리틱스 등" 
+                        className="h-12 bg-primary/5 border-none rounded-xl font-bold" 
+                      />
+                    </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-xs font-black text-primary/40 ml-2">직함</label>
-                    <Input value={jobTitle} onChange={e => setJobTitle(e.target.value)} required placeholder="직함" className="h-12 bg-primary/5 border-none rounded-xl" />
+                    <div className="space-y-2">
+                      <Label className="text-xs font-black text-primary/40 ml-2">소개 및 핵심 역량 (Bio)</Label>
+                      <Textarea 
+                        value={bio} 
+                        onChange={e => setBio(e.target.value)} 
+                        required 
+                        placeholder="동료 전문가들에게 공유할 수 있는 나만의 인사이트와 경력을 상세히 적어주세요." 
+                        className="bg-primary/5 border-none rounded-xl min-h-[150px] p-5 text-sm leading-relaxed" 
+                      />
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-black text-primary/40 ml-2">전문 분야</label>
-                    <Input value={specialty} onChange={e => setSpecialty(e.target.value)} required placeholder="예: 채용 전략" className="h-12 bg-primary/5 border-none rounded-xl" />
-                  </div>
-                </div>
 
-                <div className="space-y-2">
-                  <label className="text-xs font-black text-primary/40 ml-2">소개 및 핵심 역량</label>
-                  <Textarea value={bio} onChange={e => setBio(e.target.value)} required placeholder="전문가들에게 전하고 싶은 가치를 입력하세요" className="bg-primary/5 border-none rounded-xl min-h-[120px]" />
+                  <Button type="submit" disabled={isSubmitting} className="w-full h-16 bg-primary text-accent font-black rounded-2xl shadow-xl text-lg hover:scale-[1.02] transition-all">
+                    {isSubmitting ? "신청서 제출 중..." : "위스퍼러 신청 완료하기"}
+                  </Button>
+                </form>
+              ) : (
+                <div className="py-20 text-center space-y-4">
+                  <Info className="w-12 h-12 text-accent mx-auto opacity-20" />
+                  <p className="font-black text-primary/40">회원 정보를 불러오는 중입니다...</p>
                 </div>
-                <Button type="submit" disabled={isSubmitting} className="w-full h-14 bg-primary text-accent font-black rounded-2xl shadow-lg mt-6">
-                  {isSubmitting ? "등록 중..." : "위스퍼러 프로필 등록 신청"}
-                </Button>
-              </form>
+              )}
             </DialogContent>
           </Dialog>
         </div>
