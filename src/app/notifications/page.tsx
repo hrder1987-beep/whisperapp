@@ -1,7 +1,7 @@
 
 "use client"
 
-import { useMemo } from "react"
+import { useMemo, useEffect, useState } from "react"
 import { useUser, useFirestore, useCollection, useMemoFirebase, updateDocumentNonBlocking } from "@/firebase"
 import { collection, query, where, doc } from "firebase/firestore"
 import { Header } from "@/components/chuchot/Header"
@@ -15,21 +15,25 @@ import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 export default function NotificationsPage() {
-  const { user } = useUser()
+  const { user, isUserLoading } = useUser()
   const db = useFirestore()
   const router = useRouter()
+  const [isMounted, setIsMounted] = useState(false)
 
-  // 복합 인덱스 에러 방지를 위해 orderBy를 제거하고 클라이언트에서 정렬합니다.
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
   const notifQuery = useMemoFirebase(() => {
-    if (!db || !user) return null
+    if (!db || !user?.uid) return null
     return query(collection(db, "notifications"), where("userId", "==", user.uid))
-  }, [db, user])
+  }, [db, user?.uid])
 
-  const { data: notificationsData, isLoading } = useCollection<AppNotification>(notifQuery)
+  const { data: notificationsData, isLoading: isDataLoading } = useCollection<AppNotification>(notifQuery)
 
-  // 클라이언트 사이드 정렬
   const notifications = useMemo(() => {
-    return (notificationsData || []).sort((a, b) => b.createdAt - a.createdAt)
+    if (!notificationsData) return []
+    return [...notificationsData].sort((a, b) => b.createdAt - a.createdAt)
   }, [notificationsData])
 
   const handleNotifClick = (notif: AppNotification) => {
@@ -46,6 +50,8 @@ export default function NotificationsPage() {
     })
   }
 
+  if (!isMounted) return null
+
   return (
     <div className="min-h-screen bg-[#F8F9FA]">
       <Header />
@@ -60,16 +66,20 @@ export default function NotificationsPage() {
               <p className="text-sm font-bold text-primary/30">활동에 대한 실시간 소식</p>
             </div>
           </div>
-          {notifications && notifications.some(n => !n.isRead) && (
+          {notifications.length > 0 && notifications.some(n => !n.isRead) && (
             <Button onClick={handleReadAll} variant="ghost" className="text-accent font-black text-xs gap-2">
               <CheckCircle2 className="w-4 h-4" /> 모두 읽음 처리
             </Button>
           )}
         </div>
 
-        {isLoading ? (
+        {(isUserLoading || isDataLoading) ? (
           <div className="flex justify-center py-20"><Sparkles className="w-12 h-12 animate-spin text-accent" /></div>
-        ) : !notifications || notifications.length === 0 ? (
+        ) : !user ? (
+          <div className="text-center py-32 bg-white rounded-[3rem] border border-dashed border-primary/5 shadow-sm">
+            <p className="text-xl font-black text-primary/20">로그인이 필요한 페이지입니다.</p>
+          </div>
+        ) : notifications.length === 0 ? (
           <div className="text-center py-32 bg-white rounded-[3rem] border border-dashed border-primary/5 shadow-sm">
             <Bell className="w-16 h-16 mx-auto mb-4 text-primary/10" />
             <p className="text-xl font-black text-primary/20">새로운 소식이 없습니다.</p>

@@ -16,7 +16,6 @@ service cloud.firestore {
     }
 
     function isAdmin() {
-      // 마스터 관리자 이메일 상시 허용 및 DB 권한 확인
       return isSignedIn() && (
         request.auth.token.email == 'forum@khrd.co.kr' ||
         (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
@@ -24,14 +23,14 @@ service cloud.firestore {
       );
     }
 
-    // 모든 사용자가 지식 피드를 읽을 수 있도록 허용 (get, list 명시적으로 분리하여 에러 방지)
+    // 모든 사용자가 지식 피드를 읽을 수 있도록 허용
     match /questions/{questionId} {
-      allow get, list: if true; 
+      allow read: if true; 
       allow create: if isSignedIn();
       allow update, delete: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
 
       match /answers/{answerId} {
-        allow get, list: if true; 
+        allow read: if true; 
         allow create: if isSignedIn();
         allow update, delete: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
       }
@@ -39,7 +38,7 @@ service cloud.firestore {
 
     // 기본 설정 및 사이트 구성 정보 (공개 읽기)
     match /admin_configuration/{configId} {
-      allow get, list: if true;
+      allow read: if true;
       allow write: if isAdmin(); 
     }
 
@@ -54,14 +53,14 @@ service cloud.firestore {
 
     // 강사 및 위스퍼러 (공개 정보)
     match /instructors/{id} {
-      allow get, list: if true;
+      allow read: if true;
       allow create: if isSignedIn();
       allow update: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
       allow delete: if isAdmin();
     }
     
     match /mentors/{id} {
-      allow get, list: if true;
+      allow read: if true;
       allow create: if isSignedIn();
       allow update: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
       allow delete: if isAdmin();
@@ -69,34 +68,33 @@ service cloud.firestore {
 
     // 교육 프로그램 및 채용 정보 (공개 정보)
     match /trainingPrograms/{id} {
-      allow get, list: if true;
+      allow read: if true;
       allow create: if isSignedIn();
       allow update: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
       allow delete: if isAdmin();
     }
 
     match /jobs/{id} {
-      allow get, list: if true;
+      allow read: if true;
       allow create: if isSignedIn();
       allow update: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
       allow delete: if isAdmin();
     }
 
-    // 쪽지 시스템
+    // 쪽지 시스템 - 로그인한 사용자만 접근 가능하도록 단순화
     match /messages/{messageId} {
-      allow get, list: if isSignedIn() && (
+      allow read: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update, delete: if isSignedIn() && (
         resource.data.senderId == request.auth.uid || 
         resource.data.receiverId == request.auth.uid ||
         isAdmin()
       );
-      allow create: if isSignedIn() && request.resource.data.senderId == request.auth.uid;
-      allow update: if isSignedIn() && (resource.data.receiverId == request.auth.uid || isAdmin());
-      allow delete: if isSignedIn() && (resource.data.senderId == request.auth.uid || resource.data.receiverId == request.auth.uid || isAdmin());
     }
 
-    // 알림 시스템
+    // 알림 시스템 - 로그인한 사용자만 자신의 알림을 읽을 수 있도록 설정
     match /notifications/{notifId} {
-      allow get, list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow read: if isSignedIn();
       allow create: if isSignedIn();
       allow update, delete: if isSignedIn() && resource.data.userId == request.auth.uid;
     }

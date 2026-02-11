@@ -1,7 +1,7 @@
 
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { Header } from "@/components/chuchot/Header"
 import { QuestionFeed } from "@/components/chuchot/QuestionFeed"
 import { Question, Answer } from "@/lib/types"
@@ -11,27 +11,32 @@ import { FileText, Sparkles, ArrowLeft } from "lucide-react"
 import Link from "next/link"
 
 export default function MyPostsPage() {
-  const { user } = useUser()
+  const { user, isUserLoading } = useUser()
   const db = useFirestore()
   const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [isMounted, setIsMounted] = useState(false)
 
-  // 복합 인덱스 에러 방지를 위해 orderBy를 제거하고 클라이언트에서 정렬합니다.
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
   const myPostsQuery = useMemoFirebase(() => {
-    if (!db || !user) return null
+    if (!db || !user?.uid) return null
     return query(collection(db, "questions"), where("userId", "==", user.uid))
-  }, [db, user])
+  }, [db, user?.uid])
 
-  const { data: postsData, isLoading } = useCollection<Question>(myPostsQuery)
+  const { data: postsData, isLoading: isPostsLoading } = useCollection<Question>(myPostsQuery)
 
-  // 클라이언트 사이드 정렬
   const posts = useMemo(() => {
-    return (postsData || []).sort((a, b) => b.createdAt - a.createdAt)
+    if (!postsData) return []
+    return [...postsData].sort((a, b) => b.createdAt - a.createdAt)
   }, [postsData])
 
   const answersQuery = useMemoFirebase(() => {
     if (!db || !selectedId) return null
     return query(collection(db, "questions", selectedId, "answers"), orderBy("createdAt", "desc"))
   }, [db, selectedId])
+  
   const { data: answersData } = useCollection<Answer>(answersQuery)
   const answers = answersData || []
 
@@ -45,16 +50,7 @@ export default function MyPostsPage() {
     }
   }
 
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-[#F8F9FA]">
-        <Header />
-        <div className="max-w-md mx-auto py-40 text-center">
-          <p className="text-primary/40 font-black">로그인이 필요한 페이지입니다.</p>
-        </div>
-      </div>
-    )
-  }
+  if (!isMounted) return null
 
   return (
     <div className="min-h-screen bg-[#F8F9FA]">
@@ -76,11 +72,15 @@ export default function MyPostsPage() {
           </div>
         </div>
 
-        {isLoading ? (
+        {(isUserLoading || isPostsLoading) ? (
           <div className="flex justify-center py-20"><Sparkles className="w-12 h-12 animate-spin text-accent" /></div>
+        ) : !user ? (
+          <div className="max-w-md mx-auto py-20 text-center">
+            <p className="text-primary/40 font-black">로그인이 필요한 페이지입니다.</p>
+          </div>
         ) : (
           <QuestionFeed 
-            questions={posts || []} 
+            questions={posts} 
             onSelectQuestion={handleSelectQuestion}
             selectedId={selectedId}
             answers={answers}
