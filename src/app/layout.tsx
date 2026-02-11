@@ -8,6 +8,28 @@ import { BottomNav } from "@/components/chuchot/BottomNav"
 export const metadata: Metadata = {
   title: 'Whisper (위스퍼) - HR Intelligence Hub',
   description: '대한민국 모든 HR 전문가들의 집단지성 플랫폼. 채용, 교육, 조직문화 고민을 실시간으로 나누세요.',
+  openGraph: {
+    title: 'Whisper (위스퍼) - HR Intelligence Hub',
+    description: '대한민국 모든 HR 전문가들의 집단지성 플랫폼. 채용, 교육, 조직문화 고민을 실시간으로 나누세요.',
+    url: 'https://whisper-hr.vercel.app',
+    siteName: 'Whisper',
+    images: [
+      {
+        url: 'https://images.unsplash.com/photo-1521737711867-e3b97375f902?q=80&w=1200&h=630&auto=format&fit=crop',
+        width: 1200,
+        height: 630,
+        alt: 'Whisper HR Intelligence Hub',
+      },
+    ],
+    locale: 'ko_KR',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Whisper (위스퍼) - HR Intelligence Hub',
+    description: '대한민국 모든 HR 전문가들의 집단지성 플랫폼. 채용, 교육, 조직문화 고민을 실시간으로 나누세요.',
+    images: ['https://images.unsplash.com/photo-1521737711867-e3b97375f902?q=80&w=1200&h=630&auto=format&fit=crop'],
+  },
 };
 
 export default function RootLayout({
