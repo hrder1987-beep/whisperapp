@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo, useEffect, useDeferredValue } from "react"
@@ -7,7 +8,8 @@ import { SubmissionForm } from "@/components/chuchot/SubmissionForm"
 import { QuestionFeed } from "@/components/chuchot/QuestionFeed"
 import { RankingList } from "@/components/chuchot/RankingList"
 import { AldiChat } from "@/components/chuchot/ShuChat"
-import { Question, Answer, TrainingProgram, Instructor, JobListing } from "@/lib/types"
+import { PremiumAds } from "@/components/chuchot/PremiumAds"
+import { Question, Answer, TrainingProgram, Instructor, JobListing, PremiumAd } from "@/lib/types"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -85,7 +87,6 @@ export default function HomePage() {
   const configDocRef = useMemoFirebase(() => db ? doc(db, "admin_configuration", "site_settings") : null, [db])
   const { data: config } = useDoc<any>(configDocRef)
 
-  // AI 자동 답변 지침 가져오기
   const aldiDocRef = useMemoFirebase(() => db ? doc(db, "admin_configuration", "aldi_knowledge") : null, [db])
   const { data: aldiConfig } = useDoc<any>(aldiDocRef)
 
@@ -108,6 +109,17 @@ export default function HomePage() {
         image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=1080",
         badge: "교학상장의 장"
       }
+    ]
+  }, [config])
+
+  const premiumAds = useMemo(() => {
+    if (config?.premiumAdsSettings) {
+      try { return JSON.parse(config.premiumAdsSettings) as PremiumAd[] } catch (e) { return [] }
+    }
+    return [
+      { id: "ad1", title: "HR 전문가를 위한\n커리어 엑셀러레이팅", badge: "SPECIAL EVENT", webImage: "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=400", mobileImage: "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=400", link: "#" },
+      { id: "ad2", title: "조직문화 진단 툴킷\n무료 체험 신청하기", badge: "PARTNER", webImage: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=400", mobileImage: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=400", link: "#" },
+      { id: "ad3", title: "AI 기반 자동 채용\n어시스턴트 도입 가이드", badge: "NEW SOLUTION", webImage: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?q=80&w=400", mobileImage: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?q=80&w=400", link: "#" }
     ]
   }, [config])
 
@@ -167,7 +179,6 @@ export default function HomePage() {
       viewCount: 0, answerCount: 0, createdAt: Date.now()
     }).then(ref => {
       if (ref) {
-        // 관리자가 설정한 동적 답변 지침(Prompt)을 Flow에 전달
         generateAiReply({ 
           title, 
           text, 
@@ -345,6 +356,7 @@ export default function HomePage() {
           {!deferredSearchQuery && (
             <aside className="lg:col-span-4 space-y-8 hidden lg:block">
               <AldiChat />
+              <PremiumAds ads={premiumAds} />
               <RankingList questions={questions.slice(0, 3)} onSelectQuestion={id => setSelectedId(id)} />
             </aside>
           )}
