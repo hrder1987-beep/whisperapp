@@ -1,4 +1,3 @@
-
 "use client"
 
 import { usePathname, useRouter } from "next/navigation"
@@ -94,9 +93,12 @@ export function BottomNav() {
         </div>
       </nav>
 
-      <div className="hidden">
-         <AldiChat forceOpenTrigger={isChatOpen} onTriggerClose={() => setIsChatOpen(false)} />
-      </div>
+      {/* 모바일 Nav 전용 알디 챗 트리거 (숨김 상태로 유지하며 Dialog만 호출) */}
+      <AldiChat 
+        forceOpenTrigger={isChatOpen} 
+        onTriggerClose={() => setIsChatOpen(false)} 
+        hideCard 
+      />
     </>
   )
 }
