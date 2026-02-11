@@ -30,7 +30,7 @@ async function getQuestionData(id: string) {
     
     return {
       title: fields.title?.stringValue || "Whisper 지식 속삭임",
-      text: fields.text?.stringValue || "HR 전문가들의 집단지성 허브, Whisper에서 지혜를 나눠보세요.",
+      text: fields.text?.stringValue || "HR실무자들의 품격 있는 속삭임. HR 전문가들의 집단지성 허브 Whisper에서 지혜를 나눠보세요.",
       imageUrl: fields.imageUrl?.stringValue || null,
       nickname: fields.nickname?.stringValue || "익명전문가"
     };
@@ -53,7 +53,7 @@ export async function generateMetadata(
   }
 
   const previousImages = (await parent).openGraph?.images || []
-  const ogImage = question.imageUrl || "https://images.unsplash.com/photo-1521737711867-e3b97375f902?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080";
+  const ogImage = question.imageUrl || "https://images.unsplash.com/photo-1521737711867-e3b97375f902?q=80&w=1200&h=630&auto=format&fit=crop";
 
   return {
     title: `${question.title} | Whisper`,

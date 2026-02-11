@@ -7,10 +7,10 @@ import { BottomNav } from "@/components/chuchot/BottomNav"
 
 export const metadata: Metadata = {
   title: 'Whisper (위스퍼) - HR Intelligence Hub',
-  description: '대한민국 모든 HR 전문가들의 집단지성 플랫폼. 채용, 교육, 조직문화 고민을 실시간으로 나누세요.',
+  description: 'HR실무자들의 품격 있는 속삭임. 교육부터 조직문화, 인사전략까지 HR 전문가를 위한 지식 허브 Whisper',
   openGraph: {
     title: 'Whisper (위스퍼) - HR Intelligence Hub',
-    description: '대한민국 모든 HR 전문가들의 집단지성 플랫폼. 채용, 교육, 조직문화 고민을 실시간으로 나누세요.',
+    description: 'HR실무자들의 품격 있는 속삭임. 교육부터 조직문화, 인사전략까지 HR 실무자를 위한 지식 허브입니다.',
     url: 'https://whisper-hr.vercel.app',
     siteName: 'Whisper',
     images: [
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
         url: 'https://images.unsplash.com/photo-1521737711867-e3b97375f902?q=80&w=1200&h=630&auto=format&fit=crop',
         width: 1200,
         height: 630,
-        alt: 'Whisper HR Intelligence Hub',
+        alt: 'Whisper - HR실무자들의 품격 있는 속삭임',
       },
     ],
     locale: 'ko_KR',
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Whisper (위스퍼) - HR Intelligence Hub',
-    description: '대한민국 모든 HR 전문가들의 집단지성 플랫폼. 채용, 교육, 조직문화 고민을 실시간으로 나누세요.',
+    description: 'HR실무자들의 품격 있는 속삭임. 교육부터 조직문화, 인사전략까지 HR 전문가를 위한 지식 허브 Whisper',
     images: ['https://images.unsplash.com/photo-1521737711867-e3b97375f902?q=80&w=1200&h=630&auto=format&fit=crop'],
   },
 };
