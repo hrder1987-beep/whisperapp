@@ -18,7 +18,6 @@ export function BottomNav() {
   const [isChatOpen, setIsChatOpen] = useState(false)
 
   const unreadMessagesQuery = useMemoFirebase(() => {
-    // db와 user 상태를 엄격하게 체크
     if (!db || typeof db !== 'object' || !user || !user.uid) return null
     try {
       return query(
@@ -44,11 +43,11 @@ export function BottomNav() {
 
   return (
     <>
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-lg border-t border-primary/5 px-1 pb-safe shadow-[0_-10px_40px_rgba(0,0,0,0.08)] rounded-t-[2.5rem]">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-lg border-t border-primary/5 px-1 pb-safe shadow-[0_-10px_40px_rgba(0,0,0,0.08)] rounded-t-[2.5rem]">
         <div className="flex justify-around items-center h-18 md:h-20 py-2">
           {navItems.map((item) => {
             const isActive = pathname === item.href
-            const Icon = (item as any).icon || GraduationCap // Fallback for missing icon
+            const Icon = (item as any).icon || GraduationCap
             
             if (item.name === "쪽지함" && !user) return null;
 

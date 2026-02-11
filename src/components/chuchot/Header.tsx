@@ -31,7 +31,6 @@ export function Header({ onSearch }: HeaderProps) {
   const userDocRef = useMemoFirebase(() => (user && db) ? doc(db, "users", user.uid) : null, [user, db])
   const { data: profile } = useDoc<any>(userDocRef)
   
-  // 실시간 읽지 않은 쪽지 및 알림 수 체크
   const unreadMessagesQuery = useMemoFirebase(() => 
     (user && db) ? query(collection(db, "messages"), where("receiverId", "==", user.uid), where("isRead", "==", false)) : null,
     [db, user]
@@ -78,7 +77,7 @@ export function Header({ onSearch }: HeaderProps) {
         <div className="flex items-center gap-4 md:gap-8">
           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="lg:hidden text-white hover:bg-white/10"><Menu className="w-6 h-6" /></Button>
+              <Button variant="ghost" size="icon" className="md:hidden text-white hover:bg-white/10"><Menu className="w-6 h-6" /></Button>
             </SheetTrigger>
             <SheetContent side="left" className="bg-primary border-none p-0 w-72">
               <SheetHeader className="sr-only"><SheetTitle>메뉴</SheetTitle></SheetHeader>
@@ -122,7 +121,7 @@ export function Header({ onSearch }: HeaderProps) {
             </SheetContent>
           </Sheet>
           <Link href="/"><Logo isLight /></Link>
-          <nav className="hidden lg:flex items-center gap-6">
+          <nav className="hidden md:flex items-center gap-6">
             {navLinks.map((link) => (
               <Link key={link.href} href={link.href} className={cn("text-sm font-black transition-all hover:text-accent", pathname === link.href ? "text-accent" : "text-white/70")}>{link.name}</Link>
             ))}
