@@ -47,11 +47,19 @@ const MOCK_MENTORS: Instructor[] = [
 
 export function MentorPostsDialog({ userId, userName, isOpen, onClose }: { userId: string, userName: string, isOpen: boolean, onClose: () => void }) {
   const db = useFirestore()
+  
+  // 복합 인덱스 오류 방지를 위해 orderBy를 제거하고 클라이언트에서 정렬합니다.
   const postsQuery = useMemoFirebase(() => {
     if (!db || !userId) return null
-    return query(collection(db, "questions"), where("userId", "==", userId), orderBy("createdAt", "desc"))
+    return query(collection(db, "questions"), where("userId", "==", userId))
   }, [db, userId])
-  const { data: posts, isLoading } = useCollection<Question>(postsQuery)
+  
+  const { data: postsData, isLoading } = useCollection<Question>(postsQuery)
+
+  const posts = useMemo(() => {
+    if (!postsData) return []
+    return [...postsData].sort((a, b) => b.createdAt - a.createdAt)
+  }, [postsData])
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
