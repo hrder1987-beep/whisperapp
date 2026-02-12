@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useRef, useEffect, useCallback, memo } from "react"
@@ -14,7 +15,8 @@ import {
   BookOpen,
   MapPin,
   Bot,
-  RefreshCw
+  RefreshCw,
+  ChevronDown
 } from "lucide-react"
 import { chatShu } from "@/ai/flows/chat-shu-flow"
 import { cn } from "@/lib/utils"
@@ -37,20 +39,20 @@ interface Message {
 const BOT_INFO: Record<BotType, { name: string, sub: string, intro: string, icon: BotType }> = {
   whisperra: {
     name: "위스퍼라",
-    sub: "Corporate Case Expert",
-    intro: "안녕하세요! 실제 기업 사례와 인사이트를 전문으로 다루는 '위스퍼라'입니다. 궁금하신 실무 사례나 성공/실패 데이터를 물어보세요.",
+    sub: "Case Expert",
+    intro: "반갑습니다! 기업 실무 사례와 전문가 인사이트를 전하는 '위스퍼라'입니다. 어떤 사례가 궁금하신가요?",
     icon: "whisperra"
   },
   aldi: {
     name: "알디",
-    sub: "Program & Network Guide",
-    intro: "안녕하세요! 교육 프로그램과 파트너사 연락처 정보를 가이드해 드리는 '알디'입니다. 찾으시는 솔루션이 있으신가요?",
+    sub: "HR Guide",
+    intro: "안녕하세요! 교육 프로그램과 파트너사 정보를 안내해 드리는 '알디'입니다. 찾으시는 솔루션이 있나요?",
     icon: "aldi"
   },
   dongsan: {
     name: "동산",
-    sub: "Venue & Space Master",
-    intro: "어서오세요! 최고의 강의장과 연회장을 추천해 드리는 공간 전문가 '동산'입니다. 행사 성격에 딱 맞는 장소를 찾아 드릴게요.",
+    sub: "Space Master",
+    intro: "어서오세요! 행사에 딱 맞는 강의장과 연회장을 추천해 드리는 공간 전문가 '동산'입니다.",
     icon: "dongsan"
   }
 }
@@ -62,15 +64,15 @@ const ChatMessage = memo(({ msg, activeBot }: { msg: Message, activeBot: BotType
   )}>
     <div className="shrink-0">
       {msg.role === "user" ? (
-        <div className="p-2 md:p-2.5 bg-primary/10 rounded-xl md:rounded-2xl">
-          <User className="w-3.5 h-3.5 md:w-4 md:h-4 text-primary/60" />
+        <div className="p-2 bg-primary/10 rounded-xl">
+          <User className="w-3.5 h-3.5 text-primary/60" />
         </div>
       ) : (
-        <AvatarIcon avatarId={activeBot} className="w-8 h-8 md:w-9 md:h-9" />
+        <AvatarIcon avatarId={activeBot} className="w-8 h-8 md:w-9 md:h-9 shadow-sm" />
       )}
     </div>
     <div className={cn(
-      "max-w-[85%] p-3 md:p-4 rounded-[1.2rem] md:rounded-[1.5rem] text-[13px] md:text-[14px] leading-relaxed shadow-sm break-words whitespace-pre-wrap transition-all",
+      "max-w-[85%] p-3 md:p-4 rounded-[1.2rem] text-[13px] md:text-[14px] leading-relaxed shadow-sm break-words whitespace-pre-wrap transition-all",
       msg.role === "user" 
         ? "bg-primary text-white rounded-tr-none" 
         : "bg-white border border-primary/5 text-primary/80 rounded-tl-none font-medium"
@@ -111,21 +113,21 @@ function ChatInterface({
   }, [messages, isLoading]);
 
   return (
-    <div className={cn("flex flex-col h-full bg-[#F8F9FA]", isExpanded ? "rounded-t-[2.5rem] md:rounded-[3rem]" : "")}>
+    <div className={cn("flex flex-col h-full bg-[#F8F9FA]", isExpanded ? "rounded-t-[2rem] md:rounded-[3rem]" : "")}>
       <CardHeader className={cn(
         "p-4 md:p-6 flex flex-col space-y-4 premium-gradient shrink-0",
-        isExpanded ? "rounded-t-[2.5rem] md:rounded-t-[3rem]" : ""
+        isExpanded ? "rounded-t-[2rem] md:rounded-t-[3rem]" : ""
       )}>
         <div className="flex items-center justify-between w-full">
-          <div className="flex items-center gap-3 md:gap-4">
-            <AvatarIcon avatarId={activeBot} className="w-10 h-10 md:w-12 md:h-12 shadow-2xl scale-105" />
+          <div className="flex items-center gap-3">
+            <AvatarIcon avatarId={activeBot} className="w-10 h-10 md:w-12 md:h-12 shadow-2xl border-2 border-white/20" />
             <div>
-              <CardTitle className="text-white text-lg md:text-xl font-black tracking-tight">{BOT_INFO[activeBot].name}</CardTitle>
-              <p className="text-[9px] md:text-[11px] text-accent/80 font-black uppercase tracking-widest mt-0.5">{BOT_INFO[activeBot].sub}</p>
+              <CardTitle className="text-white text-base md:text-xl font-black tracking-tight">{BOT_INFO[activeBot].name}</CardTitle>
+              <p className="text-[8px] md:text-[10px] text-accent/80 font-black uppercase tracking-widest mt-0.5">{BOT_INFO[activeBot].sub}</p>
             </div>
           </div>
           <div className="flex items-center gap-1">
-            <Button variant="ghost" size="icon" onClick={onClose} className="text-white/50 hover:text-white hover:bg-white/10 rounded-full h-9 w-9">
+            <Button variant="ghost" size="icon" onClick={onClose} className="text-white/50 hover:text-white hover:bg-white/10 rounded-full h-8 w-8 md:h-10 md:w-10">
               {isExpanded ? <X className="w-5 h-5" /> : <Maximize2 className="w-5 h-5" />}
             </Button>
           </div>
@@ -133,23 +135,29 @@ function ChatInterface({
 
         <Tabs value={activeBot} onValueChange={(v) => onBotChange(v as BotType)} className="w-full">
           <TabsList className="grid grid-cols-3 bg-white/10 p-1 rounded-xl h-10 border border-white/5">
-            <TabsTrigger value="whisperra" className="rounded-lg text-[10px] md:text-[11px] font-black data-[state=active]:bg-white data-[state=active]:text-primary gap-1.5"><Sparkles className="w-3 h-3" />사례</TabsTrigger>
-            <TabsTrigger value="aldi" className="rounded-lg text-[10px] md:text-[11px] font-black data-[state=active]:bg-white data-[state=active]:text-primary gap-1.5"><BookOpen className="w-3 h-3" />정보</TabsTrigger>
-            <TabsTrigger value="dongsan" className="rounded-lg text-[10px] md:text-[11px] font-black data-[state=active]:bg-white data-[state=active]:text-primary gap-1.5"><MapPin className="w-3 h-3" />공간</TabsTrigger>
+            <TabsTrigger value="whisperra" className="rounded-lg text-[9px] md:text-[11px] font-black data-[state=active]:bg-white data-[state=active]:text-primary gap-1 md:gap-1.5 transition-all">
+              <Sparkles className="w-2.5 h-2.5 md:w-3 h-3" />사례
+            </TabsTrigger>
+            <TabsTrigger value="aldi" className="rounded-lg text-[9px] md:text-[11px] font-black data-[state=active]:bg-white data-[state=active]:text-primary gap-1 md:gap-1.5 transition-all">
+              <BookOpen className="w-2.5 h-2.5 md:w-3 h-3" />정보
+            </TabsTrigger>
+            <TabsTrigger value="dongsan" className="rounded-lg text-[9px] md:text-[11px] font-black data-[state=active]:bg-white data-[state=active]:text-primary gap-1 md:gap-1.5 transition-all">
+              <MapPin className="w-2.5 h-2.5 md:w-3 h-3" />공간
+            </TabsTrigger>
           </TabsList>
         </Tabs>
       </CardHeader>
       
-      <CardContent ref={scrollRef} className="flex-1 overflow-y-auto p-4 md:p-6 space-y-5 md:space-y-6 scrollbar-hide bg-white/50">
+      <CardContent ref={scrollRef} className="flex-1 overflow-y-auto p-4 md:p-6 space-y-5 scrollbar-hide bg-white/50">
         {messages.map((msg, idx) => (
           <ChatMessage key={idx} msg={msg} activeBot={activeBot} />
         ))}
         {isLoading && (
           <div className="flex items-start gap-3 animate-pulse">
             <AvatarIcon avatarId={activeBot} className="w-8 h-8" />
-            <div className="bg-white border border-primary/5 p-4 rounded-2xl shadow-sm flex items-center gap-2">
-              <RefreshCw className="w-3.5 h-3.5 text-accent animate-spin" />
-              <span className="text-[11px] font-black text-primary/40 uppercase tracking-tighter">방대한 지식을 탐색 중입니다...</span>
+            <div className="bg-white border border-primary/5 p-3 rounded-2xl shadow-sm flex items-center gap-2">
+              <RefreshCw className="w-3 h-3 text-accent animate-spin" />
+              <span className="text-[10px] font-black text-primary/40 uppercase tracking-tighter">분석 중...</span>
             </div>
           </div>
         )}
@@ -158,14 +166,14 @@ function ChatInterface({
       <div className="p-4 md:p-6 bg-white border-t border-primary/5 shrink-0 pb-safe">
         <div className="relative group max-w-4xl mx-auto">
           <Input 
-            placeholder={`${BOT_INFO[activeBot].name}에게 무엇이든 물어보세요...`}
+            placeholder={`${BOT_INFO[activeBot].name}에게 질문하기...`}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
             disabled={isLoading}
-            className={cn("pr-12 md:pr-14 bg-primary/5 border-none rounded-xl md:rounded-2xl text-sm font-bold placeholder:text-primary/20 focus-visible:ring-accent/50 h-12 md:h-14")}
+            className={cn("pr-12 md:pr-14 bg-primary/5 border-none rounded-xl md:rounded-2xl text-xs md:text-sm font-bold placeholder:text-primary/20 focus-visible:ring-accent/50 h-11 md:h-14")}
           />
-          <Button size="icon" onClick={handleSend} disabled={!input.trim() || isLoading} className="absolute right-1.5 top-1.5 md:top-2 bg-primary hover:bg-primary/90 text-accent rounded-lg md:rounded-xl h-9 w-9 md:h-10 md:w-10 active:scale-90 shadow-lg">
+          <Button size="icon" onClick={handleSend} disabled={!input.trim() || isLoading} className="absolute right-1 top-1 md:right-2 md:top-2 bg-primary hover:bg-primary/90 text-accent rounded-lg md:rounded-xl h-9 w-9 md:h-10 md:w-10 active:scale-90 shadow-lg">
             <Send className="w-4 h-4 md:w-5 h-5" />
           </Button>
         </div>
@@ -191,7 +199,12 @@ export function AldiChat({ forceOpenTrigger, onTriggerClose, hideCard = false }:
   const activeBotConfigRef = useMemoFirebase(() => db ? doc(db, "admin_configuration", `bot_${activeBot}`) : null, [db, activeBot])
   const { data: botConfig } = useDoc<any>(activeBotConfigRef)
 
-  useEffect(() => { if (forceOpenTrigger) { setIsFocused(true); onTriggerClose?.(); } }, [forceOpenTrigger, onTriggerClose])
+  useEffect(() => { 
+    if (forceOpenTrigger) { 
+      setIsFocused(true); 
+      onTriggerClose?.(); 
+    } 
+  }, [forceOpenTrigger, onTriggerClose])
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return
@@ -211,7 +224,7 @@ export function AldiChat({ forceOpenTrigger, onTriggerClose, hideCard = false }:
       })
       setConversations(prev => ({ ...prev, [currentBot]: [...prev[currentBot], { role: "bot", text: res.reply }] }))
     } catch (error) {
-      setConversations(prev => ({ ...prev, [currentBot]: [...prev[currentBot], { role: "bot", text: "지식 엔진에 일시적인 지연이 발생했습니다. 잠시 후 다시 말씀해 주세요." }] }))
+      setConversations(prev => ({ ...prev, [currentBot]: [...prev[currentBot], { role: "bot", text: "잠시 후 다시 시도해 주세요." }] }))
     } finally {
       setIsLoading(false)
     }
@@ -220,7 +233,7 @@ export function AldiChat({ forceOpenTrigger, onTriggerClose, hideCard = false }:
   return (
     <>
       {!hideCard && (
-        <Card className="bg-white rounded-[3rem] border border-primary/5 shadow-2xl overflow-hidden flex flex-col h-[550px]">
+        <Card className="bg-white rounded-[3rem] border border-primary/5 shadow-2xl overflow-hidden flex flex-col h-[550px] animate-in fade-in slide-in-from-bottom-4">
           <ChatInterface 
             messages={conversations[activeBot]} input={input} setInput={setInput}
             isLoading={isLoading} handleSend={handleSend} activeBot={activeBot}
@@ -230,9 +243,9 @@ export function AldiChat({ forceOpenTrigger, onTriggerClose, hideCard = false }:
       )}
 
       <Dialog open={isFocused} onOpenChange={setIsFocused}>
-        <DialogContent className="max-w-5xl h-[100dvh] md:h-[85vh] p-0 border-none bg-transparent shadow-none bottom-0 top-auto translate-y-0 sm:top-[50%] sm:translate-y-[-50%]">
-          <DialogHeader className="sr-only"><DialogTitle>AI 전문가와 대화하기</DialogTitle></DialogHeader>
-          <div className="relative w-full h-full md:rounded-[3.5rem] overflow-hidden bg-white border-4 border-primary/5">
+        <DialogContent className="max-w-5xl h-[100dvh] md:h-[85vh] p-0 border-none bg-transparent shadow-none bottom-0 top-auto translate-y-0 sm:top-[50%] sm:translate-y-[-50%] flex flex-col">
+          <DialogHeader className="sr-only"><DialogTitle>AI 전문가 상담</DialogTitle></DialogHeader>
+          <div className="relative w-full h-full md:rounded-[3.5rem] overflow-hidden bg-white border-none md:border-4 md:border-primary/5 flex flex-col">
             <ChatInterface 
               messages={conversations[activeBot]} input={input} setInput={setInput}
               isLoading={isLoading} handleSend={handleSend} isExpanded activeBot={activeBot}
