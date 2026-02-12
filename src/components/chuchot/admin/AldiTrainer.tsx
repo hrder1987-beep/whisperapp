@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo } from "react"
@@ -6,10 +7,11 @@ import { doc } from "firebase/firestore"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
-import { BrainCircuit, Save, FileSpreadsheet, RefreshCcw, Sparkles, UserCog, MessageSquareText, ShieldAlert } from "lucide-react"
+import { BrainCircuit, Save, FileSpreadsheet, RefreshCcw, Sparkles, UserCog, ShieldAlert, Info } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { BotType } from "@/lib/types"
+import * as XLSX from 'xlsx'
 
 export function AldiTrainer() {
   const db = useFirestore()
@@ -53,19 +55,44 @@ export function AldiTrainer() {
     }, 500)
   }
 
-  const handleCsvImport = () => {
+  const handleFileImport = () => {
     const input = document.createElement('input')
     input.type = 'file'
-    input.accept = '.csv,.txt'
+    input.accept = '.csv,.xlsx,.xls,.txt'
     input.onchange = (e: any) => {
       const file = e.target.files[0]
+      if (!file) return;
+
       const reader = new FileReader()
-      reader.onload = (event) => {
-        const text = event.target?.result as string
-        setKnowledge(prev => prev + "\n\n[추가 주입 데이터]\n" + text)
-        toast({ title: "데이터 업로드 성공", description: "지식 베이스에 파일 내용이 추가되었습니다." })
+      
+      // 엑셀 파일 처리 (.xlsx, .xls)
+      if (file.name.endsWith('.xlsx') || file.name.endsWith('.xls')) {
+        reader.onload = (event) => {
+          try {
+            const data = new Uint8Array(event.target?.result as ArrayBuffer)
+            const workbook = XLSX.read(data, { type: 'array' })
+            const sheetName = workbook.SheetNames[0]
+            const worksheet = workbook.Sheets[sheetName]
+            const csv = XLSX.utils.sheet_to_csv(worksheet)
+            
+            setKnowledge(prev => prev + `\n\n[엑셀 데이터 주입: ${file.name}]\n` + csv)
+            toast({ title: "엑셀 데이터 변환 성공", description: "엑셀 내용을 텍스트 형식으로 변환하여 추가했습니다." })
+          } catch (error) {
+            toast({ title: "변환 실패", description: "엑셀 파일을 읽는 중 오류가 발생했습니다.", variant: "destructive" })
+          }
+        }
+        reader.readAsArrayBuffer(file)
+      } 
+      // 일반 텍스트 및 CSV 처리
+      else {
+        reader.onload = (event) => {
+          const text = event.target?.result as string
+          setKnowledge(prev => prev + `\n\n[파일 데이터 추가: ${file.name}]\n` + text)
+          toast({ title: "데이터 업로드 성공", description: "파일 내용을 지식 베이스에 추가했습니다." })
+        }
+        // 한글 깨짐 방지를 위해 UTF-8로 읽기 (필요시 'euc-kr' 등 대응 가능하지만 기본 UTF-8 권장)
+        reader.readAsText(file, "UTF-8")
       }
-      reader.readAsText(file)
     }
     input.click()
   }
@@ -109,10 +136,13 @@ export function AldiTrainer() {
 
                 <div className="space-y-4">
                   <div className="flex items-center justify-between px-2">
-                    <h4 className="text-sm font-black text-primary/40 uppercase tracking-widest flex items-center gap-2">
-                      <FileSpreadsheet className="w-4 h-4" /> 지식 베이스 (Data Source)
-                    </h4>
-                    <Button variant="outline" size="sm" onClick={handleCsvImport} className="border-primary/10 text-primary/60 font-black gap-2 h-10 rounded-xl hover:bg-primary/5">
+                    <div className="space-y-1">
+                      <h4 className="text-sm font-black text-primary/40 uppercase tracking-widest flex items-center gap-2">
+                        <FileSpreadsheet className="w-4 h-4" /> 지식 베이스 (Data Source)
+                      </h4>
+                      <p className="text-[10px] text-primary/20 font-bold ml-6">* 엑셀 데이터는 텍스트(CSV)로 자동 변환되어 하단에 추가됩니다.</p>
+                    </div>
+                    <Button variant="outline" size="sm" onClick={handleFileImport} className="border-primary/10 text-primary/60 font-black gap-2 h-10 rounded-xl hover:bg-primary/5">
                       엑셀/CSV 데이터 주입
                     </Button>
                   </div>
@@ -154,6 +184,26 @@ export function AldiTrainer() {
               <div>
                 <p className="text-white mb-1">동산 (Dongsan)</p>
                 <p>전국 주요 강의장, 연회장 공간 정보를 주입하세요. 예약 가이드에 특화됩니다.</p>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="bg-white border border-primary/5 p-6 rounded-[2rem] shadow-md">
+            <h5 className="text-xs font-black text-primary/40 uppercase mb-4 flex items-center gap-2">
+              <Info className="w-4 h-4 text-accent" /> 데이터 관리 팁
+            </h5>
+            <div className="space-y-4">
+              <div className="p-3 bg-primary/5 rounded-xl">
+                <p className="text-[11px] font-black text-primary mb-1">1. 엑셀 저장 팁</p>
+                <p className="text-[10px] text-primary/40 leading-relaxed font-bold">
+                  엑셀에서 '다른 이름으로 저장' 시 <b>CSV UTF-8 (쉼표로 분리)</b> 형식을 선택하면 가장 안전하게 업로드됩니다.
+                </p>
+              </div>
+              <div className="p-3 bg-primary/5 rounded-xl">
+                <p className="text-[11px] font-black text-primary mb-1">2. 복사-붙여넣기 활용</p>
+                <p className="text-[10px] text-primary/40 leading-relaxed font-bold">
+                  파일 업로드 외에도 엑셀이나 구글 시트의 내용을 드래그하여 바로 본문에 붙여넣을 수 있습니다.
+                </p>
               </div>
             </div>
           </Card>
