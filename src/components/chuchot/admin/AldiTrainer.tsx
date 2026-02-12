@@ -1,16 +1,17 @@
 
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { useFirestore, useDoc, setDocumentNonBlocking, useMemoFirebase } from "@/firebase"
 import { doc } from "firebase/firestore"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
-import { BrainCircuit, Save, FileSpreadsheet, RefreshCcw, Sparkles, UserCog, ShieldAlert, Info } from "lucide-react"
+import { BrainCircuit, Save, FileSpreadsheet, RefreshCcw, Sparkles, UserCog, ShieldAlert, Info, ListOrdered, Type, HardDrive, Eraser } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { BotType } from "@/lib/types"
+import { cn } from "@/lib/utils"
 import * as XLSX from 'xlsx'
 
 export function AldiTrainer() {
@@ -28,7 +29,8 @@ export function AldiTrainer() {
   const [autoReplyInstruction, setAutoReplyInstruction] = useState("")
   const [isSaving, setIsSaving] = useState(false)
 
-  useMemo(() => {
+  // 데이터 로딩 로직 안정화 (useEffect 사용)
+  useEffect(() => {
     if (botConfig) {
       setKnowledge(botConfig.content || "")
       setPersona(botConfig.persona || "")
@@ -37,6 +39,15 @@ export function AldiTrainer() {
       setKnowledge(""); setPersona(""); setAutoReplyInstruction("");
     }
   }, [botConfig, activeBotTab])
+
+  // 데이터 통계 계산
+  const stats = useMemo(() => {
+    const lines = knowledge.split('\n').filter(l => l.trim()).length
+    const chars = knowledge.length
+    const sizeKb = (chars / 1024).toFixed(1)
+    const isHeavy = parseFloat(sizeKb) > 800 // 1MB(1024KB) 제한 대비 80% 수준 경고
+    return { lines, chars, sizeKb, isHeavy }
+  }, [knowledge])
 
   const handleSave = () => {
     if (!db) return
@@ -65,7 +76,6 @@ export function AldiTrainer() {
 
       const reader = new FileReader()
       
-      // 엑셀 파일 처리 (.xlsx, .xls)
       if (file.name.endsWith('.xlsx') || file.name.endsWith('.xls')) {
         reader.onload = (event) => {
           try {
@@ -75,22 +85,26 @@ export function AldiTrainer() {
             const worksheet = workbook.Sheets[sheetName]
             const csv = XLSX.utils.sheet_to_csv(worksheet)
             
-            setKnowledge(prev => prev + `\n\n[엑셀 데이터 주입: ${file.name}]\n` + csv)
-            toast({ title: "엑셀 데이터 변환 성공", description: "엑셀 내용을 텍스트 형식으로 변환하여 추가했습니다." })
+            // 기존 데이터 유지하며 추가
+            setKnowledge(prev => {
+              const separator = prev.length > 0 ? "\n\n" : ""
+              return prev + separator + `[엑셀 데이터 주입: ${file.name}]\n` + csv
+            })
+            toast({ title: "엑셀 데이터 변환 성공", description: `${file.name}의 내용을 지식 베이스에 추가했습니다.` })
           } catch (error) {
             toast({ title: "변환 실패", description: "엑셀 파일을 읽는 중 오류가 발생했습니다.", variant: "destructive" })
           }
         }
         reader.readAsArrayBuffer(file)
-      } 
-      // 일반 텍스트 및 CSV 처리
-      else {
+      } else {
         reader.onload = (event) => {
           const text = event.target?.result as string
-          setKnowledge(prev => prev + `\n\n[파일 데이터 추가: ${file.name}]\n` + text)
+          setKnowledge(prev => {
+            const separator = prev.length > 0 ? "\n\n" : ""
+            return prev + separator + `[파일 데이터 추가: ${file.name}]\n` + text
+          })
           toast({ title: "데이터 업로드 성공", description: "파일 내용을 지식 베이스에 추가했습니다." })
         }
-        // 한글 깨짐 방지를 위해 UTF-8로 읽기 (필요시 'euc-kr' 등 대응 가능하지만 기본 UTF-8 권장)
         reader.readAsText(file, "UTF-8")
       }
     }
@@ -130,7 +144,7 @@ export function AldiTrainer() {
                     value={persona}
                     onChange={e => setPersona(e.target.value)}
                     placeholder="예: 당신은 20년 경력의 베테랑 실무자입니다. 논리적이지만 따뜻하게 답변하세요."
-                    className="min-h-[200px] bg-primary/5 border-none rounded-[2rem] p-8 text-[15px] font-medium focus-visible:ring-accent/30"
+                    className="min-h-[150px] bg-primary/5 border-none rounded-[2rem] p-8 text-[15px] font-medium focus-visible:ring-accent/30"
                   />
                 </div>
 
@@ -142,16 +156,46 @@ export function AldiTrainer() {
                       </h4>
                       <p className="text-[10px] text-primary/20 font-bold ml-6">* 엑셀 데이터는 텍스트(CSV)로 자동 변환되어 하단에 추가됩니다.</p>
                     </div>
-                    <Button variant="outline" size="sm" onClick={handleFileImport} className="border-primary/10 text-primary/60 font-black gap-2 h-10 rounded-xl hover:bg-primary/5">
-                      엑셀/CSV 데이터 주입
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button variant="ghost" size="sm" onClick={() => setKnowledge("")} className="text-red-400 hover:text-red-600 hover:bg-red-50 font-black gap-2 h-10 rounded-xl">
+                        <Eraser className="w-4 h-4" /> 데이터 초기화
+                      </Button>
+                      <Button variant="outline" size="sm" onClick={handleFileImport} className="border-primary/10 text-primary/60 font-black gap-2 h-10 rounded-xl hover:bg-primary/5">
+                        엑셀/CSV 데이터 추가
+                      </Button>
+                    </div>
                   </div>
-                  <Textarea 
-                    value={knowledge}
-                    onChange={e => setKnowledge(e.target.value)}
-                    placeholder="해당 봇이 학습해야 할 핵심 데이터를 텍스트나 CSV 형식으로 붙여넣으세요."
-                    className="min-h-[250px] bg-primary/5 border-none rounded-[2rem] p-8 text-[15px] font-medium focus-visible:ring-accent/30"
-                  />
+                  <div className="relative group">
+                    <Textarea 
+                      value={knowledge}
+                      onChange={e => setKnowledge(e.target.value)}
+                      placeholder="해당 봇이 학습해야 할 핵심 데이터를 텍스트나 CSV 형식으로 붙여넣으세요."
+                      className="min-h-[350px] bg-primary/5 border-none rounded-[2rem] p-8 text-[14px] font-medium focus-visible:ring-accent/30 leading-relaxed scrollbar-hide"
+                    />
+                    
+                    {/* 데이터 통계 오버레이 */}
+                    <div className="absolute bottom-6 right-8 flex items-center gap-4 bg-white/80 backdrop-blur-md px-5 py-2.5 rounded-2xl border border-primary/5 shadow-xl">
+                      <div className="flex items-center gap-1.5 border-r border-primary/10 pr-4">
+                        <ListOrdered className="w-3.5 h-3.5 text-accent" />
+                        <span className="text-[11px] font-black text-primary/60">{stats.lines.toLocaleString()} Lines</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 border-r border-primary/10 pr-4">
+                        <Type className="w-3.5 h-3.5 text-accent" />
+                        <span className="text-[11px] font-black text-primary/60">{stats.chars.toLocaleString()} Chars</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <HardDrive className={cn("w-3.5 h-3.5", stats.isHeavy ? "text-red-500" : "text-accent")} />
+                        <span className={cn("text-[11px] font-black", stats.isHeavy ? "text-red-500" : "text-primary/60")}>
+                          {stats.sizeKb} KB
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  {stats.isHeavy && (
+                    <p className="text-[10px] text-red-500 font-bold ml-4 mt-2">
+                      * 데이터 용량이 1MB에 근접하고 있습니다. 안정적인 성능을 위해 불필요한 공백을 줄이는 것이 좋습니다.
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -194,15 +238,15 @@ export function AldiTrainer() {
             </h5>
             <div className="space-y-4">
               <div className="p-3 bg-primary/5 rounded-xl">
-                <p className="text-[11px] font-black text-primary mb-1">1. 엑셀 저장 팁</p>
+                <p className="text-[11px] font-black text-primary mb-1">1. 실시간 라인 확인</p>
                 <p className="text-[10px] text-primary/40 leading-relaxed font-bold">
-                  엑셀에서 '다른 이름으로 저장' 시 <b>CSV UTF-8 (쉼표로 분리)</b> 형식을 선택하면 가장 안전하게 업로드됩니다.
+                  우측 하단의 <b>Lines</b> 수치를 통해 1,400줄이 모두 정상적으로 들어갔는지 즉시 확인하실 수 있습니다.
                 </p>
               </div>
               <div className="p-3 bg-primary/5 rounded-xl">
-                <p className="text-[11px] font-black text-primary mb-1">2. 복사-붙여넣기 활용</p>
+                <p className="text-[11px] font-black text-primary mb-1">2. 중복 업로드 방지</p>
                 <p className="text-[10px] text-primary/40 leading-relaxed font-bold">
-                  파일 업로드 외에도 엑셀이나 구글 시트의 내용을 드래그하여 바로 본문에 붙여넣을 수 있습니다.
+                  새 엑셀을 올리기 전 '데이터 초기화' 버튼을 눌러 기존 내용을 비우고 올리는 것을 권장합니다.
                 </p>
               </div>
             </div>
