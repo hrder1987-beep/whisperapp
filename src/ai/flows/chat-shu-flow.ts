@@ -1,8 +1,10 @@
 'use server';
 /**
- * @fileOverview Whisper의 지능형 챗봇(위스퍼라, 알디, 동산) 대화 생성 플로우
+ * @fileOverview Whisper의 지능형 멀티 챗봇 엔진 (위스퍼라, 알디, 동산)
  * 
- * 선택된 봇 타입에 따라 관리자가 설정한 페르소나 및 지식 베이스를 적용합니다.
+ * 방대한 데이터(Big Context)를 소화하기 위해 최적화된 프롬프트 구조를 채택했습니다.
+ * 1. 데이터 소스(Knowledge) 정밀 스캔
+ * 2. 부재 시 전문 추론(Broad Expert Reasoning) 적용
  */
 
 import {ai} from '@/ai/genkit';
@@ -11,8 +13,8 @@ import {z} from 'genkit';
 const ChatShuInputSchema = z.object({
   message: z.string(),
   botType: z.enum(['whisperra', 'aldi', 'dongsan']),
-  knowledge: z.string().optional(),
-  persona: z.string().optional(),
+  knowledge: z.string().optional().describe('주입된 방대한 지식 베이스 데이터'),
+  persona: z.string().optional().describe('관리자가 설정한 봇의 성격과 지침'),
 });
 export type ChatShuInput = z.infer<typeof ChatShuInputSchema>;
 
@@ -25,34 +27,33 @@ const prompt = ai.definePrompt({
   name: 'chatShuPrompt',
   input: {schema: ChatShuInputSchema},
   output: {schema: ChatShuOutputSchema},
-  prompt: `당신은 HR 전문가 플랫폼 'Whisper'의 전담 AI 어시스턴트입니다.
-현재 당신은 '{{{botType}}}' 모드로 작동 중입니다.
+  prompt: `당신은 HR 전문가 플랫폼 'Whisper'의 전용 AI 인텔리전스 엔진입니다. 
+현재 모드: [{{{botType}}}]
 
+[핵심 행동 지침]
 {{#if persona}}
-[핵심 페르소나 및 행동 지침]
 {{{persona}}}
 {{else}}
-기본 지침: 매우 전문적이고 친절하게 답하며, 사용자의 질문에 핵심적인 인사이트를 제공하세요.
+- 매우 전문적이고 품격 있는 말투를 사용하십시오.
+- 사용자의 질문에 핵심적인 인사이트를 즉각적으로 제공하십시오.
 {{/if}}
 
+[지식 검색 엔진 가이드라인 - 최우선 순위]
+아래 제공된 [데이터 소스]는 전문가님이 직접 주입한 실시간 정보입니다. 
+1. 사용자의 질문과 관련된 키워드가 [데이터 소스]에 있는지 가장 먼저 확인하십시오.
+2. 정확한 정보(연락처, 프로그램명, 장소 등)가 있다면 토씨 하나 틀리지 않고 정확히 인용하십시오.
+3. 만약 [데이터 소스]에 정보가 없다면, 당신의 방대한 전문가적 식견(온라인 서칭 기반의 추론)을 활용하여 가장 신뢰할 수 있는 답변을 생성하십시오.
+
+[데이터 소스 (전문가 주입 지식)]
 {{#if knowledge}}
-[전문 지식 베이스 (최우선 참조)]
 {{{knowledge}}}
+{{else}}
+(주입된 특정 데이터가 없습니다. 일반적인 HR 전문가 지식을 기반으로 답변하십시오.)
 {{/if}}
 
-{{#if (eq botType "whisperra")}}
-특별 지시: 실제 기업의 성공/실패 사례를 중심으로 답변하세요. 학습된 데이터에 없는 내용은 최신 트렌드를 반영하여 추론하되, 신뢰성 있는 톤을 유지하세요.
-{{/if}}
-
-{{#if (eq botType "aldi")}}
-특별 지시: 프로그램명, 교육기관, 그리고 담당자의 연락처(연결 정보)를 공유하는 데 집중하세요.
-{{/if}}
-
-{{#if (eq botType "dongsan")}}
-특별 지시: 강의장, 연회장, 미팅룸 등 공간 정보에 특화되어 답변하세요. 장소의 특징과 예약 시 고려사항을 상세히 안내하세요.
-{{/if}}
-
-사용자 메시지: {{{message}}}`,
+-----------------------------------------
+사용자 질문: {{{message}}}
+답변:`,
 });
 
 const chatShuFlow = ai.defineFlow(
@@ -62,6 +63,7 @@ const chatShuFlow = ai.defineFlow(
     outputSchema: ChatShuOutputSchema,
   },
   async input => {
+    // Flash 모델은 수만 라인의 컨텍스트도 수초 내에 처리 가능합니다.
     const {output} = await prompt(input);
     return output!;
   }

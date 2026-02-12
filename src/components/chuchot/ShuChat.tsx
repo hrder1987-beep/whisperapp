@@ -13,7 +13,8 @@ import {
   Sparkles,
   BookOpen,
   MapPin,
-  Bot
+  Bot,
+  RefreshCw
 } from "lucide-react"
 import { chatShu } from "@/ai/flows/chat-shu-flow"
 import { cn } from "@/lib/utils"
@@ -69,7 +70,7 @@ const ChatMessage = memo(({ msg, activeBot }: { msg: Message, activeBot: BotType
       )}
     </div>
     <div className={cn(
-      "max-w-[85%] p-3 md:p-4 rounded-[1.2rem] md:rounded-[1.5rem] text-[13px] md:text-[14px] leading-relaxed shadow-sm break-words whitespace-pre-wrap",
+      "max-w-[85%] p-3 md:p-4 rounded-[1.2rem] md:rounded-[1.5rem] text-[13px] md:text-[14px] leading-relaxed shadow-sm break-words whitespace-pre-wrap transition-all",
       msg.role === "user" 
         ? "bg-primary text-white rounded-tr-none" 
         : "bg-white border border-primary/5 text-primary/80 rounded-tl-none font-medium"
@@ -144,10 +145,11 @@ function ChatInterface({
           <ChatMessage key={idx} msg={msg} activeBot={activeBot} />
         ))}
         {isLoading && (
-          <div className="flex items-start gap-3">
+          <div className="flex items-start gap-3 animate-pulse">
             <AvatarIcon avatarId={activeBot} className="w-8 h-8" />
-            <div className="bg-white border border-primary/5 p-3 rounded-2xl shadow-sm">
-              <span className="flex gap-1.5"><span className="w-1.5 h-1.5 bg-accent/40 rounded-full animate-bounce"></span><span className="w-1.5 h-1.5 bg-accent/40 rounded-full animate-bounce [animation-delay:0.2s]"></span><span className="w-1.5 h-1.5 bg-accent/40 rounded-full animate-bounce [animation-delay:0.4s]"></span></span>
+            <div className="bg-white border border-primary/5 p-4 rounded-2xl shadow-sm flex items-center gap-2">
+              <RefreshCw className="w-3.5 h-3.5 text-accent animate-spin" />
+              <span className="text-[11px] font-black text-primary/40 uppercase tracking-tighter">방대한 지식을 탐색 중입니다...</span>
             </div>
           </div>
         )}
@@ -176,7 +178,6 @@ export function AldiChat({ forceOpenTrigger, onTriggerClose, hideCard = false }:
   const db = useFirestore()
   const [activeBot, setActiveBot] = useState<BotType>("whisperra")
   
-  // 봇별 대화 상태 관리
   const [conversations, setConversations] = useState<Record<BotType, Message[]>>({
     whisperra: [{ role: "bot", text: BOT_INFO.whisperra.intro }],
     aldi: [{ role: "bot", text: BOT_INFO.aldi.intro }],
