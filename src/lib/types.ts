@@ -127,7 +127,9 @@ export interface PremiumAd {
   link: string;
 }
 
-export interface AldiKnowledge {
+export type BotType = 'whisperra' | 'aldi' | 'dongsan';
+
+export interface BotConfig {
   content: string;
   persona?: string;
   autoReplyInstruction?: string;
