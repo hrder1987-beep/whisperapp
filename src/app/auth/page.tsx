@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, Suspense, useRef, useEffect } from "react"
@@ -101,10 +100,13 @@ function AuthContent() {
         profilePictureUrl: profilePicture || null
       })
 
-      // 2. 자동 웰컴 메일 발송 플로우 트리거
+      // 2. 자동 웰컴 메일 발송 플로우 트리거 (비동기)
       sendWelcomeEmail({ name, email }).catch(err => console.error("Welcome email failed:", err));
 
-      toast({ title: "가입 완료!", description: "Whisper의 일원이 되신 것을 환영합니다. 가입 환영 메일을 확인해주세요!" })
+      toast({ 
+        title: "가입 완료!", 
+        description: "Whisper의 일원이 되신 것을 환영합니다. 가입 환영 메일이 전송되었습니다!" 
+      })
       router.push("/")
     } catch (error: any) {
       toast({ title: "가입 실패", description: error.message, variant: "destructive" })
