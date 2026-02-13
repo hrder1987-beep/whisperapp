@@ -1,14 +1,14 @@
 
 "use client"
 
-import { useState, Suspense, useRef } from "react"
+import { useState, Suspense, useRef, useEffect } from "react"
 import { Header } from "@/components/chuchot/Header"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useAuth, useFirestore } from "@/firebase"
+import { useAuth, useFirestore, useUser } from "@/firebase"
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth"
 import { doc, setDoc } from "firebase/firestore"
 import { useRouter, useSearchParams } from "next/navigation"
@@ -21,6 +21,7 @@ function AuthContent() {
   const router = useRouter()
   const auth = useAuth()
   const db = useFirestore()
+  const { user, isUserLoading } = useUser()
   const { toast } = useToast()
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -37,6 +38,13 @@ function AuthContent() {
   const [jobTitle, setJobTitle] = useState("")
   const [phone, setPhone] = useState("")
   const [profilePicture, setProfilePicture] = useState<string | null>(null)
+
+  // 이미 로그인된 사용자는 홈으로 리다이렉트
+  useEffect(() => {
+    if (user && !isUserLoading) {
+      router.push("/")
+    }
+  }, [user, isUserLoading, router])
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -78,14 +86,14 @@ function AuthContent() {
         name,
         company,
         department,
-        jobTitle, // 사용자가 직접 작성하는 직무/직함
+        jobTitle, 
         phoneNumber: phone,
         role: "member",
         registrationDate: new Date().toISOString(),
         profilePictureUrl: profilePicture || null
       })
 
-      // 2. 자동 웰컴 메일 발송 플로우 트리거 (Server Action)
+      // 2. 자동 웰컴 메일 발송 플로우 트리거
       sendWelcomeEmail({ name, email }).catch(err => console.error("Welcome email failed:", err));
 
       toast({ title: "가입 완료!", description: "Whisper의 일원이 되신 것을 환영합니다. 가입 환영 메일을 확인해주세요!" })
@@ -95,6 +103,15 @@ function AuthContent() {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  if (isUserLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-40 gap-4">
+        <Sparkles className="w-12 h-12 animate-spin text-accent" />
+        <p className="text-primary/40 font-black animate-pulse">인증 상태 확인 중...</p>
+      </div>
+    )
   }
 
   return (
