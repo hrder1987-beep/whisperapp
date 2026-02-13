@@ -8,12 +8,13 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 import { useAuth, useFirestore, useUser } from "@/firebase"
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth"
-import { doc, setDoc } from "firebase/firestore"
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth"
+import { doc, setDoc, collection, query, where, getDocs } from "firebase/firestore"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
-import { LogIn, UserPlus, Camera, X, Sparkles, Info } from "lucide-react"
+import { LogIn, UserPlus, Camera, X, Sparkles, Info, Search, KeyRound } from "lucide-react"
 import { sendWelcomeEmail } from "@/ai/flows/send-welcome-email-flow"
 
 function AuthContent() {
@@ -38,6 +39,13 @@ function AuthContent() {
   const [jobTitle, setJobTitle] = useState("")
   const [phone, setPhone] = useState("")
   const [profilePicture, setProfilePicture] = useState<string | null>(null)
+
+  // Recovery States
+  const [recoveryMode, setRecoveryMode] = useState<null | "id" | "password">(null)
+  const [findName, setFindName] = useState("")
+  const [findPhone, setFindPhone] = useState("")
+  const [foundEmail, setFoundEmail] = useState<string | null>(null)
+  const [resetEmail, setResetEmail] = useState("")
 
   // 이미 로그인된 사용자는 홈으로 리다이렉트
   useEffect(() => {
@@ -105,6 +113,48 @@ function AuthContent() {
     }
   }
 
+  // 아이디(이메일) 찾기 로직
+  const handleFindId = async () => {
+    if (!findName || !findPhone) return
+    setIsLoading(true)
+    try {
+      const usersRef = collection(db, "users")
+      const q = query(usersRef, where("name", "==", findName), where("phoneNumber", "==", findPhone))
+      const querySnapshot = await getDocs(q)
+      
+      if (querySnapshot.empty) {
+        toast({ title: "정보 없음", description: "일치하는 회원 정보를 찾을 수 없습니다.", variant: "destructive" })
+        setFoundEmail(null)
+      } else {
+        const userData = querySnapshot.docs[0].data()
+        const fullEmail = userData.email
+        // 이메일 마스킹 처리 (앞 3글자 제외)
+        const [id, domain] = fullEmail.split('@')
+        const maskedId = id.substring(0, 2) + '*'.repeat(id.length - 2)
+        setFoundEmail(`${maskedId}@${domain}`)
+      }
+    } catch (err) {
+      toast({ title: "오류 발생", description: "정보 조회 중 문제가 발생했습니다.", variant: "destructive" })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  // 비밀번호 재설정 메일 발송 로직
+  const handleResetPassword = async () => {
+    if (!resetEmail) return
+    setIsLoading(true)
+    try {
+      await sendPasswordResetEmail(auth, resetEmail)
+      toast({ title: "메일 발송 완료", description: "입력하신 이메일로 비밀번호 재설정 링크를 보냈습니다." })
+      setRecoveryMode(null)
+    } catch (error: any) {
+      toast({ title: "발송 실패", description: "가입된 이메일인지 확인해 주세요.", variant: "destructive" })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   if (isUserLoading) {
     return (
       <div className="flex flex-col items-center justify-center py-40 gap-4">
@@ -132,7 +182,7 @@ function AuthContent() {
             <TabsContent value="login">
               <form onSubmit={handleLogin} className="space-y-4">
                 <div className="space-y-2">
-                  <Label className="text-xs font-black text-primary/40 ml-1">이메일</Label>
+                  <Label className="text-xs font-black text-primary/40 ml-1">이메일 (ID)</Label>
                   <Input type="email" placeholder="example@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required className="h-12 bg-primary/5 border-none rounded-xl" />
                 </div>
                 <div className="space-y-2">
@@ -143,6 +193,12 @@ function AuthContent() {
                   {isLoading ? "처리 중..." : "위스퍼 시작하기"}
                   <LogIn className="w-4 h-4 ml-2" />
                 </Button>
+                
+                <div className="flex items-center justify-center gap-4 mt-6">
+                  <button type="button" onClick={() => setRecoveryMode("id")} className="text-[11px] font-bold text-primary/30 hover:text-accent transition-colors">아이디 찾기</button>
+                  <div className="w-px h-2 bg-primary/10"></div>
+                  <button type="button" onClick={() => setRecoveryMode("password")} className="text-[11px] font-bold text-primary/30 hover:text-accent transition-colors">비밀번호 재설정</button>
+                </div>
               </form>
             </TabsContent>
 
@@ -184,7 +240,7 @@ function AuthContent() {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label className="text-xs font-black text-primary/40 ml-1">이메일</Label>
+                  <Label className="text-xs font-black text-primary/40 ml-1">이메일 (ID로 사용됨)</Label>
                   <Input type="email" placeholder="example@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required className="h-11 bg-primary/5 border-none rounded-xl" />
                 </div>
 
@@ -206,8 +262,8 @@ function AuthContent() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label className="text-xs font-black text-primary/40 ml-1">직무/직함 (예: 채용담당자)</Label>
-                    <Input placeholder="인사담당자 등 직접 입력" value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} required className="h-11 bg-primary/5 border-none rounded-xl" />
+                    <Label className="text-xs font-black text-primary/40 ml-1">직무/직함</Label>
+                    <Input placeholder="채용담당자 등" value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} required className="h-11 bg-primary/5 border-none rounded-xl" />
                   </div>
                   <div className="space-y-2">
                     <Label className="text-xs font-black text-primary/40 ml-1">휴대전화</Label>
@@ -224,6 +280,65 @@ function AuthContent() {
           </Tabs>
         </CardContent>
       </Card>
+
+      {/* Recovery Dialog */}
+      <Dialog open={!!recoveryMode} onOpenChange={() => { setRecoveryMode(null); setFoundEmail(null); }}>
+        <DialogContent className="max-w-md bg-white border-none rounded-[2.5rem] p-8 shadow-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-black text-primary flex items-center gap-3">
+              {recoveryMode === "id" ? <Search className="w-6 h-6 text-accent" /> : <KeyRound className="w-6 h-6 text-accent" />}
+              {recoveryMode === "id" ? "아이디(이메일) 찾기" : "비밀번호 재설정"}
+            </DialogTitle>
+            <DialogDescription className="font-bold text-primary/40">
+              {recoveryMode === "id" 
+                ? "가입 시 입력한 정보를 확인하여 아이디를 찾아드립니다." 
+                : "등록된 이메일로 비밀번호 재설정 링크를 보내드립니다."}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="py-6 space-y-4">
+            {recoveryMode === "id" ? (
+              <>
+                {foundEmail ? (
+                  <div className="bg-primary/5 p-6 rounded-2xl text-center space-y-2">
+                    <p className="text-[10px] font-black text-primary/30 uppercase">회원님의 아이디(이메일)입니다</p>
+                    <p className="text-xl font-black text-primary">{foundEmail}</p>
+                    <Button variant="outline" onClick={() => { setEmail(foundEmail.replace(/\*/g, '')); setRecoveryMode(null); }} className="mt-4 border-primary/10 text-primary font-black rounded-xl">로그인하러 가기</Button>
+                  </div>
+                ) : (
+                  <>
+                    <div className="space-y-2">
+                      <Label className="text-[10px] font-black text-primary/40 uppercase ml-1">성함</Label>
+                      <Input placeholder="가입 시 입력한 이름" value={findName} onChange={(e) => setFindName(e.target.value)} className="bg-primary/5 border-none h-12 rounded-xl" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-[10px] font-black text-primary/40 uppercase ml-1">휴대전화 번호</Label>
+                      <Input placeholder="010-0000-0000" value={findPhone} onChange={(e) => setFindPhone(e.target.value)} className="bg-primary/5 border-none h-12 rounded-xl" />
+                    </div>
+                  </>
+                )}
+              </>
+            ) : (
+              <div className="space-y-2">
+                <Label className="text-[10px] font-black text-primary/40 uppercase ml-1">가입 이메일</Label>
+                <Input placeholder="example@email.com" value={resetEmail} onChange={(e) => setResetEmail(e.target.value)} className="bg-primary/5 border-none h-12 rounded-xl" />
+              </div>
+            )}
+          </div>
+
+          <DialogFooter>
+            {!foundEmail && (
+              <Button 
+                onClick={recoveryMode === "id" ? handleFindId : handleResetPassword}
+                disabled={isLoading}
+                className="w-full h-12 bg-primary text-accent font-black rounded-xl"
+              >
+                {isLoading ? "확인 중..." : recoveryMode === "id" ? "아이디 찾기" : "재설정 메일 발송"}
+              </Button>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
