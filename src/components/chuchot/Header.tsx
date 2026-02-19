@@ -1,4 +1,3 @@
-
 "use client"
 
 import { Logo } from "./Logo"
@@ -20,7 +19,7 @@ interface HeaderProps {
 }
 
 export function Header({ onSearch }: HeaderProps) {
-  const pathname = pathnameFromHook()
+  const pathname = usePathname()
   const router = useRouter()
   const { user } = useUser()
   const auth = useAuth()
@@ -199,12 +198,4 @@ export function Header({ onSearch }: HeaderProps) {
       </div>
     </header>
   )
-}
-
-function pathnameFromHook() {
-  try {
-    return usePathname()
-  } catch (e) {
-    return "/"
-  }
 }

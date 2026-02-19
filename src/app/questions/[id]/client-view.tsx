@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
@@ -7,6 +6,7 @@ import { Question, Answer } from "@/lib/types"
 import { useFirestore, useCollection, useDoc, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking, useUser } from "@/firebase"
 import { collection, query, orderBy, doc, increment } from "firebase/firestore"
 import { Sparkles, ArrowLeft } from "lucide-react"
+import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 
@@ -94,8 +94,8 @@ export function QuestionViewClient({ id }: { id: string }) {
 
       <QuestionFeed 
         questions={[question]} 
-        onSelectQuestion={() => {}} // 이미 해당 페이지이므로 선택 로직 불필요
-        selectedId={id} // 강제로 펼쳐진 상태로 표시
+        onSelectQuestion={() => {}} 
+        selectedId={id} 
         answers={answers}
         onAddAnswer={handleAddAnswer}
         activeTab="all"

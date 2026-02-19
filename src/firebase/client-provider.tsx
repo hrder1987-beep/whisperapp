@@ -2,7 +2,7 @@
 
 import React, { useMemo, type ReactNode } from 'react';
 import { FirebaseProvider } from '@/firebase/provider';
-import { initializeFirebase } from '@/firebase';
+import { initializeFirebase } from './app'; // 배럴 파일이 아닌 직접 참조로 순환 참조 해결
 
 interface FirebaseClientProviderProps {
   children: ReactNode;
@@ -10,9 +10,9 @@ interface FirebaseClientProviderProps {
 
 export function FirebaseClientProvider({ children }: FirebaseClientProviderProps) {
   const firebaseServices = useMemo(() => {
-    // Initialize Firebase on the client side, once per component mount.
+    // 클라이언트 사이드에서 Firebase를 한 번만 초기화합니다.
     return initializeFirebase();
-  }, []); // Empty dependency array ensures this runs only once on mount
+  }, []);
 
   return (
     <FirebaseProvider
