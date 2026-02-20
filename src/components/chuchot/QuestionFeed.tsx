@@ -57,10 +57,10 @@ export function QuestionFeed({
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       {questions.length === 0 ? (
-        <Card className="naver-card p-20 text-center">
-          <p className="text-muted-foreground font-bold">검색된 정보가 없습니다.</p>
+        <Card className="naver-card p-24 text-center bg-white">
+          <p className="text-muted-foreground font-bold">공유된 정보가 아직 없습니다.</p>
         </Card>
       ) : (
         questions.map((q) => {
@@ -73,26 +73,26 @@ export function QuestionFeed({
               key={q.id} 
               id={`q-${q.id}`}
               className={cn(
-                "naver-card cursor-pointer",
-                isExpanded && "ring-1 ring-primary/20"
+                "naver-card cursor-pointer group",
+                isExpanded && "ring-1 ring-accent/30"
               )}
               onClick={() => onSelectQuestion(q.id)}
             >
-              <CardContent className="p-5 md:p-6">
-                <div className="flex justify-between items-start mb-4">
-                  <div className="flex items-center gap-3">
-                    <AvatarIcon src={q.userProfilePicture} seed={q.nickname} className="w-10 h-10 border border-black/5" />
+              <CardContent className="p-6 md:p-8">
+                <div className="flex justify-between items-start mb-5">
+                  <div className="flex items-center gap-4">
+                    <AvatarIcon src={q.userProfilePicture} seed={q.nickname} className="w-11 h-11 border border-black/5" />
                     <div className="flex flex-col">
                       <div className="flex items-center gap-2">
-                        <span className={cn("text-sm font-black", isMentor ? "text-primary" : "text-foreground")}>@{q.nickname}</span>
+                        <span className="text-[15px] font-black text-foreground">@{q.nickname}</span>
                         {isMentor && <Badge className="naver-badge">Whisperer</Badge>}
                         {user && user.uid !== q.userId && (
-                          <button onClick={(e) => { e.stopPropagation(); setMessageTarget({ id: q.userId, nickname: q.nickname }); }} className="text-muted-foreground hover:text-primary transition-colors">
-                            <Mail className="w-3.5 h-3.5" />
+                          <button onClick={(e) => { e.stopPropagation(); setMessageTarget({ id: q.userId, nickname: q.nickname }); }} className="text-muted-foreground hover:text-accent transition-colors">
+                            <Mail className="w-4 h-4" />
                           </button>
                         )}
                       </div>
-                      <span className="text-[11px] font-medium text-muted-foreground flex items-center gap-1.5">
+                      <span className="text-[12px] font-bold text-muted-foreground flex items-center gap-2">
                         {isMounted ? formatDistanceToNow(q.createdAt, { addSuffix: true, locale: ko }) : '...'}
                         <span className="w-0.5 h-0.5 rounded-full bg-black/10"></span>
                         조회 {q.viewCount}
@@ -101,27 +101,27 @@ export function QuestionFeed({
                   </div>
                   <div className="flex items-center gap-2">
                     {q.category && (
-                      <Badge variant="outline" className="text-[10px] font-bold border-black/10 text-muted-foreground rounded-sm">#{q.category}</Badge>
+                      <Badge variant="outline" className="text-[11px] font-bold border-black/[0.08] text-muted-foreground rounded-sm px-2 py-0.5">#{q.category}</Badge>
                     )}
-                    <button onClick={(e) => { e.stopPropagation(); }} className="text-black/10 hover:text-black/30">
+                    <button onClick={(e) => { e.stopPropagation(); }} className="text-black/10 hover:text-black/30 transition-colors">
                       <MoreHorizontal className="w-5 h-5" />
                     </button>
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <h3 className={cn("text-base md:text-[17px] font-black leading-tight", isExpanded ? "text-primary" : "text-foreground")}>{q.title}</h3>
-                  <p className={cn("text-[14px] leading-relaxed text-muted-foreground whitespace-pre-wrap break-words", !isExpanded && "line-clamp-2")}>{q.text}</p>
+                <div className="space-y-3">
+                  <h3 className="text-lg md:text-[19px] font-black leading-tight text-foreground group-hover:underline decoration-accent/30 underline-offset-4">{q.title}</h3>
+                  <p className={cn("text-[15px] leading-relaxed text-muted-foreground whitespace-pre-wrap break-words", !isExpanded && "line-clamp-2")}>{q.text}</p>
                   
                   {isExpanded && q.imageUrl && (
-                    <div className="relative w-full rounded-md overflow-hidden border border-black/5 bg-black/[0.02] mt-4">
+                    <div className="relative w-full rounded-sm overflow-hidden border border-black/5 bg-black/[0.02] mt-6">
                       <img src={q.imageUrl} alt="이미지" className="w-full h-auto block" />
                     </div>
                   )}
                 </div>
 
                 {isExpanded && (
-                  <div className="mt-8 pt-8 border-t border-black/5" onClick={(e) => e.stopPropagation()}>
+                  <div className="mt-10 pt-10 border-t border-black/[0.05]" onClick={(e) => e.stopPropagation()}>
                     <SubmissionForm type="answer" placeholder="도움이 될만한 의견을 남겨주세요." onSubmit={onAddAnswer} />
                     <AnswerFeed answers={questionAnswers} isAdminMode={isAdminMode} onDeleteAnswer={onDeleteAnswer} />
                   </div>
@@ -129,18 +129,18 @@ export function QuestionFeed({
               </CardContent>
               
               {!isExpanded && (
-                <CardFooter className="px-5 md:px-6 py-3 border-t border-black/[0.02] flex items-center justify-between bg-black/[0.01]">
-                  <div className="flex gap-4">
-                    <div className="flex items-center gap-1.5 text-[12px] font-bold text-muted-foreground">
-                      <MessageCircle className="w-4 h-4" />
+                <CardFooter className="px-6 md:px-8 py-4 border-t border-black/[0.03] flex items-center justify-between bg-[#FBFBFC]">
+                  <div className="flex gap-6">
+                    <div className="flex items-center gap-2 text-[13px] font-bold text-muted-foreground">
+                      <MessageCircle className="w-4 h-4 text-accent" />
                       <span>댓글 {q.answerCount}</span>
                     </div>
-                    <button onClick={(e) => handleShare(e, q)} className="flex items-center gap-1.5 text-[12px] font-bold text-muted-foreground hover:text-primary">
+                    <button onClick={(e) => handleShare(e, q)} className="flex items-center gap-2 text-[13px] font-bold text-muted-foreground hover:text-accent transition-colors">
                       <Share2 className="w-4 h-4" />
                       공유
                     </button>
                   </div>
-                  <Bookmark className="w-4 h-4 text-black/10 hover:text-primary cursor-pointer" />
+                  <Bookmark className="w-4 h-4 text-black/10 hover:text-accent cursor-pointer transition-colors" />
                 </CardFooter>
               )}
             </Card>

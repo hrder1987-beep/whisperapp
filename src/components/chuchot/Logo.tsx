@@ -31,9 +31,9 @@ export function Logo({ className = "", isLight = false, onClick }: LogoProps) {
         </span>
         <span className={cn(
           "text-[8px] font-black tracking-widest uppercase",
-          isLight ? "text-white/60" : "text-primary/40"
+          isLight ? "text-white/60" : "text-accent"
         )}>
-          HR Hub
+          HR HUB
         </span>
       </div>
     </div>

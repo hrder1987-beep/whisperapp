@@ -5,19 +5,19 @@
 
 @layer base {
   :root {
-    --background: 210 10% 97%;
+    --background: 210 20% 98%;
     --foreground: 222 47% 11%;
     --card: 0 0% 100%;
     --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
-    --primary: 147 97% 39%; /* NAVER Green #03C75A */
+    --primary: 222 47% 11%; /* Deep Navy */
     --primary-foreground: 0 0% 100%;
     --secondary: 210 10% 94%;
     --secondary-foreground: 222 47% 11%;
     --muted: 210 10% 96%;
     --muted-foreground: 215 16% 47%;
-    --accent: 147 97% 39%;
+    --accent: 147 97% 39%; /* Naver Green */
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
@@ -25,11 +25,6 @@
     --input: 214 32% 91%;
     --ring: 147 97% 39%;
     --radius: 0.5rem;
-    --chart-1: 147 97% 39%;
-    --chart-2: 210 10% 20%;
-    --chart-3: 147 50% 30%;
-    --chart-4: 45 60% 45%;
-    --chart-5: 147 80% 60%;
   }
 }
 
@@ -43,38 +38,46 @@
 }
 
 .naver-header {
-  @apply bg-white border-b border-black/5 sticky top-0 z-50;
+  @apply bg-white border-b border-black/[0.08] sticky top-0 z-50;
 }
 
 .naver-search-bar {
-  @apply border-2 border-primary bg-white rounded-md flex items-center px-4 transition-all focus-within:shadow-[0_2px_4px_rgba(0,0,0,0.1)];
+  @apply border-2 border-accent bg-white rounded-sm flex items-center px-4 transition-all focus-within:shadow-[0_2px_4px_rgba(0,0,0,0.05)];
 }
 
 .naver-card {
-  @apply bg-white border border-black/5 shadow-sm hover:border-primary/20 transition-all rounded-lg overflow-hidden;
+  @apply bg-white border border-black/[0.08] shadow-sm hover:border-black/[0.15] transition-all rounded-sm overflow-hidden;
 }
 
 .naver-button {
-  @apply bg-primary text-white font-bold rounded-md hover:brightness-95 transition-all;
+  @apply bg-accent text-white font-bold rounded-sm hover:brightness-95 transition-all;
 }
 
 .naver-badge {
-  @apply bg-primary/10 text-primary font-bold border-none px-2 py-0.5 rounded text-[10px] uppercase;
+  @apply bg-accent/10 text-accent font-bold border-none px-2 py-0.5 rounded-sm text-[10px] uppercase;
 }
 
 .ranking-number {
-  @apply font-black text-primary italic mr-3 text-lg;
+  @apply font-black text-accent italic mr-3 text-lg;
 }
 
 .glass-morphism {
   @apply bg-white/95 backdrop-blur-md border border-black/5 shadow-sm;
 }
 
-/* Custom radius classes for Naver-like subtle rounding */
+/* Custom radius classes for subtle rounding */
 .rounded-whisper {
-  border-radius: 0.75rem;
+  border-radius: 0.25rem;
 }
 
 .rounded-whisper-card {
-  border-radius: 0.5rem;
+  border-radius: 0.125rem;
+}
+
+.premium-gradient {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+}
+
+.gold-gradient {
+  @apply bg-accent;
 }

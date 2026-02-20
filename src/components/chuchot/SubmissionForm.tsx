@@ -6,23 +6,13 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import { ImageIcon, X, Send, Video, Link as LinkIcon, Info, ChevronDown } from "lucide-react"
+import { ImageIcon, X, Send } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { Separator } from "@/components/ui/separator"
-import { AvatarIcon } from "./AvatarIcon"
 import { containsProfanity } from "@/lib/utils"
 import { cn } from "@/lib/utils"
 import { useUser, useDoc, useMemoFirebase, useFirestore } from "@/firebase"
 import { doc } from "firebase/firestore"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 
 interface SubmissionFormProps {
   placeholder: string
@@ -44,8 +34,6 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
   const [title, setTitle] = useState("")
   const [text, setText] = useState("")
   const [imageUrl, setImageUrl] = useState<string | undefined>(undefined)
-  const [videoUrl, setVideoUrl] = useState<string | undefined>(undefined)
-  const [videoUrlInput, setVideoUrlInput] = useState("")
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   
@@ -81,37 +69,37 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
 
     setIsSubmitting(true)
     setTimeout(() => {
-      onSubmit(nickname, title, text, imageUrl, videoUrl, selectedCategory || undefined)
-      setTitle(""); setText(""); setImageUrl(undefined); setVideoUrl(undefined); setSelectedCategory(null); setVideoUrlInput("")
+      onSubmit(nickname, title, text, imageUrl, undefined, selectedCategory || undefined)
+      setTitle(""); setText(""); setImageUrl(undefined); setSelectedCategory(null);
       setIsSubmitting(false)
       toast({ title: "게시 완료", description: "소중한 지식이 공유되었습니다." })
     }, 400)
   }
 
   return (
-    <Card className="bg-white border border-black/5 mb-6 overflow-hidden rounded-lg shadow-sm">
+    <Card className="naver-card mb-6 overflow-hidden rounded-sm bg-white">
       <CardContent className="p-0">
         <form onSubmit={handleSubmit}>
-          <div className="p-4 md:p-6 space-y-4">
+          <div className="p-5 md:p-8 space-y-5">
             {type === "question" && (
-              <div className="space-y-3">
+              <div className="space-y-4">
                 <Input
                   placeholder="제목을 입력하세요"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="border-none shadow-none focus-visible:ring-0 text-[16px] font-black p-0 h-8"
+                  className="border-none shadow-none focus-visible:ring-0 text-lg font-black p-0 h-auto placeholder:text-black/10 text-foreground"
                 />
-                <div className="flex flex-wrap gap-1.5 pt-1">
+                <div className="flex flex-wrap gap-2 pt-1">
                   {HR_CATEGORIES.map((cat) => (
                     <button
                       key={cat}
                       type="button"
                       onClick={() => setSelectedCategory(cat)}
                       className={cn(
-                        "px-3 py-1 rounded-full text-[11px] font-bold transition-all border whitespace-nowrap",
+                        "px-3 py-1.5 rounded-sm text-[11px] font-bold transition-all border whitespace-nowrap",
                         selectedCategory === cat 
-                          ? "bg-primary text-white border-primary" 
-                          : "bg-black/[0.02] text-muted-foreground border-transparent hover:border-black/10"
+                          ? "bg-accent text-white border-accent" 
+                          : "bg-[#F8F9FA] text-muted-foreground border-black/10 hover:border-accent/50"
                       )}
                     >
                       #{cat}
@@ -127,24 +115,24 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
               placeholder={type === "question" ? "나누고 싶은 HR 인사이트를 자유롭게 적어주세요." : "따뜻한 답변으로 도움을 주세요."}
               value={text}
               onChange={(e) => setText(e.target.value)}
-              className="min-h-[100px] border-none shadow-none focus-visible:ring-0 p-0 text-[14px] leading-relaxed resize-none"
+              className="min-h-[120px] border-none shadow-none focus-visible:ring-0 p-0 text-[15px] leading-relaxed resize-none text-foreground placeholder:text-black/10"
             />
 
-            {(imageUrl || videoUrl) && (
-              <div className="relative w-fit max-w-full rounded-md overflow-hidden border border-black/5 mt-4">
-                {imageUrl && <img src={imageUrl} alt="preview" className="h-32 w-auto object-cover" />}
+            {imageUrl && (
+              <div className="relative w-fit max-w-full rounded-sm overflow-hidden border border-black/5 mt-4">
+                <img src={imageUrl} alt="preview" className="h-40 w-auto object-cover" />
                 <button 
                   type="button" 
-                  className="absolute top-1 right-1 bg-black/60 text-white p-1 rounded-full hover:bg-red-500"
+                  className="absolute top-2 right-2 bg-black/60 text-white p-1.5 rounded-full hover:bg-red-500 transition-colors"
                   onClick={() => setImageUrl(undefined)}
                 >
-                  <X className="h-3 w-3" />
+                  <X className="h-3.5 w-3.5" />
                 </button>
               </div>
             )}
           </div>
 
-          <div className="bg-[#F8F9FA] px-4 md:px-6 py-3 flex items-center justify-between border-t border-black/5">
+          <div className="bg-[#F8F9FA] px-5 md:px-8 py-4 flex items-center justify-between border-t border-black/[0.05]">
             <div className="flex items-center gap-1">
               <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={(e) => {
                 const file = e.target.files?.[0];
@@ -154,19 +142,19 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
                   reader.readAsDataURL(file);
                 }
               }} />
-              <Button type="button" variant="ghost" size="sm" className="h-8 text-muted-foreground gap-1.5 hover:text-primary" onClick={() => fileInputRef.current?.click()}>
+              <Button type="button" variant="ghost" size="sm" className="h-9 text-muted-foreground gap-2 hover:text-accent font-bold" onClick={() => fileInputRef.current?.click()}>
                 <ImageIcon className="w-4 h-4" />
-                <span className="font-bold text-[12px]">사진</span>
+                <span className="text-[13px]">사진 추가</span>
               </Button>
             </div>
             
             <Button 
               type="submit" 
               disabled={isSubmitting || !text.trim()} 
-              className="naver-button h-9 px-6 text-[13px] gap-2"
+              className="naver-button h-10 px-8 text-[14px] gap-2 shadow-sm whitespace-nowrap"
             >
               {isSubmitting ? "게시 중" : "속삭이기"}
-              <Send className="w-3.5 h-3.5" />
+              <Send className="w-4 h-4" />
             </Button>
           </div>
         </form>
