@@ -58,8 +58,8 @@ export default function NotificationsPage() {
       <main className="max-w-3xl mx-auto px-4 py-12">
         <div className="flex items-center justify-between mb-10">
           <div className="flex items-center gap-4">
-            <div className="p-3 bg-primary text-accent rounded-2xl shadow-xl">
-              <Bell className="w-8 h-8" />
+            <div className="text-primary">
+              <Bell className="w-10 h-10" />
             </div>
             <div>
               <h1 className="text-3xl font-black text-primary tracking-tighter">알림 센터</h1>
@@ -98,10 +98,10 @@ export default function NotificationsPage() {
                 <CardContent className="p-6">
                   <div className="flex items-start gap-4">
                     <div className={cn(
-                      "p-3 rounded-2xl shrink-0",
-                      n.isRead ? "bg-primary/5 text-primary/30" : "bg-accent/10 text-accent shadow-sm"
+                      "shrink-0 mt-1",
+                      n.isRead ? "text-primary/20" : "text-accent"
                     )}>
-                      <MessageSquare className="w-5 h-5" />
+                      <MessageSquare className="w-6 h-6" />
                     </div>
                     <div className="flex-1 space-y-1">
                       <div className="flex justify-between items-start">

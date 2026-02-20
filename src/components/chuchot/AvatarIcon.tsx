@@ -1,3 +1,4 @@
+
 "use client"
 
 import { 
@@ -12,11 +13,9 @@ import {
   Bug, 
   Antenna,
   Sparkles,
-  Search,
   MapPin,
   Building2,
-  Megaphone,
-  BookOpen
+  Megaphone
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -42,10 +41,10 @@ const AldiEggIcon = ({ className }: { className?: string }) => (
  * 사례 중심 전문가 '위스퍼라' 아이콘
  */
 const WhisperraIcon = ({ className }: { className?: string }) => (
-  <div className={cn("flex items-center justify-center bg-primary text-accent rounded-full p-2 shadow-lg", className)}>
+  <div className={cn("flex items-center justify-center text-primary", className)}>
     <div className="relative">
-      <Megaphone className="w-6 h-6" />
-      <Sparkles className="w-3 h-3 absolute -top-1 -right-1 text-white animate-pulse" />
+      <Megaphone className="w-7 h-7" />
+      <Sparkles className="w-3.5 h-3.5 absolute -top-1 -right-1 text-accent animate-pulse" />
     </div>
   </div>
 )
@@ -54,10 +53,10 @@ const WhisperraIcon = ({ className }: { className?: string }) => (
  * 공간 전문가 '동산' 아이콘
  */
 const DongsanIcon = ({ className }: { className?: string }) => (
-  <div className={cn("flex items-center justify-center bg-emerald-600 text-white rounded-full p-2 shadow-lg", className)}>
+  <div className={cn("flex items-center justify-center text-emerald-600", className)}>
     <div className="relative">
-      <Building2 className="w-6 h-6" />
-      <MapPin className="w-3 h-3 absolute -bottom-1 -right-1 text-accent" />
+      <Building2 className="w-7 h-7" />
+      <MapPin className="w-3.5 h-3.5 absolute -bottom-1 -right-1 text-accent" />
     </div>
   </div>
 )
@@ -87,7 +86,7 @@ export function AvatarIcon({ src, seed, avatarId, className }: AvatarIconProps) 
   if (src) {
     return (
       <div className={cn(
-        "w-10 h-10 rounded-full bg-white border border-primary/5 flex items-center justify-center shadow-md overflow-hidden",
+        "w-10 h-10 rounded-full bg-white border border-black/5 flex items-center justify-center overflow-hidden shadow-sm",
         className
       )}>
         <img src={src} alt="avatar" className="w-full h-full object-cover" />
@@ -95,11 +94,11 @@ export function AvatarIcon({ src, seed, avatarId, className }: AvatarIconProps) 
     )
   }
 
-  // 봇 전용 아이콘 식별
+  // 봇 전용 아이콘 식별 (배경색 제거)
   if (avatarId === "aldi" || seed?.toLowerCase() === "aldi" || seed === "알디") {
     return (
       <div className={cn(
-        "w-10 h-10 rounded-full bg-accent text-primary flex items-center justify-center shadow-lg border-2 border-white",
+        "w-10 h-10 flex items-center justify-center text-accent",
         className
       )}>
         <AldiEggIcon />
@@ -130,10 +129,10 @@ export function AvatarIcon({ src, seed, avatarId, className }: AvatarIconProps) 
 
   return (
     <div className={cn(
-      "w-10 h-10 rounded-full bg-white border border-primary/5 flex items-center justify-center shadow-inner",
+      "w-10 h-10 flex items-center justify-center",
       className
     )}>
-      <Icon className={cn("w-6 h-6", color)} />
+      <Icon className={cn("w-7 h-7", color)} />
     </div>
   )
 }

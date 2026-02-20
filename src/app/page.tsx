@@ -12,7 +12,6 @@ import { PremiumAds } from "@/components/chuchot/PremiumAds"
 import { Question, Answer, TrainingProgram, Instructor, JobListing, PremiumAd } from "@/lib/types"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { Sparkles, ChevronsLeft, ChevronsRight, Search, FileText, GraduationCap, User, Briefcase, ArrowRight } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { generateAiReply } from "@/ai/flows/generate-ai-reply-flow"
@@ -211,8 +210,8 @@ export default function HomePage() {
             {deferredSearchQuery ? (
               <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 <div className="flex items-center gap-4 border-b border-primary/10 pb-6">
-                  <div className="p-4 bg-accent text-primary rounded-2xl shadow-lg">
-                    <Search className="w-8 h-8" />
+                  <div className="text-accent">
+                    <Search className="w-10 h-10" />
                   </div>
                   <div>
                     <h2 className="text-3xl font-black text-primary text-balance">'<span className="text-accent">{deferredSearchQuery}</span>' 통합 검색 결과</h2>

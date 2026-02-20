@@ -193,8 +193,8 @@ export default function ProfilePage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-6">
                 <div className="flex items-center gap-4">
-                  <div className="p-3 bg-primary/5 rounded-2xl">
-                    <UserIcon className="w-5 h-5 text-accent" />
+                  <div className="text-accent">
+                    <UserIcon className="w-6 h-6" />
                   </div>
                   <div className="flex-1">
                     <p className="text-[10px] font-black text-primary/30 uppercase tracking-widest">성함</p>
@@ -211,8 +211,8 @@ export default function ProfilePage() {
                 </div>
 
                 <div className="flex items-center gap-4">
-                  <div className="p-3 bg-primary/5 rounded-2xl">
-                    <Building2 className="w-5 h-5 text-accent" />
+                  <div className="text-accent">
+                    <Building2 className="w-6 h-6" />
                   </div>
                   <div className="flex-1">
                     <p className="text-[10px] font-black text-primary/30 uppercase tracking-widest">소속 회사</p>
@@ -229,8 +229,8 @@ export default function ProfilePage() {
                 </div>
 
                 <div className="flex items-center gap-4">
-                  <div className="p-3 bg-primary/5 rounded-2xl">
-                    <Building2 className="w-5 h-5 text-accent" />
+                  <div className="text-accent">
+                    <Building2 className="w-6 h-6" />
                   </div>
                   <div className="flex-1">
                     <p className="text-[10px] font-black text-primary/30 uppercase tracking-widest">소속 부서</p>
@@ -249,8 +249,8 @@ export default function ProfilePage() {
 
               <div className="space-y-6">
                 <div className="flex items-center gap-4">
-                  <div className="p-3 bg-primary/5 rounded-2xl">
-                    <Briefcase className="w-5 h-5 text-accent" />
+                  <div className="text-accent">
+                    <Briefcase className="w-6 h-6" />
                   </div>
                   <div className="flex-1">
                     <p className="text-[10px] font-black text-primary/30 uppercase tracking-widest">직함</p>
@@ -267,8 +267,8 @@ export default function ProfilePage() {
                 </div>
 
                 <div className="flex items-center gap-4">
-                  <div className="p-3 bg-primary/5 rounded-2xl">
-                    <Phone className="w-5 h-5 text-accent" />
+                  <div className="text-accent">
+                    <Phone className="w-6 h-6" />
                   </div>
                   <div className="flex-1">
                     <p className="text-[10px] font-black text-primary/30 uppercase tracking-widest">휴대전화</p>
@@ -285,8 +285,8 @@ export default function ProfilePage() {
                 </div>
 
                 <div className="flex items-center gap-4">
-                  <div className="p-3 bg-primary/5 rounded-2xl">
-                    <Calendar className="w-5 h-5 text-accent" />
+                  <div className="text-accent">
+                    <Calendar className="w-6 h-6" />
                   </div>
                   <div>
                     <p className="text-[10px] font-black text-primary/30 uppercase tracking-widest">가입일</p>
@@ -335,8 +335,8 @@ export default function ProfilePage() {
             <Link href="/admin">
               <Button className="w-full h-20 bg-primary text-accent hover:bg-primary/95 rounded-[2rem] shadow-2xl flex items-center justify-between px-10 group transition-all border border-accent/20">
                 <div className="flex items-center gap-4">
-                  <div className="p-3 bg-white/10 rounded-2xl group-hover:scale-110 transition-transform shadow-inner">
-                    <Settings className="w-6 h-6" />
+                  <div className="text-accent group-hover:scale-110 transition-transform">
+                    <Settings className="w-8 h-8" />
                   </div>
                   <div className="text-left">
                     <p className="text-[10px] font-black uppercase tracking-widest opacity-50">Authorized Personnel Only</p>

@@ -141,8 +141,8 @@ export default function MessagesPage() {
       <Header />
       <main className="max-w-4xl mx-auto px-4 py-12">
         <div className="flex items-center gap-4 mb-10">
-          <div className="p-3 bg-primary text-accent rounded-2xl shadow-xl">
-            <Mail className="w-8 h-8" />
+          <div className="text-primary">
+            <Mail className="w-10 h-10" />
           </div>
           <div>
             <h1 className="text-3xl font-black text-primary tracking-tighter">쪽지함</h1>

@@ -106,7 +106,7 @@ export default function AdminPage() {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
           <div className="space-y-2">
             <div className="flex items-center gap-3">
-              <div className="bg-primary text-accent p-2 rounded-lg"><Settings className="w-5 h-5" /></div>
+              <div className="text-accent"><Settings className="w-6 h-6" /></div>
               <span className="text-xs font-black text-primary/30 uppercase tracking-[0.2em]">Whisper Admin Control</span>
             </div>
             <h1 className="text-4xl font-black text-primary tracking-tighter">플랫폼 통합 관리</h1>

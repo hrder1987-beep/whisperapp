@@ -11,7 +11,6 @@ import {
   User, 
   Maximize2, 
   X,
-  Sparkles
 } from "lucide-react"
 import { chatShu } from "@/ai/flows/chat-shu-flow"
 import { cn } from "@/lib/utils"
@@ -112,7 +111,7 @@ function ChatInterface({
       <CardHeader className="p-0 shrink-0 bg-white border-b border-black/[0.08]">
         <div className="p-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <AvatarIcon avatarId={activeBot} className="w-10 h-10 border border-black/5" />
+            <AvatarIcon avatarId={activeBot} className="w-10 h-10" />
             <div>
               <CardTitle className="text-base font-black">{BOT_INFO[activeBot].name}</CardTitle>
               <p className="text-[10px] text-accent font-bold uppercase tracking-widest">{BOT_INFO[activeBot].sub}</p>
