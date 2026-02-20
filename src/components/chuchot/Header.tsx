@@ -111,12 +111,12 @@ export function Header({ onSearch }: HeaderProps) {
           <Link href="/"><Logo /></Link>
         </div>
 
-        {/* Improved Naver Style Search Bar */}
+        {/* Improved Naver Style Search Bar - Two-tone fix */}
         <div className="hidden md:flex flex-1 max-w-xl">
-          <div className="naver-search-bar w-full h-11">
+          <div className="naver-search-bar w-full h-11 focus-within:border-accent">
             <Input 
               placeholder="궁금한 HR 지식을 검색해보세요" 
-              className="border-none shadow-none focus-visible:ring-0 text-[15px] font-bold h-full placeholder:text-black/20 bg-transparent px-0"
+              className="border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 text-[15px] font-bold h-full placeholder:text-black/20 bg-transparent px-0 outline-none"
               value={searchQuery} 
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={handleKeyDown}

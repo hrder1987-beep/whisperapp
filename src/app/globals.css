@@ -30,7 +30,7 @@
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-border outline-none !ring-offset-0;
   }
   body {
     @apply bg-[#F5F6F7] text-[#1E1E23] font-body antialiased;
@@ -43,7 +43,7 @@
 }
 
 .naver-search-bar {
-  @apply border-2 border-accent bg-white rounded-none flex items-center px-4 transition-all focus-within:shadow-sm;
+  @apply border-2 border-accent bg-white rounded-none flex items-center px-4 transition-all focus-within:shadow-sm outline-none;
 }
 
 .naver-card {
@@ -85,4 +85,10 @@ p, span, div {
 
 .premium-gradient {
   background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+}
+
+/* Global Focus Reset */
+input:focus, textarea:focus {
+  outline: none !important;
+  box-shadow: none !important;
 }
