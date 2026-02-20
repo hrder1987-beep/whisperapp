@@ -235,7 +235,7 @@ export default function ProgramsPage() {
 
           <Button 
             onClick={handleOpenDialog}
-            className="hidden md:flex gold-gradient text-primary font-black h-20 px-12 rounded-[2.5rem] shadow-2xl hover:scale-105 active:scale-95 transition-all gap-2 text-lg shrink-0"
+            className="hidden md:flex bg-primary text-accent hover:bg-primary/95 font-black h-20 px-12 rounded-[2.5rem] shadow-2xl hover:scale-105 active:scale-95 transition-all gap-2 text-lg shrink-0 border border-accent/20"
           >
             <Plus className="w-6 h-6" />
             무료 프로그램 등록
@@ -340,7 +340,7 @@ export default function ProgramsPage() {
                   </div>
                 </div>
 
-                <Button type="submit" disabled={isSubmitting} className="w-full h-14 bg-primary text-accent font-black rounded-2xl shadow-xl mt-4">
+                <Button type="submit" disabled={isSubmitting} className="w-full h-14 bg-primary text-accent font-black rounded-2xl shadow-xl mt-4 border border-accent/20">
                   {isSubmitting ? "등록 중..." : "솔루션 홍보 게시하기"}
                 </Button>
               </form>

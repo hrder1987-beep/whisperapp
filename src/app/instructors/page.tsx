@@ -212,7 +212,7 @@ export default function InstructorsPage() {
 
           <Button 
             onClick={handleOpenDialog}
-            className="hidden md:flex gold-gradient text-primary font-black h-20 px-12 rounded-[2.5rem] shadow-2xl hover:scale-105 active:scale-95 transition-all gap-3 text-lg shrink-0"
+            className="hidden md:flex bg-primary text-accent hover:bg-primary/95 font-black h-20 px-12 rounded-[2.5rem] shadow-2xl hover:scale-105 active:scale-95 transition-all gap-3 text-lg shrink-0 border border-accent/20"
           >
             <Plus className="w-6 h-6" />
             강사 프로필 등록하기
@@ -311,7 +311,7 @@ export default function InstructorsPage() {
                   </div>
                 </div>
 
-                <Button type="submit" disabled={isSubmitting} className="w-full h-16 bg-primary text-accent font-black rounded-2xl shadow-xl mt-6 text-lg">
+                <Button type="submit" disabled={isSubmitting} className="w-full h-16 bg-primary text-accent font-black rounded-2xl shadow-xl mt-6 text-lg border border-accent/20">
                   {isSubmitting ? "프로필 등록 중..." : "강사 프로필 게시하기"}
                 </Button>
               </form>
@@ -350,7 +350,7 @@ export default function InstructorsPage() {
                        <img src={i.profilePictureUrl} alt={i.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                     </div>
                     {i.isVerified && (
-                      <Badge className="absolute -bottom-2 right-0 bg-primary text-accent font-black border-none px-4 py-1.5 rounded-xl shadow-2xl flex gap-1.5 items-center text-[10px]">
+                      <Badge className="absolute -bottom-2 right-0 bg-primary text-accent font-black border-none px-4 py-1.5 rounded-xl shadow-2xl flex gap-1.5 items-center text-[10px] border border-accent/20">
                         <Check className="w-3.5 h-3.5" /> VERIFIED
                       </Badge>
                     )}
@@ -482,7 +482,7 @@ export default function InstructorsPage() {
                 {viewTarget.curriculumPdfUrl && (
                   <Button 
                     onClick={() => window.open(viewTarget.curriculumPdfUrl, '_blank')}
-                    className="flex-1 h-14 rounded-2xl bg-primary text-accent font-black shadow-xl"
+                    className="flex-1 h-14 rounded-2xl bg-primary text-accent font-black shadow-xl border border-accent/20"
                   >
                     커리큘럼 PDF 열기
                   </Button>

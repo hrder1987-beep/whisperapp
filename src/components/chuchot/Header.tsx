@@ -4,7 +4,7 @@
 import { Logo } from "./Logo"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Search, User as UserIcon, Menu, Mail, ShieldCheck } from "lucide-react"
+import { Search, User as UserIcon, Menu, Mail, ShieldCheck, FileText } from "lucide-react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useUser, useAuth, useCollection, useMemoFirebase, useFirestore, useDoc } from "@/firebase"
@@ -75,6 +75,9 @@ export function Header({ onSearch }: HeaderProps) {
               <Link href="/profile" className="hover:text-[#1E1E23] transition-colors flex items-center gap-1.5">
                 <UserIcon className="w-3.5 h-3.5" /> 내 정보
               </Link>
+              <Link href="/my-posts" className="hover:text-[#1E1E23] transition-colors flex items-center gap-1.5">
+                <FileText className="w-3.5 h-3.5" /> 내가 쓴 글
+              </Link>
               <button onClick={handleLogout} className="hover:text-red-500 transition-colors">로그아웃</button>
             </>
           ) : (
@@ -104,6 +107,9 @@ export function Header({ onSearch }: HeaderProps) {
                   {navLinks.map((link) => (
                     <Link key={link.href} href={link.href} onClick={() => setIsMobileMenuOpen(false)} className={cn("text-lg font-bold transition-all", pathname === link.href ? "text-accent" : "text-[#1E1E23]")}>{link.name}</Link>
                   ))}
+                  {user && (
+                    <Link href="/my-posts" onClick={() => setIsMobileMenuOpen(false)} className={cn("text-lg font-bold transition-all", pathname === '/my-posts' ? "text-accent" : "text-[#1E1E23]")}>내가 쓴 글</Link>
+                  )}
                 </nav>
               </div>
             </SheetContent>
@@ -111,7 +117,7 @@ export function Header({ onSearch }: HeaderProps) {
           <Link href="/"><Logo /></Link>
         </div>
 
-        {/* Improved Naver Style Search Bar - Two-tone fix */}
+        {/* Improved Naver Style Search Bar */}
         <div className="hidden md:flex flex-1 max-w-xl">
           <div className="naver-search-bar w-full h-11 focus-within:border-accent">
             <Input 

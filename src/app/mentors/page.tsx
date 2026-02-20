@@ -234,7 +234,7 @@ export default function MentorsPage() {
 
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="hidden md:flex gold-gradient text-primary font-black h-20 px-12 rounded-[2.5rem] shadow-2xl hover:scale-105 active:scale-95 transition-all gap-3 text-lg shrink-0">
+              <Button className="hidden md:flex bg-primary text-accent hover:bg-primary/95 font-black h-20 px-12 rounded-[2.5rem] shadow-2xl hover:scale-105 active:scale-95 transition-all gap-3 text-lg shrink-0 border border-accent/20">
                 <Crown className="w-6 h-6" />
                 위스퍼러 신청하기
               </Button>
@@ -303,7 +303,7 @@ export default function MentorsPage() {
                     </div>
                   </div>
 
-                  <Button type="submit" disabled={isSubmitting} className="w-full h-16 bg-primary text-accent font-black rounded-2xl shadow-xl text-lg hover:scale-[1.02] transition-all">
+                  <Button type="submit" disabled={isSubmitting} className="w-full h-16 bg-primary text-accent font-black rounded-2xl shadow-xl text-lg hover:scale-[1.02] transition-all border border-accent/20">
                     {isSubmitting ? "신청서 제출 중..." : "위스퍼러 신청 완료하기"}
                   </Button>
                 </form>
@@ -330,7 +330,7 @@ export default function MentorsPage() {
                        <img src={m.profilePictureUrl} alt={m.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                     </div>
                     {m.isVerified && (
-                      <Badge className="absolute -bottom-2 right-0 bg-primary text-accent font-black border-none px-3 py-1 rounded-xl flex gap-1.5 items-center animate-bounce shadow-xl text-[10px]">
+                      <Badge className="absolute -bottom-2 right-0 bg-primary text-accent font-black border-none px-3 py-1 rounded-xl flex gap-1.5 items-center animate-bounce shadow-xl text-[10px] border border-accent/20">
                         <Award className="w-3 h-3" /> WHISPERER
                       </Badge>
                     )}

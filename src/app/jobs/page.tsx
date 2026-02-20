@@ -203,7 +203,7 @@ export default function JobsPage() {
 
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="hidden md:flex gold-gradient text-primary font-black h-20 px-12 rounded-[2.5rem] shadow-2xl hover:scale-105 active:scale-95 transition-all gap-3 text-lg shrink-0">
+              <Button className="hidden md:flex bg-primary text-accent hover:bg-primary/95 font-black h-20 px-12 rounded-[2.5rem] shadow-2xl hover:scale-105 active:scale-95 transition-all gap-3 text-lg shrink-0 border border-accent/20">
                 <Plus className="w-6 h-6" />
                 공고 등록하기
               </Button>
@@ -318,7 +318,7 @@ export default function JobsPage() {
                     </div>
                   </section>
 
-                  <Button type="submit" disabled={isSubmitting || !adImageUrl} className="w-full h-16 bg-primary text-accent font-black rounded-2xl shadow-xl text-lg hover:scale-[1.02] transition-all">
+                  <Button type="submit" disabled={isSubmitting || !adImageUrl} className="w-full h-16 bg-primary text-accent font-black rounded-2xl shadow-xl text-lg hover:scale-[1.02] transition-all border border-accent/20">
                     {isSubmitting ? "공고 등록 중..." : "HR 채용 공고 게시하기"}
                   </Button>
                 </form>
@@ -371,10 +371,10 @@ export default function JobsPage() {
                         <Badge key={tag} variant="outline" className="border-primary/10 text-primary/40 font-bold text-[10px] px-2 py-0">#{tag}</Badge>
                       ))}
                     </div>
-                    <div className="flex items-center justify-between text-[11px] font-black text-primary/30 pt-4 border-t border-primary/5">
+                    <div className="flex items-center justify-between text-[11px] font-black pt-4 border-t border-primary/5">
                       <div className="flex items-center gap-3">
-                        <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> {job.location}</span>
-                        <span className="flex items-center gap-1"><Award className="w-3 h-3" /> {job.experience}</span>
+                        <span className="flex items-center gap-1 text-primary/30"><MapPin className="w-3 h-3" /> {job.location}</span>
+                        <span className="flex items-center gap-1 text-primary/30"><Award className="w-3 h-3" /> {job.experience}</span>
                       </div>
                       <Button onClick={() => setViewJob(job)} variant="ghost" size="sm" className="text-accent hover:text-accent font-black h-8 p-0">상세보기</Button>
                     </div>
@@ -418,7 +418,7 @@ export default function JobsPage() {
                   <Badge className="bg-primary/5 text-primary/40 font-black border-none px-3 py-1 rounded-full text-[10px] w-fit">
                     #{job.category}
                   </Badge>
-                  <Button onClick={() => setViewJob(job)} className="h-12 px-8 rounded-xl bg-primary/5 hover:bg-primary text-primary hover:text-accent font-black transition-all">
+                  <Button onClick={() => setViewJob(job)} className="h-12 px-8 rounded-xl bg-primary text-accent hover:bg-primary/90 font-black transition-all border border-accent/20">
                     상세보기
                   </Button>
                 </div>
@@ -481,7 +481,7 @@ export default function JobsPage() {
                         </div>
                       </div>
                     </div>
-                    <div className="bg-primary text-accent p-8 rounded-3xl shadow-xl space-y-4 flex flex-col justify-center">
+                    <div className="bg-primary text-accent p-8 rounded-3xl shadow-xl space-y-4 flex flex-col justify-center border border-accent/20">
                       <div className="text-center space-y-2">
                         <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-60">How to Apply</p>
                         <p className="text-lg font-black leading-tight">아래 연락처로 지원 서류를<br/>보내주시기 바랍니다.</p>
