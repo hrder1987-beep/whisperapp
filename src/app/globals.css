@@ -5,31 +5,31 @@
 
 @layer base {
   :root {
-    --background: 165 20% 98%;
-    --foreground: 165 100% 5%;
+    --background: 210 10% 97%;
+    --foreground: 222 47% 11%;
     --card: 0 0% 100%;
-    --card-foreground: 165 100% 5%;
+    --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
-    --popover-foreground: 165 100% 5%;
-    --primary: 165 100% 12%;
-    --primary-foreground: 45 90% 55%;
-    --secondary: 165 30% 92%;
-    --secondary-foreground: 165 100% 10%;
-    --muted: 165 10% 94%;
-    --muted-foreground: 165 10% 40%;
-    --accent: 45 90% 55%;
-    --accent-foreground: 165 100% 10%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 147 97% 39%; /* NAVER Green #03C75A */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 10% 94%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 210 10% 96%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 147 97% 39%;
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 165 20% 88%;
-    --input: 165 20% 88%;
-    --ring: 165 100% 12%;
-    --radius: 2rem;
-    --chart-1: 165 100% 12%;
-    --chart-2: 45 90% 55%;
-    --chart-3: 165 50% 30%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 147 97% 39%;
+    --radius: 0.5rem;
+    --chart-1: 147 97% 39%;
+    --chart-2: 210 10% 20%;
+    --chart-3: 147 50% 30%;
     --chart-4: 45 60% 45%;
-    --chart-5: 165 80% 60%;
+    --chart-5: 147 80% 60%;
   }
 }
 
@@ -38,60 +38,43 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-body;
-  }
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-headline text-foreground font-bold;
+    @apply bg-background text-foreground font-body antialiased;
   }
 }
 
-.logo-animation {
-  animation: whisper 3s ease-in-out infinite;
+.naver-header {
+  @apply bg-white border-b border-black/5 sticky top-0 z-50;
 }
 
-.avatar-animation {
-  animation: float 4s ease-in-out infinite;
+.naver-search-bar {
+  @apply border-2 border-primary bg-white rounded-md flex items-center px-4 transition-all focus-within:shadow-[0_2px_4px_rgba(0,0,0,0.1)];
 }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0) rotate(0); }
-  50% { transform: translateY(-4px) rotate(5deg); }
+.naver-card {
+  @apply bg-white border border-black/5 shadow-sm hover:border-primary/20 transition-all rounded-lg overflow-hidden;
 }
 
-@keyframes whisper {
-  0%, 100% { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 2px hsl(var(--accent))); }
-  50% { opacity: 0.8; transform: scale(0.98); filter: drop-shadow(0 0 8px hsl(var(--accent))); }
+.naver-button {
+  @apply bg-primary text-white font-bold rounded-md hover:brightness-95 transition-all;
+}
+
+.naver-badge {
+  @apply bg-primary/10 text-primary font-bold border-none px-2 py-0.5 rounded text-[10px] uppercase;
+}
+
+.ranking-number {
+  @apply font-black text-primary italic mr-3 text-lg;
 }
 
 .glass-morphism {
-  @apply bg-white/90 backdrop-blur-md border border-primary/10 shadow-sm;
+  @apply bg-white/95 backdrop-blur-md border border-black/5 shadow-sm;
 }
 
-.premium-gradient {
-  background: linear-gradient(135deg, hsl(165 100% 12%) 0%, hsl(165 100% 20%) 100%);
-}
-
-.gold-gradient {
-  background: linear-gradient(135deg, hsl(45 90% 55%) 0%, hsl(40 80% 45%) 100%);
-}
-
-.card-hover {
-  @apply transition-all duration-300 hover:shadow-lg hover:border-accent/30 hover:-translate-y-0.5;
-}
-
-.text-gold {
-  color: hsl(45 90% 55%);
-}
-
-.bg-gold {
-  background-color: hsl(45 90% 55%);
-}
-
-/* Custom radius classes for super-rounded look */
+/* Custom radius classes for Naver-like subtle rounding */
 .rounded-whisper {
-  border-radius: 3rem;
+  border-radius: 0.75rem;
 }
 
 .rounded-whisper-card {
-  border-radius: 2.5rem;
+  border-radius: 0.5rem;
 }

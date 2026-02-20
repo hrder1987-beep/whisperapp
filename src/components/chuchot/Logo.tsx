@@ -17,24 +17,23 @@ export function Logo({ className = "", isLight = false, onClick }: LogoProps) {
       onClick={onClick}
     >
       <div className="relative">
-        <div className={cn(
-          "absolute inset-0 blur-lg rounded-full animate-pulse transition-all duration-500",
-          isLight ? "bg-accent/30 group-hover:bg-accent/50" : "bg-accent/20 group-hover:bg-accent/40"
-        )}></div>
-        <MessageSquareQuote className="w-8 h-8 text-accent relative logo-animation" />
+        <MessageSquareQuote className={cn(
+          "w-7 h-7 relative transition-all duration-300",
+          isLight ? "text-white" : "text-primary"
+        )} />
       </div>
       <div className="flex flex-col -space-y-1">
         <span className={cn(
-          "font-headline text-2xl font-black tracking-tighter transition-colors duration-300",
-          isLight ? "text-white group-hover:text-accent" : "text-primary group-hover:text-accent"
+          "font-headline text-xl font-black tracking-tight transition-colors duration-300",
+          isLight ? "text-white" : "text-primary"
         )}>
           WHISPER
         </span>
         <span className={cn(
-          "text-[9px] font-bold tracking-[0.2em] uppercase ml-0.5",
-          isLight ? "text-accent/90" : "text-accent/80"
+          "text-[8px] font-black tracking-widest uppercase",
+          isLight ? "text-white/60" : "text-primary/40"
         )}>
-          HR Intelligence Hub
+          HR Hub
         </span>
       </div>
     </div>

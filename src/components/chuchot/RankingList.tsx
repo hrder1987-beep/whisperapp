@@ -2,7 +2,7 @@
 "use client"
 
 import { Question } from "@/lib/types"
-import { TrendingUp, MessageCircle, Crown, ChevronRight } from "lucide-react"
+import { TrendingUp, MessageCircle, ChevronRight, BarChart2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
 
@@ -16,60 +16,47 @@ export function RankingList({ questions, onSelectQuestion }: RankingListProps) {
 
   const handleMoreClick = () => {
     toast({
-      title: "실시간 랭킹 분석 중",
-      description: "더 많은 통계와 랭킹 리포트는 다음 업데이트에서 제공될 예정입니다.",
+      title: "실시간 지식 랭킹",
+      description: "현재 가장 주목받는 HR 이슈 리포트입니다.",
     })
   }
 
-  // 상위 3개만 노출
-  const topQuestions = questions.slice(0, 3)
+  // 상위 10개까지 노출 가능하도록 변경 (디자인만)
+  const topQuestions = questions.slice(0, 5)
 
   return (
-    <div className="bg-white rounded-[2rem] p-8 border border-primary/5 shadow-xl relative overflow-hidden">
-      <div className="absolute top-0 right-0 -mr-6 -mt-6 opacity-[0.03]">
-        <Crown className="w-48 h-48 text-accent rotate-12" />
-      </div>
-      
-      <div className="flex items-center justify-between mb-8 relative z-10">
-        <h3 className="text-xl font-black text-primary flex items-center gap-3">
+    <div className="naver-card">
+      <div className="p-5 border-b border-black/5 flex items-center justify-between bg-[#F8F9FA]">
+        <h3 className="text-[15px] font-black text-foreground flex items-center gap-2">
           실시간 인기 속삭임
-          <span className="flex h-2 w-2 rounded-full bg-red-500 animate-pulse"></span>
+          <span className="text-[10px] bg-primary text-white px-1 rounded uppercase">Hot</span>
         </h3>
-        <TrendingUp className="w-6 h-6 text-accent" />
+        <span className="text-[11px] font-bold text-muted-foreground">12:00 기준</span>
       </div>
       
-      <div className="space-y-6 relative z-10">
+      <div className="divide-y divide-black/5">
         {topQuestions.map((q, idx) => (
           <div 
             key={q.id}
             onClick={() => onSelectQuestion(q.id)}
-            className="group flex gap-5 cursor-pointer items-start"
+            className="group flex items-center p-4 cursor-pointer hover:bg-black/[0.01]"
           >
-            <div className="relative flex-shrink-0 mt-1">
-              <span className={cn(
-                "text-3xl font-black w-10 text-center leading-none inline-block transition-all group-hover:scale-110",
-                idx === 0 ? "text-accent" : idx === 1 ? "text-primary/40" : "text-primary/20"
-              )}>
-                {idx + 1}
-              </span>
-              {idx === 0 && (
-                <Crown className="absolute -top-5 -left-3 w-6 h-6 text-accent transform -rotate-12 drop-shadow-md" />
-              )}
-            </div>
+            <span className={cn(
+              "ranking-number w-6 text-center",
+              idx < 3 ? "text-primary" : "text-muted-foreground/40"
+            )}>
+              {idx + 1}
+            </span>
             
-            <div className="flex-1 min-w-0 border-b border-primary/5 pb-4 group-last:border-none">
-              <p className="text-[16px] font-bold line-clamp-2 leading-[1.4] group-hover:text-accent transition-colors mb-2 text-primary/90">
+            <div className="flex-1 min-w-0 pr-4">
+              <p className="text-[14px] font-bold truncate group-hover:text-primary transition-colors">
                 {q.title}
               </p>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <span className="text-[11px] font-black text-primary/40 bg-primary/5 px-2.5 py-0.5 rounded-full uppercase tracking-tighter">@{q.nickname}</span>
-                  <span className="flex items-center gap-1.5 text-[12px] font-bold text-primary/30">
-                    <MessageCircle className="w-3.5 h-3.5" /> {q.answerCount}
-                  </span>
-                </div>
-                <ChevronRight className="w-4 h-4 text-primary/10 group-hover:text-accent group-hover:translate-x-1 transition-all" />
-              </div>
+            </div>
+            
+            <div className="flex items-center gap-1.5 text-[11px] font-bold text-muted-foreground/40 shrink-0">
+              <MessageCircle className="w-3.5 h-3.5" />
+              {q.answerCount}
             </div>
           </div>
         ))}
@@ -77,10 +64,9 @@ export function RankingList({ questions, onSelectQuestion }: RankingListProps) {
       
       <button 
         onClick={handleMoreClick}
-        className="w-full mt-6 bg-primary text-accent hover:bg-primary/95 font-black text-[15px] py-4 rounded-2xl shadow-lg transition-all transform hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 group"
+        className="w-full py-3 text-[12px] font-bold text-muted-foreground bg-[#F8F9FA] border-t border-black/5 hover:bg-black/[0.02] flex items-center justify-center gap-1"
       >
-        실시간 랭킹 더보기
-        <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+        인기 지식 전체보기 <ChevronRight className="w-3 h-3" />
       </button>
     </div>
   )

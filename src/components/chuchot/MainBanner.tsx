@@ -4,7 +4,7 @@
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
 import { Badge } from "@/components/ui/badge"
 import Image from "next/image"
-import { Sparkles } from "lucide-react"
+import { Sparkles, ChevronRight } from "lucide-react"
 
 export interface BannerData {
   id: string | number;
@@ -24,14 +24,14 @@ export function MainBanner({ banners: propBanners }: MainBannerProps) {
       id: 1,
       title: "HR실무자들의\n품격 있는 속삭임",
       description: "교육부터 조직문화 인사전략까지\nHR실무자를 위한 지식 허브 Whisper",
-      image: "https://images.unsplash.com/photo-1521737711867-e3b97375f902?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxocm8lMjBtZWV0aW5nfGVufDB8fHx8MTc3MDI4MTYxN3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      image: "https://images.unsplash.com/photo-1521737711867-e3b97375f902?q=80&w=1080",
       badge: "집단 지성의 힘"
     },
     {
       id: 2,
       title: "고민을 나누고,\n함께 성장하자",
       description: "우리의 작은 속삭임이 모여\n내일을 바꾸는 큰 울림으로 돌아옵니다.",
-      image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxjb3Jwb3JhdGUlMjBtZWV0aW5nfGVufDB8fHx8MTc3MDM1NDM3N3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=1080",
       badge: "교학상장의 장"
     }
   ]
@@ -39,43 +39,49 @@ export function MainBanner({ banners: propBanners }: MainBannerProps) {
   const banners = propBanners && propBanners.length > 0 ? propBanners : defaultBanners
 
   return (
-    <div className="w-full mb-8 md:mb-12 relative group/carousel">
-      <Carousel className="w-full overflow-hidden rounded-[2rem] md:rounded-[2.5rem] shadow-xl md:shadow-2xl shadow-primary/10" opts={{ loop: true }}>
+    <div className="w-full mb-8 relative">
+      <Carousel className="w-full overflow-hidden rounded-lg shadow-sm border border-black/5" opts={{ loop: true }}>
         <CarouselContent>
           {banners.map((banner) => (
             <CarouselItem key={banner.id}>
-              <div className="relative h-[280px] md:h-[480px] w-full overflow-hidden premium-gradient">
-                <Image 
-                  src={banner.image} 
-                  alt={banner.title} 
-                  fill 
-                  className="object-cover opacity-20 mix-blend-overlay"
-                  priority
-                  data-ai-hint="hr meeting office"
-                />
-                <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary/80 to-transparent"></div>
-                <div className="absolute inset-0 flex flex-col justify-center px-6 md:px-24 max-w-4xl">
-                  <Badge className="w-fit mb-4 md:mb-8 bg-accent text-primary font-black tracking-widest px-3 md:px-5 py-1 md:py-2 rounded-full border border-white/20 shadow-xl text-[10px] md:text-xs transition-all hover:scale-105 hover:brightness-110 whitespace-nowrap">
-                    <Sparkles className="w-3 md:w-3.5 h-3 md:h-3.5 mr-1.5 md:mr-2" />
+              <div className="relative h-[240px] md:h-[320px] w-full overflow-hidden bg-white">
+                <div className="absolute inset-0 flex flex-col justify-center px-8 md:px-16 z-10">
+                  <Badge className="naver-badge w-fit mb-4">
                     {banner.badge}
                   </Badge>
                   
-                  <h1 className="text-2xl md:text-[64px] font-headline font-black text-white mb-3 md:mb-6 leading-tight tracking-tight whitespace-pre-line text-balance drop-shadow-sm">
+                  <h1 className="text-xl md:text-3xl font-black text-foreground mb-3 leading-tight tracking-tight whitespace-pre-line">
                     {banner.title}
                   </h1>
                   
-                  <p className="text-xs md:text-xl text-accent/90 font-medium max-w-2xl whitespace-pre-line leading-relaxed text-balance">
+                  <p className="text-xs md:text-sm text-muted-foreground font-medium max-w-md whitespace-pre-line leading-relaxed">
                     {banner.description}
                   </p>
+
+                  <button className="mt-6 flex items-center gap-1 text-[11px] font-black text-primary hover:underline">
+                    자세히 보기 <ChevronRight className="w-3 h-3" />
+                  </button>
+                </div>
+                
+                <div className="absolute top-0 right-0 w-1/2 h-full hidden md:block">
+                  <div className="absolute inset-0 bg-gradient-to-r from-white via-white/80 to-transparent z-10"></div>
+                  <Image 
+                    src={banner.image} 
+                    alt={banner.title} 
+                    fill 
+                    className="object-cover opacity-90"
+                    priority
+                    data-ai-hint="hr meeting office"
+                  />
                 </div>
               </div>
             </CarouselItem>
           ))}
         </CarouselContent>
         
-        <div className="absolute bottom-6 md:bottom-10 right-6 md:right-24 flex gap-2 md:gap-3 z-20">
-          <CarouselPrevious className="relative inset-0 bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-accent hover:text-primary transition-all h-8 md:h-12 w-8 md:w-12 rounded-xl translate-x-0 translate-y-0" />
-          <CarouselNext className="relative inset-0 bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-accent hover:text-primary transition-all h-8 md:h-12 w-8 md:w-12 rounded-xl translate-x-0 translate-y-0" />
+        <div className="absolute bottom-6 right-8 flex gap-1 z-20">
+          <CarouselPrevious className="relative inset-0 bg-black/5 border-none text-muted-foreground hover:bg-black/10 h-8 w-8 rounded-full translate-x-0 translate-y-0" />
+          <CarouselNext className="relative inset-0 bg-black/5 border-none text-muted-foreground hover:bg-black/10 h-8 w-8 rounded-full translate-x-0 translate-y-0" />
         </div>
       </Carousel>
     </div>
