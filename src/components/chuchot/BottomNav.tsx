@@ -2,7 +2,7 @@
 "use client"
 
 import { usePathname, useRouter } from "next/navigation"
-import { MessageSquareQuote, Award, GraduationCap, Briefcase, Mail, Sparkles } from "lucide-react"
+import { MessageSquareQuote, Award, GraduationCap, Briefcase, Mail, Sparkles, Users } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useState } from "react"
 import { AldiChat } from "./ShuChat"
@@ -34,8 +34,8 @@ export function BottomNav() {
 
   const navItems = [
     { name: "지식", href: "/", icon: MessageSquareQuote },
+    { name: "모임", href: "/gatherings", icon: Users },
     { name: "위스퍼러", href: "/mentors", icon: Award },
-    { name: "솔루션", href: "/programs", icon: GraduationCap },
     { name: "쪽지", href: "/messages", icon: Mail, badgeCount: unreadMessages?.length || 0 },
     { name: "채용", href: "/jobs", icon: Briefcase },
   ]

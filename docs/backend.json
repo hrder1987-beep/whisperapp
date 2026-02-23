@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "UserProfile": {
@@ -40,6 +41,56 @@
         "jobTitle": { "type": "string" }
       },
       "required": ["id", "title", "text", "userId", "nickname", "createdAt"]
+    },
+    "Gathering": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Gathering",
+      "type": "object",
+      "description": "HR 전문가 모임 데이터",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "creatorId": { "type": "string" },
+        "creatorName": { "type": "string" },
+        "type": { "type": "string", "enum": ["online", "offline"] },
+        "location": { "type": "string" },
+        "schedule": { "type": "string" },
+        "capacity": { "type": "number" },
+        "participantCount": { "type": "number" },
+        "status": { "type": "string", "enum": ["recruiting", "in_progress", "closed"] },
+        "category": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "createdAt": { "type": "number" },
+        "resources": { 
+          "type": "array", 
+          "items": { 
+            "type": "object",
+            "properties": {
+              "title": { "type": "string" },
+              "url": { "type": "string" },
+              "type": { "type": "string" }
+            }
+          }
+        }
+      },
+      "required": ["id", "title", "creatorId", "type", "capacity", "status", "createdAt"]
+    },
+    "GatheringApplication": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "GatheringApplication",
+      "type": "object",
+      "description": "모임 참여 신청 데이터",
+      "properties": {
+        "id": { "type": "string" },
+        "gatheringId": { "type": "string" },
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "userEmail": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "approved", "rejected"] },
+        "appliedAt": { "type": "number" }
+      },
+      "required": ["gatheringId", "userId", "status", "appliedAt"]
     },
     "JobListing": {
       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -87,7 +138,7 @@
       "properties": {
         "id": { "type": "string" },
         "userId": { "type": "string" },
-        "type": { "type": "string", "enum": ["new_answer"] },
+        "type": { "type": "string", "enum": ["new_answer", "gathering_approved", "gathering_rejected"] },
         "questionId": { "type": "string" },
         "questionTitle": { "type": "string" },
         "senderNickname": { "type": "string" },
@@ -108,6 +159,14 @@
     "/questions/{questionId}": {
       "schema": { "$ref": "#/entities/Question" },
       "description": "공개 HR 지식 공유 피드"
+    },
+    "/gatherings/{gatheringId}": {
+      "schema": { "$ref": "#/entities/Gathering" },
+      "description": "HR 전문가 모임 목록"
+    },
+    "/gatherings/{gatheringId}/applications/{appId}": {
+      "schema": { "$ref": "#/entities/GatheringApplication" },
+      "description": "모임 개별 신청 목록"
     },
     "/jobs/{jobId}": {
       "schema": { "$ref": "#/entities/JobListing" },

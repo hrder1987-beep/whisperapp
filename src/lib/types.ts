@@ -1,3 +1,4 @@
+
 export type UserRole = 'member' | 'mentor' | 'admin';
 
 export interface UserProfile {
@@ -96,6 +97,34 @@ export interface JobListing {
   userId: string;
 }
 
+export interface Gathering {
+  id: string;
+  title: string;
+  description: string;
+  creatorId: string;
+  creatorName: string;
+  type: 'online' | 'offline';
+  location: string;
+  schedule: string;
+  capacity: number;
+  participantCount: number;
+  status: 'recruiting' | 'in_progress' | 'closed';
+  category: string;
+  imageUrl?: string;
+  createdAt: number;
+  resources?: { title: string; url: string; type: string }[];
+}
+
+export interface GatheringApplication {
+  id: string;
+  gatheringId: string;
+  userId: string;
+  userName: string;
+  userEmail: string;
+  status: 'pending' | 'approved' | 'rejected';
+  appliedAt: number;
+}
+
 export interface PrivateMessage {
   id: string;
   senderId: string;
@@ -110,7 +139,7 @@ export interface PrivateMessage {
 export interface AppNotification {
   id: string;
   userId: string;
-  type: 'new_answer';
+  type: 'new_answer' | 'gathering_approved' | 'gathering_rejected';
   questionId: string;
   questionTitle: string;
   senderNickname: string;

@@ -4,7 +4,7 @@
 import { Logo } from "./Logo"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Search, User as UserIcon, Menu, Mail, ShieldCheck, FileText } from "lucide-react"
+import { Search, User as UserIcon, Menu, Mail, ShieldCheck, FileText, Users } from "lucide-react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useUser, useAuth, useCollection, useMemoFirebase, useFirestore, useDoc } from "@/firebase"
@@ -59,6 +59,7 @@ export function Header({ onSearch }: HeaderProps) {
 
   const navLinks = [
     { name: "지식 속삭임", href: "/" },
+    { name: "모임개설", href: "/gatherings" },
     { name: "위스퍼러", href: "/mentors" },
     { name: "프로그램", href: "/programs" },
     { name: "강사 정보", href: "/instructors" },
