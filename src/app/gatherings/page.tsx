@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo, useRef } from "react"
@@ -27,6 +28,7 @@ export default function GatheringsPage() {
   const { toast } = useToast()
   const router = useRouter()
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const detailImageInputRef = useRef<HTMLInputElement>(null)
 
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("전체")
@@ -46,6 +48,7 @@ export default function GatheringsPage() {
   const [category, setCategory] = useState("COP/학습")
   const [registrationQuestion, setRegistrationQuestion] = useState("") 
   const [imageUrl, setImageUrl] = useState<string | null>(null)
+  const [detailImages, setDetailImages] = useState<string[]>([])
 
   const gatheringsQuery = useMemoFirebase(() => {
     if (!db) return null
@@ -72,6 +75,18 @@ export default function GatheringsPage() {
     }
   }
 
+  const handleDetailImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setDetailImages(prev => [...prev, reader.result as string])
+        toast({ title: "이미지 추가됨", description: "상세 정보 하단에 이미지가 삽입되었습니다." })
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
   const handleCreateGathering = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!user) {
@@ -84,10 +99,13 @@ export default function GatheringsPage() {
     try {
       const tags = tagInput.split(/[, ]+/).filter(t => t.startsWith('#')).map(t => t.replace('#', ''))
       
+      // 상세 이미지들을 설명글 하단에 포함 (시뮬레이션)
+      const finalDescription = description + (detailImages.length > 0 ? "\n\n[첨부 이미지]\n" + detailImages.join("\n") : "");
+
       await addDocumentNonBlocking(collection(db, "gatherings"), {
         title,
         summary,
-        description,
+        description: finalDescription,
         tags: tags.length > 0 ? tags : [category],
         creatorId: user.uid,
         creatorName: user.displayName || "익명전문가",
@@ -107,7 +125,8 @@ export default function GatheringsPage() {
       
       toast({ title: "모임 개설 완료", description: "새로운 HR 지식 모임이 개설되었습니다!" })
       setIsDialogOpen(false)
-      setTitle(""); setSummary(""); setTagInput(""); setDescription(""); setLocation(""); setSchedule(""); setCapacity("10"); setSessionCount("6"); setRegistrationQuestion(""); setImageUrl(null);
+      // Reset states
+      setTitle(""); setSummary(""); setTagInput(""); setDescription(""); setLocation(""); setSchedule(""); setCapacity("10"); setSessionCount("6"); setRegistrationQuestion(""); setImageUrl(null); setDetailImages([]);
     } catch (error) {
       toast({ title: "오류 발생", description: "모임 개설 중 문제가 발생했습니다.", variant: "destructive" })
     } finally {
@@ -142,6 +161,7 @@ export default function GatheringsPage() {
                 
                 <div className="flex-1 overflow-y-auto">
                   <form onSubmit={handleCreateGathering} className="p-8 md:p-12 space-y-12 pb-32">
+                    {/* 1. 썸네일 */}
                     <div className="space-y-4">
                       <div className="flex items-center gap-2">
                         <label className="text-sm font-black text-[#1E1E23]">썸네일 이미지</label>
@@ -158,61 +178,169 @@ export default function GatheringsPage() {
                       </div>
                     </div>
 
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2"><label className="text-sm font-black text-[#1E1E23]">제목</label><Badge className="bg-orange-100 text-orange-600 border-none rounded-sm px-1.5 py-0 text-[10px] font-black">필수</Badge></div>
-                        <span className="text-[11px] font-bold text-black/20">{title.length}/50</span>
+                    {/* 2. 제목 및 한줄 설명 */}
+                    <div className="space-y-8">
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2"><label className="text-sm font-black text-[#1E1E23]">제목</label><Badge className="bg-orange-100 text-orange-600 border-none rounded-sm px-1.5 py-0 text-[10px] font-black">필수</Badge></div>
+                          <span className="text-[11px] font-bold text-black/20">{title.length}/50</span>
+                        </div>
+                        <Input value={title} onChange={e => setTitle(e.target.value.slice(0, 50))} required placeholder="모임의 핵심 주제를 담은 제목을 입력해 주세요" className="h-12 bg-white border-black/10 rounded-none font-bold text-base focus-visible:ring-primary/30" />
                       </div>
-                      <Input value={title} onChange={e => setTitle(e.target.value.slice(0, 50))} required placeholder="한글/영문/숫자/띄어쓰기 포함 50자 이내로 입력해 주세요" className="h-12 bg-white border-black/10 rounded-none font-bold text-base focus-visible:ring-primary/30" />
-                    </div>
 
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2"><label className="text-sm font-black text-[#1E1E23]">설명 문구</label><Badge className="bg-orange-100 text-orange-600 border-none rounded-sm px-1.5 py-0 text-[10px] font-black">필수</Badge></div>
-                        <span className="text-[11px] font-bold text-black/20">{summary.length}/100</span>
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2"><label className="text-sm font-black text-[#1E1E23]">설명 문구</label><Badge className="bg-orange-100 text-orange-600 border-none rounded-sm px-1.5 py-0 text-[10px] font-black">필수</Badge></div>
+                          <span className="text-[11px] font-bold text-black/20">{summary.length}/100</span>
+                        </div>
+                        <Input value={summary} onChange={e => setSummary(e.target.value.slice(0, 100))} required placeholder="모임을 한 줄로 매력적이게 소개해 주세요" className="h-12 bg-white border-black/10 rounded-none font-bold text-base focus-visible:ring-primary/30" />
                       </div>
-                      <Input value={summary} onChange={e => setSummary(e.target.value.slice(0, 100))} required placeholder="한글/영문/숫자/띄어쓰기 포함 100자 이내로 입력해 주세요" className="h-12 bg-white border-black/10 rounded-none font-bold text-base focus-visible:ring-primary/30" />
                     </div>
 
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-2"><label className="text-sm font-black text-[#1E1E23]">참가 신청자에게 물어볼 질문</label><Badge className="bg-blue-100 text-blue-600 border-none rounded-sm px-1.5 py-0 text-[10px] font-black">선택</Badge></div>
-                      <Input value={registrationQuestion} onChange={e => setRegistrationQuestion(e.target.value)} placeholder="예: 이 모임에 참여하고 싶은 이유와 현재 담당 업무를 간단히 적어주세요." className="h-12 bg-white border-black/10 rounded-none font-bold text-sm focus-visible:ring-primary/30" />
+                    {/* 3. 기본 설정 (방식, 일정 등) - 전문가님의 피드백을 반영하여 상단으로 배치 및 가시성 강화 */}
+                    <div className="bg-[#FBFBFC] p-8 space-y-10 border border-black/5">
+                      <h3 className="text-sm font-black text-[#1E1E23] flex items-center gap-2">
+                        <div className="w-1.5 h-4 bg-primary"></div>
+                        기본 정보 설정
+                      </h3>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                        <div className="space-y-6">
+                          <div className="space-y-3">
+                            <label className="text-[11px] font-black text-[#1E1E23]/40 uppercase tracking-widest ml-1">모임 카테고리</label>
+                            <Select value={category} onValueChange={setCategory}>
+                              <SelectTrigger className="h-12 bg-white border-black/10 rounded-none font-bold shadow-sm">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {GATHERING_CATEGORIES.filter(c => c !== "전체").map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          
+                          <div className="space-y-3">
+                            <label className="text-[11px] font-black text-[#1E1E23]/40 uppercase tracking-widest ml-1">모임 방식 선택</label>
+                            <div className="grid grid-cols-2 gap-2">
+                              <Button 
+                                type="button" 
+                                onClick={() => setType('online')} 
+                                variant={type === 'online' ? 'default' : 'outline'} 
+                                className={cn("rounded-none font-black h-12 gap-2 transition-all", type === 'online' ? "naver-button" : "bg-white border-black/10 text-black/30 hover:bg-black/5")}
+                              >
+                                <Globe className="w-4 h-4" /> 온라인
+                              </Button>
+                              <Button 
+                                type="button" 
+                                onClick={() => setType('offline')} 
+                                variant={type === 'offline' ? 'default' : 'outline'} 
+                                className={cn("rounded-none font-black h-12 gap-2 transition-all", type === 'offline' ? "naver-button" : "bg-white border-black/10 text-black/30 hover:bg-black/5")}
+                              >
+                                <MapPin className="w-4 h-4" /> 오프라인
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="space-y-6">
+                          <div className="space-y-3">
+                            <label className="text-[11px] font-black text-[#1E1E23]/40 uppercase tracking-widest ml-1">일정 안내</label>
+                            <Input 
+                              value={schedule} 
+                              onChange={e => setSchedule(e.target.value)} 
+                              required 
+                              placeholder="예: 2024년 12월 매주 목요일 19:00" 
+                              className="h-12 bg-white border-black/10 rounded-none font-bold shadow-sm" 
+                            />
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-3">
+                              <label className="text-[11px] font-black text-[#1E1E23]/40 uppercase tracking-widest ml-1">모집 인원(명)</label>
+                              <Input type="number" value={capacity} onChange={e => setCapacity(e.target.value)} required className="h-12 bg-white border-black/10 rounded-none font-bold shadow-sm" />
+                            </div>
+                            <div className="space-y-3">
+                              <label className="text-[11px] font-black text-[#1E1E23]/40 uppercase tracking-widest ml-1">진행 회차(회)</label>
+                              <Input type="number" value={sessionCount} onChange={e => setSessionCount(e.target.value)} required className="h-12 bg-white border-black/10 rounded-none font-bold shadow-sm" />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {type === 'offline' && (
+                        <div className="space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                          <label className="text-[11px] font-black text-[#1E1E23]/40 uppercase tracking-widest ml-1">오프라인 장소</label>
+                          <Input value={location} onChange={e => setLocation(e.target.value)} placeholder="상세 주소 또는 건물명을 입력해 주세요" className="h-12 bg-white border-black/10 rounded-none font-bold shadow-sm" />
+                        </div>
+                      )}
                     </div>
 
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-2"><label className="text-sm font-black text-[#1E1E23]">해시 태그</label><Badge className="bg-orange-100 text-orange-600 border-none rounded-sm px-1.5 py-0 text-[10px] font-black">필수</Badge></div>
-                      <Input value={tagInput} onChange={e => setTagInput(e.target.value)} required placeholder="키워드 입력 (#ai, #교육 등)" className="h-12 bg-white border-black/10 rounded-none font-bold text-sm focus-visible:ring-primary/30" />
+                    {/* 4. 사전 질문 및 태그 */}
+                    <div className="space-y-8">
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-2"><label className="text-sm font-black text-[#1E1E23]">참가 신청자 사전 설문</label><Badge className="bg-blue-100 text-blue-600 border-none rounded-sm px-1.5 py-0 text-[10px] font-black">선택</Badge></div>
+                        <Input value={registrationQuestion} onChange={e => setRegistrationQuestion(e.target.value)} placeholder="신청 시 물어볼 질문을 입력하세요 (예: 본인의 직무와 참여 동기를 적어주세요)" className="h-12 bg-white border-black/10 rounded-none font-bold text-sm focus-visible:ring-primary/30" />
+                      </div>
+
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-2"><label className="text-sm font-black text-[#1E1E23]">검색용 해시 태그</label><Badge className="bg-orange-100 text-orange-600 border-none rounded-sm px-1.5 py-0 text-[10px] font-black">필수</Badge></div>
+                        <Input value={tagInput} onChange={e => setTagInput(e.target.value)} required placeholder="#인사전략 #조직문화 #네트워킹" className="h-12 bg-white border-black/10 rounded-none font-bold text-sm focus-visible:ring-primary/30" />
+                      </div>
                     </div>
 
+                    {/* 5. 상세 정보 (에디터 스타일) - 이미지 업로드 기능 활성화 */}
                     <div className="space-y-4">
-                      <label className="text-sm font-black text-[#1E1E23]">상세 정보</label>
+                      <label className="text-sm font-black text-[#1E1E23]">모임 상세 소개</label>
                       <div className="border border-black/10 rounded-none overflow-hidden">
                         <div className="bg-[#FBFBFC] border-b border-black/10 p-2 flex items-center gap-1">
-                          <Button type="button" variant="ghost" size="icon" className="h-8 w-8 text-black/40 hover:text-primary"><ImageIcon className="w-4 h-4" /></Button>
+                          <Button 
+                            type="button" 
+                            variant="ghost" 
+                            size="icon" 
+                            className="h-8 w-8 text-black/40 hover:text-primary"
+                            onClick={() => detailImageInputRef.current?.click()}
+                          >
+                            <ImageIcon className="w-4 h-4" />
+                          </Button>
+                          <input 
+                            type="file" 
+                            ref={detailImageInputRef} 
+                            className="hidden" 
+                            accept="image/*" 
+                            onChange={handleDetailImageChange} 
+                          />
                           <Button type="button" variant="ghost" size="icon" className="h-8 w-8 text-black/40 hover:text-primary"><FileText className="w-4 h-4" /></Button>
                           <Button type="button" variant="ghost" size="icon" className="h-8 w-8 text-black/40 hover:text-primary"><Video className="w-4 h-4" /></Button>
                           <div className="w-px h-4 bg-black/10 mx-1" />
                           <Button type="button" variant="ghost" size="icon" className="h-8 w-8 text-black/40 hover:text-primary"><Type className="w-4 h-4" /></Button>
                         </div>
-                        <Textarea value={description} onChange={e => setDescription(e.target.value)} required placeholder="전문가들과 나눌 지혜의 상세 내용을 적어주세요." className="min-h-[300px] border-none shadow-none focus-visible:ring-0 p-6 text-sm font-medium leading-relaxed resize-none" />
+                        <Textarea 
+                          value={description} 
+                          onChange={e => setDescription(e.target.value)} 
+                          required 
+                          placeholder="함께 나눌 지식의 상세 내용과 참여 혜택 등을 자유롭게 작성해 주세요." 
+                          className="min-h-[400px] border-none shadow-none focus-visible:ring-0 p-6 text-sm font-medium leading-relaxed resize-none" 
+                        />
                       </div>
+                      
+                      {detailImages.length > 0 && (
+                        <div className="flex flex-wrap gap-4 pt-4">
+                          {detailImages.map((img, idx) => (
+                            <div key={idx} className="relative w-24 h-24 border border-black/5 group">
+                              <img src={img} className="w-full h-full object-cover" alt="detail" />
+                              <button 
+                                type="button" 
+                                onClick={() => setDetailImages(prev => prev.filter((_, i) => i !== idx))}
+                                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                              >
+                                <X className="w-3 h-3" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8 border-t border-black/5">
-                      <div className="space-y-6">
-                        <div className="space-y-2"><label className="text-[10px] font-black text-[#1E1E23]/40 uppercase tracking-widest ml-1">카테고리</label>
-                          <Select value={category} onValueChange={setCategory}><SelectTrigger className="h-12 bg-[#F5F6F7] border-none rounded-none font-bold"><SelectValue /></SelectTrigger><SelectContent>{GATHERING_CATEGORIES.filter(c => c !== "전체").map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent></Select>
-                        </div>
-                        <div className="space-y-2"><label className="text-[10px] font-black text-[#1E1E23]/40 uppercase tracking-widest ml-1">모임 방식</label>
-                          <div className="grid grid-cols-2 gap-2"><Button type="button" onClick={() => setType('online')} variant={type === 'online' ? 'default' : 'outline'} className={cn("rounded-none font-black h-12", type === 'online' ? "naver-button" : "border-black/5")}>온라인</Button><Button type="button" onClick={() => setType('offline')} variant={type === 'offline' ? 'default' : 'outline'} className={cn("rounded-none font-black h-12", type === 'offline' ? "naver-button" : "border-black/5")}>오프라인</Button></div>
-                        </div>
-                      </div>
-                      <div className="space-y-6">
-                        <div className="grid grid-cols-2 gap-4"><div className="space-y-2"><label className="text-[10px] font-black text-[#1E1E23]/40 uppercase tracking-widest ml-1">모집 정원(명)</label><Input type="number" value={capacity} onChange={e => setCapacity(e.target.value)} required className="h-12 bg-[#F5F6F7] border-none rounded-none font-bold" /></div><div className="space-y-2"><label className="text-[10px] font-black text-[#1E1E23]/40 uppercase tracking-widest ml-1">전체 회차(회)</label><Input type="number" value={sessionCount} onChange={e => setSessionCount(e.target.value)} required className="h-12 bg-[#F5F6F7] border-none rounded-none font-bold" /></div></div>
-                        <div className="space-y-2"><label className="text-[10px] font-black text-[#1E1E23]/40 uppercase tracking-widest ml-1">일정 안내</label><Input value={schedule} onChange={e => setSchedule(e.target.value)} required placeholder="예: 매주 목요일 19:00" className="h-12 bg-[#F5F6F7] border-none rounded-none font-bold" /></div>
-                      </div>
-                    </div>
-
+                    {/* Submit Button (Sticky at bottom via dialog design) */}
                     <div className="fixed bottom-0 left-0 right-0 p-6 bg-white border-t border-black/5 flex justify-end z-50">
                       <Button type="submit" disabled={isSubmitting} className="h-14 px-16 naver-button text-lg">
                         {isSubmitting ? "모임 정보 전송 중..." : "모임 개설 완료하기"}
