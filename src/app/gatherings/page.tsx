@@ -137,18 +137,18 @@ export default function GatheringsPage() {
       <Header />
       
       <main className="max-w-7xl mx-auto px-4 py-8 md:py-16">
-        <div className="flex flex-col gap-10 mb-16">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
-            <div className="space-y-3">
-              <h1 className="text-3xl md:text-4xl font-black text-[#1E1E23] tracking-tighter">모임 인텔리전스</h1>
-              <p className="text-sm md:text-base font-bold text-[#888]">대한민국 HR 전문가들의 오프라인/온라인 동행</p>
+        <div className="flex flex-col gap-8 mb-16">
+          <div className="flex items-center justify-between gap-4">
+            <div className="space-y-1">
+              <h1 className="text-2xl md:text-3xl font-black text-[#1E1E23] tracking-tighter">모임 인텔리전스</h1>
+              <p className="text-xs md:text-sm font-bold text-[#888]">대한민국 HR 전문가들의 오프라인/온라인 동행</p>
             </div>
 
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button className="naver-button h-12 md:h-14 px-8 shadow-md transition-all gap-2 text-sm">
-                  <Plus className="w-5 h-5" />
-                  새로운 모임 만들기
+                <Button className="bg-primary text-white hover:brightness-105 font-black h-11 px-6 rounded-xl shadow-lg transition-all gap-2 text-xs border border-white/20">
+                  <Plus className="w-4 h-4" />
+                  모임 만들기
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-4xl bg-white border-none rounded-none p-0 shadow-2xl overflow-hidden max-h-[95vh] flex flex-col">
@@ -172,24 +172,6 @@ export default function GatheringsPage() {
                           <div className="text-center"><ImageIcon className="w-6 h-6 text-black/20 mx-auto mb-3" /><p className="text-xs font-bold text-primary mb-1"><span className="text-primary underline underline-offset-2">이미지를 선택</span>하거나, 이곳에 끌어다 놓으세요</p><p className="text-[10px] text-black/30 font-medium">권장 크기: 440px × 440px</p></div>
                         </div>
                         <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleImageChange} />
-                      </div>
-                    </div>
-
-                    <div className="space-y-8">
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2"><label className="text-sm font-black text-[#1E1E23]">제목</label><Badge className="bg-orange-100 text-orange-600 border-none rounded-sm px-1.5 py-0 text-[10px] font-black">필수</Badge></div>
-                          <span className="text-[11px] font-bold text-black/20">{title.length}/50</span>
-                        </div>
-                        <Input value={title} onChange={e => setTitle(e.target.value.slice(0, 50))} required placeholder="모임의 핵심 주제를 담은 제목을 입력해 주세요" className="h-12 bg-white border-black/10 rounded-none font-bold text-base focus-visible:ring-primary/30" />
-                      </div>
-
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2"><label className="text-sm font-black text-[#1E1E23]">설명 문구</label><Badge className="bg-orange-100 text-orange-600 border-none rounded-sm px-1.5 py-0 text-[10px] font-black">필수</Badge></div>
-                          <span className="text-[11px] font-bold text-black/20">{summary.length}/100</span>
-                        </div>
-                        <Input value={summary} onChange={e => setSummary(e.target.value.slice(0, 100))} required placeholder="모임을 한 줄로 매력적이게 소개해 주세요" className="h-12 bg-white border-black/10 rounded-none font-bold text-base focus-visible:ring-primary/30" />
                       </div>
                     </div>
 
@@ -271,6 +253,24 @@ export default function GatheringsPage() {
 
                     <div className="space-y-8">
                       <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2"><label className="text-sm font-black text-[#1E1E23]">제목</label><Badge className="bg-orange-100 text-orange-600 border-none rounded-sm px-1.5 py-0 text-[10px] font-black">필수</Badge></div>
+                          <span className="text-[11px] font-bold text-black/20">{title.length}/50</span>
+                        </div>
+                        <Input value={title} onChange={e => setTitle(e.target.value.slice(0, 50))} required placeholder="모임의 핵심 주제를 담은 제목을 입력해 주세요" className="h-12 bg-white border-black/10 rounded-none font-bold text-base focus-visible:ring-primary/30" />
+                      </div>
+
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2"><label className="text-sm font-black text-[#1E1E23]">설명 문구</label><Badge className="bg-orange-100 text-orange-600 border-none rounded-sm px-1.5 py-0 text-[10px] font-black">필수</Badge></div>
+                          <span className="text-[11px] font-bold text-black/20">{summary.length}/100</span>
+                        </div>
+                        <Input value={summary} onChange={e => setSummary(e.target.value.slice(0, 100))} required placeholder="모임을 한 줄로 매력적이게 소개해 주세요" className="h-12 bg-white border-black/10 rounded-none font-bold text-base focus-visible:ring-primary/30" />
+                      </div>
+                    </div>
+
+                    <div className="space-y-8">
+                      <div className="space-y-4">
                         <div className="flex items-center gap-2"><label className="text-sm font-black text-[#1E1E23]">참가 신청자 사전 설문</label><Badge className="bg-blue-100 text-blue-600 border-none rounded-sm px-1.5 py-0 text-[10px] font-black">선택</Badge></div>
                         <Input value={registrationQuestion} onChange={e => setRegistrationQuestion(e.target.value)} placeholder="신청 시 물어볼 질문을 입력하세요 (예: 본인의 직무와 참여 동기를 적어주세요)" className="h-12 bg-white border-black/10 rounded-none font-bold text-sm focus-visible:ring-primary/30" />
                       </div>
@@ -344,14 +344,30 @@ export default function GatheringsPage() {
             </Dialog>
           </div>
 
-          <div className="flex flex-col md:flex-row md:items-center gap-6">
-            <div className="relative flex-1 group">
+          <div className="flex flex-col gap-6">
+            <div className="relative group">
               <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-black/20 group-focus-within:text-primary transition-colors" />
-              <Input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="모임 제목, 주제, 키워드로 검색해 보세요" className="h-14 pl-14 pr-6 bg-white border-2 border-primary rounded-none shadow-sm focus-visible:ring-0 text-base font-black placeholder:text-black/10" />
+              <Input 
+                value={searchQuery} 
+                onChange={e => setSearchQuery(e.target.value)} 
+                placeholder="모임 제목, 주제, 키워드로 검색해 보세요" 
+                className="h-14 pl-14 pr-6 bg-white border-2 border-primary rounded-none shadow-sm focus-visible:ring-0 text-base font-black placeholder:text-black/10" 
+              />
             </div>
             <div className="flex overflow-x-auto gap-2 scrollbar-hide py-1">
               {GATHERING_CATEGORIES.map((cat) => (
-                <button key={cat} onClick={() => setSelectedCategory(cat)} className={cn("px-6 py-3 rounded-none text-xs font-black transition-all border-2 whitespace-nowrap", selectedCategory === cat ? "bg-[#1E1E23] text-primary border-[#1E1E23] shadow-md" : "bg-white text-black/30 border-black/5 hover:border-primary/30 hover:text-[#1E1E23]")}>{cat}</button>
+                <button 
+                  key={cat} 
+                  onClick={() => setSelectedCategory(cat)} 
+                  className={cn(
+                    "px-6 py-3 rounded-none text-xs font-black transition-all border-2 whitespace-nowrap", 
+                    selectedCategory === cat 
+                      ? "bg-primary text-white border-primary shadow-md" 
+                      : "bg-white text-black/30 border-black/5 hover:border-primary/30 hover:text-[#1E1E23]"
+                  )}
+                >
+                  {cat}
+                </button>
               ))}
             </div>
           </div>
@@ -372,7 +388,7 @@ export default function GatheringsPage() {
                   <div className="relative aspect-[4/3] w-full overflow-hidden bg-black/5">
                     <Image src={g.imageUrl || "https://images.unsplash.com/photo-1522071820081-009f0129c71c"} alt={g.title} fill className={cn("object-cover transition-transform duration-1000 group-hover:scale-105", isClosed && "grayscale opacity-60")} />
                     <div className="absolute top-4 left-4 flex flex-col gap-2">
-                      <Badge className={cn("border-none px-3 py-1 rounded-none text-[10px] font-black shadow-lg", isClosed ? "bg-black/60 text-white" : "bg-primary text-[#1E1E23]")}>{isClosed ? "모집 마감" : "모집 중"}</Badge>
+                      <Badge className={cn("border-none px-3 py-1 rounded-none text-[10px] font-black shadow-lg", isClosed ? "bg-black/60 text-white" : "bg-primary text-accent")}>{isClosed ? "모집 마감" : "모집 중"}</Badge>
                       <Badge className="bg-white/90 backdrop-blur-sm text-[#1E1E23] font-black border-none px-3 py-1 rounded-none text-[10px] shadow-md">#{g.category}</Badge>
                     </div>
                     <div className="absolute top-4 right-4"><div className="bg-black/40 backdrop-blur-sm px-2 py-1 flex items-center gap-1.5 rounded-none border border-white/10">{g.type === 'online' ? <Globe className="w-3 h-3 text-primary" /> : <MapPin className="w-3 h-3 text-primary" />}<span className="text-[9px] font-black text-white uppercase tracking-widest">{g.type}</span></div></div>

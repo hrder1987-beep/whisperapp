@@ -98,17 +98,18 @@ export default function ProgramsPage() {
     <div className="min-h-screen bg-[#F5F6F7]">
       <Header />
       <main className="max-w-7xl mx-auto px-4 py-8 md:py-16">
-        <div className="flex flex-col gap-10 mb-16">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
-            <div className="space-y-3">
-              <h1 className="text-3xl md:text-4xl font-black text-[#1E1E23] tracking-tighter">솔루션 및 프로그램</h1>
-              <p className="text-sm md:text-base font-bold text-[#888]">검증된 교육기관과 전문가가 제안하는 프리미엄 HR 솔루션</p>
+        <div className="flex flex-col gap-8 mb-16">
+          <div className="flex items-center justify-between gap-4">
+            <div className="space-y-1">
+              <h1 className="text-2xl md:text-3xl font-black text-[#1E1E23] tracking-tighter">솔루션 및 프로그램</h1>
+              <p className="text-xs md:text-sm font-bold text-[#888]">검증된 교육기관과 전문가가 제안하는 프리미엄 HR 솔루션</p>
             </div>
 
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button className="naver-button h-12 md:h-14 px-8 shadow-md gap-2 text-sm">
-                  <Plus className="w-5 h-5" /> 프로그램 등록하기
+                <Button className="bg-primary text-white hover:brightness-105 font-black h-11 px-6 rounded-xl shadow-lg transition-all gap-2 text-xs border border-white/20">
+                  <Plus className="w-4 h-4" />
+                  프로그램 등록
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-3xl bg-white border-none rounded-none p-0 shadow-2xl overflow-hidden">
@@ -140,7 +141,7 @@ export default function ProgramsPage() {
             </Dialog>
           </div>
 
-          <div className="flex flex-col md:flex-row md:items-center gap-6">
+          <div className="flex flex-col gap-6">
             <div className="relative flex-1 group">
               <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-black/20 group-focus-within:text-primary transition-colors" />
               <Input 
@@ -158,7 +159,7 @@ export default function ProgramsPage() {
                   className={cn(
                     "px-6 py-3 rounded-none text-xs font-black transition-all border-2 whitespace-nowrap",
                     selectedCategory === cat.id 
-                      ? "bg-[#1E1E23] text-primary border-[#1E1E23] shadow-md" 
+                      ? "bg-primary text-white border-primary shadow-md" 
                       : "bg-white text-black/30 border-black/5 hover:border-primary/30 hover:text-[#1E1E23]"
                   )}
                 >
