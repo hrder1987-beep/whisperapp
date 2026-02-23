@@ -9,8 +9,8 @@ import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase"
-import { collection, query, orderBy, addDoc } from "firebase/firestore"
+import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking } from "@/firebase"
+import { collection, query, orderBy, doc } from "firebase/firestore"
 import { JobListing } from "@/lib/types"
 import { MapPin, Plus, Search, Award, Clock, Camera, Sparkles } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
@@ -31,7 +31,8 @@ const MOCK_JOBS: JobListing[] = [
     logoUrl: "https://images.unsplash.com/photo-1551288049-bbbda536339a?q=80&w=200",
     category: "채용/리크루팅",
     createdAt: Date.now(),
-    userId: "mock-j1"
+    userId: "mock-j1",
+    education: "대졸"
   }
 ]
 
@@ -73,18 +74,33 @@ export default function JobsPage() {
 
   const handleAddJob = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!user) { toast({ title: "로그인 필요", description: "공고 등록을 위해 로그인이 필요합니다.", variant: "destructive" }); router.push("/auth?mode=login"); return; }
+    if (!user) { 
+      toast({ title: "로그인 필요", description: "공고 등록을 위해 로그인이 필요합니다.", variant: "destructive" }); 
+      router.push("/auth?mode=login"); 
+      return; 
+    }
     setIsSubmitting(true)
     try {
-      await addDoc(collection(db, "jobs"), {
-        companyName, title, location, experience, deadline, category,
-        tags: [experience, category], createdAt: Date.now(), userId: user.uid,
-        logoUrl: adImageUrl || `https://picsum.photos/seed/${companyName}/100/100`, adImageUrl
+      await addDocumentNonBlocking(collection(db, "jobs"), {
+        companyName, 
+        title, 
+        location, 
+        experience, 
+        deadline, 
+        category,
+        tags: [experience, category], 
+        createdAt: Date.now(), 
+        userId: user.uid,
+        logoUrl: adImageUrl || `https://picsum.photos/seed/${companyName}/100/100`, 
+        adImageUrl
       })
       toast({ title: "공고 등록 완료", description: "채용 공고가 게시되었습니다." })
       setIsDialogOpen(false); setTitle(""); setCompanyName(""); setAdImageUrl(null)
-    } catch (error) { toast({ title: "오류", description: "문제가 발생했습니다.", variant: "destructive" }) }
-    finally { setIsSubmitting(false) }
+    } catch (error) { 
+      toast({ title: "오류", description: "문제가 발생했습니다.", variant: "destructive" }) 
+    } finally { 
+      setIsSubmitting(false) 
+    }
   }
 
   return (
@@ -209,19 +225,19 @@ export default function JobsPage() {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10 pb-10 border-b border-black/5">
                 <div className="space-y-1">
                   <p className="text-[9px] font-black text-black/20 uppercase">Location</p>
-                  <p className="text-sm font-bold text-[#1E1E23]">{job.location}</p>
+                  <p className="text-sm font-bold text-[#1E1E23]">{viewJob.location}</p>
                 </div>
                 <div className="space-y-1">
                   <p className="text-[9px] font-black text-black/20 uppercase">Experience</p>
-                  <p className="text-sm font-bold text-[#1E1E23]">{job.experience}</p>
+                  <p className="text-sm font-bold text-[#1E1E23]">{viewJob.experience}</p>
                 </div>
                 <div className="space-y-1">
                   <p className="text-[9px] font-black text-black/20 uppercase">Deadline</p>
-                  <p className="text-sm font-bold text-[#1E1E23]">{job.deadline}</p>
+                  <p className="text-sm font-bold text-[#1E1E23]">{viewJob.deadline}</p>
                 </div>
                 <div className="space-y-1">
                   <p className="text-[9px] font-black text-black/20 uppercase">Category</p>
-                  <p className="text-sm font-bold text-[#1E1E23]">{job.category}</p>
+                  <p className="text-sm font-bold text-[#1E1E23]">{viewJob.category}</p>
                 </div>
               </div>
               {viewJob.adImageUrl ? (
