@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo, useRef } from "react"
@@ -104,9 +105,9 @@ export default function JobsPage() {
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-2xl bg-white border-none rounded-none p-0 shadow-2xl overflow-hidden">
-                <DialogHeader className="bg-[#1E1E23] p-6">
-                  <DialogTitle className="text-xl font-black text-primary">채용 공고 게시</DialogTitle>
-                  <p className="text-white/40 text-[10px] font-bold mt-0.5 uppercase tracking-widest">Post HR Job Opportunity</p>
+                <DialogHeader className="bg-white border-b border-black/5 p-6">
+                  <DialogTitle className="text-xl font-black text-accent">채용 공고 게시</DialogTitle>
+                  <p className="text-black/40 text-[10px] font-bold mt-0.5 uppercase tracking-widest">Post HR Job Opportunity</p>
                 </DialogHeader>
                 <form onSubmit={handleAddJob} className="p-8 space-y-8 overflow-y-auto max-h-[80vh]">
                   <div onClick={() => fileInputRef.current?.click()} className="relative aspect-video bg-[#F5F6F7] border-2 border-dashed border-black/10 flex items-center justify-center cursor-pointer overflow-hidden group hover:border-primary">
@@ -196,12 +197,12 @@ export default function JobsPage() {
       {viewJob && (
         <Dialog open={!!viewJob} onOpenChange={() => setViewJob(null)}>
           <DialogContent className="max-w-3xl bg-white border-none rounded-none p-0 shadow-2xl overflow-hidden">
-            <DialogHeader className="bg-[#1E1E23] p-8 text-left space-y-2">
+            <DialogHeader className="bg-white border-b border-black/5 p-8 text-left space-y-2">
               <div className="flex items-center justify-between">
-                <Badge className="bg-primary text-[#1E1E23] border-none px-3 py-1 rounded-none text-[10px] font-black">RECRUITING</Badge>
-                <span className="text-white/20 text-[10px] font-bold uppercase tracking-widest">Whisper Job Intelligence</span>
+                <Badge className="bg-primary text-accent border-none px-3 py-1 rounded-none text-[10px] font-black">RECRUITING</Badge>
+                <span className="text-black/20 text-[10px] font-bold uppercase tracking-widest">Whisper Job Intelligence</span>
               </div>
-              <DialogTitle className="text-2xl font-black text-white leading-tight">{viewJob.title}</DialogTitle>
+              <DialogTitle className="text-2xl font-black text-accent leading-tight">{viewJob.title}</DialogTitle>
               <p className="text-primary font-black text-sm">@{viewJob.companyName}</p>
             </DialogHeader>
             <div className="p-8 max-h-[60vh] overflow-y-auto bg-white">

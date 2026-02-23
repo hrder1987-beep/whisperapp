@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo, useRef } from "react"
@@ -111,9 +112,9 @@ export default function ProgramsPage() {
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-3xl bg-white border-none rounded-none p-0 shadow-2xl overflow-hidden">
-                <DialogHeader className="bg-[#1E1E23] p-6">
-                  <DialogTitle className="text-xl font-black text-primary">신규 프로그램 등록</DialogTitle>
-                  <p className="text-white/40 text-[10px] font-bold mt-0.5 uppercase tracking-widest">Register Training Program</p>
+                <DialogHeader className="bg-white border-b border-black/5 p-6">
+                  <DialogTitle className="text-xl font-black text-accent">신규 프로그램 등록</DialogTitle>
+                  <p className="text-black/40 text-[10px] font-bold mt-0.5 uppercase tracking-widest">Register Training Program</p>
                 </DialogHeader>
                 <form onSubmit={handleAddProgram} className="p-8 space-y-8 overflow-y-auto max-h-[80vh]">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -181,7 +182,7 @@ export default function ProgramsPage() {
                 <div className="relative aspect-[16/10] w-full overflow-hidden bg-black/5" onClick={() => setSelectedProgram(p)}>
                   <Image src={p.imageUrl || "https://images.unsplash.com/photo-1524178232363-1fb2b075b655"} alt={p.title} fill className="object-cover transition-transform duration-1000 group-hover:scale-105" />
                   <div className="absolute top-4 left-4">
-                    <Badge className="bg-primary text-[#1E1E23] font-black border-none px-3 py-1 rounded-none text-[10px]">#{PROGRAM_CATEGORIES.find(c => c.id === p.category)?.name || "기타"}</Badge>
+                    <Badge className="bg-primary text-accent font-black border-none px-3 py-1 rounded-none text-[10px]">#{PROGRAM_CATEGORIES.find(c => c.id === p.category)?.name || "기타"}</Badge>
                   </div>
                 </div>
                 <CardContent className="p-6 flex-1 flex flex-col">
@@ -214,7 +215,7 @@ export default function ProgramsPage() {
               <Image src={selectedProgram.imageUrl || "https://images.unsplash.com/photo-1524178232363-1fb2b075b655"} alt={selectedProgram.title} fill className="object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
               <div className="absolute bottom-8 left-8 right-8">
-                <Badge className="bg-primary text-[#1E1E23] font-black border-none px-3 py-1 rounded-none text-[10px] mb-3">#{PROGRAM_CATEGORIES.find(c => c.id === selectedProgram.category)?.name}</Badge>
+                <Badge className="bg-primary text-accent font-black border-none px-3 py-1 rounded-none text-[10px] mb-3">#{PROGRAM_CATEGORIES.find(c => c.id === selectedProgram.category)?.name}</Badge>
                 <h2 className="text-2xl md:text-3xl font-black text-white leading-tight">{selectedProgram.title}</h2>
                 <p className="text-primary font-bold mt-2 flex items-center gap-2"><Building2 className="w-4 h-4" /> {selectedProgram.instructorName}</p>
               </div>

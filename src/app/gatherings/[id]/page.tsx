@@ -34,7 +34,6 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
   const [isSurveyOpen, setIsSurveyOpen] = useState(false)
   const [surveyAnswer, setSurveyAnswer] = useState("")
 
-  // Data Fetching
   const gatheringRef = useMemoFirebase(() => db ? doc(db, "gatherings", id) : null, [db, id])
   const { data: gathering, isLoading: isGatheringLoading } = useDoc<Gathering>(gatheringRef)
 
@@ -454,12 +453,11 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
         </div>
       </main>
 
-      {/* Survey Dialog */}
       <Dialog open={isSurveyOpen} onOpenChange={setIsSurveyOpen}>
         <DialogContent className="max-w-xl bg-white border-none rounded-none p-0 shadow-2xl overflow-hidden">
-          <DialogHeader className="bg-[#1E1E23] p-6">
-            <DialogTitle className="text-xl font-black text-[#03C75A]">참가 신청 사전 설문</DialogTitle>
-            <DialogDescription className="text-white/40 text-[10px] font-bold mt-0.5 uppercase tracking-widest">Pre-registration Question</DialogDescription>
+          <DialogHeader className="bg-white border-b border-black/5 p-6">
+            <DialogTitle className="text-xl font-black text-accent">참가 신청 사전 설문</DialogTitle>
+            <p className="text-black/40 text-[10px] font-bold mt-0.5 uppercase tracking-widest">Pre-registration Question</p>
           </DialogHeader>
           <div className="p-8 space-y-6">
             <div className="bg-[#F5F6F7] p-6 border-l-4 border-[#03C75A]">
@@ -481,7 +479,7 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
             <Button 
               onClick={handleApply} 
               disabled={isApplying || !surveyAnswer.trim()} 
-              className="flex-[2] h-12 bg-[#1E1E23] text-[#03C75A] font-black rounded-none shadow-xl hover:brightness-110"
+              className="flex-[2] h-12 naver-button text-base rounded-none shadow-xl"
             >
               {isApplying ? "신청 중..." : "답변 제출 및 신청완료"}
             </Button>

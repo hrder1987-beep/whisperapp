@@ -14,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking } from "@/firebase"
 import { collection, query, orderBy } from "firebase/firestore"
 import { Gathering } from "@/lib/types"
-import { Plus, Calendar, Search, Clock, MapPin, Globe, Image as ImageIcon, Info, Video, FileText, Type, HelpCircle, Sparkles } from "lucide-react"
+import { Plus, Calendar, Search, Clock, MapPin, Globe, Image as ImageIcon, Info, Video, FileText, Type, HelpCircle, Sparkles, X } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
@@ -99,7 +99,6 @@ export default function GatheringsPage() {
     try {
       const tags = tagInput.split(/[, ]+/).filter(t => t.startsWith('#')).map(t => t.replace('#', ''))
       
-      // 상세 이미지들을 설명글 하단에 포함 (시뮬레이션)
       const finalDescription = description + (detailImages.length > 0 ? "\n\n[첨부 이미지]\n" + detailImages.join("\n") : "");
 
       await addDocumentNonBlocking(collection(db, "gatherings"), {
@@ -125,7 +124,6 @@ export default function GatheringsPage() {
       
       toast({ title: "모임 개설 완료", description: "새로운 HR 지식 모임이 개설되었습니다!" })
       setIsDialogOpen(false)
-      // Reset states
       setTitle(""); setSummary(""); setTagInput(""); setDescription(""); setLocation(""); setSchedule(""); setCapacity("10"); setSessionCount("6"); setRegistrationQuestion(""); setImageUrl(null); setDetailImages([]);
     } catch (error) {
       toast({ title: "오류 발생", description: "모임 개설 중 문제가 발생했습니다.", variant: "destructive" })
@@ -154,14 +152,13 @@ export default function GatheringsPage() {
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-4xl bg-white border-none rounded-none p-0 shadow-2xl overflow-hidden max-h-[95vh] flex flex-col">
-                <DialogHeader className="bg-[#1E1E23] p-6 shrink-0">
-                  <DialogTitle className="text-xl font-black text-primary">신규 모임 개설</DialogTitle>
-                  <p className="text-white/40 text-[10px] font-bold mt-0.5 uppercase tracking-widest">Create Professional Gathering</p>
+                <DialogHeader className="bg-white border-b border-black/5 p-6 shrink-0">
+                  <DialogTitle className="text-xl font-black text-accent">신규 모임 개설</DialogTitle>
+                  <p className="text-black/40 text-[10px] font-bold mt-0.5 uppercase tracking-widest">Create Professional Gathering</p>
                 </DialogHeader>
                 
                 <div className="flex-1 overflow-y-auto">
                   <form onSubmit={handleCreateGathering} className="p-8 md:p-12 space-y-12 pb-32">
-                    {/* 1. 썸네일 */}
                     <div className="space-y-4">
                       <div className="flex items-center gap-2">
                         <label className="text-sm font-black text-[#1E1E23]">썸네일 이미지</label>
@@ -178,7 +175,6 @@ export default function GatheringsPage() {
                       </div>
                     </div>
 
-                    {/* 2. 제목 및 한줄 설명 */}
                     <div className="space-y-8">
                       <div className="space-y-4">
                         <div className="flex items-center justify-between">
@@ -197,7 +193,6 @@ export default function GatheringsPage() {
                       </div>
                     </div>
 
-                    {/* 3. 기본 설정 (방식, 일정 등) - 전문가님의 피드백을 반영하여 상단으로 배치 및 가시성 강화 */}
                     <div className="bg-[#FBFBFC] p-8 space-y-10 border border-black/5">
                       <h3 className="text-sm font-black text-[#1E1E23] flex items-center gap-2">
                         <div className="w-1.5 h-4 bg-primary"></div>
@@ -274,7 +269,6 @@ export default function GatheringsPage() {
                       )}
                     </div>
 
-                    {/* 4. 사전 질문 및 태그 */}
                     <div className="space-y-8">
                       <div className="space-y-4">
                         <div className="flex items-center gap-2"><label className="text-sm font-black text-[#1E1E23]">참가 신청자 사전 설문</label><Badge className="bg-blue-100 text-blue-600 border-none rounded-sm px-1.5 py-0 text-[10px] font-black">선택</Badge></div>
@@ -287,7 +281,6 @@ export default function GatheringsPage() {
                       </div>
                     </div>
 
-                    {/* 5. 상세 정보 (에디터 스타일) - 이미지 업로드 기능 활성화 */}
                     <div className="space-y-4">
                       <label className="text-sm font-black text-[#1E1E23]">모임 상세 소개</label>
                       <div className="border border-black/10 rounded-none overflow-hidden">
@@ -340,7 +333,6 @@ export default function GatheringsPage() {
                       )}
                     </div>
 
-                    {/* Submit Button (Sticky at bottom via dialog design) */}
                     <div className="fixed bottom-0 left-0 right-0 p-6 bg-white border-t border-black/5 flex justify-end z-50">
                       <Button type="submit" disabled={isSubmitting} className="h-14 px-16 naver-button text-lg">
                         {isSubmitting ? "모임 정보 전송 중..." : "모임 개설 완료하기"}

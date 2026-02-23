@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useRef, useMemo } from "react"
@@ -5,13 +6,14 @@ import { Header } from "@/components/chuchot/Header"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { useUser, useFirestore, useCollection, useMemoFirebase, useDoc } from "@/firebase"
 import { collection, query, addDoc, where, doc } from "firebase/firestore"
 import { Instructor, Question } from "@/lib/types"
-import { MessageSquare, Search, FileText, Check, Plus, Sparkles } from "lucide-react"
+import { MessageSquare, Search, FileText, Check, Plus, Sparkles, Mail } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { MessageDialog } from "@/components/chuchot/MessageDialog"
 import { AvatarIcon } from "@/components/chuchot/AvatarIcon"
@@ -58,9 +60,9 @@ export function MentorPostsDialog({ userId, userName, isOpen, onClose }: { userI
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl bg-[#F5F6F7] border-none rounded-none p-0 shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
-        <DialogHeader className="bg-[#1E1E23] p-6">
-          <DialogTitle className="text-xl font-black text-primary flex items-center gap-3">
-            <FileText className="w-6 h-6" /> {userName} 위스퍼러의 활동 기록
+        <DialogHeader className="bg-white border-b border-black/5 p-6">
+          <DialogTitle className="text-xl font-black text-accent flex items-center gap-3">
+            <FileText className="w-6 h-6 text-primary" /> {userName} 위스퍼러의 활동 기록
           </DialogTitle>
         </DialogHeader>
         <div className="flex-1 overflow-y-auto p-8 space-y-4">
@@ -167,9 +169,9 @@ export default function MentorsPage() {
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-xl bg-white border-none rounded-none p-0 shadow-2xl overflow-hidden">
-                <DialogHeader className="bg-[#1E1E23] p-6">
-                  <DialogTitle className="text-xl font-black text-primary">위스퍼러 등록 신청</DialogTitle>
-                  <p className="text-white/40 text-[10px] font-bold mt-0.5 uppercase tracking-widest">Apply for Official Whisperer</p>
+                <DialogHeader className="bg-white border-b border-black/5 p-6">
+                  <DialogTitle className="text-xl font-black text-accent">위스퍼러 등록 신청</DialogTitle>
+                  <p className="text-black/40 text-[10px] font-bold mt-0.5 uppercase tracking-widest">Apply for Official Whisperer</p>
                 </DialogHeader>
                 <div className="p-8">
                   {profile ? (

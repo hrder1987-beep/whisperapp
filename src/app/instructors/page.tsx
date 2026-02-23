@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo, useRef } from "react"
@@ -98,9 +99,9 @@ export default function InstructorsPage() {
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-2xl bg-white border-none rounded-none p-0 shadow-2xl overflow-hidden">
-                <DialogHeader className="bg-[#1E1E23] p-6">
-                  <DialogTitle className="text-xl font-black text-primary">전문 강사 프로필 등록</DialogTitle>
-                  <p className="text-white/40 text-[10px] font-bold mt-0.5 uppercase tracking-widest">Register Professional Instructor</p>
+                <DialogHeader className="bg-white border-b border-black/5 p-6">
+                  <DialogTitle className="text-xl font-black text-accent">전문 강사 프로필 등록</DialogTitle>
+                  <p className="text-black/40 text-[10px] font-bold mt-0.5 uppercase tracking-widest">Register Professional Instructor</p>
                 </DialogHeader>
                 <form onSubmit={handleAddInstructor} className="p-8 space-y-8">
                   <div className="flex flex-col md:flex-row gap-8">
@@ -185,8 +186,8 @@ export default function InstructorsPage() {
       {viewTarget && (
         <Dialog open={!!viewTarget} onOpenChange={() => setViewTarget(null)}>
           <DialogContent className="max-w-2xl bg-white border-none rounded-none p-0 shadow-2xl overflow-hidden">
-            <DialogHeader className="bg-[#1E1E23] p-6">
-              <DialogTitle className="text-xl font-black text-primary">{viewTarget.name} 강사 상세 프로필</DialogTitle>
+            <DialogHeader className="bg-white border-b border-black/5 p-6">
+              <DialogTitle className="text-xl font-black text-accent">{viewTarget.name} 강사 상세 프로필</DialogTitle>
             </DialogHeader>
             <div className="p-8">
               <div className="flex items-center gap-8 mb-10">
@@ -195,7 +196,7 @@ export default function InstructorsPage() {
                 </div>
                 <div className="space-y-2">
                   <h2 className="text-2xl font-black text-[#1E1E23]">{viewTarget.name} 강사</h2>
-                  <Badge className="bg-primary text-[#1E1E23] font-black border-none px-3 py-1 rounded-none">#{viewTarget.specialty}</Badge>
+                  <Badge className="bg-primary text-accent font-black border-none px-3 py-1 rounded-none">#{viewTarget.specialty}</Badge>
                 </div>
               </div>
               <div className="space-y-6 max-h-[40vh] overflow-y-auto bg-[#FBFBFC] p-6 border border-black/5">
