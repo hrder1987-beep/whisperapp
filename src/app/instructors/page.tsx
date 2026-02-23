@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo, useRef } from "react"
@@ -7,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase"
 import { collection, query, orderBy, addDoc } from "firebase/firestore"
@@ -107,8 +108,11 @@ export default function InstructorsPage() {
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-2xl bg-white border-none rounded-[2rem] p-10 max-h-[90vh] overflow-y-auto">
-                <DialogHeader><DialogTitle className="text-2xl font-black text-primary mb-8">강사 프로필 등록</DialogTitle></DialogHeader>
-                <form onSubmit={handleAddInstructor} className="space-y-6">
+                <DialogHeader>
+                  <DialogTitle className="text-2xl font-black text-primary mb-2">강사 프로필 등록</DialogTitle>
+                  <DialogDescription className="text-sm font-bold text-primary/40">전문 강사로서의 이력과 강점을 입력해 주세요.</DialogDescription>
+                </DialogHeader>
+                <form onSubmit={handleAddInstructor} className="space-y-6 mt-6">
                   <div className="flex flex-col md:flex-row gap-8">
                     <div className="shrink-0">
                       <div onClick={() => fileInputRef.current?.click()} className="w-32 h-32 rounded-2xl bg-primary/5 border-2 border-dashed border-primary/10 flex items-center justify-center cursor-pointer hover:border-accent overflow-hidden">
@@ -188,6 +192,9 @@ export default function InstructorsPage() {
       {viewTarget && (
         <Dialog open={!!viewTarget} onOpenChange={() => setViewTarget(null)}>
           <DialogContent className="max-w-2xl bg-white border-none rounded-[2rem] p-8 overflow-hidden shadow-2xl">
+            <DialogHeader className="sr-only">
+              <DialogTitle>{viewTarget.name} 강사 상세 프로필</DialogTitle>
+            </DialogHeader>
             <div className="flex items-center gap-6 mb-8">
               <div className="w-24 h-24 rounded-2xl overflow-hidden border-2 border-primary/5">
                 <img src={viewTarget.profilePictureUrl} alt={viewTarget.name} className="w-full h-full object-cover" />

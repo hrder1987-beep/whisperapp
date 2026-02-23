@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase"
 import { collection, query, orderBy, addDoc } from "firebase/firestore"
@@ -78,7 +78,11 @@ export default function JobsPage() {
 
   const handleAddJob = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!user) return
+    if (!user) {
+      toast({ title: "로그인 필요", description: "공고 등록을 하려면 로그인이 필요합니다.", variant: "destructive" })
+      router.push("/auth?mode=login")
+      return
+    }
     setIsSubmitting(true)
     try {
       await addDoc(collection(db, "jobs"), {
@@ -99,7 +103,7 @@ export default function JobsPage() {
       
       <main className="max-w-7xl mx-auto px-4 py-8 md:py-12">
         <div className="flex flex-col gap-8 mb-12">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="flex flex-col md:flex-row md:items-center gap-6">
             <div className="space-y-1">
               <h1 className="text-3xl font-black text-primary tracking-tight">채용 정보</h1>
               <p className="text-sm font-medium text-primary/40">HR 전문가를 위한 최적의 커리어 기회를 연결합니다.</p>
@@ -113,8 +117,11 @@ export default function JobsPage() {
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-2xl bg-white border-none rounded-[2rem] p-10 max-h-[90vh] overflow-y-auto">
-                <DialogHeader><DialogTitle className="text-2xl font-black text-primary mb-8">채용 공고 등록</DialogTitle></DialogHeader>
-                <form onSubmit={handleAddJob} className="space-y-6">
+                <DialogHeader>
+                  <DialogTitle className="text-2xl font-black text-primary mb-2">채용 공고 등록</DialogTitle>
+                  <DialogDescription className="text-sm font-bold text-primary/40">전문 인재를 찾기 위한 공고 내용을 입력해 주세요.</DialogDescription>
+                </DialogHeader>
+                <form onSubmit={handleAddJob} className="space-y-6 mt-6">
                   <div onClick={() => fileInputRef.current?.click()} className="relative aspect-video bg-primary/5 rounded-xl border-2 border-dashed border-primary/10 flex items-center justify-center cursor-pointer hover:border-accent overflow-hidden group">
                     {adImageUrl ? <img src={adImageUrl} className="w-full h-full object-contain" alt="preview" /> : <Camera className="w-8 h-8 text-primary/20" />}
                   </div>
@@ -197,10 +204,10 @@ export default function JobsPage() {
       {viewJob && (
         <Dialog open={!!viewJob} onOpenChange={() => setViewJob(null)}>
           <DialogContent className="max-w-3xl bg-white border-none rounded-[2rem] p-0 overflow-hidden shadow-2xl">
-            <div className="bg-primary p-8">
-              <h2 className="text-2xl font-black text-white">{viewJob.title}</h2>
-              <p className="text-accent font-bold">{viewJob.companyName}</p>
-            </div>
+            <DialogHeader className="bg-primary p-8 text-left space-y-1">
+              <DialogTitle className="text-2xl font-black text-white">{viewJob.title}</DialogTitle>
+              <DialogDescription className="text-accent font-bold opacity-100">{viewJob.companyName}</DialogDescription>
+            </DialogHeader>
             <div className="p-8 max-h-[50vh] overflow-y-auto bg-[#F8F9FA]">
               {viewJob.adImageUrl ? <img src={viewJob.adImageUrl} className="w-full h-auto rounded-xl shadow-lg" alt="poster" /> : <p className="text-primary/20 text-center py-20 font-black">상세 이미지가 없습니다.</p>}
             </div>

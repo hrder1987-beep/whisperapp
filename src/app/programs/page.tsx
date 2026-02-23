@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo, useRef, useEffect } from "react"
@@ -7,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase"
 import { collection, query, orderBy, addDoc } from "firebase/firestore"
@@ -146,8 +147,11 @@ export default function ProgramsPage() {
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-3xl bg-white border-none rounded-[2rem] p-10 max-h-[90vh] overflow-y-auto">
-                <DialogHeader><DialogTitle className="text-2xl font-black text-primary mb-8">프로그램 정보 등록</DialogTitle></DialogHeader>
-                <form onSubmit={handleAddProgram} className="space-y-6">
+                <DialogHeader>
+                  <DialogTitle className="text-2xl font-black text-primary mb-2">프로그램 정보 등록</DialogTitle>
+                  <DialogDescription className="text-sm font-bold text-primary/40">전문가들에게 소개할 솔루션의 상세 내용을 입력해 주세요.</DialogDescription>
+                </DialogHeader>
+                <form onSubmit={handleAddProgram} className="space-y-6 mt-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-4">
                       <div onClick={() => fileInputRef.current?.click()} className="relative aspect-video bg-primary/5 rounded-xl border-2 border-dashed border-primary/10 flex items-center justify-center cursor-pointer overflow-hidden group hover:border-accent">
@@ -254,6 +258,10 @@ export default function ProgramsPage() {
       {selectedProgram && (
         <Dialog open={!!selectedProgram} onOpenChange={() => setSelectedProgram(null)}>
           <DialogContent className="max-w-3xl bg-white border-none rounded-[2rem] p-0 overflow-hidden shadow-2xl">
+            <DialogHeader className="sr-only">
+              <DialogTitle>{selectedProgram.title}</DialogTitle>
+              <DialogDescription>{selectedProgram.instructorName}</DialogDescription>
+            </DialogHeader>
             <div className="relative h-64 md:h-80 w-full">
               <Image src={selectedProgram.imageUrl || "https://images.unsplash.com/photo-1524178232363-1fb2b075b655"} alt={selectedProgram.title} fill className="object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
