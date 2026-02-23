@@ -112,7 +112,8 @@ export interface Gathering {
   category: string;
   imageUrl?: string;
   createdAt: number;
-  resources?: { title: string; url: string; type: string }[];
+  sessionCount: number; // 추가: 총 회차 (예: 6회차)
+  resources?: { title: string; url: string; type: string; sessionId?: number }[];
 }
 
 export interface GatheringApplication {
@@ -123,6 +124,16 @@ export interface GatheringApplication {
   userEmail: string;
   status: 'pending' | 'approved' | 'rejected';
   appliedAt: number;
+}
+
+export interface GatheringAttendance {
+  id: string;
+  gatheringId: string;
+  userId: string;
+  userName: string;
+  sessionId: number;
+  status: 'attending' | 'absent';
+  submittedAt: number;
 }
 
 export interface PrivateMessage {

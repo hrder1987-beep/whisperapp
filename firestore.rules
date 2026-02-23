@@ -4,7 +4,7 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * WHISPER PLATFORM SECURITY RULES - 100% RELIABLE ACCESS
+     * WHISPER PLATFORM SECURITY RULES
      */
 
     function isSignedIn() {
@@ -23,7 +23,7 @@ service cloud.firestore {
       );
     }
 
-    // 모든 사용자가 지식 피드를 읽을 수 있도록 허용
+    // 질문 및 답변
     match /questions/{questionId} {
       allow read: if true; 
       allow create: if isSignedIn();
@@ -38,12 +38,11 @@ service cloud.firestore {
 
     // 모임 (Gatherings) 규칙
     match /gatherings/{gatheringId} {
-      allow read: if true; // 누구나 모임 목록은 볼 수 있음
+      allow read: if true; 
       allow create: if isSignedIn();
       allow update, delete: if isSignedIn() && (resource.data.creatorId == request.auth.uid || isAdmin());
 
       match /applications/{appId} {
-        // 자신의 신청서 또는 모임 개설자만 읽기 가능
         allow read: if isSignedIn() && (
           resource.data.userId == request.auth.uid || 
           get(/databases/$(database)/documents/gatherings/$(gatheringId)).data.creatorId == request.auth.uid ||
@@ -56,9 +55,19 @@ service cloud.firestore {
         );
         allow delete: if isAdmin();
       }
+
+      match /attendance/{atId} {
+        allow read: if isSignedIn() && (
+          resource.data.userId == request.auth.uid || 
+          get(/databases/$(database)/documents/gatherings/$(gatheringId)).data.creatorId == request.auth.uid ||
+          isAdmin()
+        );
+        allow create, update: if isSignedIn() && (request.resource.data.userId == request.auth.uid);
+        allow delete: if isAdmin();
+      }
     }
 
-    // 기본 설정 및 사이트 구성 정보 (공개 읽기)
+    // 기본 설정 및 사이트 구성 정보
     match /admin_configuration/{configId} {
       allow read: if true;
       allow write: if isAdmin(); 
@@ -73,7 +82,6 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
-    // 강사 및 위스퍼러 (공개 정보)
     match /instructors/{id} {
       allow read: if true;
       allow create: if isSignedIn();
@@ -88,7 +96,6 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
-    // 교육 프로그램 및 채용 정보 (공개 정보)
     match /trainingPrograms/{id} {
       allow read: if true;
       allow create: if isSignedIn();
@@ -103,7 +110,6 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
-    // 쪽지 시스템 - 로그인한 사용자만 접근 가능하도록 단순화
     match /messages/{messageId} {
       allow read: if isSignedIn();
       allow create: if isSignedIn();
@@ -114,7 +120,6 @@ service cloud.firestore {
       );
     }
 
-    // 알림 시스템 - 로그인한 사용자만 자신의 알림을 읽을 수 있도록 설정
     match /notifications/{notifId} {
       allow read: if isSignedIn();
       allow create: if isSignedIn();
