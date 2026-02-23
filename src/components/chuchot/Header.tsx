@@ -1,4 +1,3 @@
-
 "use client"
 
 import { Logo } from "./Logo"
@@ -12,7 +11,7 @@ import { signOut } from "firebase/auth"
 import { collection, query, where, doc } from "firebase/firestore"
 import { cn } from "@/lib/utils"
 import { useState, KeyboardEvent } from "react"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { Badge } from "@/components/ui/badge"
 
 interface HeaderProps {
@@ -68,7 +67,7 @@ export function Header({ onSearch }: HeaderProps) {
 
   return (
     <header className="naver-header">
-      {/* Top Utility Nav */}
+      {/* Top Utility Nav - PC Only */}
       <div className="bg-[#F8F9FA] border-b border-black/[0.04] hidden md:block">
         <div className="max-w-7xl mx-auto px-4 h-9 flex items-center justify-end gap-6 text-[11px] font-bold text-[#888]">
           {user ? (
@@ -95,30 +94,50 @@ export function Header({ onSearch }: HeaderProps) {
       </div>
 
       {/* Main Header Content */}
-      <div className="max-w-7xl mx-auto px-4 h-16 md:h-20 flex items-center justify-between gap-8">
-        <div className="flex items-center gap-6">
+      <div className="max-w-7xl mx-auto px-4 h-16 md:h-20 flex items-center justify-between gap-4 md:gap-8">
+        <div className="flex items-center gap-2 md:gap-6">
           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="md:hidden text-[#1E1E23]"><Menu className="w-6 h-6" /></Button>
+              <Button variant="ghost" size="icon" className="md:hidden text-[#1E1E23] -ml-2"><Menu className="w-6 h-6" /></Button>
             </SheetTrigger>
-            <SheetContent side="left" className="bg-white border-none p-0 w-72">
+            <SheetContent side="left" className="bg-white border-none p-0 w-[280px]">
+              <SheetHeader className="sr-only">
+                <SheetTitle>메뉴</SheetTitle>
+              </SheetHeader>
               <div className="flex flex-col h-full pt-10 px-6">
                 <Logo className="mb-12" />
-                <nav className="flex flex-col gap-4">
+                <nav className="flex flex-col gap-2">
                   {navLinks.map((link) => (
-                    <Link key={link.href} href={link.href} onClick={() => setIsMobileMenuOpen(false)} className={cn("text-lg font-bold transition-all", pathname === link.href ? "text-accent" : "text-[#1E1E23]")}>{link.name}</Link>
+                    <Link 
+                      key={link.href} 
+                      href={link.href} 
+                      onClick={() => setIsMobileMenuOpen(false)} 
+                      className={cn(
+                        "text-base font-bold py-3 px-4 rounded-xl transition-all", 
+                        pathname === link.href ? "bg-accent/10 text-accent" : "text-[#1E1E23] hover:bg-black/5"
+                      )}
+                    >
+                      {link.name}
+                    </Link>
                   ))}
-                  {user && (
-                    <Link href="/my-posts" onClick={() => setIsMobileMenuOpen(false)} className={cn("text-lg font-bold transition-all", pathname === '/my-posts' ? "text-accent" : "text-[#1E1E23]")}>내가 쓴 글</Link>
+                  <div className="h-px bg-black/[0.05] my-4" />
+                  {user ? (
+                    <>
+                      <Link href="/profile" onClick={() => setIsMobileMenuOpen(false)} className="text-base font-bold py-3 px-4 text-[#1E1E23]">내 정보</Link>
+                      <Link href="/my-posts" onClick={() => setIsMobileMenuOpen(false)} className="text-base font-bold py-3 px-4 text-[#1E1E23]">내가 쓴 글</Link>
+                      <button onClick={handleLogout} className="text-left text-base font-bold py-3 px-4 text-red-500">로그아웃</button>
+                    </>
+                  ) : (
+                    <Link href="/auth?mode=login" onClick={() => setIsMobileMenuOpen(false)} className="text-base font-bold py-3 px-4 text-accent">로그인 / 회원가입</Link>
                   )}
                 </nav>
               </div>
             </SheetContent>
           </Sheet>
-          <Link href="/"><Logo /></Link>
+          <Link href="/"><Logo className="scale-90 md:scale-100" /></Link>
         </div>
 
-        {/* Improved Naver Style Search Bar */}
+        {/* Improved Naver Style Search Bar - PC Only */}
         <div className="hidden md:flex flex-1 max-w-xl">
           <div className="naver-search-bar w-full h-11 focus-within:border-accent">
             <Input 
@@ -134,7 +153,12 @@ export function Header({ onSearch }: HeaderProps) {
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 md:gap-4">
+          {/* Mobile Search Button (Placeholder for mobile search behavior) */}
+          <button className="md:hidden text-[#1E1E23] p-2" onClick={() => router.push('/?search=')}>
+            <Search className="w-6 h-6" />
+          </button>
+
           <div className="hidden md:flex items-center gap-2">
             {isAdmin && (
               <Link href="/admin">
@@ -162,7 +186,7 @@ export function Header({ onSearch }: HeaderProps) {
         </div>
       </div>
 
-      {/* Sub Nav Menu */}
+      {/* Sub Nav Menu - PC Only */}
       <nav className="border-t border-black/[0.05] hidden md:block bg-white">
         <div className="max-w-7xl mx-auto px-4 h-12 flex items-center gap-8">
           {navLinks.map((link) => (
