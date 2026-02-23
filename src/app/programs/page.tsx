@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo, useRef, useEffect } from "react"
@@ -8,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase"
 import { collection, query, orderBy, addDoc } from "firebase/firestore"
@@ -107,7 +106,11 @@ export default function ProgramsPage() {
 
   const handleAddProgram = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!user) return
+    if (!user) {
+      toast({ title: "로그인 필요", description: "프로그램 등록을 하려면 로그인이 필요합니다.", variant: "destructive" })
+      router.push("/auth?mode=login")
+      return
+    }
     setIsSubmitting(true)
     try {
       await addDoc(collection(db, "trainingPrograms"), {
@@ -129,7 +132,7 @@ export default function ProgramsPage() {
       
       <main className="max-w-7xl mx-auto px-4 py-8 md:py-12">
         <div className="flex flex-col gap-8 mb-12">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="flex flex-col md:flex-row md:items-center gap-6">
             <div className="space-y-1">
               <h1 className="text-3xl font-black text-primary tracking-tight">프로그램</h1>
               <p className="text-sm font-medium text-primary/40">검증된 교육기관의 솔루션을 한눈에 확인하세요.</p>
