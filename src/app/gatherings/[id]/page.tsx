@@ -8,10 +8,13 @@ import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
 import { useUser, useFirestore, useDoc, useCollection, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking } from "@/firebase"
 import { doc, collection, query, where, deleteDoc } from "firebase/firestore"
 import { Gathering, GatheringApplication, GatheringAttendance } from "@/lib/types"
-import { Users, Calendar, MapPin, Globe, Sparkles, FileText, Check, X, ArrowLeft, ShieldCheck, Download, Trash2, Clock, Info, CheckCircle2, Circle } from "lucide-react"
+import { Users, Calendar, MapPin, Globe, Sparkles, FileText, Check, X, ArrowLeft, ShieldCheck, Download, Trash2, Clock, Info, CheckCircle2, MessageSquare } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { formatDistanceToNow } from "date-fns"
 import { ko } from "date-fns/locale"
@@ -28,6 +31,8 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
 
   const [activeTab, setActiveTab] = useState("overview")
   const [isApplying, setIsSubmitting] = useState(false)
+  const [isSurveyOpen, setIsSurveyOpen] = useState(false)
+  const [surveyAnswer, setSurveyAnswer] = useState("")
 
   // Data Fetching
   const gatheringRef = useMemoFirebase(() => db ? doc(db, "gatherings", id) : null, [db, id])
@@ -43,12 +48,22 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
   const myApp = applications?.find(a => a.userId === user?.uid)
   const isApproved = myApp?.status === "approved"
 
-  const handleApply = async () => {
-    if (!user || !gathering || !db) {
+  const handleApplyClick = () => {
+    if (!user || !gathering) {
       toast({ title: "로그인 필요", description: "참여 신청을 하려면 로그인이 필요합니다.", variant: "destructive" })
-      if (!user) router.push("/auth?mode=login")
+      router.push("/auth?mode=login")
       return
     }
+
+    if (gathering.registrationQuestion) {
+      setIsSurveyOpen(true)
+    } else {
+      handleApply()
+    }
+  }
+
+  const handleApply = async () => {
+    if (!user || !gathering || !db) return
 
     if (gathering.participantCount >= gathering.capacity) {
       toast({ title: "정원 초과", description: "이미 모집 정원이 마감되었습니다.", variant: "destructive" })
@@ -63,9 +78,12 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
         userName: user.displayName || "익명전문가",
         userEmail: user.email || "",
         status: "pending",
+        surveyAnswer: surveyAnswer.trim() || null,
         appliedAt: Date.now()
       })
       toast({ title: "신청 완료", description: "모임 참여 신청이 완료되었습니다. 개설자의 승인을 기다려주세요!" })
+      setIsSurveyOpen(false)
+      setSurveyAnswer("")
     } catch (e) {
       toast({ title: "오류", description: "신청 중 문제가 발생했습니다.", variant: "destructive" })
     } finally {
@@ -250,7 +268,7 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
                         <h3 className="text-xl font-black text-[#1E1E23]">승인된 멤버 전용 대시보드입니다.</h3>
                         <p className="text-sm font-bold text-[#888]">모임 참여 승인 후 매 세션의 출석과 자료를 관리하실 수 있습니다.</p>
                       </div>
-                      <Button onClick={handleApply} disabled={!!myApp} className="bg-[#1E1E23] text-[#03C75A] font-black h-14 px-10 rounded-none text-sm">
+                      <Button onClick={handleApplyClick} disabled={!!myApp} className="bg-[#1E1E23] text-[#03C75A] font-black h-14 px-10 rounded-none text-sm">
                         {myApp ? "신청 대기 중" : "지금 참여 신청하기"}
                       </Button>
                     </div>
@@ -298,7 +316,7 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
                         <h3 className="text-xl font-black text-[#1E1E23]">자료실은 참여 멤버 전용입니다.</h3>
                         <p className="text-sm font-bold text-[#888]">모임 신청 후 승인이 완료되면 모든 학습 자료를 이용하실 수 있습니다.</p>
                       </div>
-                      <Button onClick={handleApply} disabled={!!myApp} className="bg-[#1E1E23] text-[#03C75A] font-black h-14 px-10 rounded-none text-sm">
+                      <Button onClick={handleApplyClick} disabled={!!myApp} className="bg-[#1E1E23] text-[#03C75A] font-black h-14 px-10 rounded-none text-sm">
                         {myApp ? "승인 대기 중" : "지금 참여 신청하기"}
                       </Button>
                     </div>
@@ -318,33 +336,42 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
                         <div className="py-20 text-center text-black/20 font-black">신청자가 아직 없습니다.</div>
                       ) : (
                         applications.map(app => (
-                          <div key={app.id} className="py-6 flex flex-col md:flex-row md:items-center justify-between gap-6 hover:bg-[#F5F6F7]/50 transition-all">
-                            <div className="flex items-center gap-4">
-                              <div className="w-12 h-12 bg-[#1E1E23] text-[#03C75A] flex items-center justify-center font-black text-lg">
-                                {app.userName.substring(0, 1)}
+                          <div key={app.id} className="py-8 flex flex-col gap-6 hover:bg-[#F5F6F7]/50 transition-all px-4">
+                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                              <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 bg-[#1E1E23] text-[#03C75A] flex items-center justify-center font-black text-lg">
+                                  {app.userName.substring(0, 1)}
+                                </div>
+                                <div>
+                                  <p className="font-black text-[#1E1E23] text-lg">@{app.userName}</p>
+                                  <p className="text-[10px] font-bold text-black/30 flex items-center gap-1.5 uppercase tracking-widest"><Clock className="w-3 h-3" /> {formatDistanceToNow(app.appliedAt, { addSuffix: true, locale: ko })}</p>
+                                </div>
                               </div>
-                              <div>
-                                <p className="font-black text-[#1E1E23] text-lg">@{app.userName}</p>
-                                <p className="text-[10px] font-bold text-black/30 flex items-center gap-1.5 uppercase tracking-widest"><Clock className="w-3 h-3" /> {formatDistanceToNow(app.appliedAt, { addSuffix: true, locale: ko })}</p>
+                              
+                              <div className="flex items-center gap-2">
+                                {app.status === 'pending' ? (
+                                  <>
+                                    <Button onClick={() => handleApprove(app)} className="bg-[#03C75A] text-white font-black rounded-none h-11 px-6 gap-2 text-xs">
+                                      <Check className="w-4 h-4" /> 승인
+                                    </Button>
+                                    <Button onClick={() => handleReject(app)} variant="ghost" className="text-red-500 hover:bg-red-50 font-black rounded-none h-11 px-6 gap-2 text-xs">
+                                      <X className="w-4 h-4" /> 반려
+                                    </Button>
+                                  </>
+                                ) : (
+                                  <Badge className={cn("px-6 py-2 rounded-none font-black text-[10px] border-none shadow-sm", app.status === 'approved' ? "bg-emerald-50 text-emerald-600" : "bg-red-50 text-red-500")}>
+                                    {app.status === 'approved' ? "승인 완료" : "반려 처리됨"}
+                                  </Badge>
+                                )}
                               </div>
                             </div>
-                            
-                            <div className="flex items-center gap-2">
-                              {app.status === 'pending' ? (
-                                <>
-                                  <Button onClick={() => handleApprove(app)} className="bg-[#03C75A] text-white font-black rounded-none h-11 px-6 gap-2 text-xs">
-                                    <Check className="w-4 h-4" /> 승인
-                                  </Button>
-                                  <Button onClick={() => handleReject(app)} variant="ghost" className="text-red-500 hover:bg-red-50 font-black rounded-none h-11 px-6 gap-2 text-xs">
-                                    <X className="w-4 h-4" /> 반려
-                                  </Button>
-                                </>
-                              ) : (
-                                <Badge className={cn("px-6 py-2 rounded-none font-black text-[10px] border-none shadow-sm", app.status === 'approved' ? "bg-emerald-50 text-emerald-600" : "bg-red-50 text-red-500")}>
-                                  {app.status === 'approved' ? "승인 완료" : "반려 처리됨"}
-                                </Badge>
-                              )}
-                            </div>
+
+                            {app.surveyAnswer && (
+                              <div className="bg-white border border-black/5 p-5 rounded-none space-y-2">
+                                <p className="text-[10px] font-black text-[#03C75A] uppercase tracking-widest flex items-center gap-1.5"><MessageSquare className="w-3 h-3" /> 신청자 답변</p>
+                                <p className="text-sm font-bold text-[#1E1E23] leading-relaxed italic">"{app.surveyAnswer}"</p>
+                              </div>
+                            )}
                           </div>
                         ))
                       )}
@@ -398,7 +425,7 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
                     </div>
                   ) : (
                     <Button 
-                      onClick={handleApply} 
+                      onClick={handleApplyClick} 
                       disabled={isApplying || isClosed}
                       className={cn(
                         "w-full h-16 text-lg font-black rounded-none shadow-xl gap-3 transition-all",
@@ -426,6 +453,41 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
           </aside>
         </div>
       </main>
+
+      {/* Survey Dialog */}
+      <Dialog open={isSurveyOpen} onOpenChange={setIsSurveyOpen}>
+        <DialogContent className="max-w-xl bg-white border-none rounded-none p-0 shadow-2xl overflow-hidden">
+          <DialogHeader className="bg-[#1E1E23] p-6">
+            <DialogTitle className="text-xl font-black text-[#03C75A]">참가 신청 사전 설문</DialogTitle>
+            <DialogDescription className="text-white/40 text-[10px] font-bold mt-0.5 uppercase tracking-widest">Pre-registration Question</DialogDescription>
+          </DialogHeader>
+          <div className="p-8 space-y-6">
+            <div className="bg-[#F5F6F7] p-6 border-l-4 border-[#03C75A]">
+              <p className="text-xs font-black text-black/30 uppercase tracking-widest mb-2">Host's Question</p>
+              <p className="text-lg font-black text-[#1E1E23] leading-tight">{gathering.registrationQuestion}</p>
+            </div>
+            <div className="space-y-3">
+              <Label className="text-sm font-black text-[#1E1E23]">답변을 작성해 주세요</Label>
+              <Textarea 
+                value={surveyAnswer}
+                onChange={(e) => setSurveyAnswer(e.target.value)}
+                placeholder="전문가님의 생각을 정갈하게 적어주세요."
+                className="min-h-[150px] bg-white border-black/10 rounded-none focus-visible:ring-[#03C75A]/30 p-4 font-bold text-sm leading-relaxed"
+              />
+            </div>
+          </div>
+          <DialogFooter className="p-6 bg-[#FBFBFC] border-t border-black/5 flex flex-row gap-2">
+            <Button variant="ghost" onClick={() => setIsSurveyOpen(false)} className="flex-1 h-12 font-black rounded-none">취소</Button>
+            <Button 
+              onClick={handleApply} 
+              disabled={isApplying || !surveyAnswer.trim()} 
+              className="flex-[2] h-12 bg-[#1E1E23] text-[#03C75A] font-black rounded-none shadow-xl hover:brightness-110"
+            >
+              {isApplying ? "신청 중..." : "답변 제출 및 신청완료"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

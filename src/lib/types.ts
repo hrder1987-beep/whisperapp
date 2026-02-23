@@ -100,9 +100,9 @@ export interface JobListing {
 export interface Gathering {
   id: string;
   title: string;
-  summary: string; // 추가: 짧은 설명 문구
-  description: string; // 상세 정보
-  tags: string[]; // 추가: 해시태그
+  summary: string;
+  description: string;
+  tags: string[];
   creatorId: string;
   creatorName: string;
   type: 'online' | 'offline';
@@ -115,6 +115,7 @@ export interface Gathering {
   imageUrl?: string;
   createdAt: number;
   sessionCount: number; 
+  registrationQuestion?: string; // 추가: 사전 질문
   resources?: { title: string; url: string; type: string; sessionId?: number }[];
 }
 
@@ -126,6 +127,7 @@ export interface GatheringApplication {
   userEmail: string;
   status: 'pending' | 'approved' | 'rejected';
   appliedAt: number;
+  surveyAnswer?: string; // 추가: 질문에 대한 답변
 }
 
 export interface GatheringAttendance {

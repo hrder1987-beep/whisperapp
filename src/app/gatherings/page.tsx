@@ -14,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking } from "@/firebase"
 import { collection, query, orderBy } from "firebase/firestore"
 import { Gathering } from "@/lib/types"
-import { Plus, Users, Calendar, Search, Camera, ChevronRight, Sparkles, Clock, MapPin, Globe, Image as ImageIcon, Info, Video, FileText, Type } from "lucide-react"
+import { Plus, Users, Calendar, Search, Camera, ChevronRight, Sparkles, Clock, MapPin, Globe, Image as ImageIcon, Info, Video, FileText, Type, HelpCircle } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
@@ -34,7 +34,7 @@ export default function GatheringsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  // Form States (Matching Onoffmix Reference)
+  // Form States
   const [title, setTitle] = useState("")
   const [summary, setSummary] = useState("")
   const [tagInput, setTagInput] = useState("")
@@ -45,6 +45,7 @@ export default function GatheringsPage() {
   const [capacity, setCapacity] = useState("10")
   const [sessionCount, setSessionCount] = useState("6")
   const [category, setCategory] = useState("COP/학습")
+  const [registrationQuestion, setRegistrationQuestion] = useState("") // 사전 질문
   const [imageUrl, setImageUrl] = useState<string | null>(null)
 
   const gatheringsQuery = useMemoFirebase(() => {
@@ -99,6 +100,7 @@ export default function GatheringsPage() {
         participantCount: 0,
         status: "recruiting",
         category,
+        registrationQuestion: registrationQuestion.trim() || undefined,
         imageUrl: imageUrl || `https://picsum.photos/seed/${Date.now()}/800/400`,
         createdAt: Date.now(),
         resources: []
@@ -107,7 +109,7 @@ export default function GatheringsPage() {
       toast({ title: "모임 개설 완료", description: "새로운 HR 지식 모임이 개설되었습니다!" })
       setIsDialogOpen(false)
       // Reset form
-      setTitle(""); setSummary(""); setTagInput(""); setDescription(""); setLocation(""); setSchedule(""); setCapacity("10"); setSessionCount("6"); setImageUrl(null);
+      setTitle(""); setSummary(""); setTagInput(""); setDescription(""); setLocation(""); setSchedule(""); setCapacity("10"); setSessionCount("6"); setRegistrationQuestion(""); setImageUrl(null);
     } catch (error) {
       toast({ title: "오류 발생", description: "모임 개설 중 문제가 발생했습니다.", variant: "destructive" })
     } finally {
@@ -213,6 +215,21 @@ export default function GatheringsPage() {
                         placeholder="한글/영문/숫자/띄어쓰기 포함 100자 이내로 입력해 주세요" 
                         className="h-12 bg-white border-black/10 rounded-sm font-bold text-base focus-visible:ring-[#03C75A]/30" 
                       />
+                    </div>
+
+                    {/* Question Section - New */}
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2">
+                        <label className="text-sm font-black text-[#1E1E23]">참가 신청자에게 물어볼 질문</label>
+                        <Badge className="bg-blue-100 text-blue-600 border-none rounded-sm px-1.5 py-0 text-[10px] font-black">선택</Badge>
+                      </div>
+                      <Input 
+                        value={registrationQuestion} 
+                        onChange={e => setRegistrationQuestion(e.target.value)} 
+                        placeholder="예: 이 모임에 참여하고 싶은 이유와 현재 담당 업무를 간단히 적어주세요." 
+                        className="h-12 bg-white border-black/10 rounded-sm font-bold text-sm focus-visible:ring-[#03C75A]/30" 
+                      />
+                      <p className="text-[11px] font-medium text-black/30 flex items-center gap-1.5"><HelpCircle className="w-3 h-3" /> 질문을 입력하면 참가자가 신청할 때 답변을 제출해야 합니다.</p>
                     </div>
 
                     {/* Tags Section */}
