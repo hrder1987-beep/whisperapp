@@ -202,7 +202,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-[#F8F9FA]">
-      <Header onSearch={setSearchQuery} />
+      <Header />
       <div className="max-w-7xl mx-auto px-4 py-6 md:py-12">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
           <main className={cn("space-y-6 md:space-y-10", deferredSearchQuery ? "lg:col-span-12" : "lg:col-span-8")}>
@@ -360,7 +360,7 @@ export default function HomePage() {
             )}
           </main>
           {!deferredSearchQuery && (
-            <aside className="lg:col-span-4 space-y-8 hidden lg:block">
+            <aside className="lg:col-span-4 space-y-8 hidden lg:block sticky top-32 self-start">
               <AldiChat />
               <PremiumAds ads={premiumAds} />
               <RankingList questions={questions.slice(0, 3)} onSelectQuestion={id => setSelectedId(id)} />
