@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label"
 import { useUser, useFirestore, useCollection, useMemoFirebase, useDoc } from "@/firebase"
 import { collection, query, orderBy, addDoc, where, doc } from "firebase/firestore"
 import { Instructor, Question } from "@/lib/types"
-import { Plus, Star, Award, Briefcase, MessageSquare, Crown, Camera, Sparkles, Search, Building2, User as UserIcon, FileText, X, Check, Info } from "lucide-react"
+import { Star, Award, Briefcase, MessageSquare, Crown, Camera, Search, Building2, User as UserIcon, FileText, X, Check, Info, Plus } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { MessageDialog } from "@/components/chuchot/MessageDialog"
 import { AvatarIcon } from "@/components/chuchot/AvatarIcon"
@@ -65,32 +65,32 @@ export function MentorPostsDialog({ userId, userName, isOpen, onClose }: { userI
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl bg-[#F8F9FA] border-none rounded-[3rem] p-8 shadow-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl bg-[#F8F9FA] border-none rounded-[2rem] p-8 shadow-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader className="mb-8">
-          <DialogTitle className="text-2xl font-black text-primary flex items-center gap-3">
-            <FileText className="w-7 h-7 text-accent" />
-            {userName} 위스퍼러의 속삭임 기록
+          <DialogTitle className="text-xl font-black text-primary flex items-center gap-3">
+            <FileText className="w-6 h-6 text-accent" />
+            {userName} 위스퍼러의 활동 기록
           </DialogTitle>
         </DialogHeader>
         
         {isLoading ? (
-          <div className="flex justify-center py-20"><Sparkles className="w-10 h-10 animate-spin text-accent" /></div>
+          <div className="flex justify-center py-20"><Plus className="w-10 h-10 animate-spin text-accent" /></div>
         ) : !posts || posts.length === 0 ? (
-          <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-primary/10">
+          <div className="text-center py-20 bg-white rounded-2xl border border-dashed border-primary/10">
             <p className="text-primary/20 font-black">아직 작성한 게시글이 없습니다.</p>
           </div>
         ) : (
-          <div className="space-y-6">
+          <div className="space-y-4">
             {posts.map(p => (
-              <Card key={p.id} className="bg-white border-primary/5 rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-all">
+              <Card key={p.id} className="bg-white border-primary/5 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all">
                 <CardContent className="p-6">
                   <div className="flex justify-between items-start mb-2">
                     <Badge className="bg-primary/5 text-primary/40 font-black border-none text-[9px]">#{p.category || "일반"}</Badge>
                     <span className="text-[10px] font-bold text-primary/20">{new Date(p.createdAt).toLocaleDateString()}</span>
                   </div>
-                  <h4 className="text-lg font-black text-primary mb-2 text-balance">{p.title}</h4>
-                  <p className="text-sm text-primary/60 line-clamp-2 mb-4 leading-relaxed">{p.text}</p>
-                  <div className="flex items-center gap-4 text-[11px] font-black text-primary/30">
+                  <h4 className="text-base font-black text-primary mb-2">{p.title}</h4>
+                  <p className="text-xs text-primary/60 line-clamp-2 mb-4 leading-relaxed">{p.text}</p>
+                  <div className="flex items-center gap-4 text-[10px] font-black text-primary/30">
                     <span>조회 {p.viewCount}</span>
                     <span>답변 {p.answerCount}</span>
                   </div>
@@ -117,11 +117,9 @@ export default function MentorsPage() {
   const [messageTarget, setMessageTarget] = useState<{ id: string, nickname: string } | null>(null)
   const [postViewTarget, setPostViewTarget] = useState<{ id: string, name: string } | null>(null)
 
-  // User Profile for Pre-filling
   const userDocRef = useMemoFirebase(() => (user && db) ? doc(db, "users", user.uid) : null, [user, db])
   const { data: profile } = useDoc<any>(userDocRef)
 
-  // Whisperer Specific Form states
   const [specialty, setSpecialty] = useState("")
   const [bio, setBio] = useState("")
   const [mentorProfilePic, setMentorProfilePic] = useState<string | null>(null)
@@ -203,172 +201,110 @@ export default function MentorsPage() {
     <div className="min-h-screen bg-[#F8F9FA]">
       <Header />
       
-      <main className="max-w-7xl mx-auto px-4 py-12 md:py-20">
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-12 mb-20">
-          <div className="space-y-8 flex-1">
-            <div className="inline-flex items-center gap-2 bg-accent/10 px-4 py-2 rounded-full border border-accent/20">
-              <Sparkles className="w-4 h-4 text-accent animate-pulse" />
-              <span className="text-[10px] font-black text-accent uppercase tracking-[0.2em]">Voices of Wisdom</span>
+      <main className="max-w-7xl mx-auto px-4 py-8 md:py-12">
+        <div className="flex flex-col gap-8 mb-12">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="space-y-1">
+              <h1 className="text-3xl font-black text-primary tracking-tight">위스퍼러</h1>
+              <p className="text-sm font-medium text-primary/40">각 분야 최고의 HR 인사이트 파트너들을 소개합니다.</p>
             </div>
             
-            <div className="space-y-4">
-              <h1 className="text-5xl md:text-7xl font-black text-primary tracking-tighter leading-[0.9] text-balance">
-                위스퍼러 <span className="text-accent/40 font-light tracking-widest block md:inline md:ml-2 text-3xl md:text-5xl">Whisperer</span>
-              </h1>
-              <p className="text-xl md:text-2xl font-medium text-primary/50 max-w-4xl leading-relaxed text-balance">
-                침묵을 깨는 지혜의 목소리, Whisper와 함께하는 <br className="hidden md:block" />
-                각 분야 최고의 <span className="text-primary font-black underline decoration-accent/30 underline-offset-4">HR 인사이트 파트너</span>들을 소개합니다.
-              </p>
-            </div>
-            
-            <div className="relative max-w-2xl group">
-              <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-6 h-6 text-primary/20 group-focus-within:text-accent transition-colors" />
-              <Input 
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                placeholder="전문 위스퍼러의 성함, 기업명, 분야를 검색하세요..." 
-                className="h-16 pl-16 pr-8 bg-white border-none rounded-[2rem] shadow-xl focus-visible:ring-accent/50 text-base font-bold placeholder:text-primary/20"
-              />
-            </div>
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger asChild>
+                <Button className="bg-primary text-accent hover:bg-primary/95 font-black h-11 px-6 rounded-xl shadow-lg transition-all gap-2 text-xs border border-accent/20">
+                  <Crown className="w-4 h-4" />
+                  위스퍼러 신청하기
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-xl bg-white border-none rounded-[2rem] p-10 shadow-2xl overflow-y-auto max-h-[90vh]">
+                <DialogHeader>
+                  <DialogTitle className="text-2xl font-black text-primary mb-2">위스퍼러 신청</DialogTitle>
+                  <p className="text-sm font-bold text-primary/40">전문가님의 지혜를 나눌 준비가 되셨나요?</p>
+                </DialogHeader>
+                {profile ? (
+                  <form onSubmit={handleAddMentor} className="space-y-8 mt-6">
+                    <div className="bg-primary/5 p-6 rounded-2xl space-y-4">
+                      <div className="flex items-center gap-4">
+                        <AvatarIcon src={profile.profilePictureUrl} seed={profile.username} className="w-12 h-12" />
+                        <div>
+                          <p className="font-black text-primary">{profile.name} 전문가</p>
+                          <p className="text-xs font-bold text-primary/40">{profile.company} · {profile.jobTitle}</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="space-y-6">
+                      <div className="space-y-2">
+                        <Label className="text-xs font-black text-primary/40 ml-2">전문 분야 (Expertise)</Label>
+                        <Input value={specialty} onChange={e => setSpecialty(e.target.value)} required placeholder="예: 채용 전략, 조직문화 설계" className="h-12 bg-primary/5 border-none rounded-xl font-bold" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-xs font-black text-primary/40 ml-2">소개 및 핵심 역량 (Bio)</Label>
+                        <Textarea value={bio} onChange={e => setBio(e.target.value)} required placeholder="나만의 인사이트와 경력을 상세히 적어주세요." className="bg-primary/5 border-none rounded-xl min-h-[120px] p-5 text-sm" />
+                      </div>
+                    </div>
+                    <Button type="submit" disabled={isSubmitting} className="w-full h-14 bg-primary text-accent font-black rounded-xl shadow-xl border border-accent/20">
+                      {isSubmitting ? "처리 중..." : "위스퍼러 신청 완료"}
+                    </Button>
+                  </form>
+                ) : <div className="py-20 text-center text-primary/20 font-black">회원 정보를 불러오는 중...</div>}
+              </DialogContent>
+            </Dialog>
           </div>
 
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="hidden md:flex bg-primary text-accent hover:bg-primary/95 font-black h-20 px-12 rounded-[2.5rem] shadow-2xl hover:scale-105 active:scale-95 transition-all gap-3 text-lg shrink-0 border border-accent/20">
-                <Crown className="w-6 h-6" />
-                위스퍼러 신청하기
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-xl bg-white border-none rounded-[3rem] p-10 shadow-2xl overflow-y-auto max-h-[90vh]">
-              <DialogHeader>
-                <DialogTitle className="text-2xl font-black text-primary mb-2">Whisperer Registration</DialogTitle>
-                <p className="text-sm font-bold text-primary/40">전문가님의 지혜를 나눌 준비가 되셨나요?</p>
-              </DialogHeader>
-              
-              {profile ? (
-                <form onSubmit={handleAddMentor} className="space-y-8 mt-6">
-                  <div className="bg-primary/5 p-6 rounded-[2rem] space-y-4">
-                    <h4 className="text-[10px] font-black text-primary/30 uppercase tracking-widest flex items-center gap-2">
-                      <UserIcon className="w-3 h-3" /> 기본 정보 확인
-                    </h4>
-                    <div className="flex items-center gap-4">
-                      <AvatarIcon src={profile.profilePictureUrl} seed={profile.username} className="w-14 h-14" />
-                      <div className="space-y-0.5">
-                        <p className="font-black text-primary">{profile.name} 전문가</p>
-                        <p className="text-xs font-bold text-primary/40">{profile.company} · {profile.jobTitle}</p>
-                      </div>
-                    </div>
-                    <p className="text-[10px] text-accent font-bold">* 기본 정보는 마이페이지에서 수정 가능합니다.</p>
-                  </div>
-
-                  <div className="space-y-6">
-                    <div className="flex flex-col items-center">
-                      <Label className="text-xs font-black text-primary/40 mb-3 uppercase tracking-tighter">위스퍼러용 프로필 사진 (선택)</Label>
-                      <div 
-                        onClick={() => fileInputRef.current?.click()}
-                        className="relative w-32 h-32 rounded-[2rem] bg-primary/5 border-2 border-dashed border-primary/10 flex flex-col items-center justify-center cursor-pointer hover:border-accent transition-all overflow-hidden"
-                      >
-                        {mentorProfilePic ? (
-                          <img src={mentorProfilePic} alt="preview" className="w-full h-full object-cover" />
-                        ) : (
-                          <>
-                            <Camera className="w-8 h-8 text-primary/20 mb-1" />
-                            <p className="text-[9px] text-primary/30 font-black">사진 업로드</p>
-                          </>
-                        )}
-                      </div>
-                      <input type="file" ref={fileInputRef} onChange={handleImageChange} accept="image/*" className="hidden" />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label className="text-xs font-black text-primary/40 ml-2">전문 분야 (Expertise)</Label>
-                      <Input 
-                        value={specialty} 
-                        onChange={e => setSpecialty(e.target.value)} 
-                        required 
-                        placeholder="예: 채용 전략, 조직문화 설계, HR 애널리틱스 등" 
-                        className="h-12 bg-primary/5 border-none rounded-xl font-bold" 
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label className="text-xs font-black text-primary/40 ml-2">소개 및 핵심 역량 (Bio)</Label>
-                      <Textarea 
-                        value={bio} 
-                        onChange={e => setBio(e.target.value)} 
-                        required 
-                        placeholder="동료 전문가들에게 공유할 수 있는 나만의 인사이트와 경력을 상세히 적어주세요." 
-                        className="bg-primary/5 border-none rounded-xl min-h-[150px] p-5 text-sm leading-relaxed" 
-                      />
-                    </div>
-                  </div>
-
-                  <Button type="submit" disabled={isSubmitting} className="w-full h-16 bg-primary text-accent font-black rounded-2xl shadow-xl text-lg hover:scale-[1.02] transition-all border border-accent/20">
-                    {isSubmitting ? "신청서 제출 중..." : "위스퍼러 신청 완료하기"}
-                  </Button>
-                </form>
-              ) : (
-                <div className="py-20 text-center space-y-4">
-                  <Info className="w-12 h-12 text-accent mx-auto opacity-20" />
-                  <p className="font-black text-primary/40">회원 정보를 불러오는 중입니다...</p>
-                </div>
-              )}
-            </DialogContent>
-          </Dialog>
+          <div className="relative max-w-2xl group">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-primary/20 group-focus-within:text-accent transition-colors" />
+            <Input 
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              placeholder="성함, 기업명, 분야를 검색하세요..." 
+              className="h-12 pl-12 pr-6 bg-white border-none rounded-xl shadow-sm focus-visible:ring-accent/50 text-sm font-bold placeholder:text-primary/20"
+            />
+          </div>
         </div>
 
         {isLoading ? (
-          <div className="flex justify-center py-40"><Star className="w-16 h-16 animate-spin text-accent" /></div>
+          <div className="flex justify-center py-40"><Plus className="w-12 h-12 animate-spin text-accent" /></div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             {filteredMentors.map((m) => (
-              <Card key={m.id} className="group bg-white border-primary/5 rounded-[3rem] overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-3 transition-all duration-500 flex flex-col">
+              <Card key={m.id} className="group bg-white border-primary/5 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 flex flex-col">
                 <CardContent className="p-8 flex flex-col items-center text-center flex-1">
                   <div className="relative mb-6">
-                    <div className="absolute inset-0 bg-accent blur-3xl opacity-20 group-hover:opacity-40 transition-opacity"></div>
-                    <div className="relative w-36 h-36 rounded-[2.5rem] overflow-hidden border-4 border-white shadow-2xl">
+                    <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-lg">
                        <img src={m.profilePictureUrl} alt={m.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                     </div>
                     {m.isVerified && (
-                      <Badge className="absolute -bottom-2 right-0 bg-primary text-accent font-black border-none px-3 py-1 rounded-xl flex gap-1.5 items-center animate-bounce shadow-xl text-[10px] border border-accent/20">
-                        <Award className="w-3 h-3" /> WHISPERER
+                      <Badge className="absolute -bottom-1 right-0 bg-primary text-accent font-black border-none px-3 py-1 rounded-lg flex gap-1 items-center shadow-lg text-[9px]">
+                        <Check className="w-3 h-3" /> WHISPERER
                       </Badge>
                     )}
                   </div>
                   
                   <div className="space-y-1 mb-4">
-                    <h3 className="text-xl font-black text-primary group-hover:text-accent transition-colors flex items-center gap-1.5 justify-center">
-                      {m.name}
-                      {m.isVerified && <Check className="w-4 h-4 text-emerald-500" />}
-                    </h3>
-                    <div className="flex flex-col items-center gap-0.5">
-                      <p className="text-primary/60 text-[11px] font-black uppercase flex items-center gap-1 text-balance">
-                        <Building2 className="w-3 h-3" /> {m.company || "전문가"}
-                      </p>
-                      <p className="text-primary/30 text-[10px] font-bold text-balance">{m.jobTitle || "HR Consultant"}</p>
-                    </div>
+                    <h3 className="text-lg font-black text-primary">{m.name} 전문가</h3>
+                    <p className="text-primary/40 text-[11px] font-bold">{m.company} · {m.jobTitle}</p>
                   </div>
 
-                  <Badge variant="outline" className="mb-6 border-accent/20 text-accent font-black text-[10px] px-3 py-0.5">#{m.specialty}</Badge>
+                  <Badge variant="outline" className="mb-6 border-accent/20 text-accent font-black text-[10px]">#{m.specialty}</Badge>
                   
                   <p className="text-xs text-primary/50 line-clamp-3 mb-8 font-medium leading-relaxed italic px-2">
                     "{m.bio}"
                   </p>
 
-                  <div className="grid grid-cols-1 w-full gap-3 mt-auto">
+                  <div className="grid grid-cols-1 w-full gap-2 mt-auto">
                     <Button 
                       onClick={() => setPostViewTarget({ id: m.userId, name: m.name })}
                       variant="ghost" 
-                      className="h-11 rounded-xl bg-primary/5 hover:bg-primary/10 text-primary/60 font-black gap-2 text-xs"
+                      className="h-10 rounded-xl bg-primary/5 hover:bg-primary/10 text-primary/60 font-black gap-2 text-xs"
                     >
-                      <FileText className="w-4 h-4" /> 작성한 속삭임 보기
+                      <FileText className="w-4 h-4" /> 작성글 보기
                     </Button>
                     <Button 
                       onClick={() => handleMessageClick(m)}
                       variant="outline" 
-                      className="h-12 rounded-2xl border-primary/10 text-primary font-black gap-2 hover:bg-primary hover:text-accent transition-all text-xs"
+                      className="h-10 rounded-xl border-primary/10 text-primary font-black gap-2 hover:bg-primary hover:text-accent transition-all text-xs"
                     >
-                      <MessageSquare className="w-4 h-4" /> 1:1 인사이트 문의
+                      <MessageSquare className="w-4 h-4" /> 1:1 문의
                     </Button>
                   </div>
                 </CardContent>
@@ -379,21 +315,11 @@ export default function MentorsPage() {
       </main>
 
       {messageTarget && (
-        <MessageDialog 
-          isOpen={!!messageTarget}
-          onClose={() => setMessageTarget(null)}
-          receiverId={messageTarget.id}
-          receiverNickname={messageTarget.nickname}
-        />
+        <MessageDialog isOpen={!!messageTarget} onClose={() => setMessageTarget(null)} receiverId={messageTarget.id} receiverNickname={messageTarget.nickname} />
       )}
 
       {postViewTarget && (
-        <MentorPostsDialog 
-          userId={postViewTarget.id}
-          userName={postViewTarget.name}
-          isOpen={!!postViewTarget}
-          onClose={() => setPostViewTarget(null)}
-        />
+        <MentorPostsDialog userId={postViewTarget.id} userName={postViewTarget.name} isOpen={!!postViewTarget} onClose={() => setPostViewTarget(null)} />
       )}
     </div>
   )
