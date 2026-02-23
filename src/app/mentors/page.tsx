@@ -1,7 +1,6 @@
-
 "use client"
 
-import { useState, useRef, useMemo, useEffect } from "react"
+import { useState, useRef, useMemo } from "react"
 import { Header } from "@/components/chuchot/Header"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -10,9 +9,9 @@ import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { useUser, useFirestore, useCollection, useMemoFirebase, useDoc } from "@/firebase"
-import { collection, query, orderBy, addDoc, where, doc } from "firebase/firestore"
+import { collection, query, addDoc, where, doc } from "firebase/firestore"
 import { Instructor, Question } from "@/lib/types"
-import { Star, Award, Briefcase, MessageSquare, Crown, Camera, Search, Building2, User as UserIcon, FileText, X, Check, Info, Plus, Sparkles, Clock } from "lucide-react"
+import { MessageSquare, Search, FileText, Check, Plus, Sparkles } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { MessageDialog } from "@/components/chuchot/MessageDialog"
 import { AvatarIcon } from "@/components/chuchot/AvatarIcon"
@@ -60,20 +59,20 @@ export function MentorPostsDialog({ userId, userName, isOpen, onClose }: { userI
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl bg-[#F5F6F7] border-none rounded-none p-0 shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
         <DialogHeader className="bg-[#1E1E23] p-6">
-          <DialogTitle className="text-xl font-black text-[#03C75A] flex items-center gap-3">
+          <DialogTitle className="text-xl font-black text-primary flex items-center gap-3">
             <FileText className="w-6 h-6" /> {userName} 위스퍼러의 활동 기록
           </DialogTitle>
         </DialogHeader>
         <div className="flex-1 overflow-y-auto p-8 space-y-4">
           {isLoading ? (
-            <div className="flex justify-center py-20"><Sparkles className="w-10 h-10 animate-spin text-[#03C75A]" /></div>
+            <div className="flex justify-center py-20"><Sparkles className="w-10 h-10 animate-spin text-primary" /></div>
           ) : posts.length === 0 ? (
             <div className="text-center py-24 bg-white border border-dashed border-black/5">
               <p className="text-black/20 font-black">아직 작성한 게시글이 없습니다.</p>
             </div>
           ) : (
             posts.map(p => (
-              <Card key={p.id} className="bg-white border-black/5 rounded-none shadow-sm hover:border-[#03C75A] transition-all">
+              <Card key={p.id} className="bg-white border-black/5 rounded-none shadow-sm hover:border-primary transition-all">
                 <CardContent className="p-6">
                   <div className="flex justify-between items-start mb-2">
                     <Badge className="bg-[#F5F6F7] text-black/40 font-black border-none text-[9px]">#{p.category || "일반"}</Badge>
@@ -100,7 +99,6 @@ export default function MentorsPage() {
   const db = useFirestore()
   const { toast } = useToast()
   const router = useRouter()
-  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("전체")
@@ -164,13 +162,13 @@ export default function MentorsPage() {
 
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button className="bg-[#1E1E23] text-[#03C75A] hover:brightness-110 font-black h-12 md:h-14 px-8 rounded-none shadow-md transition-all gap-2 text-sm">
+                <Button className="naver-button h-12 md:h-14 px-8 shadow-md gap-2 text-sm">
                   <Plus className="w-5 h-5" /> 위스퍼러 신청하기
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-xl bg-white border-none rounded-none p-0 shadow-2xl overflow-hidden">
                 <DialogHeader className="bg-[#1E1E23] p-6">
-                  <DialogTitle className="text-xl font-black text-[#03C75A]">위스퍼러 등록 신청</DialogTitle>
+                  <DialogTitle className="text-xl font-black text-primary">위스퍼러 등록 신청</DialogTitle>
                   <p className="text-white/40 text-[10px] font-bold mt-0.5 uppercase tracking-widest">Apply for Official Whisperer</p>
                 </DialogHeader>
                 <div className="p-8">
@@ -193,7 +191,7 @@ export default function MentorsPage() {
                           <Textarea value={bio} onChange={e => setBio(e.target.value)} required placeholder="나만의 실무 노하우와 경력을 상세히 적어주세요." className="min-h-[150px] bg-white border-black/10 rounded-none p-4 font-bold text-sm leading-relaxed" />
                         </div>
                       </div>
-                      <Button type="submit" disabled={isSubmitting} className="w-full h-14 bg-[#1E1E23] text-[#03C75A] font-black rounded-none shadow-xl hover:brightness-110">
+                      <Button type="submit" disabled={isSubmitting} className="w-full h-14 naver-button text-base">
                         {isSubmitting ? "처리 중..." : "위스퍼러 자격 신청 완료"}
                       </Button>
                     </form>
@@ -205,12 +203,12 @@ export default function MentorsPage() {
 
           <div className="flex flex-col md:flex-row md:items-center gap-6">
             <div className="relative flex-1 group">
-              <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-black/20 group-focus-within:text-[#03C75A] transition-colors" />
+              <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-black/20 group-focus-within:text-primary transition-colors" />
               <Input 
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 placeholder="전문가 성함, 기업명, 전문 분야로 검색해 보세요" 
-                className="h-14 pl-14 pr-6 bg-white border-2 border-[#03C75A] rounded-none shadow-sm focus-visible:ring-0 text-base font-black placeholder:text-black/10"
+                className="h-14 pl-14 pr-6 bg-white border-2 border-primary rounded-none shadow-sm focus-visible:ring-0 text-base font-black placeholder:text-black/10"
               />
             </div>
             <div className="flex overflow-x-auto gap-2 scrollbar-hide py-1">
@@ -221,8 +219,8 @@ export default function MentorsPage() {
                   className={cn(
                     "px-6 py-3 rounded-none text-xs font-black transition-all border-2 whitespace-nowrap",
                     selectedCategory === cat 
-                      ? "bg-[#1E1E23] text-[#03C75A] border-[#1E1E23] shadow-md" 
-                      : "bg-white text-black/30 border-black/5 hover:border-[#03C75A]/30 hover:text-[#1E1E23]"
+                      ? "bg-[#1E1E23] text-primary border-[#1E1E23] shadow-md" 
+                      : "bg-white text-black/30 border-black/5 hover:border-primary/30 hover:text-[#1E1E23]"
                   )}
                 >
                   {cat}
@@ -233,7 +231,7 @@ export default function MentorsPage() {
         </div>
 
         {isLoading ? (
-          <div className="flex justify-center py-40"><Sparkles className="w-12 h-12 animate-spin text-[#03C75A]" /></div>
+          <div className="flex justify-center py-40"><Sparkles className="w-12 h-12 animate-spin text-primary" /></div>
         ) : filteredMentors.length === 0 ? (
           <div className="py-40 text-center bg-white border border-black/5">
             <p className="text-black/20 font-black text-xl">검색 결과와 일치하는 전문가가 없습니다.</p>
@@ -248,7 +246,7 @@ export default function MentorsPage() {
                        <img src={m.profilePictureUrl} alt={m.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                     </div>
                     {m.isVerified && (
-                      <Badge className="absolute -bottom-1 right-0 bg-[#03C75A] text-white font-black border-none px-3 py-1 rounded-none flex gap-1 items-center shadow-lg text-[9px]">
+                      <Badge className="absolute -bottom-1 right-0 bg-primary text-[#1E1E23] font-black border-none px-3 py-1 rounded-none flex gap-1 items-center shadow-lg text-[9px]">
                         <Check className="w-3 h-3" /> WHISPERER
                       </Badge>
                     )}
@@ -259,7 +257,7 @@ export default function MentorsPage() {
                     <p className="text-black/40 text-xs font-bold">{m.company} · {m.jobTitle}</p>
                   </div>
 
-                  <Badge variant="outline" className="mb-6 border-[#03C75A]/20 text-[#03C75A] font-black text-[10px] px-3 rounded-none">#{m.specialty}</Badge>
+                  <Badge variant="outline" className="mb-6 border-primary/20 text-primary font-black text-[10px] px-3 rounded-none">#{m.specialty}</Badge>
                   
                   <p className="text-xs text-black/50 line-clamp-3 mb-8 font-medium leading-relaxed italic px-2">
                     "{m.bio}"
@@ -269,7 +267,7 @@ export default function MentorsPage() {
                     <Button 
                       onClick={() => setPostViewTarget({ id: m.userId, name: m.name })}
                       variant="ghost" 
-                      className="h-11 rounded-none bg-[#F5F6F7] hover:bg-[#1E1E23] hover:text-[#03C75A] text-black/40 font-black gap-2 text-xs transition-all"
+                      className="h-11 rounded-none bg-[#F5F6F7] hover:bg-[#1E1E23] hover:text-primary text-black/40 font-black gap-2 text-xs transition-all"
                     >
                       <FileText className="w-4 h-4" /> 작성글 보기
                     </Button>
@@ -278,7 +276,7 @@ export default function MentorsPage() {
                         if (!user) { toast({ title: "로그인 필요", description: "문의를 위해 로그인이 필요합니다.", variant: "destructive" }); return; }
                         setMessageTarget({ id: m.userId, nickname: m.name })
                       }}
-                      className="h-11 rounded-none bg-[#1E1E23] text-[#03C75A] font-black gap-2 hover:brightness-110 transition-all text-xs"
+                      className="h-11 rounded-none naver-button gap-2 hover:brightness-110 transition-all text-xs"
                     >
                       <MessageSquare className="w-4 h-4" /> 1:1 인사이트 문의
                     </Button>

@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo, useRef } from "react"
@@ -8,12 +7,12 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase"
 import { collection, query, orderBy, addDoc } from "firebase/firestore"
 import { Instructor } from "@/lib/types"
-import { Plus, Search, Star, Award, Briefcase, Camera, Check, GraduationCap, Phone, Mail, Globe, FileText, X, User, ExternalLink, Info, Clock, Sparkles } from "lucide-react"
+import { Plus, Search, Camera, FileText, Sparkles } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
@@ -94,18 +93,18 @@ export default function InstructorsPage() {
 
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button className="bg-[#1E1E23] text-[#03C75A] hover:brightness-110 font-black h-12 md:h-14 px-8 rounded-none shadow-md transition-all gap-2 text-sm">
+                <Button className="naver-button h-12 md:h-14 px-8 shadow-md gap-2 text-sm">
                   <Plus className="w-5 h-5" /> 강사 프로필 등록하기
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-2xl bg-white border-none rounded-none p-0 shadow-2xl overflow-hidden">
                 <DialogHeader className="bg-[#1E1E23] p-6">
-                  <DialogTitle className="text-xl font-black text-[#03C75A]">전문 강사 프로필 등록</DialogTitle>
+                  <DialogTitle className="text-xl font-black text-primary">전문 강사 프로필 등록</DialogTitle>
                   <p className="text-white/40 text-[10px] font-bold mt-0.5 uppercase tracking-widest">Register Professional Instructor</p>
                 </DialogHeader>
                 <form onSubmit={handleAddInstructor} className="p-8 space-y-8">
                   <div className="flex flex-col md:flex-row gap-8">
-                    <div onClick={() => fileInputRef.current?.click()} className="w-32 h-32 rounded-none bg-[#F5F6F7] border-2 border-dashed border-black/10 flex items-center justify-center cursor-pointer hover:border-[#03C75A] overflow-hidden shrink-0">
+                    <div onClick={() => fileInputRef.current?.click()} className="w-32 h-32 rounded-none bg-[#F5F6F7] border-2 border-dashed border-black/10 flex items-center justify-center cursor-pointer hover:border-primary overflow-hidden shrink-0">
                       {profilePictureUrl ? <img src={profilePictureUrl} className="w-full h-full object-cover" alt="preview" /> : <Camera className="w-8 h-8 text-black/10" />}
                     </div>
                     <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={(e) => {
@@ -120,7 +119,7 @@ export default function InstructorsPage() {
                     </div>
                   </div>
                   <Textarea value={bio} onChange={e => setBio(e.target.value)} required placeholder="강사 소개, 주요 강의 이력 및 전문 분야를 상세히 적어주세요." className="min-h-[150px] bg-white border-black/10 rounded-none p-4 text-sm leading-relaxed" />
-                  <Button type="submit" disabled={isSubmitting} className="w-full h-14 bg-[#1E1E23] text-[#03C75A] font-black rounded-none shadow-xl hover:brightness-110">프로필 게시 완료</Button>
+                  <Button type="submit" disabled={isSubmitting} className="w-full h-14 naver-button text-base">프로필 게시 완료</Button>
                 </form>
               </DialogContent>
             </Dialog>
@@ -128,12 +127,12 @@ export default function InstructorsPage() {
 
           <div className="flex flex-col md:flex-row md:items-center gap-6">
             <div className="relative flex-1 group">
-              <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-black/20 group-focus-within:text-[#03C75A] transition-colors" />
+              <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-black/20 group-focus-within:text-primary transition-colors" />
               <Input 
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 placeholder="강사명 또는 강의 주제를 검색해 보세요" 
-                className="h-14 pl-14 pr-6 bg-white border-2 border-[#03C75A] rounded-none shadow-sm focus-visible:ring-0 text-base font-black placeholder:text-black/10"
+                className="h-14 pl-14 pr-6 bg-white border-2 border-primary rounded-none shadow-sm focus-visible:ring-0 text-base font-black placeholder:text-black/10"
               />
             </div>
             <div className="flex overflow-x-auto gap-2 scrollbar-hide py-1">
@@ -144,8 +143,8 @@ export default function InstructorsPage() {
                   className={cn(
                     "px-6 py-3 rounded-none text-xs font-black transition-all border-2 whitespace-nowrap",
                     selectedCategory === cat 
-                      ? "bg-[#1E1E23] text-[#03C75A] border-[#1E1E23] shadow-md" 
-                      : "bg-white text-black/30 border-black/5 hover:border-[#03C75A]/30 hover:text-[#1E1E23]"
+                      ? "bg-[#1E1E23] text-primary border-[#1E1E23] shadow-md" 
+                      : "bg-white text-black/30 border-black/5 hover:border-primary/30 hover:text-[#1E1E23]"
                   )}
                 >
                   {cat}
@@ -156,7 +155,7 @@ export default function InstructorsPage() {
         </div>
 
         {isLoading ? (
-          <div className="flex justify-center py-40"><Sparkles className="w-12 h-12 animate-spin text-[#03C75A]" /></div>
+          <div className="flex justify-center py-40"><Sparkles className="w-12 h-12 animate-spin text-primary" /></div>
         ) : filteredInstructors.length === 0 ? (
           <div className="py-40 text-center bg-white border border-black/5">
             <p className="text-black/20 font-black text-xl">준비된 강사 정보가 없습니다.</p>
@@ -170,12 +169,12 @@ export default function InstructorsPage() {
                     <div className="w-32 h-32 rounded-none overflow-hidden border-2 border-black/5 shadow-md">
                        <img src={i.profilePictureUrl} alt={i.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                     </div>
-                    {i.isVerified && <Badge className="absolute -bottom-2 right-0 bg-[#1E1E23] text-[#03C75A] font-black border-none px-2 py-0.5 rounded-none text-[8px]">VERIFIED</Badge>}
+                    {i.isVerified && <Badge className="absolute -bottom-2 right-0 bg-[#1E1E23] text-primary font-black border-none px-2 py-0.5 rounded-none text-[8px]">VERIFIED</Badge>}
                   </div>
                   <h3 className="text-xl font-black text-[#1E1E23] mb-1">{i.name} 강사</h3>
-                  <Badge variant="outline" className="mb-6 border-[#03C75A]/20 text-[#03C75A] font-black text-[10px] px-3 rounded-none">#{i.specialty}</Badge>
+                  <Badge variant="outline" className="mb-6 border-primary/20 text-primary font-black text-[10px] px-3 rounded-none">#{i.specialty}</Badge>
                   <p className="text-[13px] text-black/50 line-clamp-3 mb-8 font-medium italic px-2">"{i.bio}"</p>
-                  <Button onClick={() => setViewTarget(i)} className="w-full h-11 rounded-none bg-[#1E1E23] text-[#03C75A] hover:brightness-110 font-black text-xs gap-1.5 shadow-lg">상세 프로필 확인</Button>
+                  <Button onClick={() => setViewTarget(i)} className="w-full h-11 rounded-none naver-button text-xs gap-1.5 shadow-lg">상세 프로필 확인</Button>
                 </CardContent>
               </Card>
             ))}
@@ -187,7 +186,7 @@ export default function InstructorsPage() {
         <Dialog open={!!viewTarget} onOpenChange={() => setViewTarget(null)}>
           <DialogContent className="max-w-2xl bg-white border-none rounded-none p-0 shadow-2xl overflow-hidden">
             <DialogHeader className="bg-[#1E1E23] p-6">
-              <DialogTitle className="text-xl font-black text-[#03C75A]">{viewTarget.name} 강사 상세 프로필</DialogTitle>
+              <DialogTitle className="text-xl font-black text-primary">{viewTarget.name} 강사 상세 프로필</DialogTitle>
             </DialogHeader>
             <div className="p-8">
               <div className="flex items-center gap-8 mb-10">
@@ -196,7 +195,7 @@ export default function InstructorsPage() {
                 </div>
                 <div className="space-y-2">
                   <h2 className="text-2xl font-black text-[#1E1E23]">{viewTarget.name} 강사</h2>
-                  <Badge className="bg-[#03C75A] text-white font-black border-none px-3 py-1 rounded-none">#{viewTarget.specialty}</Badge>
+                  <Badge className="bg-primary text-[#1E1E23] font-black border-none px-3 py-1 rounded-none">#{viewTarget.specialty}</Badge>
                 </div>
               </div>
               <div className="space-y-6 max-h-[40vh] overflow-y-auto bg-[#FBFBFC] p-6 border border-black/5">
@@ -206,7 +205,7 @@ export default function InstructorsPage() {
                 </section>
               </div>
               <div className="pt-8 flex justify-end">
-                <Button onClick={() => setViewTarget(null)} className="h-12 px-10 rounded-none bg-[#1E1E23] text-[#03C75A] font-black">프로필 닫기</Button>
+                <Button onClick={() => setViewTarget(null)} className="h-12 px-10 rounded-none naver-button text-base">프로필 닫기</Button>
               </div>
             </div>
           </DialogContent>

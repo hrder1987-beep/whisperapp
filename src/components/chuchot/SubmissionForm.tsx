@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useRef, useEffect } from "react"
@@ -6,11 +5,10 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
-import { ImageIcon, X, Send, ChevronDown } from "lucide-react"
+import { ImageIcon, X, Send } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { Separator } from "@/components/ui/separator"
 import { containsProfanity } from "@/lib/utils"
-import { cn } from "@/lib/utils"
 import { useUser, useDoc, useMemoFirebase, useFirestore } from "@/firebase"
 import { doc } from "firebase/firestore"
 import {
@@ -99,12 +97,12 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
                   />
                   <div className="w-full md:w-48">
                     <Select value={selectedCategory || ""} onValueChange={setSelectedCategory}>
-                      <SelectTrigger className="h-10 bg-primary/5 border-none rounded-sm font-bold text-xs text-primary/60 focus:ring-0">
+                      <SelectTrigger className="h-10 bg-primary/5 border-none rounded-sm font-bold text-xs text-primary focus:ring-0">
                         <SelectValue placeholder="카테고리 선택" />
                       </SelectTrigger>
                       <SelectContent className="bg-white border-black/10 rounded-sm">
                         {HR_CATEGORIES.map((cat) => (
-                          <SelectItem key={cat} value={cat} className="text-xs font-bold py-2.5 focus:bg-accent focus:text-white transition-colors cursor-pointer">
+                          <SelectItem key={cat} value={cat} className="text-xs font-bold py-2.5 focus:bg-primary focus:text-white transition-colors cursor-pointer">
                             {cat}
                           </SelectItem>
                         ))}
@@ -148,7 +146,7 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
                   reader.readAsDataURL(file);
                 }
               }} />
-              <Button type="button" variant="ghost" size="sm" className="h-9 text-[#888] gap-1.5 md:gap-2 hover:text-accent font-bold px-2" onClick={() => fileInputRef.current?.click()}>
+              <Button type="button" variant="ghost" size="sm" className="h-9 text-[#888] gap-1.5 md:gap-2 hover:text-primary font-bold px-2" onClick={() => fileInputRef.current?.click()}>
                 <ImageIcon className="w-4 h-4" />
                 <span className="text-[12px] md:text-[13px]">사진</span>
               </Button>

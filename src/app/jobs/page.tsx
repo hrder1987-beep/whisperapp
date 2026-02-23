@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo, useRef } from "react"
@@ -7,12 +6,12 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase"
 import { collection, query, orderBy, addDoc } from "firebase/firestore"
 import { JobListing } from "@/lib/types"
-import { Briefcase, MapPin, Calendar, Plus, Search, Building2, Flame, Award, Clock, Camera, Mail, X, ChevronRight, Sparkles } from "lucide-react"
+import { MapPin, Plus, Search, Award, Clock, Camera, Sparkles } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
@@ -100,17 +99,17 @@ export default function JobsPage() {
 
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button className="bg-[#1E1E23] text-[#03C75A] hover:brightness-110 font-black h-12 md:h-14 px-8 rounded-none shadow-md transition-all gap-2 text-sm">
+                <Button className="naver-button h-12 md:h-14 px-8 shadow-md gap-2 text-sm">
                   <Plus className="w-5 h-5" /> 공고 등록하기
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-2xl bg-white border-none rounded-none p-0 shadow-2xl overflow-hidden">
                 <DialogHeader className="bg-[#1E1E23] p-6">
-                  <DialogTitle className="text-xl font-black text-[#03C75A]">채용 공고 게시</DialogTitle>
+                  <DialogTitle className="text-xl font-black text-primary">채용 공고 게시</DialogTitle>
                   <p className="text-white/40 text-[10px] font-bold mt-0.5 uppercase tracking-widest">Post HR Job Opportunity</p>
                 </DialogHeader>
                 <form onSubmit={handleAddJob} className="p-8 space-y-8 overflow-y-auto max-h-[80vh]">
-                  <div onClick={() => fileInputRef.current?.click()} className="relative aspect-video bg-[#F5F6F7] border-2 border-dashed border-black/10 flex items-center justify-center cursor-pointer overflow-hidden group hover:border-[#03C75A]">
+                  <div onClick={() => fileInputRef.current?.click()} className="relative aspect-video bg-[#F5F6F7] border-2 border-dashed border-black/10 flex items-center justify-center cursor-pointer overflow-hidden group hover:border-primary">
                     {adImageUrl ? <img src={adImageUrl} className="w-full h-full object-contain" alt="preview" /> : <Camera className="w-8 h-8 text-black/10" />}
                   </div>
                   <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={(e) => {
@@ -128,7 +127,7 @@ export default function JobsPage() {
                     <Input value={location} onChange={e => setLocation(e.target.value)} required placeholder="근무지 (예: 서울 강남구)" className="h-12 bg-white border-black/10 rounded-none" />
                     <Input value={deadline} onChange={e => setDeadline(e.target.value)} required placeholder="마감일 (예: 2024-12-31)" className="h-12 bg-white border-black/10 rounded-none" />
                   </div>
-                  <Button type="submit" disabled={isSubmitting} className="w-full h-14 bg-[#1E1E23] text-[#03C75A] font-black rounded-none shadow-xl hover:brightness-110">채용 공고 게시 완료</Button>
+                  <Button type="submit" disabled={isSubmitting} className="w-full h-14 naver-button text-base">채용 공고 게시 완료</Button>
                 </form>
               </DialogContent>
             </Dialog>
@@ -136,12 +135,12 @@ export default function JobsPage() {
 
           <div className="flex flex-col md:flex-row md:items-center gap-6">
             <div className="relative flex-1 group">
-              <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-black/20 group-focus-within:text-[#03C75A] transition-colors" />
+              <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-black/20 group-focus-within:text-primary transition-colors" />
               <Input 
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 placeholder="기업명 또는 직무 키워드로 채용 소식을 검색해 보세요" 
-                className="h-14 pl-14 pr-6 bg-white border-2 border-[#03C75A] rounded-none shadow-sm focus-visible:ring-0 text-base font-black placeholder:text-black/10"
+                className="h-14 pl-14 pr-6 bg-white border-2 border-primary rounded-none shadow-sm focus-visible:ring-0 text-base font-black placeholder:text-black/10"
               />
             </div>
             <div className="flex overflow-x-auto gap-2 scrollbar-hide py-1">
@@ -152,8 +151,8 @@ export default function JobsPage() {
                   className={cn(
                     "px-6 py-3 rounded-none text-xs font-black transition-all border-2 whitespace-nowrap",
                     selectedCategory === cat 
-                      ? "bg-[#1E1E23] text-[#03C75A] border-[#1E1E23] shadow-md" 
-                      : "bg-white text-black/30 border-black/5 hover:border-[#03C75A]/30 hover:text-[#1E1E23]"
+                      ? "bg-[#1E1E23] text-primary border-[#1E1E23] shadow-md" 
+                      : "bg-white text-black/30 border-black/5 hover:border-primary/30 hover:text-[#1E1E23]"
                   )}
                 >
                   {cat}
@@ -166,7 +165,7 @@ export default function JobsPage() {
         <div className="bg-white border border-black/[0.06] rounded-none shadow-sm overflow-hidden">
           <div className="divide-y divide-black/[0.06]">
             {isLoading ? (
-              <div className="flex justify-center py-40"><Sparkles className="w-12 h-12 animate-spin text-[#03C75A]" /></div>
+              <div className="flex justify-center py-40"><Sparkles className="w-12 h-12 animate-spin text-primary" /></div>
             ) : filteredJobs.length === 0 ? (
               <div className="py-40 text-center">
                 <p className="text-black/20 font-black text-xl">현재 진행 중인 채용 공고가 없습니다.</p>
@@ -177,15 +176,15 @@ export default function JobsPage() {
                   <img src={job.logoUrl} alt={job.companyName} className="w-full h-full object-cover" />
                 </div>
                 <div className="flex-1 space-y-2">
-                  <p className="text-[11px] font-black text-[#03C75A] uppercase tracking-widest">{job.companyName}</p>
-                  <h3 className="text-xl font-black text-[#1E1E23] group-hover:underline decoration-[#03C75A]/30 underline-offset-4">{job.title}</h3>
+                  <p className="text-[11px] font-black text-primary uppercase tracking-widest">{job.companyName}</p>
+                  <h3 className="text-xl font-black text-[#1E1E23] group-hover:underline decoration-primary/30 underline-offset-4">{job.title}</h3>
                   <div className="flex flex-wrap items-center gap-4 text-[11px] font-bold text-black/30 uppercase tracking-tighter">
                     <span className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5 text-black/10" /> {job.location}</span>
                     <span className="flex items-center gap-1.5"><Award className="w-3.5 h-3.5 text-black/10" /> {job.experience}</span>
                     <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5 text-black/10" /> {job.deadline}</span>
                   </div>
                 </div>
-                <Button onClick={(e) => { e.stopPropagation(); setViewJob(job); }} className="h-12 px-8 rounded-none bg-[#1E1E23] text-[#03C75A] font-black transition-all text-xs border border-[#03C75A]/20">
+                <Button onClick={(e) => { e.stopPropagation(); setViewJob(job); }} className="h-12 px-8 rounded-none naver-button text-xs">
                   공고 상세 보기
                 </Button>
               </div>
@@ -199,29 +198,29 @@ export default function JobsPage() {
           <DialogContent className="max-w-3xl bg-white border-none rounded-none p-0 shadow-2xl overflow-hidden">
             <DialogHeader className="bg-[#1E1E23] p-8 text-left space-y-2">
               <div className="flex items-center justify-between">
-                <Badge className="bg-[#03C75A] text-white border-none px-3 py-1 rounded-none text-[10px] font-black">RECRUITING</Badge>
+                <Badge className="bg-primary text-[#1E1E23] border-none px-3 py-1 rounded-none text-[10px] font-black">RECRUITING</Badge>
                 <span className="text-white/20 text-[10px] font-bold uppercase tracking-widest">Whisper Job Intelligence</span>
               </div>
               <DialogTitle className="text-2xl font-black text-white leading-tight">{viewJob.title}</DialogTitle>
-              <p className="text-[#03C75A] font-black text-sm">@{viewJob.companyName}</p>
+              <p className="text-primary font-black text-sm">@{viewJob.companyName}</p>
             </DialogHeader>
             <div className="p-8 max-h-[60vh] overflow-y-auto bg-white">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10 pb-10 border-b border-black/5">
                 <div className="space-y-1">
                   <p className="text-[9px] font-black text-black/20 uppercase">Location</p>
-                  <p className="text-sm font-bold text-[#1E1E23]">{viewJob.location}</p>
+                  <p className="text-sm font-bold text-[#1E1E23]">{job.location}</p>
                 </div>
                 <div className="space-y-1">
                   <p className="text-[9px] font-black text-black/20 uppercase">Experience</p>
-                  <p className="text-sm font-bold text-[#1E1E23]">{viewJob.experience}</p>
+                  <p className="text-sm font-bold text-[#1E1E23]">{job.experience}</p>
                 </div>
                 <div className="space-y-1">
                   <p className="text-[9px] font-black text-black/20 uppercase">Deadline</p>
-                  <p className="text-sm font-bold text-[#1E1E23]">{viewJob.deadline}</p>
+                  <p className="text-sm font-bold text-[#1E1E23]">{job.deadline}</p>
                 </div>
                 <div className="space-y-1">
                   <p className="text-[9px] font-black text-black/20 uppercase">Category</p>
-                  <p className="text-sm font-bold text-[#1E1E23]">{viewJob.category}</p>
+                  <p className="text-sm font-bold text-[#1E1E23]">{job.category}</p>
                 </div>
               </div>
               {viewJob.adImageUrl ? (
@@ -235,7 +234,7 @@ export default function JobsPage() {
               )}
             </div>
             <div className="p-6 bg-[#F5F6F7] border-t border-black/5 flex justify-end">
-              <Button onClick={() => setViewJob(null)} className="h-12 px-10 rounded-none bg-[#1E1E23] text-[#03C75A] font-black">창 닫기</Button>
+              <Button onClick={() => setViewJob(null)} className="h-12 px-10 rounded-none naver-button text-base">창 닫기</Button>
             </div>
           </DialogContent>
         </Dialog>

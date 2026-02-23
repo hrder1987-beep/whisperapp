@@ -10,14 +10,14 @@
     --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
-    --primary: 222 47% 11%; /* Deep Navy */
-    --primary-foreground: 147 97% 39%; /* Green text on Navy */
+    --primary: 147 97% 39%; /* Naver Green as Primary Action */
+    --primary-foreground: 222 47% 11%; /* Navy text on Green for contrast */
     --secondary: 210 10% 96%;
     --secondary-foreground: 222 47% 11%;
     --muted: 210 10% 96%;
     --muted-foreground: 215 16% 47%;
-    --accent: 147 97% 39%; /* Naver Green */
-    --accent-foreground: 222 47% 11%; /* Navy text on Green */
+    --accent: 222 47% 11%; /* Deep Navy for headers/secondary */
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
     --border: 214 32% 91%;
@@ -33,19 +33,18 @@
   }
   body {
     @apply bg-[#F5F6F7] text-[#1E1E23] font-body antialiased;
-    /* 모바일 텍스트 렌더링 최적화 */
     -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
   }
 }
 
-/* Naver Style Components */
+/* Naver/Onoffmix Style Components */
 .naver-header {
   @apply bg-white border-b border-black/[0.06] sticky top-0 z-50;
 }
 
 .naver-search-bar {
-  @apply border-2 border-accent bg-white rounded-none flex items-center px-4 transition-all focus-within:shadow-sm outline-none;
+  @apply border-2 border-primary bg-white rounded-none flex items-center px-4 transition-all focus-within:shadow-sm outline-none;
 }
 
 .naver-card {
@@ -53,18 +52,17 @@
 }
 
 .naver-button {
-  @apply bg-accent text-primary font-black rounded-none hover:brightness-95 transition-all border border-primary/10;
+  @apply bg-primary text-[#1E1E23] font-black rounded-none hover:brightness-95 transition-all shadow-sm;
 }
 
 .naver-badge {
-  @apply bg-accent/10 text-accent font-bold border-none px-2 py-0.5 rounded-none text-[10px] uppercase;
+  @apply bg-primary/10 text-primary font-bold border-none px-2 py-0.5 rounded-none text-[10px] uppercase;
 }
 
 .ranking-number {
-  @apply font-black text-accent italic mr-3 text-lg;
+  @apply font-black text-primary italic mr-3 text-lg;
 }
 
-/* Neutral Text Overrides */
 h1, h2, h3, h4, h5, h6 {
   @apply text-[#1E1E23];
 }
@@ -86,20 +84,18 @@ p, span, div {
 }
 
 .premium-gradient {
-  background: linear-gradient(135deg, #002B26 0%, #001A17 100%);
+  background: linear-gradient(135deg, #1E1E23 0%, #000000 100%);
 }
 
 .gold-gradient {
   background: linear-gradient(135deg, #03C75A 0%, #029e4a 100%);
 }
 
-/* Global Focus Reset */
 input:focus, textarea:focus {
   outline: none !important;
   box-shadow: none !important;
 }
 
-/* 가독성 향상 - 모바일 대응 */
 @media (max-width: 768px) {
   .font-body {
     line-height: 1.6;
