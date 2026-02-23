@@ -30,7 +30,6 @@ export default function AdminPage() {
   const userDocRef = useMemoFirebase(() => (user && db) ? doc(db, "users", user.uid) : null, [user, db])
   const { data: profile, isLoading: isProfileLoading } = useDoc<any>(userDocRef)
 
-  // 관리자 계정 이메일 자동 감지 및 키 자동 입력
   useEffect(() => {
     if (user?.email === 'forum@khrd.co.kr' && profile && profile.role !== 'admin') {
       setAdminKeyInput("khrd9933-525")
@@ -71,65 +70,69 @@ export default function AdminPage() {
   }
 
   if (isUserLoading || isProfileLoading) {
-    return <div className="min-h-screen flex items-center justify-center bg-[#F8F9FA]"><Sparkles className="w-12 h-12 animate-spin text-accent" /></div>
+    return <div className="min-h-screen flex items-center justify-center bg-white"><Sparkles className="w-12 h-12 animate-spin text-primary" /></div>
   }
 
   if (!user || profile?.role !== 'admin') {
     const isMasterEmail = user?.email === 'forum@khrd.co.kr'
     return (
-      <div className="min-h-screen bg-[#F8F9FA] flex flex-col items-center justify-center p-4">
-        <ShieldAlert className="w-20 h-20 text-red-500 mb-6" />
-        <h1 className="text-3xl font-black text-primary mb-2">관리자 전용 구역</h1>
-        <p className="text-primary/40 font-bold mb-8 text-center max-w-sm">
-          {isMasterEmail ? "마스터 관리자님, 아래 버튼을 눌러 관리자 권한을 활성화하세요." : "해당 페이지는 관리자만 접근 가능합니다. 인증 키를 입력하여 권한을 획득하세요."}
-        </p>
-        <div className="w-full max-w-sm space-y-4">
-          {!isMasterEmail && (
-            <div className="relative">
-              <Key className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-primary/20" />
-              <Input type="password" placeholder="ADMIN ACCESS KEY" value={adminKeyInput} onChange={(e) => setAdminKeyInput(e.target.value)} className="h-14 pl-12 bg-white border-none rounded-2xl text-center font-black text-lg focus:ring-accent shadow-sm" onKeyDown={(e) => e.key === 'Enter' && handleAdminPromotion()} />
-            </div>
-          )}
-          <Button onClick={handleAdminPromotion} disabled={isPromoting || (!isMasterEmail && !adminKeyInput)} className="w-full h-14 bg-primary text-accent font-black rounded-2xl text-lg shadow-lg">
-            {isPromoting ? "인증 중..." : isMasterEmail ? "관리자 권한 즉시 획득" : "관리자 권한 획득"}
-          </Button>
-          <Button variant="ghost" onClick={() => router.push("/")} className="w-full text-primary/30 font-bold">홈으로 돌아가기</Button>
+      <div className="min-h-screen bg-white flex flex-col items-center justify-center p-4">
+        <div className="bg-primary/5 p-10 rounded-[3rem] flex flex-col items-center max-w-sm w-full text-center">
+          <ShieldAlert className="w-16 h-16 text-primary mb-6" />
+          <h1 className="text-2xl font-black text-accent mb-2">관리자 전용 구역</h1>
+          <p className="text-sm font-bold text-accent/40 mb-8 leading-relaxed">
+            {isMasterEmail ? "마스터 관리자 계정입니다.\n권한을 활성화하세요." : "관리자만 접근 가능한 페이지입니다.\n인증 키를 입력해 주세요."}
+          </p>
+          <div className="w-full space-y-4">
+            {!isMasterEmail && (
+              <div className="relative">
+                <Key className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-accent/20" />
+                <Input type="password" placeholder="ADMIN ACCESS KEY" value={adminKeyInput} onChange={(e) => setAdminKeyInput(e.target.value)} className="h-12 pl-11 bg-white border-accent/10 rounded-xl text-center font-bold focus:ring-primary shadow-sm" onKeyDown={(e) => e.key === 'Enter' && handleAdminPromotion()} />
+              </div>
+            )}
+            <Button onClick={handleAdminPromotion} disabled={isPromoting || (!isMasterEmail && !adminKeyInput)} className="w-full h-12 bg-primary text-white font-black rounded-xl shadow-lg">
+              {isPromoting ? "인증 중..." : isMasterEmail ? "관리자 권한 활성화" : "권한 획득"}
+            </Button>
+            <Button variant="ghost" onClick={() => router.push("/")} className="w-full text-accent/30 font-bold text-xs">홈으로 돌아가기</Button>
+          </div>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA] pb-20">
+    <div className="min-h-screen bg-[#FBFBFC] pb-20">
       <Header />
-      <main className="max-w-7xl mx-auto px-4 py-12">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-          <div className="space-y-2">
-            <div className="flex items-center gap-3">
-              <div className="text-accent"><Settings className="w-6 h-6" /></div>
-              <span className="text-xs font-black text-primary/30 uppercase tracking-[0.2em]">Whisper Admin Control</span>
+      <main className="max-w-7xl mx-auto px-4 py-10 md:py-16">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2 mb-1">
+              <Settings className="w-5 h-5 text-primary" />
+              <span className="text-[10px] font-black text-accent/30 uppercase tracking-widest">Platform Admin Dashboard</span>
             </div>
-            <h1 className="text-4xl font-black text-primary tracking-tighter">플랫폼 통합 관리</h1>
+            <h1 className="text-3xl font-black text-accent tracking-tighter">통합 관리 센터</h1>
           </div>
-          <Button onClick={() => router.push("/")} variant="outline" className="border-primary/10 text-primary font-black rounded-xl gap-2">
-            <ArrowLeft className="w-4 h-4" /> 사용자 모드 전환
+          <Button onClick={() => router.push("/")} variant="outline" className="border-accent/10 text-accent font-black rounded-xl gap-2 h-11 px-6">
+            <ArrowLeft className="w-4 h-4" /> 서비스 페이지로 이동
           </Button>
         </div>
 
         <Tabs defaultValue="cms" className="space-y-10">
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 bg-primary/5 p-1 rounded-2xl h-16 md:h-20">
-            <TabsTrigger value="cms" className="rounded-xl font-black gap-2 data-[state=active]:bg-white data-[state=active]:shadow-lg text-sm md:text-base"><LayoutDashboard className="w-4 h-4" /> 랜딩페이지</TabsTrigger>
-            <TabsTrigger value="members" className="rounded-xl font-black gap-2 data-[state=active]:bg-white data-[state=active]:shadow-lg text-sm md:text-base"><Users className="w-4 h-4" /> 회원 관리</TabsTrigger>
-            <TabsTrigger value="content" className="rounded-xl font-black gap-2 data-[state=active]:bg-white data-[state=active]:shadow-lg text-sm md:text-base"><FileText className="w-4 h-4" /> 콘텐츠 관리</TabsTrigger>
-            <TabsTrigger value="aldi" className="rounded-xl font-black gap-2 data-[state=active]:bg-white data-[state=active]:shadow-lg text-sm md:text-base"><Sparkles className="w-4 h-4" /> 알디 챗 학습</TabsTrigger>
+          <TabsList className="bg-white border border-accent/5 p-1 rounded-2xl h-16 md:h-20 w-full md:w-fit grid grid-cols-2 md:flex md:gap-2 shadow-sm">
+            <TabsTrigger value="cms" className="rounded-xl font-black gap-2 data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-md px-8"><LayoutDashboard className="w-4 h-4" /> 사이트 구성</TabsTrigger>
+            <TabsTrigger value="members" className="rounded-xl font-black gap-2 data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-md px-8"><Users className="w-4 h-4" /> 회원 관리</TabsTrigger>
+            <TabsTrigger value="content" className="rounded-xl font-black gap-2 data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-md px-8"><FileText className="w-4 h-4" /> 콘텐츠 현황</TabsTrigger>
+            <TabsTrigger value="aldi" className="rounded-xl font-black gap-2 data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-md px-8"><Sparkles className="w-4 h-4" /> AI 봇 관리</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="cms">
-            <AdminCMS initialBanners={initialBanners} initialPremiumAds={initialPremiumAds} onUpdate={() => router.refresh()} />
-          </TabsContent>
-          <TabsContent value="members"><MemberManager /></TabsContent>
-          <TabsContent value="content"><ContentManager /></TabsContent>
-          <TabsContent value="aldi"><AldiTrainer /></TabsContent>
+          <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
+            <TabsContent value="cms">
+              <AdminCMS initialBanners={initialBanners} initialPremiumAds={initialPremiumAds} onUpdate={() => router.refresh()} />
+            </TabsContent>
+            <TabsContent value="members"><MemberManager /></TabsContent>
+            <TabsContent value="content"><ContentManager /></TabsContent>
+            <TabsContent value="aldi"><AldiTrainer /></TabsContent>
+          </div>
         </Tabs>
       </main>
     </div>
