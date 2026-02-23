@@ -21,6 +21,7 @@ import { ko } from "date-fns/locale"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
+import { MOCK_GATHERINGS } from "@/lib/mock-gatherings"
 
 export default function GatheringDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
@@ -35,7 +36,13 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
   const [surveyAnswer, setSurveyAnswer] = useState("")
 
   const gatheringRef = useMemoFirebase(() => db ? doc(db, "gatherings", id) : null, [db, id])
-  const { data: gathering, isLoading: isGatheringLoading } = useDoc<Gathering>(gatheringRef)
+  const { data: dbGathering, isLoading: isGatheringLoading } = useDoc<Gathering>(gatheringRef)
+
+  // Firestore에 없으면 샘플 데이터에서 찾음
+  const gathering = useMemo(() => {
+    if (dbGathering) return dbGathering;
+    return MOCK_GATHERINGS.find(g => g.id === id);
+  }, [dbGathering, id]);
 
   const appsQuery = useMemoFirebase(() => db ? query(collection(db, "gatherings", id, "applications")) : null, [db, id])
   const { data: applications } = useCollection<GatheringApplication>(appsQuery)
@@ -93,7 +100,11 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
   const handleApprove = (app: GatheringApplication) => {
     if (!db || !gathering) return
     updateDocumentNonBlocking(doc(db, "gatherings", id, "applications", app.id), { status: "approved" })
-    updateDocumentNonBlocking(gatheringRef!, { participantCount: gathering.participantCount + 1 })
+    
+    // 실제 Firestore 문서일 경우에만 카운트 업데이트
+    if (!id.startsWith('sample-')) {
+      updateDocumentNonBlocking(gatheringRef!, { participantCount: gathering.participantCount + 1 })
+    }
     
     addDocumentNonBlocking(collection(db, "notifications"), {
       userId: app.userId,
@@ -381,8 +392,8 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
             </Tabs>
           </div>
 
-          <aside className="lg:col-span-4 space-y-8">
-            <Card className="bg-white border border-black/5 shadow-lg rounded-none p-8 space-y-10 sticky top-32">
+          <aside className="lg:col-span-4 space-y-8 sticky top-32 h-fit self-start">
+            <Card className="bg-white border border-black/5 shadow-lg rounded-none p-8 space-y-10">
               <h4 className="text-xl font-black text-[#1E1E23] border-b border-black/5 pb-6">프로젝트 참여 정보</h4>
               
               <div className="space-y-8">

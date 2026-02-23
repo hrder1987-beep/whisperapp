@@ -360,12 +360,10 @@ export default function HomePage() {
             )}
           </main>
           {!deferredSearchQuery && (
-            <aside className="lg:col-span-4 hidden lg:block self-start">
-              <div className="sticky top-32 space-y-8">
-                <AldiChat />
-                <PremiumAds ads={premiumAds} />
-                <RankingList questions={questions.slice(0, 3)} onSelectQuestion={id => setSelectedId(id)} />
-              </div>
+            <aside className="lg:col-span-4 hidden lg:block sticky top-32 h-fit self-start space-y-8">
+              <AldiChat />
+              <PremiumAds ads={premiumAds} />
+              <RankingList questions={questions.slice(0, 5)} onSelectQuestion={id => setSelectedId(id)} />
             </aside>
           )}
         </div>
