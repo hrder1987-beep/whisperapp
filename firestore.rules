@@ -36,6 +36,28 @@ service cloud.firestore {
       }
     }
 
+    // 모임 (Gatherings) 규칙
+    match /gatherings/{gatheringId} {
+      allow read: if true; // 누구나 모임 목록은 볼 수 있음
+      allow create: if isSignedIn();
+      allow update, delete: if isSignedIn() && (resource.data.creatorId == request.auth.uid || isAdmin());
+
+      match /applications/{appId} {
+        // 자신의 신청서 또는 모임 개설자만 읽기 가능
+        allow read: if isSignedIn() && (
+          resource.data.userId == request.auth.uid || 
+          get(/databases/$(database)/documents/gatherings/$(gatheringId)).data.creatorId == request.auth.uid ||
+          isAdmin()
+        );
+        allow create: if isSignedIn();
+        allow update: if isSignedIn() && (
+          get(/databases/$(database)/documents/gatherings/$(gatheringId)).data.creatorId == request.auth.uid ||
+          isAdmin()
+        );
+        allow delete: if isAdmin();
+      }
+    }
+
     // 기본 설정 및 사이트 구성 정보 (공개 읽기)
     match /admin_configuration/{configId} {
       allow read: if true;
