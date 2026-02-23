@@ -171,11 +171,11 @@ export default function HomePage() {
 
   useEffect(() => { setCurrentPage(1); setSelectedId(null); }, [deferredSearchQuery, activeTab])
 
-  const handleAddQuestion = (nickname: string, title: string, text: string, category?: string) => {
+  const handleAddQuestion = (nickname: string, title: string, text: string, imageUrl?: string, videoUrl?: string, category?: string) => {
     if (!db || !user) return;
     addDocumentNonBlocking(collection(db, "questions"), {
       title, text, nickname, userId: user.uid, category: category || "기타",
-      viewCount: 0, answerCount: 0, createdAt: Date.now()
+      viewCount: 0, answerCount: 0, createdAt: Date.now(), imageUrl: imageUrl || null
     }).then(ref => {
       if (ref) {
         generateAiReply({ 
@@ -360,8 +360,8 @@ export default function HomePage() {
             )}
           </main>
           {!deferredSearchQuery && (
-            <aside className="lg:col-span-4 hidden lg:block relative">
-              <div className="sticky top-32 space-y-8 self-start">
+            <aside className="lg:col-span-4 hidden lg:block self-start">
+              <div className="sticky top-32 space-y-8">
                 <AldiChat />
                 <PremiumAds ads={premiumAds} />
                 <RankingList questions={questions.slice(0, 3)} onSelectQuestion={id => setSelectedId(id)} />

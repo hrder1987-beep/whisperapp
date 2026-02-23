@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useRef, useEffect } from "react"
@@ -5,13 +6,20 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
-import { ImageIcon, X, Send } from "lucide-react"
+import { ImageIcon, X, Send, ChevronDown } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { Separator } from "@/components/ui/separator"
 import { containsProfanity } from "@/lib/utils"
 import { cn } from "@/lib/utils"
 import { useUser, useDoc, useMemoFirebase, useFirestore } from "@/firebase"
 import { doc } from "firebase/firestore"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 interface SubmissionFormProps {
   placeholder: string
@@ -56,7 +64,7 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
       return
     }
     if (type === "question" && (!title.trim() || !selectedCategory)) {
-      toast({ title: "입력 오류", description: "제목과 카테고리를 입력해 주세요.", variant: "destructive" })
+      toast({ title: "입력 오류", description: "제목과 카테고리를 선택해 주세요.", variant: "destructive" })
       return
     }
     if (!text.trim()) return
@@ -81,31 +89,28 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
         <form onSubmit={handleSubmit}>
           <div className="p-5 md:p-8 space-y-4 md:space-y-6">
             {type === "question" && (
-              <div className="space-y-4 md:space-y-5">
-                <Input
-                  placeholder="질문 제목을 입력하세요"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  className="border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 text-lg md:text-xl font-black p-0 h-auto placeholder:text-black/15 text-[#1E1E23] bg-transparent outline-none"
-                />
-                
-                {/* 모바일 가로 스크롤 대응 카테고리 칩 */}
-                <div className="flex overflow-x-auto gap-2 pt-1 scrollbar-hide -mx-1 px-1">
-                  {HR_CATEGORIES.map((cat) => (
-                    <button
-                      key={cat}
-                      type="button"
-                      onClick={() => setSelectedCategory(cat)}
-                      className={cn(
-                        "px-3 py-1.5 text-[10px] md:text-[11px] font-bold transition-all border whitespace-nowrap rounded-sm",
-                        selectedCategory === cat 
-                          ? "bg-accent text-white border-accent shadow-sm" 
-                          : "bg-white text-[#888] border-black/[0.08] hover:border-accent/50"
-                      )}
-                    >
-                      #{cat}
-                    </button>
-                  ))}
+              <div className="space-y-4">
+                <div className="flex flex-col md:flex-row md:items-center gap-4">
+                  <Input
+                    placeholder="제목을 입력하세요"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    className="flex-1 border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 text-lg md:text-xl font-black p-0 h-auto placeholder:text-black/15 text-[#1E1E23] bg-transparent outline-none"
+                  />
+                  <div className="w-full md:w-48">
+                    <Select value={selectedCategory || ""} onValueChange={setSelectedCategory}>
+                      <SelectTrigger className="h-10 bg-primary/5 border-none rounded-sm font-bold text-xs text-primary/60 focus:ring-0">
+                        <SelectValue placeholder="카테고리 선택" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white border-black/10 rounded-sm">
+                        {HR_CATEGORIES.map((cat) => (
+                          <SelectItem key={cat} value={cat} className="text-xs font-bold py-2.5 focus:bg-accent focus:text-white transition-colors cursor-pointer">
+                            {cat}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
                 <Separator className="bg-black/[0.06]" />
               </div>
