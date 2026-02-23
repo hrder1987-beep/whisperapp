@@ -46,7 +46,7 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased selection:bg-primary selection:text-primary-foreground bg-[#F8F9FA]">
         <FirebaseClientProvider>
-          <div className="relative min-h-screen overflow-x-hidden flex flex-col">
+          <div className="relative min-h-screen flex flex-col">
             <div className="fixed inset-0 pointer-events-none opacity-30">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,hsl(var(--primary)/0.05)_0%,transparent_70%)] blur-3xl transform -translate-y-1/2"></div>
             </div>

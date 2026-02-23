@@ -360,7 +360,7 @@ export default function HomePage() {
             )}
           </main>
           {!deferredSearchQuery && (
-            <aside className="lg:col-span-4 hidden lg:block relative min-h-full">
+            <aside className="lg:col-span-4 hidden lg:block relative">
               <div className="sticky top-32 space-y-8 self-start">
                 <AldiChat />
                 <PremiumAds ads={premiumAds} />
