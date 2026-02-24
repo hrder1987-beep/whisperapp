@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo, useEffect, useDeferredValue, Suspense } from "react"
@@ -200,7 +201,7 @@ function HomePageContent() {
     if (!db || !user) return;
     addDocumentNonBlocking(collection(db, "questions"), {
       title, text, nickname, userId: user.uid, category: category || "기타",
-      viewCount: 0, answerCount: 0, createdAt: Date.now(), imageUrl: imageUrl || null
+      viewCount: 0, answerCount: 0, createdAt: Date.now(), imageUrl: imageUrl || null, videoUrl: videoUrl || null
     }).then(ref => {
       if (ref) {
         generateAiReply({ 

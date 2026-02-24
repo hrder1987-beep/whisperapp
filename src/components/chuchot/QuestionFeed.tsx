@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect } from "react"
@@ -57,6 +58,13 @@ export function QuestionFeed({
     }
   }
 
+  // 유튜브 ID 추출 헬퍼
+  const getYoutubeId = (url: string) => {
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
+  }
+
   return (
     <div className="space-y-3 md:space-y-4">
       {questions.length === 0 ? (
@@ -68,6 +76,7 @@ export function QuestionFeed({
           const isExpanded = selectedId === q.id
           const questionAnswers = answers.filter(a => a.questionId === q.id)
           const isMentor = q.userRole === 'mentor'
+          const youtubeId = q.videoUrl ? getYoutubeId(q.videoUrl) : null
 
           return (
             <Card 
@@ -114,9 +123,27 @@ export function QuestionFeed({
                   <h3 className="text-base md:text-[19px] font-black leading-tight text-foreground group-hover:underline decoration-accent/30 underline-offset-4 line-clamp-2 md:line-clamp-none">{q.title}</h3>
                   <p className={cn("text-[14px] md:text-[15px] leading-relaxed text-muted-foreground whitespace-pre-wrap break-words", !isExpanded && "line-clamp-2")}>{q.text}</p>
                   
-                  {isExpanded && q.imageUrl && (
-                    <div className="relative w-full rounded-sm overflow-hidden border border-black/5 bg-black/[0.02] mt-4 md:mt-6">
-                      <img src={q.imageUrl} alt="이미지" className="w-full h-auto block" />
+                  {isExpanded && (
+                    <div className="space-y-4 mt-4 md:mt-6">
+                      {q.imageUrl && (
+                        <div className="relative w-full rounded-sm overflow-hidden border border-black/5 bg-black/[0.02]">
+                          <img src={q.imageUrl} alt="이미지" className="w-full h-auto block" />
+                        </div>
+                      )}
+                      
+                      {youtubeId && (
+                        <div className="relative w-full aspect-video rounded-sm overflow-hidden border border-black/5 bg-black">
+                          <iframe
+                            width="100%"
+                            height="100%"
+                            src={`https://www.youtube.com/embed/${youtubeId}`}
+                            title="YouTube video player"
+                            frameBorder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                          ></iframe>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>

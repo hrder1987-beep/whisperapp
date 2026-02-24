@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
-import { ImageIcon, X, Send } from "lucide-react"
+import { ImageIcon, X, Send, Video, Youtube } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { Separator } from "@/components/ui/separator"
 import { containsProfanity } from "@/lib/utils"
@@ -40,6 +40,8 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
   const [title, setTitle] = useState("")
   const [text, setText] = useState("")
   const [imageUrl, setImageUrl] = useState<string | undefined>(undefined)
+  const [videoUrl, setVideoUrl] = useState<string | undefined>(undefined)
+  const [showVideoInput, setShowVideoInput] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   
@@ -75,8 +77,8 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
 
     setIsSubmitting(true)
     setTimeout(() => {
-      onSubmit(nickname, title, text, imageUrl, undefined, selectedCategory || undefined)
-      setTitle(""); setText(""); setImageUrl(undefined); setSelectedCategory(null);
+      onSubmit(nickname, title, text, imageUrl, videoUrl, selectedCategory || undefined)
+      setTitle(""); setText(""); setImageUrl(undefined); setVideoUrl(undefined); setShowVideoInput(false); setSelectedCategory(null);
       setIsSubmitting(false)
       toast({ title: "게시 완료", description: "소중한 지식이 공유되었습니다." })
     }, 400)
@@ -123,6 +125,24 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
               className="min-h-[100px] md:min-h-[140px] border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 p-0 text-[15px] md:text-[16px] leading-relaxed resize-none text-[#404040] placeholder:text-black/30 bg-transparent outline-none"
             />
 
+            {showVideoInput && (
+              <div className="bg-primary/5 p-4 rounded-sm border border-primary/10 animate-in fade-in slide-in-from-top-2 duration-300">
+                <div className="flex items-center gap-3">
+                  <Youtube className="w-5 h-5 text-[#FF0000]" />
+                  <Input 
+                    placeholder="유튜브 링크를 입력하세요 (예: https://youtu.be/...)"
+                    value={videoUrl || ""}
+                    onChange={(e) => setVideoUrl(e.target.value)}
+                    className="flex-1 bg-white border-black/10 h-10 text-sm font-bold focus-visible:ring-primary/20"
+                  />
+                  <Button type="button" variant="ghost" size="icon" onClick={() => { setVideoUrl(undefined); setShowVideoInput(false); }} className="h-10 w-10 text-black/20 hover:text-red-500">
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+                <p className="text-[10px] font-bold text-primary/40 mt-2 ml-8">* 유튜브 링크가 입력되면 피드에서 영상이 자동으로 재생됩니다.</p>
+              </div>
+            )}
+
             {imageUrl && (
               <div className="relative w-fit max-w-full rounded-none overflow-hidden border border-black/5 mt-4">
                 <img src={imageUrl} alt="preview" className="h-32 md:h-40 w-auto object-cover" />
@@ -150,6 +170,10 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
               <Button type="button" variant="ghost" size="sm" className="h-9 text-[#888] gap-1.5 md:gap-2 hover:text-primary font-bold px-2" onClick={() => fileInputRef.current?.click()}>
                 <ImageIcon className="w-4 h-4" />
                 <span className="text-[12px] md:text-[13px]">사진</span>
+              </Button>
+              <Button type="button" variant="ghost" size="sm" className="h-9 text-[#888] gap-1.5 md:gap-2 hover:text-primary font-bold px-2" onClick={() => setShowVideoInput(!showVideoInput)}>
+                <Video className="w-4 h-4" />
+                <span className="text-[12px] md:text-[13px]">동영상</span>
               </Button>
             </div>
             
