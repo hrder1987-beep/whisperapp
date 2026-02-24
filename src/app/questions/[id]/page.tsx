@@ -27,6 +27,7 @@ async function getQuestionData(id: string) {
     
     const data = await response.json();
     const fields = data.fields;
+    if (!fields) return null;
     
     return {
       title: fields.title?.stringValue || "Whisper 지식 속삭임",

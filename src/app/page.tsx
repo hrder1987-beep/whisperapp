@@ -20,6 +20,7 @@ import { useFirestore, useCollection, useDoc, useMemoFirebase, addDocumentNonBlo
 import { collection, query, orderBy, doc, increment } from "firebase/firestore"
 import mockData from "@/lib/mock-data.json"
 import Link from "next/link"
+import { useSearchParams } from "next/navigation"
 
 const ITEMS_PER_PAGE = 7
 
@@ -65,8 +66,9 @@ export default function HomePage() {
   const { user } = useUser()
   const db = useFirestore()
   const { toast } = useToast()
+  const searchParams = useSearchParams()
   
-  const [searchQuery, setSearchQuery] = useState("")
+  const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "")
   const deferredSearchQuery = useDeferredValue(searchQuery)
   
   const [activeTab, setActiveTab] = useState<"all" | "hrm" | "hrd" | "culture" | "popular" | "waiting">("all")
@@ -88,6 +90,26 @@ export default function HomePage() {
 
   const aldiDocRef = useMemoFirebase(() => db ? doc(db, "admin_configuration", "aldi_knowledge") : null, [db])
   const { data: aldiConfig } = useDoc<any>(aldiDocRef)
+
+  // 1. 순서 중요: searchResults에서 사용되는 questions를 먼저 정의합니다.
+  const questions = useMemo(() => {
+    const merged = [...(dbQuestions || [])];
+    MOCK_QUESTIONS.forEach(mq => { if (!merged.some(dq => dq.id === mq.id)) merged.push(mq); });
+    return merged.sort((a, b) => b.createdAt - a.createdAt);
+  }, [dbQuestions])
+
+  // 2. 그 다음 검색 결과를 계산합니다.
+  const searchResults = useMemo(() => {
+    if (!deferredSearchQuery) return null;
+    const q = deferredSearchQuery.toLowerCase();
+
+    return {
+      questions: questions.filter(item => item.title.toLowerCase().includes(q) || item.text.toLowerCase().includes(q)),
+      programs: (dbPrograms || []).filter(item => item.title.toLowerCase().includes(q) || item.instructorName.toLowerCase().includes(q)),
+      instructors: (dbInstructors || []).filter(item => item.name.toLowerCase().includes(q) || item.specialty.toLowerCase().includes(q)),
+      jobs: (dbJobs || []).filter(item => item.title.toLowerCase().includes(q) || item.companyName.toLowerCase().includes(q))
+    };
+  }, [questions, dbPrograms, dbInstructors, dbJobs, deferredSearchQuery]);
 
   const banners = useMemo(() => {
     if (config?.bannerSettings) {
@@ -122,12 +144,6 @@ export default function HomePage() {
     ]
   }, [config])
 
-  const questions = useMemo(() => {
-    const merged = [...(dbQuestions || [])];
-    MOCK_QUESTIONS.forEach(mq => { if (!merged.some(dq => dq.id === mq.id)) merged.push(mq); });
-    return merged.sort((a, b) => b.createdAt - a.createdAt);
-  }, [dbQuestions])
-
   const answersQuery = useMemoFirebase(() => {
     if (!db || !selectedId) return null
     return query(collection(db, "questions", selectedId, "answers"), orderBy("createdAt", "desc"))
@@ -137,18 +153,6 @@ export default function HomePage() {
   const answers = useMemo(() => {
     return dbAnswers?.length ? dbAnswers : (mockData.answers as any[]).filter(a => a.questionId === selectedId);
   }, [dbAnswers, selectedId])
-
-  const searchResults = useMemo(() => {
-    if (!deferredSearchQuery) return null;
-    const q = deferredSearchQuery.toLowerCase();
-
-    return {
-      questions: questions.filter(item => item.title.toLowerCase().includes(q) || item.text.toLowerCase().includes(q)),
-      programs: (dbPrograms || []).filter(item => item.title.toLowerCase().includes(q) || item.instructorName.toLowerCase().includes(q)),
-      instructors: (dbInstructors || []).filter(item => item.name.toLowerCase().includes(q) || item.specialty.toLowerCase().includes(q)),
-      jobs: (dbJobs || []).filter(item => item.title.toLowerCase().includes(q) || item.companyName.toLowerCase().includes(q))
-    };
-  }, [questions, dbPrograms, dbInstructors, dbJobs, deferredSearchQuery]);
 
   const filtered = useMemo(() => {
     let res = [...questions]
@@ -170,6 +174,12 @@ export default function HomePage() {
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE)
 
   useEffect(() => { setCurrentPage(1); setSelectedId(null); }, [deferredSearchQuery, activeTab])
+
+  // URL에서 검색어를 가져왔을 때 상태 업데이트
+  useEffect(() => {
+    const search = searchParams.get("search")
+    if (search) setSearchQuery(search)
+  }, [searchParams])
 
   const handleAddQuestion = (nickname: string, title: string, text: string, imageUrl?: string, videoUrl?: string, category?: string) => {
     if (!db || !user) return;
@@ -202,7 +212,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-[#F8F9FA]">
-      <Header />
+      <Header onSearch={(q) => setSearchQuery(q)} />
       <div className="max-w-7xl mx-auto px-4 py-6 md:py-12">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
           <main className={cn("space-y-6 md:space-y-10", deferredSearchQuery ? "lg:col-span-12" : "lg:col-span-8")}>
