@@ -49,6 +49,8 @@ export default function GatheringsPage() {
   const [location, setLocation] = useState("")
   const [startDate, setStartDate] = useState<Date | undefined>(undefined)
   const [endDate, setEndDate] = useState<Date | undefined>(undefined)
+  const [startTime, setStartTime] = useState("14:00")
+  const [endTime, setEndTime] = useState("16:00")
   const [capacity, setCapacity] = useState("10")
   const [sessionCount, setSessionCount] = useState("6")
   const [category, setCategory] = useState("COP/학습")
@@ -134,7 +136,10 @@ export default function GatheringsPage() {
       const tags = tagInput.split(/[, ]+/).filter(t => t.startsWith('#')).map(t => t.replace('#', ''))
       const finalDescription = description + (detailImages.length > 0 ? "\n\n[첨부 이미지]\n" + detailImages.join("\n") : "");
 
-      const scheduleStr = format(startDate, "yyyy년 M월 d일") + (startDate.getTime() !== endDate.getTime() ? ` ~ ${format(endDate, "M월 d일")}` : "")
+      const scheduleStr = format(startDate, "yyyy년 M월 d일") + ` ${startTime}` + 
+        (startDate.getTime() !== endDate.getTime() 
+          ? ` ~ ${format(endDate, "M월 d일")} ${endTime}` 
+          : ` ~ ${endTime}`)
 
       await addDocumentNonBlocking(collection(db, "gatherings"), {
         title,
@@ -262,42 +267,64 @@ export default function GatheringsPage() {
 
                         <div className="space-y-6">
                           <div className="space-y-3">
-                            <label className="text-[11px] font-black text-[#1E1E23]/40 uppercase tracking-widest ml-1">모임 일정</label>
-                            <div className="grid grid-cols-2 gap-2">
-                              <Popover>
-                                <PopoverTrigger asChild>
-                                  <Button variant="outline" className="h-12 bg-white border-black/10 rounded-xl font-bold shadow-sm justify-start gap-2">
-                                    <CalendarIcon className="w-4 h-4 text-black/20" />
-                                    {startDate ? format(startDate, "yyyy-MM-dd") : "시작일 선택"}
-                                  </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0 z-[100] min-w-fit bg-white shadow-2xl border-none" align="start">
-                                  <Calendar 
-                                    mode="single" 
-                                    selected={startDate} 
-                                    onSelect={(date) => setStartDate(date)} 
-                                    initialFocus 
-                                    locale={ko} 
+                            <label className="text-[11px] font-black text-[#1E1E23]/40 uppercase tracking-widest ml-1">모임 일정 및 시간</label>
+                            <div className="space-y-3">
+                              <div className="grid grid-cols-2 gap-2">
+                                <Popover>
+                                  <PopoverTrigger asChild>
+                                    <Button variant="outline" className="h-12 bg-white border-black/10 rounded-xl font-bold shadow-sm justify-start gap-2">
+                                      <CalendarIcon className="w-4 h-4 text-black/20" />
+                                      {startDate ? format(startDate, "yyyy-MM-dd") : "시작일"}
+                                    </Button>
+                                  </PopoverTrigger>
+                                  <PopoverContent className="w-auto p-0 z-[100] min-w-fit bg-white shadow-2xl border-none" align="start">
+                                    <Calendar 
+                                      mode="single" 
+                                      selected={startDate} 
+                                      onSelect={(date) => setStartDate(date || undefined)} 
+                                      initialFocus 
+                                      locale={ko} 
+                                    />
+                                  </PopoverContent>
+                                </Popover>
+                                <Popover>
+                                  <PopoverTrigger asChild>
+                                    <Button variant="outline" className="h-12 bg-white border-black/10 rounded-xl font-bold shadow-sm justify-start gap-2">
+                                      <CalendarIcon className="w-4 h-4 text-black/20" />
+                                      {endDate ? format(endDate, "yyyy-MM-dd") : "종료일"}
+                                    </Button>
+                                  </PopoverTrigger>
+                                  <PopoverContent className="w-auto p-0 z-[100] min-w-fit bg-white shadow-2xl border-none" align="start">
+                                    <Calendar 
+                                      mode="single" 
+                                      selected={endDate} 
+                                      onSelect={(date) => setEndDate(date || undefined)} 
+                                      initialFocus 
+                                      locale={ko} 
+                                    />
+                                  </PopoverContent>
+                                </Popover>
+                              </div>
+                              <div className="grid grid-cols-2 gap-2">
+                                <div className="flex items-center gap-2 bg-white border border-black/10 rounded-xl px-3 h-12 shadow-sm">
+                                  <Clock className="w-4 h-4 text-black/20" />
+                                  <Input 
+                                    type="time" 
+                                    value={startTime} 
+                                    onChange={(e) => setStartTime(e.target.value)} 
+                                    className="border-none shadow-none focus-visible:ring-0 p-0 font-bold"
                                   />
-                                </PopoverContent>
-                              </Popover>
-                              <Popover>
-                                <PopoverTrigger asChild>
-                                  <Button variant="outline" className="h-12 bg-white border-black/10 rounded-xl font-bold shadow-sm justify-start gap-2">
-                                    <CalendarIcon className="w-4 h-4 text-black/20" />
-                                    {endDate ? format(endDate, "yyyy-MM-dd") : "종료일 선택"}
-                                  </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0 z-[100] min-w-fit bg-white shadow-2xl border-none" align="start">
-                                  <Calendar 
-                                    mode="single" 
-                                    selected={endDate} 
-                                    onSelect={(date) => setEndDate(date)} 
-                                    initialFocus 
-                                    locale={ko} 
+                                </div>
+                                <div className="flex items-center gap-2 bg-white border border-black/10 rounded-xl px-3 h-12 shadow-sm">
+                                  <Clock className="w-4 h-4 text-black/20" />
+                                  <Input 
+                                    type="time" 
+                                    value={endTime} 
+                                    onChange={(e) => setEndTime(e.target.value)} 
+                                    className="border-none shadow-none focus-visible:ring-0 p-0 font-bold"
                                   />
-                                </PopoverContent>
-                              </Popover>
+                                </div>
+                              </div>
                             </div>
                           </div>
 
