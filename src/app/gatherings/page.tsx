@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo, useRef } from "react"
@@ -10,8 +11,6 @@ import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Calendar } from "@/components/ui/calendar"
 import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking } from "@/firebase"
 import { collection, query, orderBy } from "firebase/firestore"
 import { Gathering, GatheringQuestion } from "@/lib/types"
@@ -21,8 +20,6 @@ import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import { MOCK_GATHERINGS } from "@/lib/mock-gatherings"
-import { format } from "date-fns"
-import { ko } from "date-fns/locale"
 
 const GATHERING_CATEGORIES = ["전체", "COP/학습", "네트워킹/친목", "컨퍼런스", "북클럽", "프로젝트"]
 
@@ -46,20 +43,19 @@ export default function GatheringsPage() {
   const [description, setDescription] = useState("")
   const [type, setType] = useState<"online" | "offline">("online")
   const [location, setLocation] = useState("")
-  const [startDate, setStartDate] = useState<Date | undefined>(undefined)
-  const [endDate, setEndDate] = useState<Date | undefined>(undefined)
+  
+  // 수기 입력 방식 (HTML Date & Time Input 전용)
+  const [startDateStr, setStartDateStr] = useState("")
+  const [endDateStr, setEndDateStr] = useState("")
   const [startTime, setStartTime] = useState("14:00")
   const [endTime, setEndTime] = useState("16:00")
+  
   const [capacity, setCapacity] = useState("10")
   const [sessionCount, setSessionCount] = useState("6")
   const [category, setCategory] = useState("COP/학습")
   const [questions, setQuestions] = useState<GatheringQuestion[]>([])
   const [imageUrl, setImageUrl] = useState<string | null>(null)
   const [detailImages, setDetailImages] = useState<string[]>([])
-
-  // Popover Control
-  const [isStartOpen, setIsStartOpen] = useState(false)
-  const [isEndOpen, setIsEndOpen] = useState(false)
 
   const gatheringsQuery = useMemoFirebase(() => {
     if (!db) return null
@@ -129,8 +125,8 @@ export default function GatheringsPage() {
       return
     }
 
-    if (!startDate || !endDate) {
-      toast({ title: "일정 선택 필요", description: "모임의 시작일과 종료일을 선택해 주세요.", variant: "destructive" })
+    if (!startDateStr || !endDateStr) {
+      toast({ title: "일정 선택 필요", description: "모임의 시작일과 종료일을 입력해 주세요.", variant: "destructive" })
       return
     }
 
@@ -139,10 +135,8 @@ export default function GatheringsPage() {
       const tags = tagInput.split(/[, ]+/).filter(t => t.startsWith('#')).map(t => t.replace('#', ''))
       const finalDescription = description + (detailImages.length > 0 ? "\n\n[첨부 이미지]\n" + detailImages.join("\n") : "");
 
-      const scheduleStr = format(startDate, "yyyy년 M월 d일") + ` ${startTime}` + 
-        (startDate.getTime() !== endDate.getTime() 
-          ? ` ~ ${format(endDate, "M월 d일")} ${endTime}` 
-          : ` ~ ${endTime}`)
+      // 일정 문자열 조합
+      const scheduleStr = `${startDateStr} ${startTime} ~ ${endDateStr} ${endTime}`
 
       await addDocumentNonBlocking(collection(db, "gatherings"), {
         title,
@@ -154,8 +148,8 @@ export default function GatheringsPage() {
         type,
         location: type === "online" ? "온라인(상세 링크)" : location,
         schedule: scheduleStr,
-        startDate: startDate.getTime(),
-        endDate: endDate.getTime(),
+        startDate: new Date(startDateStr).getTime(),
+        endDate: new Date(endDateStr).getTime(),
         capacity: parseInt(capacity),
         sessionCount: parseInt(sessionCount),
         participantCount: 0,
@@ -169,7 +163,10 @@ export default function GatheringsPage() {
       
       toast({ title: "모임 개설 완료", description: "새로운 HR 지식 모임이 개설되었습니다!" })
       setIsDialogOpen(false)
-      setTitle(""); setSummary(""); setTagInput(""); setDescription(""); setLocation(""); setStartDate(undefined); setEndDate(undefined); setCapacity("10"); setSessionCount("6"); setQuestions([]); setImageUrl(null); setDetailImages([]);
+      // 상태 초기화
+      setTitle(""); setSummary(""); setTagInput(""); setDescription(""); setLocation(""); 
+      setStartDateStr(""); setEndDateStr(""); setCapacity("10"); setSessionCount("6"); 
+      setQuestions([]); setImageUrl(null); setDetailImages([]);
     } catch (error) {
       toast({ title: "오류 발생", description: "모임 개설 중 문제가 발생했습니다.", variant: "destructive" })
     } finally {
@@ -272,65 +269,49 @@ export default function GatheringsPage() {
                             <label className="text-[11px] font-black text-[#1E1E23]/40 uppercase tracking-widest ml-1">모임 일정 및 시간</label>
                             <div className="space-y-3">
                               <div className="grid grid-cols-2 gap-2">
-                                <Popover open={isStartOpen} onOpenChange={setIsStartOpen}>
-                                  <PopoverTrigger asChild>
-                                    <Button variant="outline" className="h-12 bg-white border-black/10 rounded-xl font-bold shadow-sm justify-start gap-2">
-                                      <CalendarIcon className="w-4 h-4 text-black/20" />
-                                      {startDate ? format(startDate, "yyyy-MM-dd") : "시작일"}
-                                    </Button>
-                                  </PopoverTrigger>
-                                  <PopoverContent className="w-auto p-0 z-[100] bg-white shadow-2xl border-none" align="start">
-                                    <Calendar 
-                                      mode="single" 
-                                      selected={startDate} 
-                                      onSelect={(date) => {
-                                        setStartDate(date || undefined);
-                                        if (date) setIsStartOpen(false);
-                                      }}
-                                      initialFocus 
-                                      locale={ko} 
-                                    />
-                                  </PopoverContent>
-                                </Popover>
-                                <Popover open={isEndOpen} onOpenChange={setIsEndOpen}>
-                                  <PopoverTrigger asChild>
-                                    <Button variant="outline" className="h-12 bg-white border-black/10 rounded-xl font-bold shadow-sm justify-start gap-2">
-                                      <CalendarIcon className="w-4 h-4 text-black/20" />
-                                      {endDate ? format(endDate, "yyyy-MM-dd") : "종료일"}
-                                    </Button>
-                                  </PopoverTrigger>
-                                  <PopoverContent className="w-auto p-0 z-[100] bg-white shadow-2xl border-none" align="start">
-                                    <Calendar 
-                                      mode="single" 
-                                      selected={endDate} 
-                                      onSelect={(date) => {
-                                        setEndDate(date || undefined);
-                                        if (date) setIsEndOpen(false);
-                                      }}
-                                      initialFocus 
-                                      locale={ko} 
-                                    />
-                                  </PopoverContent>
-                                </Popover>
-                              </div>
-                              <div className="grid grid-cols-2 gap-2">
-                                <div className="flex items-center gap-2 bg-white border border-black/10 rounded-xl px-3 h-12 shadow-sm">
-                                  <Clock className="w-4 h-4 text-black/20" />
+                                <div className="space-y-1">
+                                  <span className="text-[9px] font-bold text-black/30 ml-1">시작일</span>
                                   <Input 
-                                    type="time" 
-                                    value={startTime} 
-                                    onChange={(e) => setStartTime(e.target.value)} 
-                                    className="border-none shadow-none focus-visible:ring-0 p-0 font-bold"
+                                    type="date" 
+                                    value={startDateStr} 
+                                    onChange={(e) => setStartDateStr(e.target.value)}
+                                    className="h-12 bg-white border-black/10 rounded-xl font-bold shadow-sm"
                                   />
                                 </div>
-                                <div className="flex items-center gap-2 bg-white border border-black/10 rounded-xl px-3 h-12 shadow-sm">
-                                  <Clock className="w-4 h-4 text-black/20" />
+                                <div className="space-y-1">
+                                  <span className="text-[9px] font-bold text-black/30 ml-1">종료일</span>
                                   <Input 
-                                    type="time" 
-                                    value={endTime} 
-                                    onChange={(e) => setEndTime(e.target.value)} 
-                                    className="border-none shadow-none focus-visible:ring-0 p-0 font-bold"
+                                    type="date" 
+                                    value={endDateStr} 
+                                    onChange={(e) => setEndDateStr(e.target.value)}
+                                    className="h-12 bg-white border-black/10 rounded-xl font-bold shadow-sm"
                                   />
+                                </div>
+                              </div>
+                              <div className="grid grid-cols-2 gap-2">
+                                <div className="space-y-1">
+                                  <span className="text-[9px] font-bold text-black/30 ml-1">시작시간</span>
+                                  <div className="flex items-center gap-2 bg-white border border-black/10 rounded-xl px-3 h-12 shadow-sm">
+                                    <Clock className="w-4 h-4 text-black/20" />
+                                    <Input 
+                                      type="time" 
+                                      value={startTime} 
+                                      onChange={(e) => setStartTime(e.target.value)} 
+                                      className="border-none shadow-none focus-visible:ring-0 p-0 font-bold"
+                                    />
+                                  </div>
+                                </div>
+                                <div className="space-y-1">
+                                  <span className="text-[9px] font-bold text-black/30 ml-1">종료시간</span>
+                                  <div className="flex items-center gap-2 bg-white border border-black/10 rounded-xl px-3 h-12 shadow-sm">
+                                    <Clock className="w-4 h-4 text-black/20" />
+                                    <Input 
+                                      type="time" 
+                                      value={endTime} 
+                                      onChange={(e) => setEndTime(e.target.value)} 
+                                      className="border-none shadow-none focus-visible:ring-0 p-0 font-bold"
+                                    />
+                                  </div>
                                 </div>
                               </div>
                             </div>
