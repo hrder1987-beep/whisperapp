@@ -14,7 +14,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase"
 import { collection, query, orderBy, addDoc } from "firebase/firestore"
 import { TrainingProgram } from "@/lib/types"
-import { Plus, Search, Building2, MessageSquare, Camera, Sparkles, Calendar, CreditCard, Link as LinkIcon, Info, Users, Clock, Globe, Laptop, GraduationCap, Youtube, FileImage } from "lucide-react"
+import { Plus, Search, Building2, MessageSquare, Camera, Sparkles, Calendar, CreditCard, Link as LinkIcon, Info, Users, Clock, Globe, Laptop, GraduationCap, Youtube, FileImage, Type, Bold, Italic, List, Video, ImageIcon, FileText } from "lucide-react"
 import Image from "next/image"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
@@ -94,6 +94,7 @@ export default function ProgramsPage() {
   const [imageUrl, setImageUrl] = useState<string | null>(null)
   const [detailImageUrl, setDetailImageUrl] = useState<string | null>(null)
   const [videoUrl, setVideoUrl] = useState("")
+  const [showVideoInput, setShowVideoInput] = useState(false)
   const [cost, setCost] = useState("")
   const [startDate, setStartDate] = useState("")
   const [endDate, setEndDate] = useState("")
@@ -152,7 +153,7 @@ export default function ProgramsPage() {
       setIsDialogOpen(false)
       // Reset
       setTitle(""); setDescription(""); setInstructorName(""); setImageUrl(null); setDetailImageUrl(null); setVideoUrl("");
-      setCost(""); setStartDate(""); setEndDate(""); setWebsiteUrl(""); setTargetAudience("")
+      setCost(""); setStartDate(""); setEndDate(""); setWebsiteUrl(""); setTargetAudience(""); setShowVideoInput(false);
     } catch (error) { toast({ title: "오류", description: "문제가 발생했습니다.", variant: "destructive" }) }
     finally { setIsSubmitting(false) }
   }
@@ -275,21 +276,74 @@ export default function ProgramsPage() {
 
                     <div className="space-y-10">
                       <div className="space-y-4">
-                        <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest ml-1 flex items-center gap-2"><Youtube className="w-4 h-4 text-[#FF0000]" /> 홍보 영상 (유튜브 링크)</label>
-                        <Input value={videoUrl} onChange={e => setVideoUrl(e.target.value)} placeholder="https://www.youtube.com/watch?v=..." className="h-12 bg-[#F5F6F7] border-none rounded-xl font-bold shadow-inner" />
-                      </div>
+                        <label className="text-sm font-black text-[#1E1E23]">모임 상세 소개</label>
+                        <div className="border border-black/10 rounded-2xl overflow-hidden shadow-sm">
+                          {/* Rich Text Editor Toolbar Style */}
+                          <div className="bg-[#FBFBFC] border-b border-black/10 p-3 flex items-center gap-2">
+                            <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-black/40 hover:text-primary" onClick={() => detailImageInputRef.current?.click()} title="상세 이미지 추가">
+                              <ImageIcon className="w-5 h-5" />
+                            </Button>
+                            <input type="file" ref={detailImageInputRef} className="hidden" accept="image/*" onChange={(e) => handleImageChange(e, setDetailImageUrl)} />
+                            
+                            <Button type="button" variant="ghost" size="icon" className={cn("h-9 w-9 transition-colors", showVideoInput ? "text-primary bg-primary/5" : "text-black/40 hover:text-primary")} onClick={() => setShowVideoInput(!showVideoInput)} title="유튜브 영상 추가">
+                              <Video className="w-5 h-5" />
+                            </Button>
 
-                      <div className="space-y-4">
-                        <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest ml-1 flex items-center gap-2"><FileImage className="w-4 h-4 text-primary" /> 상세 소개 이미지 (포스터 등)</label>
-                        <div onClick={() => detailImageInputRef.current?.click()} className="relative w-full aspect-[4/3] max-w-md bg-[#F5F6F7] border-2 border-dashed border-black/10 flex items-center justify-center cursor-pointer rounded-2xl overflow-hidden group hover:border-primary shadow-inner">
-                          {detailImageUrl ? <img src={detailImageUrl} alt="detail preview" className="w-full h-full object-contain" /> : <div className="text-center"><Camera className="w-10 h-10 text-black/10 group-hover:text-primary transition-colors mx-auto mb-2" /><p className="text-[10px] font-bold text-black/20">상세 소개란에 들어갈 고해상도 이미지</p></div>}
+                            <div className="w-px h-5 bg-black/10 mx-2" />
+
+                            <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-black/40 hover:text-primary" title="글꼴 설정">
+                              <Type className="w-5 h-5" />
+                            </Button>
+                            <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-black/40 hover:text-primary" title="굵게">
+                              <Bold className="w-4 h-4" />
+                            </Button>
+                            <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-black/40 hover:text-primary" title="기울임">
+                              <Italic className="w-4 h-4" />
+                            </Button>
+                            <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-black/40 hover:text-primary" title="목록">
+                              <List className="w-4 h-4" />
+                            </Button>
+                          </div>
+
+                          <div className="p-0">
+                            {showVideoInput && (
+                              <div className="bg-primary/5 p-4 border-b border-black/5 animate-in fade-in slide-in-from-top-1 duration-200">
+                                <div className="flex items-center gap-3">
+                                  <Youtube className="w-5 h-5 text-[#FF0000]" />
+                                  <Input 
+                                    value={videoUrl} 
+                                    onChange={e => setVideoUrl(e.target.value)} 
+                                    placeholder="유튜브 영상 주소를 입력하세요 (https://...)" 
+                                    className="h-10 bg-white border-black/10 rounded-lg text-sm font-bold shadow-sm"
+                                  />
+                                </div>
+                              </div>
+                            )}
+
+                            {detailImageUrl && (
+                              <div className="p-4 border-b border-black/5 bg-white flex justify-center relative group">
+                                <img src={detailImageUrl} alt="detail preview" className="max-h-60 rounded-lg object-contain shadow-md" />
+                                <Button 
+                                  type="button" 
+                                  variant="destructive" 
+                                  size="icon" 
+                                  className="absolute top-6 right-6 h-8 w-8 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                                  onClick={() => setDetailImageUrl(null)}
+                                >
+                                  <X className="w-4 h-4" />
+                                </Button>
+                              </div>
+                            )}
+
+                            <Textarea 
+                              value={description} 
+                              onChange={e => setDescription(e.target.value)} 
+                              required 
+                              placeholder={contentType === 'program' ? "커리큘럼, 시간표, 기대 효과 등을 상세히 적어주세요." : "솔루션의 주요 기능, 도입 혜택, 타 솔루션 대비 강점 등을 상세히 적어주세요."} 
+                              className="min-h-[400px] border-none shadow-none focus-visible:ring-0 p-8 text-base font-medium leading-relaxed resize-none bg-white" 
+                            />
+                          </div>
                         </div>
-                        <input type="file" ref={detailImageInputRef} className="hidden" accept="image/*" onChange={(e) => handleImageChange(e, setDetailImageUrl)} />
-                      </div>
-
-                      <div className="space-y-4">
-                        <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest ml-1 flex items-center gap-2"><Info className="w-3.5 h-3.5 text-primary" /> 상세 텍스트 소개</label>
-                        <Textarea value={description} onChange={e => setDescription(e.target.value)} required placeholder={contentType === 'program' ? "커리큘럼, 시간표, 기대 효과 등을 상세히 적어주세요." : "솔루션의 주요 기능, 도입 혜택, 타 솔루션 대비 강점 등을 상세히 적어주세요."} className="min-h-[300px] bg-[#F5F6F7] border-none rounded-2xl p-8 text-base leading-relaxed font-medium shadow-inner resize-none" />
                       </div>
                     </div>
 
