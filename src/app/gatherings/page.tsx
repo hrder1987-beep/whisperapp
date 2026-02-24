@@ -271,7 +271,7 @@ export default function GatheringsPage() {
                                     {startDate ? format(startDate, "yyyy-MM-dd") : "시작일 선택"}
                                   </Button>
                                 </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0 z-[100]" align="start">
+                                <PopoverContent className="w-auto p-0 z-[100] min-w-fit bg-white shadow-2xl border-none" align="start">
                                   <Calendar 
                                     mode="single" 
                                     selected={startDate} 
@@ -288,7 +288,7 @@ export default function GatheringsPage() {
                                     {endDate ? format(endDate, "yyyy-MM-dd") : "종료일 선택"}
                                   </Button>
                                 </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0 z-[100]" align="start">
+                                <PopoverContent className="w-auto p-0 z-[100] min-w-fit bg-white shadow-2xl border-none" align="start">
                                   <Calendar 
                                     mode="single" 
                                     selected={endDate} 
