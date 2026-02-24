@@ -11,15 +11,19 @@ import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Calendar } from "@/components/ui/calendar"
 import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking } from "@/firebase"
 import { collection, query, orderBy } from "firebase/firestore"
-import { Gathering } from "@/lib/types"
-import { Plus, Calendar, Search, Clock, MapPin, Globe, Image as ImageIcon, Video, FileText, Type, Sparkles, X } from "lucide-react"
+import { Gathering, GatheringQuestion } from "@/lib/types"
+import { Plus, Calendar as CalendarIcon, Search, Clock, MapPin, Globe, Image as ImageIcon, Video, FileText, Type, Sparkles, X, ListPlus, Trash2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import { MOCK_GATHERINGS } from "@/lib/mock-gatherings"
+import { format } from "date-fns"
+import { ko } from "date-fns/locale"
 
 const GATHERING_CATEGORIES = ["전체", "COP/학습", "네트워킹/친목", "컨퍼런스", "북클럽", "프로젝트"]
 
@@ -43,11 +47,12 @@ export default function GatheringsPage() {
   const [description, setDescription] = useState("")
   const [type, setType] = useState<"online" | "offline">("online")
   const [location, setLocation] = useState("")
-  const [schedule, setSchedule] = useState("")
+  const [startDate, setStartDate] = useState<Date | undefined>(undefined)
+  const [endDate, setEndDate] = useState<Date | undefined>(undefined)
   const [capacity, setCapacity] = useState("10")
   const [sessionCount, setSessionCount] = useState("6")
   const [category, setCategory] = useState("COP/학습")
-  const [registrationQuestion, setRegistrationQuestion] = useState("") 
+  const [questions, setQuestions] = useState<GatheringQuestion[]>([])
   const [imageUrl, setImageUrl] = useState<string | null>(null)
   const [detailImages, setDetailImages] = useState<string[]>([])
 
@@ -61,7 +66,8 @@ export default function GatheringsPage() {
   const gatherings = useMemo(() => {
     const fetched = gatheringsData || []
     const merged = [...fetched]
-    MOCK_GATHERINGS.forEach(mg => { if (!merged.some(g => g.id === mg.id)) merged.push(mg) })
+    const existingIds = new Set(merged.map(g => g.id))
+    MOCK_GATHERINGS.forEach(mg => { if (!existingIds.has(mg.id)) merged.push(mg) })
     return merged.sort((a, b) => b.createdAt - a.createdAt)
   }, [gatheringsData])
 
@@ -94,6 +100,22 @@ export default function GatheringsPage() {
     }
   }
 
+  const addQuestion = () => {
+    if (questions.length >= 10) {
+      toast({ title: "질문 개수 제한", description: "설문 질문은 최대 10개까지 가능합니다.", variant: "destructive" })
+      return
+    }
+    setQuestions([...questions, { id: Date.now().toString(), text: "", type: "text" }])
+  }
+
+  const updateQuestion = (id: string, updates: Partial<GatheringQuestion>) => {
+    setQuestions(questions.map(q => q.id === id ? { ...q, ...updates } : q))
+  }
+
+  const removeQuestion = (id: string) => {
+    setQuestions(questions.filter(q => q.id !== id))
+  }
+
   const handleCreateGathering = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!user) {
@@ -102,10 +124,17 @@ export default function GatheringsPage() {
       return
     }
 
+    if (!startDate || !endDate) {
+      toast({ title: "일정 선택 필요", description: "모임의 시작일과 종료일을 선택해 주세요.", variant: "destructive" })
+      return
+    }
+
     setIsSubmitting(true)
     try {
       const tags = tagInput.split(/[, ]+/).filter(t => t.startsWith('#')).map(t => t.replace('#', ''))
       const finalDescription = description + (detailImages.length > 0 ? "\n\n[첨부 이미지]\n" + detailImages.join("\n") : "");
+
+      const scheduleStr = format(startDate, "yyyy년 M월 d일") + (startDate.getTime() !== endDate.getTime() ? ` ~ ${format(endDate, "M월 d일")}` : "")
 
       await addDocumentNonBlocking(collection(db, "gatherings"), {
         title,
@@ -116,13 +145,15 @@ export default function GatheringsPage() {
         creatorName: user.displayName || "익명전문가",
         type,
         location: type === "online" ? "온라인(상세 링크)" : location,
-        schedule,
+        schedule: scheduleStr,
+        startDate: startDate.getTime(),
+        endDate: endDate.getTime(),
         capacity: parseInt(capacity),
         sessionCount: parseInt(sessionCount),
         participantCount: 0,
         status: "recruiting",
         category,
-        registrationQuestion: registrationQuestion.trim() || undefined,
+        questions: questions.length > 0 ? questions : [],
         imageUrl: imageUrl || `https://picsum.photos/seed/${Date.now()}/800/400`,
         createdAt: Date.now(),
         resources: []
@@ -130,7 +161,7 @@ export default function GatheringsPage() {
       
       toast({ title: "모임 개설 완료", description: "새로운 HR 지식 모임이 개설되었습니다!" })
       setIsDialogOpen(false)
-      setTitle(""); setSummary(""); setTagInput(""); setDescription(""); setLocation(""); setSchedule(""); setCapacity("10"); setSessionCount("6"); setRegistrationQuestion(""); setImageUrl(null); setDetailImages([]);
+      setTitle(""); setSummary(""); setTagInput(""); setDescription(""); setLocation(""); setStartDate(undefined); setEndDate(undefined); setCapacity("10"); setSessionCount("6"); setQuestions([]); setImageUrl(null); setDetailImages([]);
     } catch (error) {
       toast({ title: "오류 발생", description: "모임 개설 중 문제가 발생했습니다.", variant: "destructive" })
     } finally {
@@ -165,6 +196,7 @@ export default function GatheringsPage() {
                 
                 <div className="flex-1 overflow-y-auto">
                   <form onSubmit={handleCreateGathering} className="p-8 md:p-12 space-y-12 pb-32">
+                    {/* 썸네일 */}
                     <div className="space-y-4">
                       <div className="flex items-center gap-2">
                         <label className="text-sm font-black text-[#1E1E23]">썸네일 이미지</label>
@@ -231,13 +263,30 @@ export default function GatheringsPage() {
                         <div className="space-y-6">
                           <div className="space-y-3">
                             <label className="text-[11px] font-black text-[#1E1E23]/40 uppercase tracking-widest ml-1">모임 일정</label>
-                            <Input 
-                              value={schedule} 
-                              onChange={e => setSchedule(e.target.value)} 
-                              required 
-                              placeholder="예: 매주 목요일 19:00" 
-                              className="h-12 bg-white border-black/10 rounded-xl font-bold shadow-sm" 
-                            />
+                            <div className="grid grid-cols-2 gap-2">
+                              <Popover>
+                                <PopoverTrigger asChild>
+                                  <Button variant="outline" className="h-12 bg-white border-black/10 rounded-xl font-bold shadow-sm justify-start gap-2">
+                                    <CalendarIcon className="w-4 h-4 text-black/20" />
+                                    {startDate ? format(startDate, "yyyy-MM-dd") : "시작일 선택"}
+                                  </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0" align="start">
+                                  <Calendar mode="single" selected={startDate} onSelect={setStartDate} initialFocus locale={ko} />
+                                </PopoverContent>
+                              </Popover>
+                              <Popover>
+                                <PopoverTrigger asChild>
+                                  <Button variant="outline" className="h-12 bg-white border-black/10 rounded-xl font-bold shadow-sm justify-start gap-2">
+                                    <CalendarIcon className="w-4 h-4 text-black/20" />
+                                    {endDate ? format(endDate, "yyyy-MM-dd") : "종료일 선택"}
+                                  </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0" align="start">
+                                  <Calendar mode="single" selected={endDate} onSelect={setEndDate} initialFocus locale={ko} />
+                                </PopoverContent>
+                              </Popover>
+                            </div>
                           </div>
 
                           <div className="grid grid-cols-2 gap-4">
@@ -279,16 +328,73 @@ export default function GatheringsPage() {
                       </div>
                     </div>
 
-                    <div className="space-y-8">
-                      <div className="space-y-4">
-                        <div className="flex items-center gap-2"><label className="text-sm font-black text-[#1E1E23]">참가 신청자 사전 설문</label><Badge className="bg-blue-500 text-white border-none rounded-sm px-2 py-0.5 text-[10px] font-black">선택</Badge></div>
-                        <Input value={registrationQuestion} onChange={e => setRegistrationQuestion(e.target.value)} placeholder="예: 현재 직무와 참여를 결정하게 된 계기를 적어주세요." className="h-12 bg-white border-black/10 rounded-xl font-bold text-sm shadow-sm" />
+                    {/* 다중 설문 빌더 */}
+                    <div className="space-y-6">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <label className="text-sm font-black text-[#1E1E23]">참가 신청자 사전 설문</label>
+                          <Badge className="bg-blue-500 text-white border-none rounded-sm px-2 py-0.5 text-[10px] font-black">최대 10개</Badge>
+                        </div>
+                        <Button type="button" variant="outline" onClick={addQuestion} className="h-9 gap-2 border-primary/20 text-primary font-black rounded-lg">
+                          <ListPlus className="w-4 h-4" /> 질문 추가
+                        </Button>
                       </div>
+                      
+                      <div className="space-y-4">
+                        {questions.length === 0 ? (
+                          <div className="py-10 text-center border-2 border-dashed border-black/5 rounded-2xl bg-[#FBFBFC]">
+                            <p className="text-[11px] font-bold text-black/20 uppercase tracking-widest">설문 질문이 없습니다.</p>
+                          </div>
+                        ) : (
+                          questions.map((q, idx) => (
+                            <div key={q.id} className="p-6 bg-[#FBFBFC] border border-black/5 rounded-2xl space-y-4 animate-in fade-in slide-in-from-top-2">
+                              <div className="flex items-center justify-between gap-4">
+                                <Badge className="bg-black/10 text-black/40 font-black border-none h-6 w-6 p-0 flex items-center justify-center rounded-full text-[10px] shrink-0">{idx + 1}</Badge>
+                                <Input 
+                                  value={q.text} 
+                                  onChange={e => updateQuestion(q.id, { text: e.target.value })} 
+                                  placeholder="질문 내용을 입력하세요 (예: 신청 이유가 무엇인가요?)" 
+                                  className="flex-1 h-11 border-black/10 rounded-xl font-bold text-sm shadow-sm"
+                                />
+                                <Select value={q.type} onValueChange={(val: any) => updateQuestion(q.id, { type: val })}>
+                                  <SelectTrigger className="w-32 h-11 border-black/10 rounded-xl font-bold shadow-sm">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="text">주관식</SelectItem>
+                                    <SelectItem value="multiple">객관식</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                                <Button type="button" variant="ghost" size="icon" onClick={() => removeQuestion(q.id)} className="text-red-400 hover:text-red-600 hover:bg-red-50 shrink-0">
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </div>
+                              
+                              {q.type === 'multiple' && (
+                                <div className="pl-10 space-y-3">
+                                  <div className="flex items-center gap-2">
+                                    <label className="text-[10px] font-black text-black/30 uppercase tracking-widest">선택지 입력 (콤마로 구분)</label>
+                                  </div>
+                                  <Input 
+                                    value={q.options?.join(', ') || ""} 
+                                    onChange={e => updateQuestion(q.id, { options: e.target.value.split(',').map(s => s.trim()).filter(s => s) })} 
+                                    placeholder="예: 초급, 중급, 고급" 
+                                    className="h-10 border-black/10 rounded-xl font-medium text-xs bg-white"
+                                  />
+                                </div>
+                              )}
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </div>
 
-                      <div className="space-y-4">
-                        <div className="flex items-center gap-2"><label className="text-sm font-black text-[#1E1E23]">해시태그</label><Badge className="bg-primary text-white border-none rounded-sm px-2 py-0.5 text-[10px] font-black">필수</Badge></div>
-                        <Input value={tagInput} onChange={e => setTagInput(e.target.value)} required placeholder="#인사전략 #네트워킹 #데이터분석" className="h-12 bg-white border-black/10 rounded-xl font-bold text-sm shadow-sm" />
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2">
+                        <label className="text-sm font-black text-[#1E1E23]">해시태그</label>
+                        <Badge className="bg-primary text-white border-none rounded-sm px-2 py-0.5 text-[10px] font-black">필수</Badge>
                       </div>
+                      <Input value={tagInput} onChange={e => setTagInput(e.target.value)} required placeholder="#인사전략 #네트워킹 #데이터분석" className="h-12 bg-white border-black/10 rounded-xl font-bold text-sm shadow-sm" />
                     </div>
 
                     <div className="space-y-4">
@@ -373,7 +479,7 @@ export default function GatheringsPage() {
                     "px-8 py-3.5 rounded-full text-sm font-black transition-all border-2 whitespace-nowrap", 
                     selectedCategory === cat 
                       ? "bg-primary text-white border-primary shadow-lg" 
-                      : "bg-white text-black/30 border-black/5 hover:border-primary/30"
+                      : "bg-white text-black/60 border-black/5 hover:border-primary/30"
                   )}
                 >
                   {cat}
@@ -408,7 +514,7 @@ export default function GatheringsPage() {
                       <h3 className="text-xl font-black text-[#1E1E23] group-hover:text-primary transition-colors line-clamp-2 leading-tight min-h-[3.5rem]">{g.title}</h3>
                       {g.summary && <p className="text-sm font-bold text-black/40 line-clamp-2 leading-relaxed">{g.summary}</p>}
                       <div className="flex flex-col gap-2 pt-2">
-                        <div className="flex items-center gap-2.5 text-[12px] font-bold text-[#888]"><Calendar className="w-4 h-4 text-primary" /><span>{g.schedule}</span></div>
+                        <div className="flex items-center gap-2.5 text-[12px] font-bold text-[#888]"><CalendarIcon className="w-4 h-4 text-primary" /><span>{g.schedule}</span></div>
                         <div className="flex items-center gap-2.5 text-[12px] font-bold text-[#888]"><Clock className="w-4 h-4 text-primary" /><span>총 {g.sessionCount}회차 프로젝트</span></div>
                       </div>
                     </div>

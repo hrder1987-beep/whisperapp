@@ -97,6 +97,13 @@ export interface JobListing {
   userId: string;
 }
 
+export interface GatheringQuestion {
+  id: string;
+  text: string;
+  type: 'text' | 'multiple';
+  options?: string[];
+}
+
 export interface Gathering {
   id: string;
   title: string;
@@ -108,6 +115,8 @@ export interface Gathering {
   type: 'online' | 'offline';
   location: string;
   schedule: string;
+  startDate: number;
+  endDate: number;
   capacity: number;
   participantCount: number;
   status: 'recruiting' | 'in_progress' | 'closed';
@@ -115,7 +124,7 @@ export interface Gathering {
   imageUrl?: string;
   createdAt: number;
   sessionCount: number; 
-  registrationQuestion?: string; // 추가: 사전 질문
+  questions?: GatheringQuestion[]; // 다중 설문
   resources?: { title: string; url: string; type: string; sessionId?: number }[];
 }
 
@@ -127,7 +136,7 @@ export interface GatheringApplication {
   userEmail: string;
   status: 'pending' | 'approved' | 'rejected';
   appliedAt: number;
-  surveyAnswer?: string; // 추가: 질문에 대한 답변
+  answers?: { questionId: string; answer: string }[]; // 설문 답변
 }
 
 export interface GatheringAttendance {

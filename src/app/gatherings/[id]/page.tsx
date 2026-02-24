@@ -11,10 +11,12 @@ import { Progress } from "@/components/ui/progress"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { Input } from "@/components/ui/input"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { useUser, useFirestore, useDoc, useCollection, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking } from "@/firebase"
 import { doc, collection, query, where, deleteDoc } from "firebase/firestore"
 import { Gathering, GatheringApplication, GatheringAttendance } from "@/lib/types"
-import { Users, Calendar, MapPin, Globe, Sparkles, FileText, Check, X, ArrowLeft, ShieldCheck, Download, Trash2, Clock, Info, CheckCircle2, MessageSquare } from "lucide-react"
+import { Users, Calendar, MapPin, Globe, Sparkles, FileText, Check, X, ArrowLeft, ShieldCheck, Download, Trash2, Clock, Info, CheckCircle2, MessageSquare, ClipboardList } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { formatDistanceToNow } from "date-fns"
 import { ko } from "date-fns/locale"
@@ -33,7 +35,7 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
   const [activeTab, setActiveTab] = useState("overview")
   const [isApplying, setIsSubmitting] = useState(false)
   const [isSurveyOpen, setIsSurveyOpen] = useState(false)
-  const [surveyAnswer, setSurveyAnswer] = useState("")
+  const [surveyAnswers, setSurveyAnswers] = useState<Record<string, string>>({})
 
   const gatheringRef = useMemoFirebase(() => db ? doc(db, "gatherings", id) : null, [db, id])
   const { data: dbGathering, isLoading: isGatheringLoading } = useDoc<Gathering>(gatheringRef)
@@ -60,7 +62,7 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
       return
     }
 
-    if (gathering.registrationQuestion) {
+    if (gathering.questions && gathering.questions.length > 0) {
       setIsSurveyOpen(true)
     } else {
       handleApply()
@@ -77,13 +79,18 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
 
     setIsSubmitting(true)
     try {
+      const answersArray = Object.entries(surveyAnswers).map(([qid, ans]) => ({
+        questionId: qid,
+        answer: ans
+      }))
+
       addDocumentNonBlocking(collection(db, "gatherings", id, "applications"), {
         gatheringId: id,
         userId: user.uid,
         userName: user.displayName || "익명전문가",
         userEmail: user.email || "",
         status: "pending",
-        surveyAnswer: surveyAnswer.trim() || null,
+        answers: answersArray,
         appliedAt: Date.now()
       }).then(() => {
         // 개설자에게 알림 발송
@@ -99,7 +106,7 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
       })
       toast({ title: "신청 완료", description: "모임 참여 신청이 완료되었습니다. 개설자의 승인을 기다려주세요!" })
       setIsSurveyOpen(false)
-      setSurveyAnswer("")
+      setSurveyAnswers({})
     } catch (e) {
       toast({ title: "오류", description: "신청 중 문제가 발생했습니다.", variant: "destructive" })
     } finally {
@@ -385,10 +392,20 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
                               </div>
                             </div>
 
-                            {app.surveyAnswer && (
-                              <div className="bg-white border border-black/5 p-5 rounded-none space-y-2">
-                                <p className="text-[10px] font-black text-[#03C75A] uppercase tracking-widest flex items-center gap-1.5"><MessageSquare className="w-3 h-3" /> 신청자 답변</p>
-                                <p className="text-sm font-bold text-[#1E1E23] leading-relaxed italic">"{app.surveyAnswer}"</p>
+                            {app.answers && app.answers.length > 0 && (
+                              <div className="bg-white border border-black/5 p-6 rounded-none space-y-4">
+                                <p className="text-[10px] font-black text-[#03C75A] uppercase tracking-widest flex items-center gap-1.5"><ClipboardList className="w-3.5 h-3.5" /> 신청자 답변 리스트</p>
+                                <div className="grid grid-cols-1 gap-4">
+                                  {app.answers.map((ans, idx) => {
+                                    const qText = gathering.questions?.find(q => q.id === ans.questionId)?.text || `질문 ${idx + 1}`
+                                    return (
+                                      <div key={idx} className="space-y-1">
+                                        <p className="text-[11px] font-black text-black/40">Q. {qText}</p>
+                                        <p className="text-sm font-bold text-accent italic">A. "{ans.answer}"</p>
+                                      </div>
+                                    )
+                                  })}
+                                </div>
                               </div>
                             )}
                           </div>
@@ -473,32 +490,50 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
         </div>
       </main>
 
+      {/* 다중 설문 대화상자 */}
       <Dialog open={isSurveyOpen} onOpenChange={setIsSurveyOpen}>
         <DialogContent className="max-w-xl bg-white border-none rounded-none p-0 shadow-2xl overflow-hidden">
           <DialogHeader className="bg-white border-b border-black/5 p-6">
             <DialogTitle className="text-xl font-black text-accent">참가 신청 사전 설문</DialogTitle>
-            <p className="text-black/40 text-[10px] font-bold mt-0.5 uppercase tracking-widest">Pre-registration Question</p>
+            <p className="text-black/40 text-[10px] font-bold mt-0.5 uppercase tracking-widest">Pre-registration Survey</p>
           </DialogHeader>
-          <div className="p-8 space-y-6">
-            <div className="bg-[#F5F6F7] p-6 border-l-4 border-[#03C75A]">
-              <p className="text-xs font-black text-black/30 uppercase tracking-widest mb-2">Host's Question</p>
-              <p className="text-lg font-black text-[#1E1E23] leading-tight">{gathering.registrationQuestion}</p>
-            </div>
-            <div className="space-y-3">
-              <Label className="text-sm font-black text-[#1E1E23]">답변을 작성해 주세요</Label>
-              <Textarea 
-                value={surveyAnswer}
-                onChange={(e) => setSurveyAnswer(e.target.value)}
-                placeholder="전문가님의 생각을 정갈하게 적어주세요."
-                className="min-h-[150px] bg-white border-black/10 rounded-none focus-visible:ring-[#03C75A]/30 p-4 font-bold text-sm leading-relaxed"
-              />
-            </div>
+          <div className="p-8 space-y-8 max-h-[60vh] overflow-y-auto">
+            {gathering.questions?.map((q, idx) => (
+              <div key={q.id} className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <Badge className="bg-[#03C75A] text-accent h-5 w-5 p-0 flex items-center justify-center rounded-full text-[10px] font-black">{idx + 1}</Badge>
+                  <Label className="text-base font-black text-[#1E1E23]">{q.text}</Label>
+                </div>
+                
+                {q.type === 'text' ? (
+                  <Textarea 
+                    value={surveyAnswers[q.id] || ""}
+                    onChange={(e) => setSurveyAnswers(prev => ({ ...prev, [q.id]: e.target.value }))}
+                    placeholder="내용을 입력하세요"
+                    className="min-h-[100px] bg-white border-black/10 rounded-none focus-visible:ring-[#03C75A]/30 p-4 font-bold text-sm"
+                  />
+                ) : (
+                  <RadioGroup 
+                    value={surveyAnswers[q.id] || ""} 
+                    onValueChange={(val) => setSurveyAnswers(prev => ({ ...prev, [q.id]: val }))}
+                    className="grid grid-cols-1 gap-2"
+                  >
+                    {q.options?.map((opt, i) => (
+                      <div key={i} className="flex items-center space-x-2 bg-[#F5F6F7] p-4 border border-transparent hover:border-[#03C75A]/30 transition-all">
+                        <RadioGroupItem value={opt} id={`opt-${idx}-${i}`} className="text-[#03C75A] border-black/10" />
+                        <Label htmlFor={`opt-${idx}-${i}`} className="flex-1 cursor-pointer font-bold text-sm text-accent">{opt}</Label>
+                      </div>
+                    ))}
+                  </RadioGroup>
+                )}
+              </div>
+            ))}
           </div>
           <DialogFooter className="p-6 bg-[#FBFBFC] border-t border-black/5 flex flex-row gap-2">
             <Button variant="ghost" onClick={() => setIsSurveyOpen(false)} className="flex-1 h-12 font-black rounded-none">취소</Button>
             <Button 
               onClick={handleApply} 
-              disabled={isApplying || !surveyAnswer.trim()} 
+              disabled={isApplying || (gathering.questions?.some(q => !surveyAnswers[q.id]))} 
               className="flex-[2] h-12 naver-button text-base rounded-none shadow-xl"
             >
               {isApplying ? "신청 중..." : "답변 제출 및 신청완료"}
