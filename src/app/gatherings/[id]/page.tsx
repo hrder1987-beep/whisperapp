@@ -44,10 +44,11 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
     return MOCK_GATHERINGS.find(g => g.id === id);
   }, [dbGathering, id]);
 
-  const appsQuery = useMemoFirebase(() => db ? query(collection(db, "gatherings", id, "applications")) : null, [db, id])
+  // 권한이 필요한 쿼리는 로그인 상태일 때만 활성화
+  const appsQuery = useMemoFirebase(() => (db && user) ? query(collection(db, "gatherings", id, "applications")) : null, [db, id, user])
   const { data: applications } = useCollection<GatheringApplication>(appsQuery)
 
-  const attendanceQuery = useMemoFirebase(() => db ? query(collection(db, "gatherings", id, "attendance")) : null, [db, id])
+  const attendanceQuery = useMemoFirebase(() => (db && user) ? query(collection(db, "gatherings", id, "attendance")) : null, [db, id, user])
   const { data: attendanceList } = useCollection<GatheringAttendance>(attendanceQuery)
 
   const isCreator = user && gathering && user.uid === gathering.creatorId
