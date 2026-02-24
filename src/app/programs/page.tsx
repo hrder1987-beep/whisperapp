@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo, useRef } from "react"
@@ -40,7 +39,7 @@ const MOCK_PROGRAMS: TrainingProgram[] = [
     endDate: "2025-02-28",
     imageUrl: "https://images.unsplash.com/photo-1551288049-bbbda536339a?q=80&w=800",
     userId: "mock-p1",
-    createdAt: Date.now() - 86400000 * 4
+    createdAt: 1714521600000
   },
   {
     id: "sample-p2",
@@ -52,7 +51,7 @@ const MOCK_PROGRAMS: TrainingProgram[] = [
     endDate: "2025-01-12",
     imageUrl: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=800",
     userId: "mock-p2",
-    createdAt: Date.now() - 86400000 * 2
+    createdAt: 1714608000000
   },
   {
     id: "sample-p3",
@@ -64,7 +63,7 @@ const MOCK_PROGRAMS: TrainingProgram[] = [
     endDate: "2024-12-21",
     imageUrl: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?q=80&w=800",
     userId: "mock-p3",
-    createdAt: Date.now() - 86400000 * 1
+    createdAt: 1714694400000
   }
 ]
 

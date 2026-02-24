@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useRef, useMemo } from "react"
@@ -33,7 +32,7 @@ const MOCK_MENTORS: Instructor[] = [
     profilePictureUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400",
     userId: "mock-m1",
     role: "mentor",
-    createdAt: Date.now() - 86400000 * 10,
+    createdAt: 1714521600000,
     isVerified: true
   },
   {
@@ -46,7 +45,7 @@ const MOCK_MENTORS: Instructor[] = [
     profilePictureUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=400",
     userId: "mock-m2",
     role: "mentor",
-    createdAt: Date.now() - 86400000 * 5,
+    createdAt: 1714608000000,
     isVerified: true
   },
   {
@@ -59,7 +58,7 @@ const MOCK_MENTORS: Instructor[] = [
     profilePictureUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=400",
     userId: "mock-m3",
     role: "mentor",
-    createdAt: Date.now() - 86400000 * 2,
+    createdAt: 1714694400000,
     isVerified: true
   }
 ]

@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo, useRef } from "react"
@@ -28,7 +27,7 @@ const MOCK_INSTRUCTORS: Instructor[] = [
     bio: "국내 10대 기업 대상 15년간 리더십 코칭을 수행해온 전문가입니다. 특히 '심리적 안정감' 기반의 고성과 팀 구축 전략에 특화되어 있습니다. 수많은 임원과 팀장들의 행동 변화를 이끌어낸 실질적인 방법론을 전수합니다.",
     profilePictureUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400",
     userId: "mock-i1",
-    createdAt: Date.now() - 86400000 * 3,
+    createdAt: 1714521600000,
     isVerified: true,
     company: "리더십인사이트"
   },
@@ -39,7 +38,7 @@ const MOCK_INSTRUCTORS: Instructor[] = [
     bio: "HR 테크 및 데이터 분석 전문가입니다. 생성형 AI(ChatGPT 등)를 채용과 교육에 즉각적으로 도입할 수 있는 실무 프로세스를 제안합니다. 대기업 HR transformation 프로젝트 다수 수행.",
     profilePictureUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400",
     userId: "mock-i2",
-    createdAt: Date.now() - 86400000 * 1,
+    createdAt: 1714608000000,
     isVerified: true,
     company: "HR테크 연구소"
   },
@@ -50,7 +49,7 @@ const MOCK_INSTRUCTORS: Instructor[] = [
     bio: "현업에서 바로 쓰는 '비즈니스 커뮤니케이션' 및 '세대 간 갈등 관리' 전문 강사입니다. 전직 아나운서 출신으로 명확한 전달력과 심리학 기반의 소통 스킬을 전파하며 수강생 만족도 4.9/5.0를 기록하고 있습니다.",
     profilePictureUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=400",
     userId: "mock-i3",
-    createdAt: Date.now() - 86400000 * 7,
+    createdAt: 1714694400000,
     isVerified: true,
     company: "소통의정석"
   }

@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo, useRef } from "react"
@@ -30,7 +29,7 @@ const MOCK_JOBS: JobListing[] = [
     tags: ["HRD", "조직문화", "시니어"],
     logoUrl: "https://images.unsplash.com/photo-1551288049-bbbda536339a?q=80&w=200",
     category: "HRD/교육",
-    createdAt: Date.now() - 86400000 * 2,
+    createdAt: 1714521600000,
     userId: "mock-j1",
     education: "대졸 이상"
   },
@@ -44,7 +43,7 @@ const MOCK_JOBS: JobListing[] = [
     tags: ["채용", "브랜딩", "스타트업"],
     logoUrl: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=200",
     category: "채용/리크루팅",
-    createdAt: Date.now() - 86400000 * 5,
+    createdAt: 1714608000000,
     userId: "mock-j2",
     education: "무관"
   },
@@ -58,7 +57,7 @@ const MOCK_JOBS: JobListing[] = [
     tags: ["급여", "평가보상", "제도설계"],
     logoUrl: "https://images.unsplash.com/photo-1454165833762-01049369290d?q=80&w=200",
     category: "급여/보상",
-    createdAt: Date.now() - 86400000 * 1,
+    createdAt: 1714694400000,
     userId: "mock-j3",
     education: "대졸"
   }
