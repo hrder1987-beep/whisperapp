@@ -139,7 +139,7 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
                     <X className="w-4 h-4" />
                   </Button>
                 </div>
-                <p className="text-[10px] font-bold text-primary/40 mt-2 ml-8">* 유튜브 링크가 입력되면 피드에서 영상이 자동으로 재생됩니다.</p>
+                <p className="text-[10px] font-bold text-primary/40 mt-2 ml-8">* 유튜브 링크를 입력하면 게시글 상세 보기에서 영상을 확인하실 수 있습니다.</p>
               </div>
             )}
 
