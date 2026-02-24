@@ -1,3 +1,4 @@
+
 "use client"
 
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
@@ -44,31 +45,31 @@ export function MainBanner({ banners: propBanners }: MainBannerProps) {
           {banners.map((banner) => (
             <CarouselItem key={banner.id}>
               <div className="relative h-[200px] md:h-[320px] w-full overflow-hidden bg-white">
-                <div className="absolute inset-0 flex flex-col justify-center px-6 md:px-16 z-10">
-                  <Badge className="naver-badge w-fit mb-2 md:mb-4">
+                <div className="absolute inset-0 flex flex-col justify-center px-6 md:px-16 z-20">
+                  <Badge className="naver-badge w-fit mb-2 md:mb-4 bg-primary text-white shadow-sm border-none">
                     {banner.badge}
                   </Badge>
                   
-                  <h1 className="text-lg md:text-3xl font-black text-foreground mb-2 md:mb-3 leading-tight tracking-tight whitespace-pre-line">
+                  <h1 className="text-lg md:text-3xl font-black text-foreground mb-2 md:mb-3 leading-tight tracking-tight whitespace-pre-line drop-shadow-sm">
                     {banner.title}
                   </h1>
                   
-                  <p className="text-[10px] md:text-sm text-muted-foreground font-medium max-w-[200px] md:max-w-md whitespace-pre-line leading-relaxed line-clamp-2 md:line-clamp-none">
+                  <p className="text-[10px] md:text-sm text-black/70 font-bold max-w-[200px] md:max-w-md whitespace-pre-line leading-relaxed line-clamp-2 md:line-clamp-none drop-shadow-sm">
                     {banner.description}
                   </p>
 
-                  <button className="mt-4 md:mt-6 flex items-center gap-1 text-[10px] md:text-[11px] font-black text-primary hover:underline">
+                  <button className="mt-4 md:mt-6 flex items-center gap-1 text-[10px] md:text-[11px] font-black text-primary hover:underline drop-shadow-sm">
                     자세히 보기 <ChevronRight className="w-3 h-3" />
                   </button>
                 </div>
                 
                 <div className="absolute top-0 right-0 w-full md:w-1/2 h-full">
-                  <div className="absolute inset-0 bg-gradient-to-r from-white via-white/60 md:via-white/80 to-transparent z-10"></div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-white via-white/80 md:via-white/95 to-transparent z-10"></div>
                   <Image 
                     src={banner.image} 
                     alt={banner.title} 
                     fill 
-                    className="object-cover opacity-40 md:opacity-90"
+                    className="object-cover opacity-50 md:opacity-100"
                     priority
                     data-ai-hint="hr meeting office"
                   />
@@ -78,7 +79,7 @@ export function MainBanner({ banners: propBanners }: MainBannerProps) {
           ))}
         </CarouselContent>
         
-        <div className="absolute bottom-4 right-6 md:bottom-6 md:right-8 flex gap-1 z-20">
+        <div className="absolute bottom-4 right-6 md:bottom-6 md:right-8 flex gap-1 z-30">
           <CarouselPrevious className="relative inset-0 bg-black/5 border-none text-muted-foreground hover:bg-black/10 h-7 w-7 md:h-8 md:w-8 rounded-full translate-x-0 translate-y-0" />
           <CarouselNext className="relative inset-0 bg-black/5 border-none text-muted-foreground hover:bg-black/10 h-7 w-7 md:h-8 md:w-8 rounded-full translate-x-0 translate-y-0" />
         </div>

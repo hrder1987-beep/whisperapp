@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, Suspense, useRef, useEffect } from "react"
@@ -46,7 +47,6 @@ function AuthContent() {
   const [foundEmail, setFoundEmail] = useState<string | null>(null)
   const [resetEmail, setResetEmail] = useState("")
 
-  // 이미 로그인된 사용자는 홈으로 리다이렉트
   useEffect(() => {
     if (user && !isUserLoading) {
       router.push("/")
@@ -85,7 +85,6 @@ function AuthContent() {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password)
       const user = userCredential.user
 
-      // 1. Firestore에 사용자 프로필 저장
       await setDoc(doc(db, "users", user.uid), {
         id: user.uid,
         username,
@@ -100,7 +99,6 @@ function AuthContent() {
         profilePictureUrl: profilePicture || null
       })
 
-      // 2. 자동 웰컴 메일 발송 플로우 트리거 (비동기)
       sendWelcomeEmail({ name, email }).catch(err => console.error("Welcome email failed:", err));
 
       toast({ 
@@ -115,7 +113,6 @@ function AuthContent() {
     }
   }
 
-  // 아이디(이메일) 찾기 로직
   const handleFindId = async () => {
     if (!findName || !findPhone) return
     setIsLoading(true)
@@ -130,7 +127,6 @@ function AuthContent() {
       } else {
         const userData = querySnapshot.docs[0].data()
         const fullEmail = userData.email
-        // 이메일 마스킹 처리 (앞 3글자 제외)
         const [id, domain] = fullEmail.split('@')
         const maskedId = id.substring(0, 2) + '*'.repeat(id.length - 2)
         setFoundEmail(`${maskedId}@${domain}`)
@@ -142,7 +138,6 @@ function AuthContent() {
     }
   }
 
-  // 비밀번호 재설정 메일 발송 로직
   const handleResetPassword = async () => {
     if (!resetEmail) return
     setIsLoading(true)
@@ -177,8 +172,8 @@ function AuthContent() {
         <CardContent className="px-8 pb-10">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-2 bg-primary/5 p-1 rounded-2xl mb-8">
-              <TabsTrigger value="login" className="rounded-xl font-black text-xs md:text-sm">로그인</TabsTrigger>
-              <TabsTrigger value="signup" className="rounded-xl font-black text-xs md:text-sm">회원가입</TabsTrigger>
+              <TabsTrigger value="login" className="rounded-xl font-black text-xs md:text-sm data-[state=active]:bg-primary data-[state=active]:text-white data-[state=inactive]:text-black/60">로그인</TabsTrigger>
+              <TabsTrigger value="signup" className="rounded-xl font-black text-xs md:text-sm data-[state=active]:bg-primary data-[state=active]:text-white data-[state=inactive]:text-black/60">회원가입</TabsTrigger>
             </TabsList>
             
             <TabsContent value="login">
@@ -191,7 +186,7 @@ function AuthContent() {
                   <Label className="text-xs font-black text-primary/40 ml-1">비밀번호</Label>
                   <Input type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required className="h-12 bg-primary/5 border-none rounded-xl" />
                 </div>
-                <Button type="submit" disabled={isLoading} className="w-full h-12 bg-primary text-accent font-black rounded-xl mt-4">
+                <Button type="submit" disabled={isLoading} className="w-full h-12 bg-primary text-white font-black rounded-xl mt-4 hover:brightness-110 shadow-lg">
                   {isLoading ? "처리 중..." : "위스퍼 시작하기"}
                   <LogIn className="w-4 h-4 ml-2" />
                 </Button>
@@ -273,7 +268,7 @@ function AuthContent() {
                   </div>
                 </div>
 
-                <Button type="submit" disabled={isLoading} className="w-full h-12 gold-gradient text-primary font-black rounded-xl mt-4">
+                <Button type="submit" disabled={isLoading} className="w-full h-12 gold-gradient text-white font-black rounded-xl mt-4 shadow-xl">
                   {isLoading ? "처리 중..." : "전문가 등록 완료"}
                   <UserPlus className="w-4 h-4 ml-2" />
                 </Button>
@@ -333,7 +328,7 @@ function AuthContent() {
               <Button 
                 onClick={recoveryMode === "id" ? handleFindId : handleResetPassword}
                 disabled={isLoading}
-                className="w-full h-12 bg-primary text-accent font-black rounded-xl"
+                className="w-full h-12 bg-primary text-white font-black rounded-xl shadow-lg"
               >
                 {isLoading ? "확인 중..." : recoveryMode === "id" ? "아이디 찾기" : "재설정 메일 발송"}
               </Button>

@@ -91,7 +91,6 @@ function HomePageContent() {
   const aldiDocRef = useMemoFirebase(() => db ? doc(db, "admin_configuration", "aldi_knowledge") : null, [db])
   const { data: aldiConfig } = useDoc<any>(aldiDocRef)
 
-  // 중복 체크 최적화를 위한 Set 사용
   const questions = useMemo(() => {
     const merged = [...(dbQuestions || [])];
     const existingIds = new Set(merged.map(q => q.id));
@@ -362,7 +361,7 @@ function HomePageContent() {
                         "pb-3 text-[15px] transition-all border-b-2 whitespace-nowrap shrink-0", 
                         activeTab === t.id 
                           ? "font-black text-primary border-accent" 
-                          : "font-bold text-black/30 border-transparent hover:text-black/50"
+                          : "font-bold text-black/60 border-transparent hover:text-black/80"
                       )}
                     >
                       {t.label}
