@@ -61,6 +61,7 @@ export interface TrainingProgram {
   cost?: string;
   websiteUrl?: string;
   targetAudience?: string;
+  type: 'program' | 'solution';
 }
 
 export interface Instructor {
