@@ -92,14 +92,6 @@ export function QuestionFeed({
     }
   }
 
-  const openEditDialog = (e: React.MouseEvent, q: Question) => {
-    e.stopPropagation();
-    setEditingQuestion(q);
-    setEditTitle(q.title);
-    setEditText(q.text);
-    setEditCategory(q.category || "");
-  }
-
   const handleUpdate = () => {
     if (!db || !editingQuestion) return;
     setIsUpdating(true);
@@ -117,7 +109,6 @@ export function QuestionFeed({
     }, 500);
   }
 
-  // 유튜브 ID 추출 헬퍼
   const getYoutubeId = (url: string) => {
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
     const match = url.match(regExp);
@@ -183,15 +174,36 @@ export function QuestionFeed({
                       <DropdownMenuContent align="end" className="bg-white border-black/5 rounded-xl shadow-xl p-1 w-32">
                         {isOwner ? (
                           <>
-                            <DropdownMenuItem onClick={(e) => openEditDialog(e, q)} className="rounded-lg font-black text-xs gap-2 py-2.5 cursor-pointer text-accent">
+                            <DropdownMenuItem 
+                              onSelect={(e) => {
+                                e.preventDefault(); // 다이얼로그 중복 포커스 방지
+                                setEditingQuestion(q);
+                                setEditTitle(q.title);
+                                setEditText(q.text);
+                                setEditCategory(q.category || "");
+                              }} 
+                              className="rounded-lg font-black text-xs gap-2 py-2.5 cursor-pointer text-accent"
+                            >
                               <Edit3 className="w-3.5 h-3.5" /> 수정하기
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={(e) => handleDelete(e, q)} className="rounded-lg font-black text-xs gap-2 py-2.5 cursor-pointer text-red-500 hover:text-red-600 hover:bg-red-50">
+                            <DropdownMenuItem 
+                              onSelect={(e) => {
+                                e.preventDefault();
+                                handleDelete(e as any, q);
+                              }} 
+                              className="rounded-lg font-black text-xs gap-2 py-2.5 cursor-pointer text-red-500 hover:text-red-600 hover:bg-red-50"
+                            >
                               <Trash2 className="w-3.5 h-3.5" /> 삭제하기
                             </DropdownMenuItem>
                           </>
                         ) : (
-                          <DropdownMenuItem onClick={(e) => handleShare(e, q)} className="rounded-lg font-black text-xs gap-2 py-2.5 cursor-pointer">
+                          <DropdownMenuItem 
+                            onSelect={(e) => {
+                              e.preventDefault();
+                              handleShare(e as any, q);
+                            }} 
+                            className="rounded-lg font-black text-xs gap-2 py-2.5 cursor-pointer"
+                          >
                             <Share2 className="w-3.5 h-3.5" /> 공유하기
                           </DropdownMenuItem>
                         )}
@@ -258,7 +270,7 @@ export function QuestionFeed({
       )}
 
       {/* 수정 다이얼로그 */}
-      <Dialog open={!!editingQuestion} onOpenChange={() => setEditingQuestion(null)}>
+      <Dialog open={!!editingQuestion} onOpenChange={(open) => { if(!open) setEditingQuestion(null); }}>
         <DialogContent className="max-w-2xl bg-white border-none rounded-[2rem] p-0 shadow-2xl overflow-hidden">
           <DialogHeader className="bg-primary/5 p-8 border-b border-primary/5">
             <DialogTitle className="text-xl font-black text-primary flex items-center gap-3">
