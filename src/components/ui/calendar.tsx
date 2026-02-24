@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -31,10 +32,10 @@ function Calendar({
         ),
         nav_button_previous: "absolute left-1",
         nav_button_next: "absolute right-1",
-        table: "w-full border-collapse space-y-1",
-        head_row: "flex w-full mb-2",
+        table: "w-full border-collapse",
+        head_row: "grid grid-cols-7 mb-2", // grid로 변경하여 열 맞춤
         head_cell: "text-muted-foreground rounded-md w-9 font-black text-[11px] text-center",
-        row: "flex w-full mt-1",
+        row: "grid grid-cols-7 mt-1", // grid로 변경하여 열 맞춤
         cell: cn(
           "relative p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected])]:bg-accent/5 first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md",
           props.mode === "range"
@@ -43,7 +44,7 @@ function Calendar({
         ),
         day: cn(
           buttonVariants({ variant: "ghost" }),
-          "h-9 w-9 p-0 font-bold aria-selected:opacity-100 hover:bg-primary/10 hover:text-primary transition-colors"
+          "h-9 w-9 p-0 font-bold aria-selected:opacity-100 hover:bg-primary/10 hover:text-primary transition-colors flex items-center justify-center mx-auto"
         ),
         day_range_start: "day-range-start",
         day_range_end: "day-range-end",
