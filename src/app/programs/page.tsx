@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo, useRef } from "react"
@@ -12,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase"
 import { collection, query, orderBy, addDoc } from "firebase/firestore"
 import { TrainingProgram } from "@/lib/types"
-import { Plus, Search, Building2, MessageSquare, Camera, Sparkles } from "lucide-react"
+import { Plus, Search, Building2, MessageSquare, Camera, Sparkles, LayoutGrid } from "lucide-react"
 import Image from "next/image"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
@@ -20,12 +21,17 @@ import { useRouter } from "next/navigation"
 import { MessageDialog } from "@/components/chuchot/MessageDialog"
 
 const PROGRAM_CATEGORIES = [
-  { id: "all", name: "전체", sub: [] },
-  { id: "hrd", name: "HRD/교육", sub: ["핵심인재 육성", "교육계획", "사내강사"] },
-  { id: "leader", name: "리더십", sub: ["팀장 리더십", "임원 코칭", "성과관리"] },
-  { id: "skill", name: "비즈니스 스킬", sub: ["문서작성", "문제해결", "커뮤니케이션"] },
-  { id: "ai", name: "DX/생성형 AI", sub: ["ChatGPT", "데이터 분석"] },
-  { id: "culture", name: "조직문화", sub: ["조직진단", "가치내재화"] },
+  { id: "all", name: "전체" },
+  { id: "strategy", name: "인사전략/HRM" },
+  { id: "recruitment", name: "채용/리크루팅" },
+  { id: "hrd", name: "HRD/교육" },
+  { id: "cb", name: "평가/보상(C&B)" },
+  { id: "culture", name: "조직문화/EVP" },
+  { id: "hrtech", name: "HR 테크/AI" },
+  { id: "labor", name: "노무/법률" },
+  { id: "leadership", name: "리더십/코칭" },
+  { id: "business", name: "비즈니스 스킬" },
+  { id: "etc", name: "기타 솔루션" },
 ]
 
 const MOCK_PROGRAMS: TrainingProgram[] = [
@@ -34,7 +40,7 @@ const MOCK_PROGRAMS: TrainingProgram[] = [
     title: "HR 애널리틱스 실무 마스터 클래스",
     description: "데이터로 말하는 HR 담당자를 위한 실무 과정입니다. 파이썬과 태블로를 활용한 인사 데이터 시각화 및 전략 도출 기법을 전수합니다. 실제 사내 데이터를 활용한 캡스톤 프로젝트 포함.",
     instructorName: "데이터인사이트 연구소",
-    category: "ai",
+    category: "hrtech",
     startDate: "2024-12-15",
     endDate: "2025-02-28",
     imageUrl: "https://images.unsplash.com/photo-1551288049-bbbda536339a?q=80&w=800",
@@ -46,7 +52,7 @@ const MOCK_PROGRAMS: TrainingProgram[] = [
     title: "성과 중심의 '애자일 리더십' 워크숍",
     description: "전통적인 인사 고과 방식을 넘어 실시간 피드백과 협업을 끌어내는 애자일 조직 관리법을 배웁니다. 글로벌 IT 기업들의 성공적인 리더십 사례를 바탕으로 우리 조직에 맞는 시스템을 설계합니다.",
     instructorName: "글로벌 코칭 그룹",
-    category: "leader",
+    category: "leadership",
     startDate: "2025-01-10",
     endDate: "2025-01-12",
     imageUrl: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=800",
@@ -58,7 +64,7 @@ const MOCK_PROGRAMS: TrainingProgram[] = [
     title: "생성형 AI 기반 '채용 브랜딩' 혁신 과정",
     description: "채용 공고 작성부터 면접 질문 생성까지, ChatGPT와 미드저니를 활용해 채용 브랜딩의 퀄리티를 300% 향상시키는 노하우를 공개합니다. HR 실무 시간을 획기적으로 줄여드립니다.",
     instructorName: "AI HR 솔루션즈",
-    category: "ai",
+    category: "recruitment",
     startDate: "2024-12-20",
     endDate: "2024-12-21",
     imageUrl: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?q=80&w=800",
@@ -163,7 +169,9 @@ export default function ProgramsPage() {
                           <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest ml-1">카테고리</label>
                           <Select onValueChange={setCategory} required>
                             <SelectTrigger className="h-12 bg-[#F5F6F7] border-none rounded-xl font-bold shadow-inner focus:ring-0"><SelectValue placeholder="분류 선택" /></SelectTrigger>
-                            <SelectContent>{PROGRAM_CATEGORIES.filter(c => c.id !== "all").map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
+                            <SelectContent className="max-h-80 overflow-y-auto">
+                              {PROGRAM_CATEGORIES.filter(c => c.id !== "all").map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                            </SelectContent>
                           </Select>
                         </div>
                       </div>
