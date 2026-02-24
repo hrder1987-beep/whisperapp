@@ -1,7 +1,7 @@
 
 "use client"
 
-import { useState, useMemo, useEffect, useDeferredValue } from "react"
+import { useState, useMemo, useEffect, useDeferredValue, Suspense } from "react"
 import { Header } from "@/components/chuchot/Header"
 import { MainBanner, BannerData } from "@/components/chuchot/MainBanner"
 import { SubmissionForm } from "@/components/chuchot/SubmissionForm"
@@ -62,7 +62,7 @@ const generateMocks = () => {
 
 const MOCK_QUESTIONS = generateMocks();
 
-export default function HomePage() {
+function HomePageContent() {
   const { user } = useUser()
   const db = useFirestore()
   const { toast } = useToast()
@@ -91,23 +91,41 @@ export default function HomePage() {
   const aldiDocRef = useMemoFirebase(() => db ? doc(db, "admin_configuration", "aldi_knowledge") : null, [db])
   const { data: aldiConfig } = useDoc<any>(aldiDocRef)
 
-  // 1. 순서 중요: searchResults에서 사용되는 questions를 먼저 정의합니다.
+  // 중복 체크 최적화를 위한 Set 사용
   const questions = useMemo(() => {
     const merged = [...(dbQuestions || [])];
-    MOCK_QUESTIONS.forEach(mq => { if (!merged.some(dq => dq.id === mq.id)) merged.push(mq); });
+    const existingIds = new Set(merged.map(q => q.id));
+    
+    MOCK_QUESTIONS.forEach(mq => {
+      if (!existingIds.has(mq.id)) {
+        merged.push(mq);
+      }
+    });
+    
     return merged.sort((a, b) => b.createdAt - a.createdAt);
   }, [dbQuestions])
 
-  // 2. 그 다음 검색 결과를 계산합니다.
   const searchResults = useMemo(() => {
     if (!deferredSearchQuery) return null;
     const q = deferredSearchQuery.toLowerCase();
 
     return {
-      questions: questions.filter(item => item.title.toLowerCase().includes(q) || item.text.toLowerCase().includes(q)),
-      programs: (dbPrograms || []).filter(item => item.title.toLowerCase().includes(q) || item.instructorName.toLowerCase().includes(q)),
-      instructors: (dbInstructors || []).filter(item => item.name.toLowerCase().includes(q) || item.specialty.toLowerCase().includes(q)),
-      jobs: (dbJobs || []).filter(item => item.title.toLowerCase().includes(q) || item.companyName.toLowerCase().includes(q))
+      questions: questions.filter(item => 
+        item.title?.toLowerCase().includes(q) || 
+        item.text?.toLowerCase().includes(q)
+      ),
+      programs: (dbPrograms || []).filter(item => 
+        item.title?.toLowerCase().includes(q) || 
+        item.instructorName?.toLowerCase().includes(q)
+      ),
+      instructors: (dbInstructors || []).filter(item => 
+        item.name?.toLowerCase().includes(q) || 
+        item.specialty?.toLowerCase().includes(q)
+      ),
+      jobs: (dbJobs || []).filter(item => 
+        item.title?.toLowerCase().includes(q) || 
+        item.companyName?.toLowerCase().includes(q)
+      )
     };
   }, [questions, dbPrograms, dbInstructors, dbJobs, deferredSearchQuery]);
 
@@ -155,9 +173,9 @@ export default function HomePage() {
   }, [dbAnswers, selectedId])
 
   const filtered = useMemo(() => {
-    let res = [...questions]
     if (deferredSearchQuery) return searchResults?.questions || [];
     
+    let res = [...questions]
     if (activeTab === "hrm") res = res.filter(q => q.category === "인사전략/HRM");
     if (activeTab === "hrd") res = res.filter(q => q.category === "HRD/교육");
     if (activeTab === "culture") res = res.filter(q => q.category === "조직문화/EVP");
@@ -175,7 +193,6 @@ export default function HomePage() {
 
   useEffect(() => { setCurrentPage(1); setSelectedId(null); }, [deferredSearchQuery, activeTab])
 
-  // URL에서 검색어를 가져왔을 때 상태 업데이트
   useEffect(() => {
     const search = searchParams.get("search")
     if (search) setSearchQuery(search)
@@ -211,7 +228,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA]">
+    <>
       <Header onSearch={(q) => setSearchQuery(q)} />
       <div className="max-w-7xl mx-auto px-4 py-6 md:py-12">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
@@ -378,6 +395,21 @@ export default function HomePage() {
           )}
         </div>
       </div>
+    </>
+  )
+}
+
+export default function HomePage() {
+  return (
+    <div className="min-h-screen bg-[#F8F9FA]">
+      <Suspense fallback={
+        <div className="flex flex-col items-center justify-center py-40 gap-4">
+          <Sparkles className="w-12 h-12 animate-spin text-accent" />
+          <p className="text-primary/20 font-black animate-pulse">Whisper 인텔리전스 로딩 중...</p>
+        </div>
+      }>
+        <HomePageContent />
+      </Suspense>
     </div>
   )
 }
