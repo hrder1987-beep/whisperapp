@@ -12,22 +12,33 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { MessageDialog } from "./MessageDialog"
 import { cn } from "@/lib/utils"
-import { useUser } from "@/firebase"
+import { useUser, useFirestore, deleteDocumentNonBlocking } from "@/firebase"
+import { doc } from "firebase/firestore"
+import { useToast } from "@/hooks/use-toast"
 
 interface AnswerFeedProps {
   answers: Answer[]
   isAdminMode?: boolean
-  onDeleteAnswer?: (id: string) => void
 }
 
-export function AnswerFeed({ answers, isAdminMode = false, onDeleteAnswer }: AnswerFeedProps) {
+export function AnswerFeed({ answers, isAdminMode = false }: AnswerFeedProps) {
   const { user } = useUser()
+  const db = useFirestore()
+  const { toast } = useToast()
   const [messageTarget, setMessageTarget] = useState<{ id: string, nickname: string } | null>(null)
   
   const [isMounted, setIsMounted] = useState(false)
   useEffect(() => setIsMounted(true), [])
 
   const sortedAnswers = [...answers].sort((a, b) => b.createdAt - a.createdAt)
+
+  const handleDeleteAnswer = (id: string) => {
+    if (!db) return;
+    if (confirm("이 답글을 삭제하시겠습니까?")) {
+      deleteDocumentNonBlocking(doc(db, "questions", sortedAnswers.find(a => a.id === id)!.questionId, "answers", id));
+      toast({ title: "삭제 완료", description: "답글이 삭제되었습니다." });
+    }
+  }
 
   return (
     <div className="mt-8 space-y-4">
@@ -38,6 +49,8 @@ export function AnswerFeed({ answers, isAdminMode = false, onDeleteAnswer }: Ans
       ) : (
         sortedAnswers.map((a) => {
           const isMentor = a.userRole === 'mentor';
+          const isOwner = user && user.uid === a.userId;
+          
           return (
             <Card key={a.id} className={cn("bg-card border-black/5 shadow-sm", isMentor && "border-accent/30 bg-accent/5")}>
               <CardContent className="p-4">
@@ -55,7 +68,7 @@ export function AnswerFeed({ answers, isAdminMode = false, onDeleteAnswer }: Ans
                       <span className={cn("font-bold text-sm", isMentor ? "text-accent" : "text-primary")}>@{a.nickname}</span>
                       {a.jobTitle && <span className="text-[10px] font-bold text-accent/60 italic">#{a.jobTitle}</span>}
                       {isMentor && <Badge className="bg-accent text-primary text-[9px] font-black border-none px-1.5 py-0">WHISPERER</Badge>}
-                      {user && user.uid !== a.userId && (
+                      {user && !isOwner && (
                         <button onClick={() => setMessageTarget({ id: a.userId, nickname: a.nickname })} className="p-1 text-primary/20 hover:text-accent transition-colors bg-primary/5 rounded-full">
                           <Mail className="w-2.5 h-2.5" />
                         </button>
@@ -67,8 +80,8 @@ export function AnswerFeed({ answers, isAdminMode = false, onDeleteAnswer }: Ans
                       <Clock className="w-3 h-3" />
                       {isMounted ? formatDistanceToNow(a.createdAt, { addSuffix: true, locale: ko }) : '...'}
                     </span>
-                    {isAdminMode && (
-                      <Button variant="ghost" size="icon" className="w-6 h-6 text-red-300 hover:text-red-500 hover:bg-red-50 rounded-full" onClick={() => onDeleteAnswer?.(a.id)}>
+                    {(isAdminMode || isOwner) && (
+                      <Button variant="ghost" size="icon" className="w-6 h-6 text-red-300 hover:text-red-500 hover:bg-red-50 rounded-full" onClick={() => handleDeleteAnswer(a.id)}>
                         <Trash2 className="w-3.5 h-3.5" />
                       </Button>
                     )}
