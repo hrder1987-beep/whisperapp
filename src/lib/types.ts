@@ -82,6 +82,10 @@ export interface Instructor {
   references?: string;
   curriculumPdfUrl?: string;
   isVerified?: boolean;
+  career?: string;
+  certifications?: string;
+  videoUrl?: string;
+  detailImageUrl?: string;
 }
 
 export interface JobListing {
