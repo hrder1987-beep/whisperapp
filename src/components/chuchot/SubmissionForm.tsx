@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useRef, useEffect } from "react"
@@ -93,7 +94,7 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
                     placeholder="제목을 입력하세요"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    className="flex-1 border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 text-lg md:text-xl font-black p-0 h-auto placeholder:text-black/15 text-[#1E1E23] bg-transparent outline-none"
+                    className="flex-1 border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 text-lg md:text-xl font-black p-0 h-auto placeholder:text-black/30 text-[#1E1E23] bg-transparent outline-none"
                   />
                   <div className="w-full md:w-48">
                     <Select value={selectedCategory || ""} onValueChange={setSelectedCategory}>
@@ -119,7 +120,7 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
               placeholder={type === "question" ? "나누고 싶은 HR 인사이트를 자유롭게 적어주세요." : "도움이 되는 따뜻한 답변을 남겨주세요."}
               value={text}
               onChange={(e) => setText(e.target.value)}
-              className="min-h-[100px] md:min-h-[140px] border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 p-0 text-[15px] md:text-[16px] leading-relaxed resize-none text-[#404040] placeholder:text-black/15 bg-transparent outline-none"
+              className="min-h-[100px] md:min-h-[140px] border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 p-0 text-[15px] md:text-[16px] leading-relaxed resize-none text-[#404040] placeholder:text-black/30 bg-transparent outline-none"
             />
 
             {imageUrl && (

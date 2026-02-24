@@ -346,7 +346,7 @@ function HomePageContent() {
                 <MainBanner banners={banners} />
                 <SubmissionForm type="question" placeholder="HR 고민을 속삭여보세요." onSubmit={handleAddQuestion} />
                 
-                <div className="flex gap-6 overflow-x-auto pb-2 border-b border-primary/5 scrollbar-hide">
+                <div className="flex gap-6 overflow-x-auto pb-2 border-b border-black/[0.05] scrollbar-hide">
                   {[
                     { id: "all", label: "전체 피드" },
                     { id: "hrm", label: "인사/총무" },
@@ -359,8 +359,10 @@ function HomePageContent() {
                       key={t.id} 
                       onClick={() => setActiveTab(t.id as any)} 
                       className={cn(
-                        "pb-3 text-sm transition-all border-b-2 whitespace-nowrap shrink-0", 
-                        activeTab === t.id ? "font-black text-primary border-accent" : "font-bold text-primary/20 border-transparent"
+                        "pb-3 text-[15px] transition-all border-b-2 whitespace-nowrap shrink-0", 
+                        activeTab === t.id 
+                          ? "font-black text-primary border-accent" 
+                          : "font-bold text-black/30 border-transparent hover:text-black/50"
                       )}
                     >
                       {t.label}
