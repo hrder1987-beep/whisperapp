@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useRef, useMemo } from "react"
@@ -12,7 +13,7 @@ import { Label } from "@/components/ui/label"
 import { useUser, useFirestore, useCollection, useMemoFirebase, useDoc } from "@/firebase"
 import { collection, query, addDoc, where, doc } from "firebase/firestore"
 import { Instructor, Question } from "@/lib/types"
-import { MessageSquare, Search, FileText, Check, Plus, Sparkles, Mail } from "lucide-react"
+import { MessageSquare, Search, FileText, Check, Plus, Sparkles, Mail, Briefcase, Award, Zap, Link as LinkIcon, History } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { MessageDialog } from "@/components/chuchot/MessageDialog"
 import { AvatarIcon } from "@/components/chuchot/AvatarIcon"
@@ -124,7 +125,12 @@ export default function MentorsPage() {
   const userDocRef = useMemoFirebase(() => (user && db) ? doc(db, "users", user.uid) : null, [user, db])
   const { data: profile } = useDoc<any>(userDocRef)
 
+  // 신청 폼 상태
   const [specialty, setSpecialty] = useState("")
+  const [career, setCareer] = useState("")
+  const [keySkills, setKeySkills] = useState("")
+  const [projects, setProjects] = useState("")
+  const [website, setWebsite] = useState("")
   const [bio, setBio] = useState("")
 
   const mentorsQuery = useMemoFirebase(() => db ? query(collection(db, "mentors"), where("isVerified", "==", true)) : null, [db])
@@ -153,13 +159,26 @@ export default function MentorsPage() {
     setIsSubmitting(true)
     try {
       await addDoc(collection(db, "mentors"), {
-        name: profile.name, company: profile.company, jobTitle: profile.jobTitle, phoneNumber: profile.phoneNumber,
-        specialty, bio, profilePictureUrl: profile.profilePictureUrl || `https://picsum.photos/seed/${profile.name}/400/400`,
-        userId: user.uid, role: "mentor", createdAt: Date.now(), isVerified: false 
+        name: profile.name, 
+        company: profile.company, 
+        jobTitle: profile.jobTitle, 
+        phoneNumber: profile.phoneNumber,
+        email: profile.email,
+        specialty, 
+        career,
+        keySkills,
+        projects,
+        website,
+        bio, 
+        profilePictureUrl: profile.profilePictureUrl || `https://picsum.photos/seed/${profile.name}/400/400`,
+        userId: user.uid, 
+        role: "mentor", 
+        createdAt: Date.now(), 
+        isVerified: false 
       })
       toast({ title: "신청 완료", description: "위스퍼러 프로필이 등록되었습니다. 관리자 승인 후 공식 뱃지가 부여됩니다." })
       setIsDialogOpen(false)
-      setSpecialty(""); setBio("")
+      setSpecialty(""); setCareer(""); setKeySkills(""); setProjects(""); setWebsite(""); setBio("")
     } catch (error) { toast({ title: "오류", description: "등록 중 문제가 발생했습니다.", variant: "destructive" }) }
     finally { setIsSubmitting(false) }
   }
@@ -182,36 +201,144 @@ export default function MentorsPage() {
                   위스퍼러 자격 신청
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-xl bg-white border-none rounded-[2.5rem] p-0 shadow-2xl overflow-hidden">
-                <DialogHeader className="bg-white border-b border-black/5 p-8">
-                  <DialogTitle className="text-2xl font-black text-accent">위스퍼러 등록 신청</DialogTitle>
-                  <p className="text-black/40 text-[10px] font-bold mt-1 uppercase tracking-widest">Apply for Official Whisperer</p>
+              <DialogContent className="max-w-3xl bg-white border-none rounded-[2.5rem] p-0 shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+                <DialogHeader className="bg-white border-b border-black/5 p-8 shrink-0">
+                  <DialogTitle className="text-2xl font-black text-accent">위스퍼러 공식 전문가 등록</DialogTitle>
+                  <p className="text-black/40 text-[10px] font-bold mt-1 uppercase tracking-widest">Apply for Official HR Expert</p>
                 </DialogHeader>
-                <div className="p-10">
-                  {profile ? (
-                    <form onSubmit={handleAddMentor} className="space-y-8">
-                      <div className="bg-[#F5F6F7] p-8 flex items-center gap-6 rounded-2xl shadow-inner">
-                        <AvatarIcon src={profile.profilePictureUrl} seed={profile.username} className="w-16 h-16 border-2 border-white shadow-lg" />
-                        <div>
-                          <p className="font-black text-accent text-xl">{profile.name} 전문가님</p>
-                          <p className="text-xs font-bold text-black/40 mt-1">{profile.company} · {profile.jobTitle}</p>
+                <div className="flex-1 overflow-y-auto">
+                  <div className="p-10">
+                    {profile ? (
+                      <form onSubmit={handleAddMentor} className="space-y-12">
+                        {/* 기본 프로필 요약 */}
+                        <div className="bg-[#F5F6F7] p-8 flex items-center gap-6 rounded-2xl shadow-inner border border-black/5">
+                          <AvatarIcon src={profile.profilePictureUrl} seed={profile.username} className="w-20 h-20 border-4 border-white shadow-xl" />
+                          <div>
+                            <p className="font-black text-accent text-2xl">{profile.name} 전문가님</p>
+                            <p className="text-sm font-bold text-black/40 mt-1">{profile.company} · {profile.jobTitle}</p>
+                            <div className="mt-3 flex gap-2">
+                              <Badge className="bg-primary text-white border-none font-black text-[10px]">인증대기</Badge>
+                              <Badge variant="outline" className="text-black/30 border-black/10 text-[10px]">{profile.email}</Badge>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                      <div className="space-y-6">
-                        <div className="space-y-2">
-                          <Label className="text-[11px] font-black text-black/40 uppercase tracking-widest ml-1">주요 전문 분야</Label>
-                          <Input value={specialty} onChange={e => setSpecialty(e.target.value)} required placeholder="예: IT 테크 채용 전략, 유연근무제 설계" className="h-12 bg-[#F5F6F7] border-none rounded-xl font-bold shadow-inner" />
+
+                        {/* 상세 정보 입력 섹션 */}
+                        <div className="space-y-10">
+                          {/* 1. 핵심 전문 분야 */}
+                          <div className="space-y-4">
+                            <div className="flex items-center gap-2 px-1">
+                              <div className="w-1 h-4 bg-primary rounded-full"></div>
+                              <Label className="text-sm font-black text-accent uppercase tracking-widest flex items-center gap-2">
+                                <Award className="w-4 h-4 text-primary" /> 핵심 전문 분야
+                              </Label>
+                            </div>
+                            <Input 
+                              value={specialty} 
+                              onChange={e => setSpecialty(e.target.value)} 
+                              required 
+                              placeholder="예: IT 테크 채용 전략, 포괄임금제 설계 및 리스크 관리" 
+                              className="h-12 bg-[#F5F6F7] border-none rounded-xl font-bold shadow-inner" 
+                            />
+                          </div>
+
+                          {/* 2. 핵심 역량 키워드 */}
+                          <div className="space-y-4">
+                            <div className="flex items-center gap-2 px-1">
+                              <div className="w-1 h-4 bg-primary rounded-full"></div>
+                              <Label className="text-sm font-black text-accent uppercase tracking-widest flex items-center gap-2">
+                                <Zap className="w-4 h-4 text-primary" /> 핵심 역량 키워드
+                              </Label>
+                            </div>
+                            <Input 
+                              value={keySkills} 
+                              onChange={e => setKeySkills(e.target.value)} 
+                              required 
+                              placeholder="콤마(,)로 구분하여 입력 (예: 채용브랜딩, 노무진단, 직무분석, EVP)" 
+                              className="h-12 bg-[#F5F6F7] border-none rounded-xl font-bold shadow-inner" 
+                            />
+                          </div>
+
+                          {/* 3. 주요 경력 및 이력 */}
+                          <div className="space-y-4">
+                            <div className="flex items-center gap-2 px-1">
+                              <div className="w-1 h-4 bg-primary rounded-full"></div>
+                              <Label className="text-sm font-black text-accent uppercase tracking-widest flex items-center gap-2">
+                                <History className="w-4 h-4 text-primary" /> 주요 경력 및 이력
+                              </Label>
+                            </div>
+                            <Textarea 
+                              value={career} 
+                              onChange={e => setCareer(e.target.value)} 
+                              required 
+                              placeholder="시기별 소속 회사 및 담당했던 핵심 직무를 요약해 주세요." 
+                              className="min-h-[150px] bg-[#F5F6F7] border-none rounded-2xl p-6 font-bold text-sm leading-relaxed shadow-inner resize-none" 
+                            />
+                          </div>
+
+                          {/* 4. 주요 프로젝트 성과 */}
+                          <div className="space-y-4">
+                            <div className="flex items-center gap-2 px-1">
+                              <div className="w-1 h-4 bg-primary rounded-full"></div>
+                              <Label className="text-sm font-black text-accent uppercase tracking-widest flex items-center gap-2">
+                                <Briefcase className="w-4 h-4 text-primary" /> 주요 프로젝트 및 성과
+                              </Label>
+                            </div>
+                            <Textarea 
+                              value={projects} 
+                              onChange={e => setProjects(e.target.value)} 
+                              required 
+                              placeholder="수치나 사례 중심으로 전문가로서의 역량을 보여줄 수 있는 프로젝트를 적어주세요." 
+                              className="min-h-[150px] bg-[#F5F6F7] border-none rounded-2xl p-6 font-bold text-sm leading-relaxed shadow-inner resize-none" 
+                            />
+                          </div>
+
+                          {/* 5. 위스퍼러 상세 소개 (바이오) */}
+                          <div className="space-y-4">
+                            <div className="flex items-center gap-2 px-1">
+                              <div className="w-1 h-4 bg-primary rounded-full"></div>
+                              <Label className="text-sm font-black text-accent uppercase tracking-widest flex items-center gap-2">
+                                <FileText className="w-4 h-4 text-primary" /> 위스퍼러 지식 나눔 포부
+                              </Label>
+                            </div>
+                            <Textarea 
+                              value={bio} 
+                              onChange={e => setBio(e.target.value)} 
+                              required 
+                              placeholder="위스퍼러로서 동료 전문가들에게 어떤 지혜를 나누고 싶으신가요? 나만의 철학을 담아주세요." 
+                              className="min-h-[120px] bg-[#F5F6F7] border-none rounded-2xl p-6 font-bold text-sm leading-relaxed shadow-inner resize-none" 
+                            />
+                          </div>
+
+                          {/* 6. 외부 채널 (링크드인 등) */}
+                          <div className="space-y-4">
+                            <div className="flex items-center gap-2 px-1">
+                              <div className="w-1 h-4 bg-primary rounded-full"></div>
+                              <Label className="text-sm font-black text-accent uppercase tracking-widest flex items-center gap-2">
+                                <LinkIcon className="w-4 h-4 text-primary" /> 웹사이트 / SNS (링크드인 등)
+                              </Label>
+                            </div>
+                            <Input 
+                              value={website} 
+                              onChange={e => setWebsite(e.target.value)} 
+                              placeholder="https://www.linkedin.com/in/..." 
+                              className="h-12 bg-[#F5F6F7] border-none rounded-xl font-bold shadow-inner" 
+                            />
+                          </div>
                         </div>
-                        <div className="space-y-2">
-                          <Label className="text-[11px] font-black text-black/40 uppercase tracking-widest ml-1">나만의 인사이트 소개</Label>
-                          <Textarea value={bio} onChange={e => setBio(e.target.value)} required placeholder="나만의 실전 실무 노하우와 경력을 정성껏 적어주세요." className="min-h-[180px] bg-[#F5F6F7] border-none rounded-2xl p-6 font-bold text-sm leading-relaxed shadow-inner" />
+
+                        <div className="pt-6 sticky bottom-0 bg-white pb-4">
+                          <Button type="submit" disabled={isSubmitting} className="w-full h-16 naver-button text-lg rounded-xl shadow-2xl transition-all hover:scale-[1.01] active:scale-[0.99]">
+                            {isSubmitting ? "신청 정보 전송 중..." : "위스퍼러 공식 전문가 신청 완료"}
+                          </Button>
+                          <p className="text-center text-[10px] text-black/30 font-bold mt-4">관리자 검토 후 최대 3일 이내에 인증 뱃지가 부여됩니다.</p>
                         </div>
-                      </div>
-                      <Button type="submit" disabled={isSubmitting} className="w-full h-14 naver-button text-lg rounded-xl shadow-xl">
-                        {isSubmitting ? "신청 정보 전송 중..." : "위스퍼러 자격 신청 완료"}
-                      </Button>
-                    </form>
-                  ) : <div className="py-24 text-center text-black/20 font-black">전문가 프로필을 불러오고 있습니다...</div>}
+                      </form>
+                    ) : <div className="py-24 text-center text-black/20 font-black flex flex-col items-center gap-4">
+                          <Sparkles className="w-10 h-10 animate-spin" />
+                          전문가 프로필을 불러오고 있습니다...
+                        </div>}
+                  </div>
                 </div>
               </DialogContent>
             </Dialog>
