@@ -274,14 +274,14 @@ export default function ProgramsPage() {
               />
             </div>
             
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
               <div className="flex overflow-x-auto gap-3 scrollbar-hide py-2 flex-1">
                 {PROGRAM_CATEGORIES.map((cat) => (
                   <button
                     key={cat.id}
                     onClick={() => setSelectedCategory(cat.id)}
                     className={cn(
-                      "px-8 py-3 rounded-full text-xs font-black transition-all border-2 whitespace-nowrap",
+                      "px-8 py-3.5 rounded-full text-xs font-black transition-all border-2 whitespace-nowrap",
                       selectedCategory === cat.id 
                         ? "bg-primary text-white border-primary shadow-md" 
                         : "bg-white text-black/30 border-black/5 hover:border-primary/30"
@@ -293,10 +293,25 @@ export default function ProgramsPage() {
               </div>
               
               <Tabs value={selectedType} onValueChange={(v) => setSelectedType(v as any)} className="shrink-0">
-                <TabsList className="bg-white border border-black/5 p-1 rounded-full h-11">
-                  <TabsTrigger value="all" className="rounded-full font-bold text-[10px] px-5 data-[state=active]:bg-primary data-[state=active]:text-white">전체</TabsTrigger>
-                  <TabsTrigger value="program" className="rounded-full font-bold text-[10px] px-5 data-[state=active]:bg-primary data-[state=active]:text-white">교육/프로그램</TabsTrigger>
-                  <TabsTrigger value="solution" className="rounded-full font-bold text-[10px] px-5 data-[state=active]:bg-primary data-[state=active]:text-white">IT/솔루션</TabsTrigger>
+                <TabsList className="bg-white border border-black/5 p-1.5 rounded-2xl h-16 shadow-sm flex items-center">
+                  <TabsTrigger 
+                    value="all" 
+                    className="rounded-xl font-black text-sm px-10 h-full data-[state=active]:bg-primary data-[state=active]:text-white transition-all duration-300"
+                  >
+                    전체
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="program" 
+                    className="rounded-xl font-black text-sm px-10 h-full data-[state=active]:bg-primary data-[state=active]:text-white transition-all duration-300"
+                  >
+                    교육/프로그램
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="solution" 
+                    className="rounded-xl font-black text-sm px-10 h-full data-[state=active]:bg-primary data-[state=active]:text-white transition-all duration-300"
+                  >
+                    IT/솔루션
+                  </TabsTrigger>
                 </TabsList>
               </Tabs>
             </div>
