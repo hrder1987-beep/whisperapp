@@ -14,7 +14,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase"
 import { collection, query, orderBy, addDoc } from "firebase/firestore"
 import { TrainingProgram } from "@/lib/types"
-import { Plus, Search, Building2, MessageSquare, Camera, Sparkles, Calendar, CreditCard, Link as LinkIcon, Info, Users, Clock, Globe, Laptop, GraduationCap, Youtube, FileImage, Type, Bold, Italic, List, Video, ImageIcon, FileText } from "lucide-react"
+import { Plus, Search, Building2, MessageSquare, Camera, Sparkles, Calendar, CreditCard, Link as LinkIcon, Info, Users, Clock, Globe, Laptop, GraduationCap, Youtube, FileImage, Type, Bold, Italic, List, Video, ImageIcon, FileText, X } from "lucide-react"
 import Image from "next/image"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
@@ -276,33 +276,45 @@ export default function ProgramsPage() {
 
                     <div className="space-y-10">
                       <div className="space-y-4">
-                        <label className="text-sm font-black text-[#1E1E23]">모임 상세 소개</label>
+                        <label className="text-sm font-black text-[#1E1E23]">상세 소개 및 홍보</label>
                         <div className="border border-black/10 rounded-2xl overflow-hidden shadow-sm">
                           {/* Rich Text Editor Toolbar Style */}
                           <div className="bg-[#FBFBFC] border-b border-black/10 p-3 flex items-center gap-2">
-                            <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-black/40 hover:text-primary" onClick={() => detailImageInputRef.current?.click()} title="상세 이미지 추가">
+                            <Button 
+                              type="button" 
+                              variant="ghost" 
+                              size="icon" 
+                              className="h-9 w-9 text-black/40 hover:text-primary" 
+                              onClick={(e) => { e.preventDefault(); e.stopPropagation(); detailImageInputRef.current?.click(); }}
+                              title="상세 이미지 추가"
+                            >
                               <ImageIcon className="w-5 h-5" />
                             </Button>
-                            <input type="file" ref={detailImageInputRef} className="hidden" accept="image/*" onChange={(e) => handleImageChange(e, setDetailImageUrl)} />
+                            <input 
+                              type="file" 
+                              ref={detailImageInputRef} 
+                              className="hidden" 
+                              accept="image/*" 
+                              onChange={(e) => handleImageChange(e, setDetailImageUrl)} 
+                            />
                             
-                            <Button type="button" variant="ghost" size="icon" className={cn("h-9 w-9 transition-colors", showVideoInput ? "text-primary bg-primary/5" : "text-black/40 hover:text-primary")} onClick={() => setShowVideoInput(!showVideoInput)} title="유튜브 영상 추가">
+                            <Button 
+                              type="button" 
+                              variant="ghost" 
+                              size="icon" 
+                              className={cn("h-9 w-9 transition-colors", showVideoInput ? "text-primary bg-primary/5" : "text-black/40 hover:text-primary")} 
+                              onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowVideoInput(!showVideoInput); }}
+                              title="유튜브 영상 추가"
+                            >
                               <Video className="w-5 h-5" />
                             </Button>
 
                             <div className="w-px h-5 bg-black/10 mx-2" />
 
-                            <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-black/40 hover:text-primary" title="글꼴 설정">
-                              <Type className="w-5 h-5" />
-                            </Button>
-                            <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-black/40 hover:text-primary" title="굵게">
-                              <Bold className="w-4 h-4" />
-                            </Button>
-                            <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-black/40 hover:text-primary" title="기울임">
-                              <Italic className="w-4 h-4" />
-                            </Button>
-                            <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-black/40 hover:text-primary" title="목록">
-                              <List className="w-4 h-4" />
-                            </Button>
+                            <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-black/40 hover:text-primary" title="글꼴 설정"><Type className="w-5 h-5" /></Button>
+                            <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-black/40 hover:text-primary" title="굵게"><Bold className="w-4 h-4" /></Button>
+                            <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-black/40 hover:text-primary" title="기울임"><Italic className="w-4 h-4" /></Button>
+                            <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-black/40 hover:text-primary" title="목록"><List className="w-4 h-4" /></Button>
                           </div>
 
                           <div className="p-0">
