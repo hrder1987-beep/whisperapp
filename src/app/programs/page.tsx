@@ -14,7 +14,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase"
 import { collection, query, orderBy, addDoc } from "firebase/firestore"
 import { TrainingProgram } from "@/lib/types"
-import { Plus, Search, Building2, MessageSquare, Camera, Sparkles, Calendar, CreditCard, Link as LinkIcon, Info, Users, Clock, Globe, Laptop, GraduationCap } from "lucide-react"
+import { Plus, Search, Building2, MessageSquare, Camera, Sparkles, Calendar, CreditCard, Link as LinkIcon, Info, Users, Clock, Globe, Laptop, GraduationCap, Youtube, FileImage } from "lucide-react"
 import Image from "next/image"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
@@ -35,7 +35,7 @@ const PROGRAM_CATEGORIES = [
   { id: "etc", name: "기타 솔루션" },
 ]
 
-const MOCK_PROGRAMS: TrainingProgram[] = [
+const MOCK_PROGRAMS: (TrainingProgram & { detailImageUrl?: string })[] = [
   {
     id: "sample-p1",
     title: "HR 애널리틱스 실무 마스터 클래스",
@@ -50,7 +50,8 @@ const MOCK_PROGRAMS: TrainingProgram[] = [
     cost: "1,200,000원",
     websiteUrl: "https://example.com/hr-analytics",
     targetAudience: "데이터 기반 의사결정이 필요한 3년차 이상 인사담당자",
-    type: 'program'
+    type: 'program',
+    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
   },
   {
     id: "sample-s1",
@@ -76,11 +77,12 @@ export default function ProgramsPage() {
   const { toast } = useToast()
   const router = useRouter()
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const detailImageInputRef = useRef<HTMLInputElement>(null)
   
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("all")
   const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [selectedProgram, setSelectedProgram] = useState<TrainingProgram | null>(null)
+  const [selectedProgram, setSelectedProgram] = useState<(TrainingProgram & { detailImageUrl?: string }) | null>(null)
   const [messageTarget, setMessageTarget] = useState<{ id: string, nickname: string } | null>(null)
 
   // Registration Form States
@@ -90,6 +92,8 @@ export default function ProgramsPage() {
   const [instructorName, setInstructorName] = useState("")
   const [category, setCategory] = useState("")
   const [imageUrl, setImageUrl] = useState<string | null>(null)
+  const [detailImageUrl, setDetailImageUrl] = useState<string | null>(null)
+  const [videoUrl, setVideoUrl] = useState("")
   const [cost, setCost] = useState("")
   const [startDate, setStartDate] = useState("")
   const [endDate, setEndDate] = useState("")
@@ -101,7 +105,7 @@ export default function ProgramsPage() {
   const { data: programsData, isLoading } = useCollection<TrainingProgram>(programsQuery)
   
   const programs = useMemo(() => {
-    const fetched = programsData || []
+    const fetched = (programsData || []) as (TrainingProgram & { detailImageUrl?: string })[]
     const merged = [...fetched]
     MOCK_PROGRAMS.forEach(mp => { if (!merged.some(p => p.id === mp.id)) merged.push(mp) })
     return merged.sort((a, b) => b.createdAt - a.createdAt)
@@ -112,6 +116,15 @@ export default function ProgramsPage() {
     const matchesCategory = selectedCategory === "all" || p.category === selectedCategory
     return matchesSearch && matchesCategory
   })
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string | null) => void) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onloadend = () => setter(reader.result as string)
+      reader.readAsDataURL(file)
+    }
+  }
 
   const handleAddProgram = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -125,6 +138,8 @@ export default function ProgramsPage() {
         instructorName, 
         category, 
         imageUrl: imageUrl || `https://picsum.photos/seed/${Date.now()}/800/400`,
+        detailImageUrl: detailImageUrl || null,
+        videoUrl: videoUrl || null,
         cost,
         startDate: startDate || "상시",
         endDate: endDate || "상시",
@@ -136,10 +151,16 @@ export default function ProgramsPage() {
       toast({ title: "등록 완료", description: `${contentType === 'program' ? '교육 과정' : '솔루션'} 정보가 성공적으로 게시되었습니다.` })
       setIsDialogOpen(false)
       // Reset
-      setTitle(""); setDescription(""); setInstructorName(""); setImageUrl(null); 
+      setTitle(""); setDescription(""); setInstructorName(""); setImageUrl(null); setDetailImageUrl(null); setVideoUrl("");
       setCost(""); setStartDate(""); setEndDate(""); setWebsiteUrl(""); setTargetAudience("")
     } catch (error) { toast({ title: "오류", description: "문제가 발생했습니다.", variant: "destructive" }) }
     finally { setIsSubmitting(false) }
+  }
+
+  const getYoutubeId = (url: string) => {
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
   }
 
   return (
@@ -160,7 +181,7 @@ export default function ProgramsPage() {
                   신규 정보 등록
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-4xl bg-white border-none rounded-[2.5rem] p-0 shadow-2xl overflow-hidden max-h-[95vh] flex flex-col">
+              <DialogContent className="max-w-4xl bg-white border-none rounded-none p-0 shadow-2xl overflow-hidden max-h-[95vh] flex flex-col">
                 <DialogHeader className="bg-white border-b border-black/5 p-8 shrink-0">
                   <DialogTitle className="text-2xl font-black text-accent">전문 콘텐츠 등록</DialogTitle>
                   <p className="text-black/40 text-[10px] font-bold mt-1 uppercase tracking-widest">Register Training Program or IT Solution</p>
@@ -185,13 +206,11 @@ export default function ProgramsPage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                       <div className="space-y-4">
-                        <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest ml-1 flex items-center gap-2"><Camera className="w-3.5 h-3.5" /> 대표 이미지</label>
+                        <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest ml-1 flex items-center gap-2"><Camera className="w-3.5 h-3.5" /> 대표 썸네일 이미지</label>
                         <div onClick={() => fileInputRef.current?.click()} className="relative aspect-video bg-[#F5F6F7] border-2 border-dashed border-black/10 flex items-center justify-center cursor-pointer rounded-2xl overflow-hidden group hover:border-primary shadow-inner">
-                          {imageUrl ? <img src={imageUrl} alt="preview" className="w-full h-full object-cover" /> : <div className="text-center"><Camera className="w-10 h-10 text-black/10 group-hover:text-primary transition-colors mx-auto mb-2" /><p className="text-[10px] font-bold text-black/20">권장: 16:9 비율</p></div>}
+                          {imageUrl ? <img src={imageUrl} alt="preview" className="w-full h-full object-cover" /> : <div className="text-center"><Camera className="w-10 h-10 text-black/10 group-hover:text-primary transition-colors mx-auto mb-2" /><p className="text-[10px] font-bold text-black/20">목록에 노출될 썸네일 (16:9)</p></div>}
                         </div>
-                        <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={(e) => {
-                          const file = e.target.files?.[0]; if (file) { const reader = new FileReader(); reader.onloadend = () => setImageUrl(reader.result as string); reader.readAsDataURL(file); }
-                        }} />
+                        <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={(e) => handleImageChange(e, setImageUrl)} />
                       </div>
                       <div className="space-y-6">
                         <div className="space-y-2">
@@ -254,9 +273,24 @@ export default function ProgramsPage() {
                       </div>
                     </div>
 
-                    <div className="space-y-2">
-                      <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest ml-1 flex items-center gap-2"><Info className="w-3.5 h-3.5 text-primary" /> 상세 소개</label>
-                      <Textarea value={description} onChange={e => setDescription(e.target.value)} required placeholder={contentType === 'program' ? "커리큘럼, 시간표, 기대 효과 등을 상세히 적어주세요." : "솔루션의 주요 기능, 도입 혜택, 타 솔루션 대비 강점 등을 상세히 적어주세요."} className="min-h-[300px] bg-[#F5F6F7] border-none rounded-2xl p-8 text-base leading-relaxed font-medium shadow-inner resize-none" />
+                    <div className="space-y-10">
+                      <div className="space-y-4">
+                        <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest ml-1 flex items-center gap-2"><Youtube className="w-4 h-4 text-[#FF0000]" /> 홍보 영상 (유튜브 링크)</label>
+                        <Input value={videoUrl} onChange={e => setVideoUrl(e.target.value)} placeholder="https://www.youtube.com/watch?v=..." className="h-12 bg-[#F5F6F7] border-none rounded-xl font-bold shadow-inner" />
+                      </div>
+
+                      <div className="space-y-4">
+                        <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest ml-1 flex items-center gap-2"><FileImage className="w-4 h-4 text-primary" /> 상세 소개 이미지 (포스터 등)</label>
+                        <div onClick={() => detailImageInputRef.current?.click()} className="relative w-full aspect-[4/3] max-w-md bg-[#F5F6F7] border-2 border-dashed border-black/10 flex items-center justify-center cursor-pointer rounded-2xl overflow-hidden group hover:border-primary shadow-inner">
+                          {detailImageUrl ? <img src={detailImageUrl} alt="detail preview" className="w-full h-full object-contain" /> : <div className="text-center"><Camera className="w-10 h-10 text-black/10 group-hover:text-primary transition-colors mx-auto mb-2" /><p className="text-[10px] font-bold text-black/20">상세 소개란에 들어갈 고해상도 이미지</p></div>}
+                        </div>
+                        <input type="file" ref={detailImageInputRef} className="hidden" accept="image/*" onChange={(e) => handleImageChange(e, setDetailImageUrl)} />
+                      </div>
+
+                      <div className="space-y-4">
+                        <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest ml-1 flex items-center gap-2"><Info className="w-3.5 h-3.5 text-primary" /> 상세 텍스트 소개</label>
+                        <Textarea value={description} onChange={e => setDescription(e.target.value)} required placeholder={contentType === 'program' ? "커리큘럼, 시간표, 기대 효과 등을 상세히 적어주세요." : "솔루션의 주요 기능, 도입 혜택, 타 솔루션 대비 강점 등을 상세히 적어주세요."} className="min-h-[300px] bg-[#F5F6F7] border-none rounded-2xl p-8 text-base leading-relaxed font-medium shadow-inner resize-none" />
+                      </div>
                     </div>
 
                     <Button type="submit" disabled={isSubmitting} className="w-full h-16 naver-button text-lg rounded-xl shadow-2xl hover:scale-[1.01] transition-all">
@@ -369,7 +403,8 @@ export default function ProgramsPage() {
                 </div>
               </div>
 
-              <div className="p-12 space-y-12">
+              <div className="p-12 space-y-16">
+                {/* 1. 핵심 요약 정보 */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                   <div className="bg-[#F5F6F7] p-6 rounded-2xl space-y-1">
                     <p className="text-[10px] font-black text-black/20 uppercase tracking-widest flex items-center gap-2">
@@ -403,12 +438,47 @@ export default function ProgramsPage() {
                   </div>
                 </div>
 
+                {/* 2. 홍보 영상 (유튜브) */}
+                {selectedProgram.videoUrl && getYoutubeId(selectedProgram.videoUrl) && (
+                  <div className="space-y-6">
+                    <h4 className="text-sm font-black text-accent/30 uppercase tracking-[0.2em] flex items-center gap-3">
+                      <div className="w-8 h-px bg-accent/10"></div> 홍보 및 소개 영상
+                    </h4>
+                    <div className="relative w-full aspect-video rounded-3xl overflow-hidden border border-black/5 shadow-2xl bg-black">
+                      <iframe
+                        width="100%"
+                        height="100%"
+                        src={`https://www.youtube.com/embed/${getYoutubeId(selectedProgram.videoUrl)}`}
+                        title="Program Promotion Video"
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      ></iframe>
+                    </div>
+                  </div>
+                )}
+
+                {/* 3. 상세 이미지 소개 */}
+                {selectedProgram.detailImageUrl && (
+                  <div className="space-y-6">
+                    <h4 className="text-sm font-black text-accent/30 uppercase tracking-[0.2em] flex items-center gap-3">
+                      <div className="w-8 h-px bg-accent/10"></div> 상세 안내 이미지
+                    </h4>
+                    <div className="relative w-full border border-black/5 shadow-xl rounded-3xl overflow-hidden bg-white">
+                      <img src={selectedProgram.detailImageUrl} alt="detail information" className="w-full h-auto block" />
+                    </div>
+                  </div>
+                )}
+
+                {/* 4. 텍스트 상세 소개 */}
                 <div className="space-y-6">
                   <h4 className="text-sm font-black text-accent/30 uppercase tracking-[0.2em] flex items-center gap-3">
                     <div className="w-8 h-px bg-accent/10"></div> 
                     {selectedProgram.type === 'program' ? '프로그램 상세 소개' : '솔루션 주요 기능 및 도입 소개'}
                   </h4>
-                  <p className="text-lg leading-relaxed text-accent/80 whitespace-pre-wrap font-medium">{selectedProgram.description}</p>
+                  <div className="bg-[#FBFBFC] p-10 rounded-3xl border border-black/5">
+                    <p className="text-lg leading-relaxed text-accent/80 whitespace-pre-wrap font-medium">{selectedProgram.description}</p>
+                  </div>
                 </div>
               </div>
             </div>
