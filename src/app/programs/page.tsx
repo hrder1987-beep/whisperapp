@@ -198,7 +198,7 @@ export default function ProgramsPage() {
                           <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest ml-1">
                             {contentType === 'program' ? '프로그램 명' : '솔루션/플랫폼 명'}
                           </label>
-                          <Input value={title} onChange={e => setTitle(e.target.value)} required placeholder="제목을 입력하세요" className="h-12 bg-[#F5F6F7] border-none rounded-xl font-bold shadow-inner" />
+                          <Input value={title} onChange={e => setTitle(e.target.value)} required placeholder={contentType === 'program' ? "예: 리더십 코칭 클래스" : "예: 클라우드 기반 LMS"} className="h-12 bg-[#F5F6F7] border-none rounded-xl font-bold shadow-inner" />
                         </div>
                         <div className="space-y-2">
                           <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest ml-1">
@@ -221,18 +221,25 @@ export default function ProgramsPage() {
                     <div className="bg-[#F5F6F7] p-8 rounded-3xl space-y-8 border border-black/5 shadow-inner">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div className="space-y-2">
-                          <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest ml-1 flex items-center gap-2"><CreditCard className="w-3.5 h-3.5" /> 사용 비용</label>
-                          <Input value={cost} onChange={e => setCost(e.target.value)} placeholder="예: 500,000원 또는 별도문의" className="h-12 bg-white border-none rounded-xl font-bold" />
+                          <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest ml-1 flex items-center gap-2">
+                            <CreditCard className="w-3.5 h-3.5 text-primary" /> 
+                            {contentType === 'program' ? '참여 비용' : '도입 및 이용 요금'}
+                          </label>
+                          <Input value={cost} onChange={e => setCost(e.target.value)} placeholder={contentType === 'program' ? "예: 500,000원" : "예: 월 5만원(인당) 또는 별도문의"} className="h-12 bg-white border-none rounded-xl font-bold" />
                         </div>
                         <div className="space-y-2">
-                          <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest ml-1 flex items-center gap-2"><Users className="w-3.5 h-3.5" /> {contentType === 'program' ? '교육 대상' : '권장 도입 조직'}</label>
-                          <Input value={targetAudience} onChange={e => setTargetAudience(e.target.value)} placeholder="예: 인사팀 팀장급 또는 100인 이상 조직" className="h-12 bg-white border-none rounded-xl font-bold" />
+                          <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest ml-1 flex items-center gap-2">
+                            <Users className="w-3.5 h-3.5 text-primary" /> 
+                            {contentType === 'program' ? '교육 권장 대상' : '주요 도입 권장 대상'}
+                          </label>
+                          <Input value={targetAudience} onChange={e => setTargetAudience(e.target.value)} placeholder={contentType === 'program' ? "예: 인사팀 팀장급 이상" : "예: 50인 이상 스타트업 또는 중견기업"} className="h-12 bg-white border-none rounded-xl font-bold" />
                         </div>
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div className="space-y-2">
                           <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest ml-1 flex items-center gap-2">
-                            <Calendar className="w-3.5 h-3.5" /> {contentType === 'program' ? '교육 일정' : '서비스 운영 기간'}
+                            <Calendar className="w-3.5 h-3.5 text-primary" /> 
+                            {contentType === 'program' ? '교육 일정' : '서비스 운영 및 계약 기간'}
                           </label>
                           <div className="flex items-center gap-2">
                             <Input value={startDate} onChange={e => setStartDate(e.target.value)} placeholder="시작일(또는 상시)" className="h-12 bg-white border-none rounded-xl font-bold" />
@@ -241,14 +248,14 @@ export default function ProgramsPage() {
                           </div>
                         </div>
                         <div className="space-y-2">
-                          <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest ml-1 flex items-center gap-2"><LinkIcon className="w-3.5 h-3.5" /> 상세 홈페이지 링크</label>
+                          <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest ml-1 flex items-center gap-2"><LinkIcon className="w-3.5 h-3.5 text-primary" /> 상세 홈페이지 링크</label>
                           <Input value={websiteUrl} onChange={e => setWebsiteUrl(e.target.value)} placeholder="https://..." className="h-12 bg-white border-none rounded-xl font-bold" />
                         </div>
                       </div>
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest ml-1 flex items-center gap-2"><Info className="w-3.5 h-3.5" /> 상세 소개</label>
+                      <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest ml-1 flex items-center gap-2"><Info className="w-3.5 h-3.5 text-primary" /> 상세 소개</label>
                       <Textarea value={description} onChange={e => setDescription(e.target.value)} required placeholder={contentType === 'program' ? "커리큘럼, 시간표, 기대 효과 등을 상세히 적어주세요." : "솔루션의 주요 기능, 도입 혜택, 타 솔루션 대비 강점 등을 상세히 적어주세요."} className="min-h-[300px] bg-[#F5F6F7] border-none rounded-2xl p-8 text-base leading-relaxed font-medium shadow-inner resize-none" />
                     </div>
 
@@ -365,15 +372,24 @@ export default function ProgramsPage() {
               <div className="p-12 space-y-12">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                   <div className="bg-[#F5F6F7] p-6 rounded-2xl space-y-1">
-                    <p className="text-[10px] font-black text-black/20 uppercase tracking-widest flex items-center gap-2"><CreditCard className="w-3.5 h-3.5 text-primary" /> 사용 비용</p>
+                    <p className="text-[10px] font-black text-black/20 uppercase tracking-widest flex items-center gap-2">
+                      <CreditCard className="w-3.5 h-3.5 text-primary" /> 
+                      {selectedProgram.type === 'program' ? '참여 비용' : '도입 및 이용 요금'}
+                    </p>
                     <p className="text-lg font-black text-accent">{selectedProgram.cost || "별도 문의"}</p>
                   </div>
                   <div className="bg-[#F5F6F7] p-6 rounded-2xl space-y-1">
-                    <p className="text-[10px] font-black text-black/20 uppercase tracking-widest flex items-center gap-2"><Clock className="w-3.5 h-3.5 text-primary" /> {selectedProgram.type === 'program' ? '교육 일정' : '서비스 기간'}</p>
+                    <p className="text-[10px] font-black text-black/20 uppercase tracking-widest flex items-center gap-2">
+                      <Clock className="w-3.5 h-3.5 text-primary" /> 
+                      {selectedProgram.type === 'program' ? '교육 일정' : '서비스 운영 기간'}
+                    </p>
                     <p className="text-sm font-black text-accent">{selectedProgram.startDate && selectedProgram.endDate ? `${selectedProgram.startDate} ~ ${selectedProgram.endDate}` : "상시 운영"}</p>
                   </div>
                   <div className="bg-[#F5F6F7] p-6 rounded-2xl space-y-1">
-                    <p className="text-[10px] font-black text-black/20 uppercase tracking-widest flex items-center gap-2"><Users className="w-3.5 h-3.5 text-primary" /> {selectedProgram.type === 'program' ? '권장 대상' : '도입 권장 조직'}</p>
+                    <p className="text-[10px] font-black text-black/20 uppercase tracking-widest flex items-center gap-2">
+                      <Users className="w-3.5 h-3.5 text-primary" /> 
+                      {selectedProgram.type === 'program' ? '교육 대상' : '도입 권장 대상'}
+                    </p>
                     <p className="text-base font-black text-accent line-clamp-1">{selectedProgram.targetAudience || "전체 전문가"}</p>
                   </div>
                   <div className="bg-[#F5F6F7] p-6 rounded-2xl flex flex-col justify-center">
@@ -389,7 +405,8 @@ export default function ProgramsPage() {
 
                 <div className="space-y-6">
                   <h4 className="text-sm font-black text-accent/30 uppercase tracking-[0.2em] flex items-center gap-3">
-                    <div className="w-8 h-px bg-accent/10"></div> {selectedProgram.type === 'program' ? '프로그램 상세 소개' : '솔루션 주요 기능 및 소개'}
+                    <div className="w-8 h-px bg-accent/10"></div> 
+                    {selectedProgram.type === 'program' ? '프로그램 상세 소개' : '솔루션 주요 기능 및 도입 소개'}
                   </h4>
                   <p className="text-lg leading-relaxed text-accent/80 whitespace-pre-wrap font-medium">{selectedProgram.description}</p>
                 </div>
