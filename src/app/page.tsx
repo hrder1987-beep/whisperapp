@@ -220,8 +220,23 @@ function HomePageContent() {
 
   const handleAddAnswer = (nickname: string, title: string, text: string) => {
     if (!db || !selectedId || !user) return;
+    const question = questions.find(q => q.id === selectedId);
+    
     addDocumentNonBlocking(collection(db, "questions", selectedId, "answers"), {
       questionId: selectedId, text, nickname, userId: user.uid, createdAt: Date.now()
+    }).then(() => {
+      // 본인이 아닌 경우에만 알림 발송
+      if (question && question.userId !== user.uid) {
+        addDocumentNonBlocking(collection(db, "notifications"), {
+          userId: question.userId,
+          type: "new_answer",
+          questionId: selectedId,
+          questionTitle: question.title,
+          senderNickname: nickname,
+          createdAt: Date.now(),
+          isRead: false
+        })
+      }
     });
     updateDocumentNonBlocking(doc(db, "questions", selectedId), { answerCount: increment(1) });
   }

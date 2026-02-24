@@ -8,7 +8,7 @@ import { Header } from "@/components/chuchot/Header"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { AppNotification } from "@/lib/types"
-import { Bell, Sparkles, MessageSquare, Clock, CheckCircle2 } from "lucide-react"
+import { Bell, Sparkles, MessageSquare, Clock, CheckCircle2, UserPlus, ShieldCheck } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 import { ko } from "date-fns/locale"
 import { useRouter } from "next/navigation"
@@ -40,7 +40,12 @@ export default function NotificationsPage() {
     if (db && !notif.isRead) {
       updateDocumentNonBlocking(doc(db, "notifications", notif.id), { isRead: true })
     }
-    router.push(`/?q=${notif.questionId}`)
+    
+    if (notif.type === 'gathering_applied' || notif.type === 'gathering_approved' || notif.type === 'gathering_rejected') {
+      router.push(`/gatherings/${notif.questionId}`)
+    } else {
+      router.push(`/questions/${notif.questionId}`)
+    }
   }
 
   const handleReadAll = () => {
@@ -86,43 +91,59 @@ export default function NotificationsPage() {
           </div>
         ) : (
           <div className="space-y-4">
-            {notifications.map((n) => (
-              <Card 
-                key={n.id} 
-                onClick={() => handleNotifClick(n)}
-                className={cn(
-                  "bg-white border-primary/5 rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl transition-all cursor-pointer",
-                  !n.isRead && "ring-2 ring-accent/20"
-                )}
-              >
-                <CardContent className="p-6">
-                  <div className="flex items-start gap-4">
-                    <div className={cn(
-                      "shrink-0 mt-1",
-                      n.isRead ? "text-primary/20" : "text-accent"
-                    )}>
-                      <MessageSquare className="w-6 h-6" />
-                    </div>
-                    <div className="flex-1 space-y-1">
-                      <div className="flex justify-between items-start">
-                        <p className={cn(
-                          "text-sm font-bold leading-relaxed",
-                          n.isRead ? "text-primary/40" : "text-primary"
-                        )}>
-                          <span className="font-black text-accent">@{n.senderNickname}</span>님이 전문가님의 질문 
-                          <span className="text-primary italic"> "{n.questionTitle}" </span>에 새로운 지혜를 속삭였습니다.
-                        </p>
-                        {!n.isRead && <div className="w-2 h-2 rounded-full bg-accent animate-pulse shrink-0 mt-1.5 ml-2"></div>}
+            {notifications.map((n) => {
+              const Icon = n.type === 'new_answer' ? MessageSquare : n.type === 'gathering_applied' ? UserPlus : ShieldCheck;
+              const colorClass = n.type === 'new_answer' ? 'text-accent' : n.type === 'gathering_applied' ? 'text-blue-500' : 'text-emerald-500';
+
+              return (
+                <Card 
+                  key={n.id} 
+                  onClick={() => handleNotifClick(n)}
+                  className={cn(
+                    "bg-white border-primary/5 rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl transition-all cursor-pointer",
+                    !n.isRead && "ring-2 ring-accent/20"
+                  )}
+                >
+                  <CardContent className="p-6">
+                    <div className="flex items-start gap-4">
+                      <div className={cn(
+                        "shrink-0 mt-1",
+                        n.isRead ? "text-primary/20" : colorClass
+                      )}>
+                        <Icon className="w-6 h-6" />
                       </div>
-                      <div className="flex items-center gap-1.5 text-[10px] font-black text-primary/20">
-                        <Clock className="w-3 h-3" />
-                        {formatDistanceToNow(n.createdAt, { addSuffix: true, locale: ko })}
+                      <div className="flex-1 space-y-1">
+                        <div className="flex justify-between items-start">
+                          <p className={cn(
+                            "text-sm font-bold leading-relaxed",
+                            n.isRead ? "text-primary/40" : "text-primary"
+                          )}>
+                            <span className="font-black text-accent">@{n.senderNickname}</span>님이 
+                            {n.type === 'new_answer' && (
+                              <> 전문가님의 질문 <span className="text-primary italic"> "{n.questionTitle}" </span>에 새로운 지혜를 속삭였습니다.</>
+                            )}
+                            {n.type === 'gathering_applied' && (
+                              <> 전문가님의 모임 <span className="text-primary italic"> "{n.questionTitle}" </span>에 참여를 신청했습니다.</>
+                            )}
+                            {n.type === 'gathering_approved' && (
+                              <> 전문가님의 모임 <span className="text-primary italic"> "{n.questionTitle}" </span> 참여를 승인했습니다.</>
+                            )}
+                            {n.type === 'gathering_rejected' && (
+                              <> 전문가님의 모임 <span className="text-primary italic"> "{n.questionTitle}" </span> 참여 신청이 반려되었습니다.</>
+                            )}
+                          </p>
+                          {!n.isRead && <div className="w-2 h-2 rounded-full bg-accent animate-pulse shrink-0 mt-1.5 ml-2"></div>}
+                        </div>
+                        <div className="flex items-center gap-1.5 text-[10px] font-black text-primary/20">
+                          <Clock className="w-3 h-3" />
+                          {formatDistanceToNow(n.createdAt, { addSuffix: true, locale: ko })}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         )}
       </main>

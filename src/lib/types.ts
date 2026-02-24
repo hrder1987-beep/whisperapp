@@ -154,7 +154,7 @@ export interface PrivateMessage {
 export interface AppNotification {
   id: string;
   userId: string;
-  type: 'new_answer' | 'gathering_approved' | 'gathering_rejected';
+  type: 'new_answer' | 'gathering_approved' | 'gathering_rejected' | 'gathering_applied';
   questionId: string;
   questionTitle: string;
   senderNickname: string;

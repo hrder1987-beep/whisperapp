@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
@@ -47,6 +48,7 @@ export function QuestionViewClient({ id }: { id: string }) {
     }
 
     addDocumentNonBlocking(collection(db, "questions", id, "answers"), answerData).then(() => {
+      // 본인이 아닌 경우에만 알림 발송
       if (question.userId !== user.uid) {
         addDocumentNonBlocking(collection(db, "notifications"), {
           userId: question.userId,

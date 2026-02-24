@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo, use, useEffect } from "react"
@@ -84,6 +85,17 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
         status: "pending",
         surveyAnswer: surveyAnswer.trim() || null,
         appliedAt: Date.now()
+      }).then(() => {
+        // 개설자에게 알림 발송
+        addDocumentNonBlocking(collection(db, "notifications"), {
+          userId: gathering.creatorId,
+          type: "gathering_applied",
+          questionId: id,
+          questionTitle: gathering.title,
+          senderNickname: user.displayName || "익명전문가",
+          createdAt: Date.now(),
+          isRead: false
+        })
       })
       toast({ title: "신청 완료", description: "모임 참여 신청이 완료되었습니다. 개설자의 승인을 기다려주세요!" })
       setIsSurveyOpen(false)
@@ -164,7 +176,7 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
   }
 
   const sessionArray = Array.from({ length: gathering.sessionCount || 1 }, (_, i) => i + 1)
-  const isClosed = gathering.status === 'closed' || gathering.participantCount >= gathering.capacity;
+  const isClosed = gathering.status === 'closed' || (gathering.participantCount >= gathering.capacity);
 
   return (
     <div className="min-h-screen bg-[#F5F6F7] pb-32">

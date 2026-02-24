@@ -1,9 +1,10 @@
+
 "use client"
 
 import { Logo } from "./Logo"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Search, User as UserIcon, Menu, Mail, ShieldCheck, FileText, Users } from "lucide-react"
+import { Search, User as UserIcon, Menu, Mail, ShieldCheck, FileText, Bell } from "lucide-react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useUser, useAuth, useCollection, useMemoFirebase, useFirestore, useDoc } from "@/firebase"
@@ -86,10 +87,6 @@ export function Header({ onSearch }: HeaderProps) {
               <Link href="/auth?mode=signup" className="hover:text-[#1E1E23]">회원가입</Link>
             </>
           )}
-          <Link href="/notifications" className="relative hover:text-[#1E1E23]">
-            알림
-            {unreadNotifs && unreadNotifs.length > 0 && <span className="absolute -top-1 -right-2 w-1 h-1 bg-red-500 rounded-full"></span>}
-          </Link>
         </div>
       </div>
 
@@ -125,6 +122,7 @@ export function Header({ onSearch }: HeaderProps) {
                     <>
                       <Link href="/profile" onClick={() => setIsMobileMenuOpen(false)} className="text-base font-bold py-3 px-4 text-[#1E1E23]">내 정보</Link>
                       <Link href="/my-posts" onClick={() => setIsMobileMenuOpen(false)} className="text-base font-bold py-3 px-4 text-[#1E1E23]">내가 쓴 글</Link>
+                      <Link href="/notifications" onClick={() => setIsMobileMenuOpen(false)} className="text-base font-bold py-3 px-4 text-[#1E1E23]">알림 센터</Link>
                       <button onClick={handleLogout} className="text-left text-base font-bold py-3 px-4 text-red-500">로그아웃</button>
                     </>
                   ) : (
@@ -154,11 +152,6 @@ export function Header({ onSearch }: HeaderProps) {
         </div>
 
         <div className="flex items-center gap-2 md:gap-4">
-          {/* Mobile Search Button */}
-          <button className="md:hidden text-[#1E1E23] p-2" onClick={() => router.push('/?search=')}>
-            <Search className="w-6 h-6" />
-          </button>
-
           <div className="hidden md:flex items-center gap-2">
             {isAdmin && (
               <Link href="/admin">
@@ -168,14 +161,24 @@ export function Header({ onSearch }: HeaderProps) {
               </Link>
             )}
             {user && (
-              <Link href="/messages">
-                <Button variant="ghost" size="icon" className="relative text-[#1E1E23]/60 hover:text-[#1E1E23] h-10 w-10">
-                  <Mail className="w-5 h-5" />
-                  {unreadMessages && unreadMessages.length > 0 && (
-                    <Badge className="absolute -top-1 -right-1 bg-red-500 text-white border-none h-4 w-4 p-0 flex items-center justify-center text-[8px] rounded-full font-black">{unreadMessages.length}</Badge>
-                  )}
-                </Button>
-              </Link>
+              <div className="flex items-center gap-1">
+                <Link href="/notifications">
+                  <Button variant="ghost" size="icon" className="relative text-[#1E1E23]/60 hover:text-[#1E1E23] h-10 w-10">
+                    <Bell className="w-5 h-5" />
+                    {unreadNotifs && unreadNotifs.length > 0 && (
+                      <Badge className="absolute -top-1 -right-1 bg-red-500 text-white border-none h-4 w-4 p-0 flex items-center justify-center text-[8px] rounded-full font-black animate-in zoom-in duration-300">{unreadNotifs.length}</Badge>
+                    )}
+                  </Button>
+                </Link>
+                <Link href="/messages">
+                  <Button variant="ghost" size="icon" className="relative text-[#1E1E23]/60 hover:text-[#1E1E23] h-10 w-10">
+                    <Mail className="w-5 h-5" />
+                    {unreadMessages && unreadMessages.length > 0 && (
+                      <Badge className="absolute -top-1 -right-1 bg-red-500 text-white border-none h-4 w-4 p-0 flex items-center justify-center text-[8px] rounded-full font-black animate-in zoom-in duration-300">{unreadMessages.length}</Badge>
+                    )}
+                  </Button>
+                </Link>
+              </div>
             )}
           </div>
           {!user && (
