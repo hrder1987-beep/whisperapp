@@ -1,4 +1,3 @@
-
 "use client"
 
 import * as React from "react"
@@ -34,10 +33,10 @@ function Calendar({
           buttonVariants({ variant: "outline" }),
           "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 border-black/10 absolute right-1 z-10"
         ),
-        month_grid: "w-full border-collapse",
-        weekdays: "grid grid-cols-7 mb-2",
+        month_grid: "w-full border-collapse grid grid-cols-7",
+        weekdays: "grid grid-cols-7 mb-2 w-full",
         weekday: "text-muted-foreground rounded-md w-9 font-black text-[11px] text-center",
-        weeks: "grid grid-cols-1 gap-1",
+        weeks: "grid grid-cols-1 gap-1 w-full",
         week: "grid grid-cols-7 w-full",
         day: "h-9 w-9 text-center text-sm p-0 relative focus-within:relative focus-within:z-20 flex items-center justify-center",
         day_button: cn(
@@ -46,7 +45,7 @@ function Calendar({
         ),
         range_start: "day-range-start",
         range_end: "day-range-end",
-        selected: "bg-primary text-white hover:bg-primary hover:text-white focus:bg-primary focus:text-white",
+        selected: "bg-primary text-white hover:bg-primary hover:text-white focus:bg-primary focus:text-white rounded-md",
         today: "bg-accent/5 text-primary font-black",
         outside: "day-outside text-muted-foreground opacity-50",
         disabled: "text-muted-foreground opacity-50",

@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo, useRef } from "react"
@@ -57,6 +56,10 @@ export default function GatheringsPage() {
   const [questions, setQuestions] = useState<GatheringQuestion[]>([])
   const [imageUrl, setImageUrl] = useState<string | null>(null)
   const [detailImages, setDetailImages] = useState<string[]>([])
+
+  // Popover Control
+  const [isStartOpen, setIsStartOpen] = useState(false)
+  const [isEndOpen, setIsEndOpen] = useState(false)
 
   const gatheringsQuery = useMemoFirebase(() => {
     if (!db) return null
@@ -201,7 +204,6 @@ export default function GatheringsPage() {
                 
                 <div className="flex-1 overflow-y-auto">
                   <form onSubmit={handleCreateGathering} className="p-8 md:p-12 space-y-12 pb-32">
-                    {/* 썸네일 */}
                     <div className="space-y-4">
                       <div className="flex items-center gap-2">
                         <label className="text-sm font-black text-[#1E1E23]">썸네일 이미지</label>
@@ -270,35 +272,41 @@ export default function GatheringsPage() {
                             <label className="text-[11px] font-black text-[#1E1E23]/40 uppercase tracking-widest ml-1">모임 일정 및 시간</label>
                             <div className="space-y-3">
                               <div className="grid grid-cols-2 gap-2">
-                                <Popover>
+                                <Popover open={isStartOpen} onOpenChange={setIsStartOpen}>
                                   <PopoverTrigger asChild>
                                     <Button variant="outline" className="h-12 bg-white border-black/10 rounded-xl font-bold shadow-sm justify-start gap-2">
                                       <CalendarIcon className="w-4 h-4 text-black/20" />
                                       {startDate ? format(startDate, "yyyy-MM-dd") : "시작일"}
                                     </Button>
                                   </PopoverTrigger>
-                                  <PopoverContent className="w-auto p-0 z-[100] min-w-fit bg-white shadow-2xl border-none" align="start">
+                                  <PopoverContent className="w-auto p-0 z-[100] bg-white shadow-2xl border-none" align="start">
                                     <Calendar 
                                       mode="single" 
                                       selected={startDate} 
-                                      onSelect={(date) => setStartDate(date || undefined)} 
+                                      onSelect={(date) => {
+                                        setStartDate(date || undefined);
+                                        if (date) setIsStartOpen(false);
+                                      }}
                                       initialFocus 
                                       locale={ko} 
                                     />
                                   </PopoverContent>
                                 </Popover>
-                                <Popover>
+                                <Popover open={isEndOpen} onOpenChange={setIsEndOpen}>
                                   <PopoverTrigger asChild>
                                     <Button variant="outline" className="h-12 bg-white border-black/10 rounded-xl font-bold shadow-sm justify-start gap-2">
                                       <CalendarIcon className="w-4 h-4 text-black/20" />
                                       {endDate ? format(endDate, "yyyy-MM-dd") : "종료일"}
                                     </Button>
                                   </PopoverTrigger>
-                                  <PopoverContent className="w-auto p-0 z-[100] min-w-fit bg-white shadow-2xl border-none" align="start">
+                                  <PopoverContent className="w-auto p-0 z-[100] bg-white shadow-2xl border-none" align="start">
                                     <Calendar 
                                       mode="single" 
                                       selected={endDate} 
-                                      onSelect={(date) => setEndDate(date || undefined)} 
+                                      onSelect={(date) => {
+                                        setEndDate(date || undefined);
+                                        if (date) setIsEndOpen(false);
+                                      }}
                                       initialFocus 
                                       locale={ko} 
                                     />
@@ -367,7 +375,6 @@ export default function GatheringsPage() {
                       </div>
                     </div>
 
-                    {/* 다중 설문 빌더 */}
                     <div className="space-y-6">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
@@ -392,7 +399,7 @@ export default function GatheringsPage() {
                                 <Input 
                                   value={q.text} 
                                   onChange={e => updateQuestion(q.id, { text: e.target.value })} 
-                                  placeholder="질문 내용을 입력하세요 (예: 신청 이유가 무엇인가요?)" 
+                                  placeholder="질문 내용을 입력하세요" 
                                   className="flex-1 h-11 border-black/10 rounded-xl font-bold text-sm shadow-sm"
                                 />
                                 <Select value={q.type} onValueChange={(val: any) => updateQuestion(q.id, { type: val })}>
@@ -411,9 +418,7 @@ export default function GatheringsPage() {
                               
                               {q.type === 'multiple' && (
                                 <div className="pl-10 space-y-3">
-                                  <div className="flex items-center gap-2">
-                                    <label className="text-[10px] font-black text-black/30 uppercase tracking-widest">선택지 입력 (콤마로 구분)</label>
-                                  </div>
+                                  <label className="text-[10px] font-black text-black/30 uppercase tracking-widest">선택지 입력 (콤마로 구분)</label>
                                   <Input 
                                     value={q.options?.join(', ') || ""} 
                                     onChange={e => updateQuestion(q.id, { options: e.target.value.split(',').map(s => s.trim()).filter(s => s) })} 
@@ -440,22 +445,8 @@ export default function GatheringsPage() {
                       <label className="text-sm font-black text-[#1E1E23]">모임 상세 소개</label>
                       <div className="border border-black/10 rounded-2xl overflow-hidden shadow-sm">
                         <div className="bg-[#FBFBFC] border-b border-black/10 p-3 flex items-center gap-2">
-                          <Button 
-                            type="button" 
-                            variant="ghost" 
-                            size="icon" 
-                            className="h-9 w-9 text-black/40 hover:text-primary"
-                            onClick={() => detailImageInputRef.current?.click()}
-                          >
-                            <ImageIcon className="w-5 h-5" />
-                          </Button>
-                          <input 
-                            type="file" 
-                            ref={detailImageInputRef} 
-                            className="hidden" 
-                            accept="image/*" 
-                            onChange={handleDetailImageChange} 
-                          />
+                          <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-black/40 hover:text-primary" onClick={() => detailImageInputRef.current?.click()}><ImageIcon className="w-5 h-5" /></Button>
+                          <input type="file" ref={detailImageInputRef} className="hidden" accept="image/*" onChange={handleDetailImageChange} />
                           <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-black/40 hover:text-primary"><FileText className="w-5 h-5" /></Button>
                           <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-black/40 hover:text-primary"><Video className="w-5 h-5" /></Button>
                           <div className="w-px h-5 bg-black/10 mx-2" />
@@ -465,27 +456,10 @@ export default function GatheringsPage() {
                           value={description} 
                           onChange={e => setDescription(e.target.value)} 
                           required 
-                          placeholder="프로그램 내용, 참여 혜택, 커리큘럼 등을 정성껏 작성해 주세요." 
+                          placeholder="프로그램 내용 등을 작성해 주세요." 
                           className="min-h-[400px] border-none shadow-none focus-visible:ring-0 p-8 text-base font-medium leading-relaxed resize-none" 
                         />
                       </div>
-                      
-                      {detailImages.length > 0 && (
-                        <div className="flex flex-wrap gap-4 pt-4">
-                          {detailImages.map((img, idx) => (
-                            <div key={idx} className="relative w-28 h-28 border border-black/5 rounded-xl group overflow-hidden">
-                              <img src={img} className="w-full h-full object-cover" alt="detail" />
-                              <button 
-                                type="button" 
-                                onClick={() => setDetailImages(prev => prev.filter((_, i) => i !== idx))}
-                                className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity"
-                              >
-                                <X className="w-3.5 h-3.5" />
-                              </button>
-                            </div>
-                          ))}
-                        </div>
-                      )}
                     </div>
 
                     <div className="fixed bottom-0 left-0 right-0 p-6 bg-white/80 backdrop-blur-md border-t border-black/5 flex justify-end z-50">
