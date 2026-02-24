@@ -154,7 +154,7 @@ export function Header({ onSearch }: HeaderProps) {
         </div>
 
         <div className="flex items-center gap-2 md:gap-4">
-          {/* Mobile Search Button (Placeholder for mobile search behavior) */}
+          {/* Mobile Search Button */}
           <button className="md:hidden text-[#1E1E23] p-2" onClick={() => router.push('/?search=')}>
             <Search className="w-6 h-6" />
           </button>

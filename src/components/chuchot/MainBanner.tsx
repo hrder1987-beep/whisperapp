@@ -1,4 +1,3 @@
-
 "use client"
 
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
@@ -46,15 +45,15 @@ export function MainBanner({ banners: propBanners }: MainBannerProps) {
             <CarouselItem key={banner.id}>
               <div className="relative h-[200px] md:h-[320px] w-full overflow-hidden bg-white">
                 <div className="absolute inset-0 flex flex-col justify-center px-6 md:px-16 z-20">
-                  <Badge className="naver-badge w-fit mb-2 md:mb-4 bg-primary text-white shadow-sm border-none">
+                  <Badge className="naver-badge w-fit mb-2 md:mb-4 bg-primary text-accent shadow-sm border-none">
                     {banner.badge}
                   </Badge>
                   
-                  <h1 className="text-lg md:text-3xl font-black text-foreground mb-2 md:mb-3 leading-tight tracking-tight whitespace-pre-line drop-shadow-sm">
+                  <h1 className="text-lg md:text-3xl font-black text-accent mb-2 md:mb-3 leading-tight tracking-tight whitespace-pre-line drop-shadow-sm">
                     {banner.title}
                   </h1>
                   
-                  <p className="text-[10px] md:text-sm text-black/70 font-bold max-w-[200px] md:max-w-md whitespace-pre-line leading-relaxed line-clamp-2 md:line-clamp-none drop-shadow-sm">
+                  <p className="text-[10px] md:text-sm text-accent/70 font-bold max-w-[200px] md:max-w-md whitespace-pre-line leading-relaxed line-clamp-2 md:line-clamp-none drop-shadow-sm">
                     {banner.description}
                   </p>
 

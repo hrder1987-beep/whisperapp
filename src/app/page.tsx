@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo, useEffect, useDeferredValue, Suspense } from "react"
@@ -110,20 +109,20 @@ function HomePageContent() {
 
     return {
       questions: questions.filter(item => 
-        item.title?.toLowerCase().includes(q) || 
-        item.text?.toLowerCase().includes(q)
+        (item.title && item.title.toLowerCase().includes(q)) || 
+        (item.text && item.text.toLowerCase().includes(q))
       ),
       programs: (dbPrograms || []).filter(item => 
-        item.title?.toLowerCase().includes(q) || 
-        item.instructorName?.toLowerCase().includes(q)
+        (item.title && item.title.toLowerCase().includes(q)) || 
+        (item.instructorName && item.instructorName.toLowerCase().includes(q))
       ),
       instructors: (dbInstructors || []).filter(item => 
-        item.name?.toLowerCase().includes(q) || 
-        item.specialty?.toLowerCase().includes(q)
+        (item.name && item.name.toLowerCase().includes(q)) || 
+        (item.specialty && item.specialty.toLowerCase().includes(q))
       ),
       jobs: (dbJobs || []).filter(item => 
-        item.title?.toLowerCase().includes(q) || 
-        item.companyName?.toLowerCase().includes(q)
+        (item.title && item.title.toLowerCase().includes(q)) || 
+        (item.companyName && item.companyName.toLowerCase().includes(q))
       )
     };
   }, [questions, dbPrograms, dbInstructors, dbJobs, deferredSearchQuery]);

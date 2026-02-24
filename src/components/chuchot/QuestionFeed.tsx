@@ -50,9 +50,11 @@ export function QuestionFeed({
 
   const handleShare = async (e: React.MouseEvent, q: Question) => {
     e.stopPropagation();
-    const shareUrl = `${window.location.origin}/questions/${q.id}`;
-    await navigator.clipboard.writeText(shareUrl);
-    toast({ title: "링크 복사 완료", description: "게시글 주소가 복사되었습니다." });
+    if (typeof window !== 'undefined') {
+      const shareUrl = `${window.location.origin}/questions/${q.id}`;
+      await navigator.clipboard.writeText(shareUrl);
+      toast({ title: "링크 복사 완료", description: "게시글 주소가 복사되었습니다." });
+    }
   }
 
   return (

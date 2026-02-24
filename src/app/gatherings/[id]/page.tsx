@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo, use, useEffect } from "react"
@@ -38,13 +37,11 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
   const gatheringRef = useMemoFirebase(() => db ? doc(db, "gatherings", id) : null, [db, id])
   const { data: dbGathering, isLoading: isGatheringLoading } = useDoc<Gathering>(gatheringRef)
 
-  // Firestore에 없으면 샘플 데이터에서 찾음
   const gathering = useMemo(() => {
     if (dbGathering) return dbGathering;
     return MOCK_GATHERINGS.find(g => g.id === id);
   }, [dbGathering, id]);
 
-  // 권한이 필요한 쿼리는 로그인 상태일 때만 활성화
   const appsQuery = useMemoFirebase(() => (db && user) ? query(collection(db, "gatherings", id, "applications")) : null, [db, id, user])
   const { data: applications } = useCollection<GatheringApplication>(appsQuery)
 
@@ -79,7 +76,7 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
 
     setIsSubmitting(true)
     try {
-      await addDocumentNonBlocking(collection(db, "gatherings", id, "applications"), {
+      addDocumentNonBlocking(collection(db, "gatherings", id, "applications"), {
         gatheringId: id,
         userId: user.uid,
         userName: user.displayName || "익명전문가",
@@ -102,7 +99,6 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
     if (!db || !gathering) return
     updateDocumentNonBlocking(doc(db, "gatherings", id, "applications", app.id), { status: "approved" })
     
-    // 실제 Firestore 문서일 경우에만 카운트 업데이트
     if (!id.startsWith('sample-')) {
       updateDocumentNonBlocking(gatheringRef!, { participantCount: gathering.participantCount + 1 })
     }
@@ -187,7 +183,7 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
         <div className="absolute bottom-12 left-4 md:left-8 right-4 md:right-8 max-w-7xl mx-auto">
           <div className="flex flex-col gap-4">
             <div className="flex flex-wrap gap-2">
-              <Badge className="bg-[#03C75A] text-white font-black border-none px-4 py-1.5 rounded-none text-xs">#{gathering.category}</Badge>
+              <Badge className="bg-[#03C75A] text-accent font-black border-none px-4 py-1.5 rounded-none text-xs">#{gathering.category}</Badge>
               <Badge className="bg-white/20 backdrop-blur-md text-white font-black border border-white/20 px-4 py-1.5 rounded-none text-xs">
                 {gathering.type === 'online' ? '온라인 모임' : '오프라인 모임'}
               </Badge>
@@ -236,7 +232,7 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
                               <div className="flex items-center gap-6">
                                 <div className={cn(
                                   "w-12 h-12 flex items-center justify-center font-black text-lg border-2",
-                                  myAttendance?.status === 'attending' ? "bg-[#03C75A] text-white border-[#03C75A]" : "bg-[#F5F6F7] text-black/20 border-transparent"
+                                  myAttendance?.status === 'attending' ? "bg-[#03C75A] text-accent border-[#03C75A]" : "bg-[#F5F6F7] text-black/20 border-transparent"
                                 )}>
                                   {sessionNum}
                                 </div>
@@ -251,7 +247,7 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
                                   onClick={() => handleSubmitAttendance(sessionNum, 'attending')}
                                   className={cn(
                                     "h-11 rounded-none font-black text-xs gap-2 px-6",
-                                    myAttendance?.status === 'attending' ? "bg-[#03C75A] text-white" : "bg-[#F5F6F7] text-black/40 hover:bg-black/5"
+                                    myAttendance?.status === 'attending' ? "bg-[#03C75A] text-accent" : "bg-[#F5F6F7] text-black/40 hover:bg-black/5"
                                   )}
                                 >
                                   <CheckCircle2 className="w-4 h-4" /> 참석 완료
@@ -338,7 +334,7 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
                   <section className="space-y-6">
                     <div className="flex items-center justify-between border-b border-black/5 pb-6">
                       <h3 className="text-xl font-black text-[#1E1E23] flex items-center gap-3">
-                        <Users className="w-6 h-6 text-[#03C75A]" /> 신청 전문가 명단 ({applications?.filter(a => a.status === 'pending').length})
+                        <Users className="w-6 h-6 text-[#03C75A]" /> 신청 전문가 명단 ({applications?.filter(a => a.status === 'pending').length || 0})
                       </h3>
                     </div>
                     
@@ -362,7 +358,7 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
                               <div className="flex items-center gap-2">
                                 {app.status === 'pending' ? (
                                   <>
-                                    <Button onClick={() => handleApprove(app)} className="bg-[#03C75A] text-white font-black rounded-none h-11 px-6 gap-2 text-xs">
+                                    <Button onClick={() => handleApprove(app)} className="bg-[#03C75A] text-accent font-black rounded-none h-11 px-6 gap-2 text-xs">
                                       <Check className="w-4 h-4" /> 승인
                                     </Button>
                                     <Button onClick={() => handleReject(app)} variant="ghost" className="text-red-500 hover:bg-red-50 font-black rounded-none h-11 px-6 gap-2 text-xs">

@@ -52,7 +52,7 @@
 }
 
 .naver-button {
-  @apply bg-primary text-[#1E1E23] font-black rounded-none hover:brightness-95 transition-all shadow-sm;
+  @apply bg-primary text-accent font-black rounded-none hover:brightness-95 transition-all shadow-sm;
 }
 
 .naver-badge {
