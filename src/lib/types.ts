@@ -58,6 +58,9 @@ export interface TrainingProgram {
   videoUrl?: string;
   userId: string;
   createdAt: number;
+  cost?: string;
+  websiteUrl?: string;
+  targetAudience?: string;
 }
 
 export interface Instructor {
