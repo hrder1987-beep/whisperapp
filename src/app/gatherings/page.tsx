@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo, useRef } from "react"
@@ -271,8 +270,14 @@ export default function GatheringsPage() {
                                     {startDate ? format(startDate, "yyyy-MM-dd") : "시작일 선택"}
                                   </Button>
                                 </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0" align="start">
-                                  <Calendar mode="single" selected={startDate} onSelect={setStartDate} initialFocus locale={ko} />
+                                <PopoverContent className="w-auto p-0 z-[100]" align="start">
+                                  <Calendar 
+                                    mode="single" 
+                                    selected={startDate} 
+                                    onSelect={(date) => setStartDate(date)} 
+                                    initialFocus 
+                                    locale={ko} 
+                                  />
                                 </PopoverContent>
                               </Popover>
                               <Popover>
@@ -282,8 +287,14 @@ export default function GatheringsPage() {
                                     {endDate ? format(endDate, "yyyy-MM-dd") : "종료일 선택"}
                                   </Button>
                                 </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0" align="start">
-                                  <Calendar mode="single" selected={endDate} onSelect={setEndDate} initialFocus locale={ko} />
+                                <PopoverContent className="w-auto p-0 z-[100]" align="start">
+                                  <Calendar 
+                                    mode="single" 
+                                    selected={endDate} 
+                                    onSelect={(date) => setEndDate(date)} 
+                                    initialFocus 
+                                    locale={ko} 
+                                  />
                                 </PopoverContent>
                               </Popover>
                             </div>
