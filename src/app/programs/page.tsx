@@ -450,6 +450,9 @@ export default function ProgramsPage() {
       {selectedProgram && (
         <Dialog open={!!selectedProgram} onOpenChange={() => setSelectedProgram(null)}>
           <DialogContent className="max-w-4xl bg-white border-none rounded-[3rem] p-0 shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+            <DialogHeader className="sr-only">
+              <DialogTitle>{selectedProgram.title} 상세 정보</DialogTitle>
+            </DialogHeader>
             <div className="flex-1 overflow-y-auto">
               <div className="relative h-80 md:h-[450px] w-full">
                 <Image src={selectedProgram.imageUrl || "https://images.unsplash.com/photo-1524178232363-1fb2b075b655"} alt={selectedProgram.title} fill className="object-cover" />

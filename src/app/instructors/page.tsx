@@ -309,6 +309,9 @@ export default function InstructorsPage() {
       {viewTarget && (
         <Dialog open={!!viewTarget} onOpenChange={() => setViewTarget(null)}>
           <DialogContent className="max-w-4xl bg-white border-none rounded-[3rem] p-0 shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+            <DialogHeader className="sr-only">
+              <DialogTitle>{viewTarget.name} 강사 상세 프로필</DialogTitle>
+            </DialogHeader>
             <div className="flex-1 overflow-y-auto">
               <div className="p-12">
                 <div className="flex flex-col md:flex-row items-center md:items-start gap-12 mb-16">
