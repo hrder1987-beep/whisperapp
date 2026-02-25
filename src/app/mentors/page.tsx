@@ -354,7 +354,7 @@ export default function MentorsPage() {
                 className="h-16 pl-16 pr-8 bg-white border-2 border-primary rounded-2xl shadow-lg focus-visible:ring-0 text-lg font-black placeholder:text-black/10"
               />
             </div>
-            <div className="flex overflow-x-auto gap-3 scrollbar-hide py-2">
+            <div className="flex flex-wrap gap-2 md:gap-3 py-2">
               {MENTOR_CATEGORIES.map((cat) => (
                 <button
                   key={cat}
@@ -362,7 +362,7 @@ export default function MentorsPage() {
                   className={cn(
                     "px-8 py-3.5 rounded-full text-sm font-black transition-all border-2 whitespace-nowrap",
                     selectedCategory === cat 
-                      ? "bg-primary text-white border-primary shadow-lg" 
+                      ? "bg-primary text-accent border-primary shadow-lg" 
                       : "bg-white text-black/30 border-black/5 hover:border-primary/30"
                   )}
                 >
@@ -389,7 +389,7 @@ export default function MentorsPage() {
                        <img src={m.profilePictureUrl} alt={m.name} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
                     </div>
                     {m.isVerified && (
-                      <Badge className="absolute -bottom-2 right-4 bg-primary text-white font-black border-none px-4 py-1.5 rounded-full flex gap-2 items-center shadow-xl text-[10px]">
+                      <Badge className="absolute -bottom-2 right-4 bg-primary text-accent font-black border-none px-4 py-1.5 rounded-full flex gap-2 items-center shadow-xl text-[10px]">
                         <Check className="w-3.5 h-3.5" /> WHISPERER
                       </Badge>
                     )}

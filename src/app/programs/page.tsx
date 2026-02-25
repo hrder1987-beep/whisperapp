@@ -379,7 +379,7 @@ export default function ProgramsPage() {
               />
             </div>
             
-            <div className="flex overflow-x-auto gap-3 scrollbar-hide py-2">
+            <div className="flex flex-wrap gap-2 md:gap-3 py-2">
               {PROGRAM_CATEGORIES.map((cat) => (
                 <button
                   key={cat.id}

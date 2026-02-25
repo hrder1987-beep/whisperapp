@@ -206,7 +206,7 @@ export default function JobsPage() {
                 className="h-14 pl-14 pr-6 bg-white border-2 border-primary rounded-none shadow-sm focus-visible:ring-0 text-base font-bold placeholder:text-black/10"
               />
             </div>
-            <div className="flex overflow-x-auto gap-2 scrollbar-hide py-1">
+            <div className="flex flex-wrap gap-2 py-1">
               {JOB_CATEGORIES.map((cat) => (
                 <button
                   key={cat}

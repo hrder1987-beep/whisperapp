@@ -283,7 +283,9 @@ export default function GatheringsPage() {
                                   <Input 
                                     type="date" 
                                     value={endDateStr} 
-                                    onChange={(e) => setEndDateStr(e.target.value)}
+                                    onChange={(e) => {
+                                      setEndDateStr(e.target.value)
+                                    }}
                                     className="h-12 bg-white border-black/10 rounded-xl font-bold shadow-sm"
                                   />
                                 </div>
@@ -464,7 +466,7 @@ export default function GatheringsPage() {
                 className="h-16 pl-16 pr-8 bg-white border-2 border-primary rounded-2xl shadow-lg focus-visible:ring-0 text-lg font-black placeholder:text-black/10" 
               />
             </div>
-            <div className="flex overflow-x-auto gap-3 scrollbar-hide py-2">
+            <div className="flex flex-wrap gap-2 md:gap-3 py-2">
               {GATHERING_CATEGORIES.map((cat) => (
                 <button 
                   key={cat} 

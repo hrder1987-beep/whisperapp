@@ -360,7 +360,7 @@ function HomePageContent() {
                 <MainBanner banners={banners} />
                 <SubmissionForm type="question" placeholder="HR 고민을 속삭여보세요." onSubmit={handleAddQuestion} />
                 
-                <div className="flex gap-6 overflow-x-auto pb-2 border-b border-black/[0.05] scrollbar-hide">
+                <div className="flex flex-wrap gap-x-6 gap-y-2 pb-2 border-b border-black/[0.05]">
                   {[
                     { id: "all", label: "전체 피드" },
                     { id: "hrm", label: "인사/총무" },
