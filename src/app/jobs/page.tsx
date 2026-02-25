@@ -77,6 +77,7 @@ export default function JobsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [viewJob, setViewJob] = useState<JobListing | null>(null)
 
+  // Registration Form States
   const [companyName, setCompanyName] = useState("")
   const [title, setTitle] = useState("")
   const [location, setLocation] = useState("")
@@ -87,6 +88,7 @@ export default function JobsPage() {
 
   const jobsQuery = useMemoFirebase(() => db ? query(collection(db, "jobs"), orderBy("createdAt", "desc")) : null, [db])
   const { data: jobsData, isLoading } = useCollection<JobListing>(jobsQuery)
+  
   const jobs = useMemo(() => {
     const fetched = jobsData || []
     const merged = [...fetched]
