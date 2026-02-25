@@ -4,26 +4,26 @@
 
 @layer base {
   :root {
-    --background: 0 0% 98%;
+    --background: 88 30% 98%; /* Soft Off-white with a hint of green */
     --foreground: 222 47% 11%;
     --card: 0 0% 100%;
     --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
-    --primary: 147 97% 39%; /* Naver Green as Primary Action */
-    --primary-foreground: 222 47% 11%; /* Navy text on Green for contrast */
-    --secondary: 210 10% 96%;
+    --primary: 88 63% 81%; /* The specific light green from user image */
+    --primary-foreground: 222 47% 11%; /* Dark navy text on light green for contrast */
+    --secondary: 88 30% 95%;
     --secondary-foreground: 222 47% 11%;
-    --muted: 210 10% 96%;
+    --muted: 88 20% 96%;
     --muted-foreground: 215 16% 47%;
-    --accent: 222 47% 11%; /* Deep Navy for headers/secondary */
+    --accent: 222 47% 11%; /* Deep Navy for primary headers and contrast */
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 147 97% 39%;
-    --radius: 0.5rem;
+    --border: 88 20% 90%;
+    --input: 88 20% 90%;
+    --ring: 88 63% 81%;
+    --radius: 1rem; /* More rounded for a premium feel */
   }
 }
 
@@ -32,39 +32,39 @@
     @apply border-border outline-none !ring-offset-0;
   }
   body {
-    @apply bg-[#F5F6F7] text-[#1E1E23] font-body antialiased;
+    @apply bg-[#F7FAF2] text-[#1E1E23] font-body antialiased;
     -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
   }
 }
 
-/* Naver/Onoffmix Style Components */
+/* Whisper Style Components - Refined */
 .naver-header {
-  @apply bg-white border-b border-black/[0.06] sticky top-0 z-50;
+  @apply bg-white/80 backdrop-blur-xl border-b border-black/[0.04] sticky top-0 z-50;
 }
 
 .naver-search-bar {
-  @apply border-2 border-primary bg-white rounded-none flex items-center px-4 transition-all focus-within:shadow-sm outline-none;
+  @apply border-2 border-primary bg-white rounded-xl flex items-center px-4 transition-all focus-within:shadow-md outline-none;
 }
 
 .naver-card {
-  @apply bg-white border border-black/[0.08] shadow-none hover:border-black/[0.12] transition-all rounded-sm overflow-hidden;
+  @apply bg-white border border-black/[0.04] shadow-sm hover:shadow-xl hover:border-primary/20 transition-all rounded-[1.5rem] overflow-hidden;
 }
 
 .naver-button {
-  @apply bg-primary text-accent font-black rounded-none hover:brightness-95 transition-all shadow-sm;
+  @apply bg-primary text-accent font-black rounded-xl hover:brightness-95 transition-all shadow-sm active:scale-95;
 }
 
 .naver-badge {
-  @apply bg-primary/10 text-primary font-bold border-none px-2 py-0.5 rounded-none text-[10px] uppercase;
+  @apply bg-primary/30 text-accent font-bold border-none px-2.5 py-0.5 rounded-full text-[10px] uppercase tracking-tighter;
 }
 
 .ranking-number {
-  @apply font-black text-primary italic mr-3 text-lg;
+  @apply font-black text-accent italic mr-3 text-lg;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  @apply text-[#1E1E23];
+  @apply text-accent tracking-tighter;
 }
 
 p, span, div {
@@ -72,7 +72,7 @@ p, span, div {
 }
 
 .text-neutral-title {
-  @apply text-[#1E1E23] font-black;
+  @apply text-accent font-black;
 }
 
 .text-neutral-body {
@@ -88,7 +88,7 @@ p, span, div {
 }
 
 .gold-gradient {
-  background: linear-gradient(135deg, #03C75A 0%, #029e4a 100%);
+  background: linear-gradient(135deg, #CDECB1 0%, #B8E094 100%);
 }
 
 input:focus, textarea:focus {

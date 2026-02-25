@@ -1,4 +1,3 @@
-
 "use client"
 
 import { cn } from "@/lib/utils"
@@ -36,30 +35,30 @@ export function Logo({ className = "", isLight = false, onClick }: LogoProps) {
               strokeLinejoin="round" 
             />
             {/* Intelligence Pulse Dots */}
-            <circle cx="8" cy="12" r="1" fill="currentColor" className="animate-pulse" />
-            <circle cx="12" cy="12" r="1" fill="currentColor" className="animate-pulse [animation-delay:200ms]" />
-            <circle cx="16" cy="12" r="1" fill="currentColor" className="animate-pulse [animation-delay:400ms]" />
+            <circle cx="8" cy="12" r="1" fill="#CDECB1" className="animate-pulse" />
+            <circle cx="12" cy="12" r="1" fill="#CDECB1" className="animate-pulse [animation-delay:200ms]" />
+            <circle cx="16" cy="12" r="1" fill="#CDECB1" className="animate-pulse [animation-delay:400ms]" />
           </svg>
         </div>
         
         {/* Subtle Background Glow on Hover */}
         {!isLight && (
-          <div className="absolute inset-0 bg-accent/10 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
+          <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
         )}
       </div>
 
       <div className="flex flex-col -space-y-1.5">
         <span className={cn(
           "font-headline text-[22px] font-black tracking-tighter transition-colors duration-300",
-          isLight ? "text-white" : "text-primary"
+          isLight ? "text-white" : "text-accent"
         )}>
           WHISPER
         </span>
         <div className="flex items-center gap-1.5">
-          <div className={cn("h-0.5 w-3 rounded-full shrink-0", isLight ? "bg-white/40" : "bg-accent")}></div>
+          <div className={cn("h-0.5 w-3 rounded-full shrink-0", isLight ? "bg-white/40" : "bg-primary")}></div>
           <span className={cn(
             "text-[9px] font-black tracking-[0.25em] uppercase whitespace-nowrap",
-            isLight ? "text-white/60" : "text-primary/40"
+            isLight ? "text-white/60" : "text-accent/40"
           )}>
             HR Intelligence
           </span>
@@ -67,4 +66,3 @@ export function Logo({ className = "", isLight = false, onClick }: LogoProps) {
       </div>
     </div>
   )
-}
