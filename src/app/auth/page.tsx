@@ -165,15 +165,15 @@ function AuthContent() {
     <div className="max-w-xl mx-auto px-4 py-12 md:py-20">
       <Card className="border-primary/10 shadow-2xl rounded-[2.5rem] overflow-hidden bg-white">
         <div className="h-2 w-full gold-gradient"></div>
-        <CardHeader className="text-center pt-10 pb-6">
+        <CardHeader className="text-center pt-10 pb-6 text-left">
           <CardTitle className="text-3xl font-black text-primary tracking-tighter">Whisper Intelligence</CardTitle>
           <CardDescription className="font-bold text-primary/40 mt-2">대한민국 HR 전문가들의 집단지성 허브</CardDescription>
         </CardHeader>
         <CardContent className="px-8 pb-10">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-2 bg-primary/5 p-1 rounded-2xl mb-8">
-              <TabsTrigger value="login" className="rounded-xl font-black text-xs md:text-sm data-[state=active]:bg-primary data-[state=active]:text-white data-[state=inactive]:text-black/60">로그인</TabsTrigger>
-              <TabsTrigger value="signup" className="rounded-xl font-black text-xs md:text-sm data-[state=active]:bg-primary data-[state=active]:text-white data-[state=inactive]:text-black/60">회원가입</TabsTrigger>
+              <TabsTrigger value="login" className="rounded-xl font-black text-xs md:text-sm data-[state=active]:bg-primary data-[state=active]:text-accent data-[state=inactive]:text-black/60">로그인</TabsTrigger>
+              <TabsTrigger value="signup" className="rounded-xl font-black text-xs md:text-sm data-[state=active]:bg-primary data-[state=active]:text-accent data-[state=inactive]:text-black/60">회원가입</TabsTrigger>
             </TabsList>
             
             <TabsContent value="login">
@@ -186,7 +186,7 @@ function AuthContent() {
                   <Label className="text-xs font-black text-primary/40 ml-1">비밀번호</Label>
                   <Input type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required className="h-12 bg-primary/5 border-none rounded-xl" />
                 </div>
-                <Button type="submit" disabled={isLoading} className="w-full h-12 bg-primary text-white font-black rounded-xl mt-4 hover:brightness-110 shadow-lg">
+                <Button type="submit" disabled={isLoading} className="w-full h-12 bg-primary text-accent font-black rounded-xl mt-4 hover:brightness-110 shadow-lg">
                   {isLoading ? "처리 중..." : "위스퍼 시작하기"}
                   <LogIn className="w-4 h-4 ml-2" />
                 </Button>
@@ -268,7 +268,7 @@ function AuthContent() {
                   </div>
                 </div>
 
-                <Button type="submit" disabled={isLoading} className="w-full h-12 gold-gradient text-white font-black rounded-xl mt-4 shadow-xl">
+                <Button type="submit" disabled={isLoading} className="w-full h-12 gold-gradient text-accent font-black rounded-xl mt-4 shadow-xl">
                   {isLoading ? "처리 중..." : "전문가 등록 완료"}
                   <UserPlus className="w-4 h-4 ml-2" />
                 </Button>
@@ -280,8 +280,8 @@ function AuthContent() {
 
       {/* Recovery Dialog */}
       <Dialog open={!!recoveryMode} onOpenChange={() => { setRecoveryMode(null); setFoundEmail(null); }}>
-        <DialogContent className="max-w-md bg-white border-none rounded-[2.5rem] p-8 shadow-2xl">
-          <DialogHeader>
+        <DialogContent className="max-w-md bg-white border-none rounded-[2.5rem] p-8 shadow-2xl overflow-hidden">
+          <DialogHeader className="text-left">
             <DialogTitle className="text-2xl font-black text-primary flex items-center gap-3">
               {recoveryMode === "id" ? <Search className="w-6 h-6 text-accent" /> : <KeyRound className="w-6 h-6 text-accent" />}
               {recoveryMode === "id" ? "아이디(이메일) 찾기" : "비밀번호 재설정"}
@@ -328,7 +328,7 @@ function AuthContent() {
               <Button 
                 onClick={recoveryMode === "id" ? handleFindId : handleResetPassword}
                 disabled={isLoading}
-                className="w-full h-12 bg-primary text-white font-black rounded-xl shadow-lg"
+                className="w-full h-12 bg-primary text-accent font-black rounded-xl shadow-lg"
               >
                 {isLoading ? "확인 중..." : recoveryMode === "id" ? "아이디 찾기" : "재설정 메일 발송"}
               </Button>

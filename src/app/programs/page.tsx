@@ -183,7 +183,7 @@ export default function ProgramsPage() {
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-4xl bg-white border-none rounded-none p-0 shadow-2xl overflow-hidden max-h-[95vh] flex flex-col">
-                <DialogHeader className="bg-white border-b border-black/5 p-8 shrink-0">
+                <DialogHeader className="bg-white border-b border-black/5 p-8 shrink-0 text-left">
                   <DialogTitle className="text-2xl font-black text-accent">전문 콘텐츠 등록</DialogTitle>
                   <p className="text-black/40 text-[10px] font-bold mt-1 uppercase tracking-widest">Register Training Program or IT Solution</p>
                 </DialogHeader>
@@ -387,7 +387,7 @@ export default function ProgramsPage() {
                   className={cn(
                     "px-8 py-3.5 rounded-full text-xs font-black transition-all border-2 whitespace-nowrap",
                     selectedCategory === cat.id 
-                      ? "bg-primary text-white border-primary shadow-md" 
+                      ? "bg-primary text-accent border-primary shadow-md" 
                       : "bg-white text-black/30 border-black/5 hover:border-primary/30"
                   )}
                 >
@@ -413,7 +413,7 @@ export default function ProgramsPage() {
                   <div className="absolute top-5 left-5 flex flex-col gap-2">
                     <Badge className={cn(
                       "border-none px-4 py-1.5 rounded-full text-[9px] font-black shadow-lg",
-                      p.type === 'solution' ? "bg-accent text-white" : "bg-primary text-white"
+                      p.type === 'solution' ? "bg-accent text-white" : "bg-primary text-accent"
                     )}>
                       {p.type === 'solution' ? 'IT 솔루션' : '교육 과정'}
                     </Badge>
@@ -461,7 +461,7 @@ export default function ProgramsPage() {
                   <div className="flex gap-2 mb-6">
                     <Badge className={cn(
                       "border-none px-5 py-1.5 rounded-full text-xs shadow-xl font-black",
-                      selectedProgram.type === 'solution' ? "bg-accent text-white" : "bg-primary text-white"
+                      selectedProgram.type === 'solution' ? "bg-accent text-white" : "bg-primary text-accent"
                     )}>
                       {selectedProgram.type === 'solution' ? 'IT 솔루션' : '교육 프로그램'}
                     </Badge>

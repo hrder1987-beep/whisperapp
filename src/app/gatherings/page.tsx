@@ -194,7 +194,7 @@ export default function GatheringsPage() {
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-4xl bg-white border-none rounded-none p-0 shadow-2xl overflow-hidden max-h-[95vh] flex flex-col">
-                <DialogHeader className="bg-white border-b border-black/5 p-8 shrink-0">
+                <DialogHeader className="bg-white border-b border-black/5 p-8 shrink-0 text-left">
                   <DialogTitle className="text-2xl font-black text-accent">새로운 지식 모임 개설</DialogTitle>
                   <p className="text-black/40 text-[10px] font-bold mt-1 uppercase tracking-widest">Create Professional Gathering</p>
                 </DialogHeader>
@@ -204,7 +204,7 @@ export default function GatheringsPage() {
                     <div className="space-y-4">
                       <div className="flex items-center gap-2">
                         <label className="text-sm font-black text-[#1E1E23]">썸네일 이미지</label>
-                        <Badge className="bg-primary text-white border-none rounded-sm px-2 py-0.5 text-[10px] font-black">필수</Badge>
+                        <Badge className="bg-primary text-accent border-none rounded-sm px-2 py-0.5 text-[10px] font-black">필수</Badge>
                       </div>
                       <div className="flex flex-col md:flex-row gap-8">
                         <div className="w-48 h-48 bg-[#F5F6F7] border border-black/5 rounded-xl flex items-center justify-center overflow-hidden shrink-0 shadow-inner">
@@ -248,7 +248,7 @@ export default function GatheringsPage() {
                                 type="button" 
                                 onClick={() => setType('online')} 
                                 variant={type === 'online' ? 'default' : 'outline'} 
-                                className={cn("rounded-xl font-black h-12 gap-2 transition-all", type === 'online' ? "bg-primary text-white shadow-lg" : "bg-white border-black/10 text-black/30")}
+                                className={cn("rounded-xl font-black h-12 gap-2 transition-all", type === 'online' ? "bg-primary text-accent shadow-lg" : "bg-white border-black/10 text-black/30")}
                               >
                                 <Globe className="w-4 h-4" /> 온라인
                               </Button>
@@ -256,7 +256,7 @@ export default function GatheringsPage() {
                                 type="button" 
                                 onClick={() => setType('offline')} 
                                 variant={type === 'offline' ? 'default' : 'outline'} 
-                                className={cn("rounded-xl font-black h-12 gap-2 transition-all", type === 'offline' ? "bg-primary text-white shadow-lg" : "bg-white border-black/10 text-black/30")}
+                                className={cn("rounded-xl font-black h-12 gap-2 transition-all", type === 'offline' ? "bg-primary text-accent shadow-lg" : "bg-white border-black/10 text-black/30")}
                               >
                                 <MapPin className="w-4 h-4" /> 오프라인
                               </Button>
@@ -341,7 +341,7 @@ export default function GatheringsPage() {
                     <div className="space-y-8">
                       <div className="space-y-4">
                         <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2"><label className="text-sm font-black text-[#1E1E23]">모임 제목</label><Badge className="bg-primary text-white border-none rounded-sm px-2 py-0.5 text-[10px] font-black">필수</Badge></div>
+                          <div className="flex items-center gap-2"><label className="text-sm font-black text-[#1E1E23]">모임 제목</label><Badge className="bg-primary text-accent border-none rounded-sm px-2 py-0.5 text-[10px] font-black">필수</Badge></div>
                           <span className="text-[11px] font-bold text-black/20">{title.length}/50</span>
                         </div>
                         <Input value={title} onChange={e => setTitle(e.target.value.slice(0, 50))} required placeholder="모임의 목적이 잘 드러나는 제목" className="h-14 bg-white border-black/10 rounded-xl font-black text-lg focus-visible:ring-primary/30 shadow-sm" />
@@ -349,7 +349,7 @@ export default function GatheringsPage() {
 
                       <div className="space-y-4">
                         <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2"><label className="text-sm font-black text-[#1E1E23]">한 줄 요약</label><Badge className="bg-primary text-white border-none rounded-sm px-2 py-0.5 text-[10px] font-black">필수</Badge></div>
+                          <div className="flex items-center gap-2"><label className="text-sm font-black text-[#1E1E23]">한 줄 요약</label><Badge className="bg-primary text-accent border-none rounded-sm px-2 py-0.5 text-[10px] font-black">필수</Badge></div>
                           <span className="text-[11px] font-bold text-black/20">{summary.length}/100</span>
                         </div>
                         <Input value={summary} onChange={e => setSummary(e.target.value.slice(0, 100))} required placeholder="카드 리스트에 노출될 요약 문구" className="h-12 bg-white border-black/10 rounded-xl font-bold text-base focus-visible:ring-primary/30 shadow-sm" />
@@ -417,7 +417,7 @@ export default function GatheringsPage() {
                     <div className="space-y-4">
                       <div className="flex items-center gap-2">
                         <label className="text-sm font-black text-[#1E1E23]">해시태그</label>
-                        <Badge className="bg-primary text-white border-none rounded-sm px-2 py-0.5 text-[10px] font-black">필수</Badge>
+                        <Badge className="bg-primary text-accent border-none rounded-sm px-2 py-0.5 text-[10px] font-black">필수</Badge>
                       </div>
                       <Input value={tagInput} onChange={e => setTagInput(e.target.value)} required placeholder="#인사전략 #네트워킹 #데이터분석" className="h-12 bg-white border-black/10 rounded-xl font-bold text-sm shadow-sm" />
                     </div>
@@ -472,7 +472,7 @@ export default function GatheringsPage() {
                   className={cn(
                     "px-8 py-3.5 rounded-full text-sm font-black transition-all border-2 whitespace-nowrap", 
                     selectedCategory === cat 
-                      ? "bg-primary text-white border-primary shadow-lg" 
+                      ? "bg-primary text-accent border-primary shadow-lg" 
                       : "bg-white text-black/60 border-black/5 hover:border-primary/30"
                   )}
                 >
@@ -498,7 +498,7 @@ export default function GatheringsPage() {
                   <div className="relative aspect-[4/3] w-full overflow-hidden bg-black/5">
                     <Image src={g.imageUrl || "https://images.unsplash.com/photo-1522071820081-009f0129c71c"} alt={g.title} fill className={cn("object-cover transition-transform duration-1000 group-hover:scale-110", isClosed && "grayscale opacity-60")} />
                     <div className="absolute top-5 left-5 flex flex-col gap-2">
-                      <Badge className={cn("border-none px-4 py-1.5 rounded-full text-[10px] font-black shadow-lg", isClosed ? "bg-black/60 text-white" : "bg-primary text-white")}>{isClosed ? "모집 마감" : "모집 중"}</Badge>
+                      <Badge className={cn("border-none px-4 py-1.5 rounded-full text-[10px] font-black shadow-lg", isClosed ? "bg-black/60 text-white" : "bg-primary text-accent")}>{isClosed ? "모집 마감" : "모집 중"}</Badge>
                       <Badge className="bg-white/95 backdrop-blur-sm text-accent font-black border-none px-4 py-1.5 rounded-full text-[10px] shadow-md">#{g.category}</Badge>
                     </div>
                     <div className="absolute bottom-5 right-5"><div className="bg-black/40 backdrop-blur-md px-3 py-1.5 flex items-center gap-2 rounded-full border border-white/10">{g.type === 'online' ? <Globe className="w-3.5 h-3.5 text-primary" /> : <MapPin className="w-3.5 h-3.5 text-primary" />}<span className="text-[10px] font-black text-white uppercase tracking-widest">{g.type}</span></div></div>
