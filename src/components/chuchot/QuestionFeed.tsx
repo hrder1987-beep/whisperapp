@@ -74,8 +74,7 @@ export function QuestionFeed({
   const [isMounted, setIsMounted] = useState(false)
   useEffect(() => setIsMounted(true), [])
 
-  const handleShare = async (e: React.MouseEvent, q: Question) => {
-    e.stopPropagation();
+  const handleShare = async (q: Question) => {
     if (typeof window !== 'undefined') {
       const shareUrl = `${window.location.origin}/questions/${q.id}`;
       await navigator.clipboard.writeText(shareUrl);
@@ -83,10 +82,13 @@ export function QuestionFeed({
     }
   }
 
-  const handleDelete = (e: React.MouseEvent, q: Question) => {
-    e.stopPropagation();
+  const handleDelete = (q: Question) => {
     if (!db) return;
-    if (confirm("이 게시글을 영구적으로 삭제하시겠습니까?")) {
+    if (window.confirm("이 게시글을 영구적으로 삭제하시겠습니까?")) {
+      // 만약 현재 삭제하려는 글이 펼쳐져 있다면 선택 해제
+      if (selectedId === q.id) {
+        onSelectQuestion(q.id);
+      }
       deleteDocumentNonBlocking(doc(db, "questions", q.id));
       toast({ title: "삭제 완료", description: "게시글이 삭제되었습니다." });
     }
@@ -176,7 +178,7 @@ export function QuestionFeed({
                           <>
                             <DropdownMenuItem 
                               onSelect={(e) => {
-                                e.preventDefault(); // 다이얼로그 중복 포커스 방지
+                                e.preventDefault();
                                 setEditingQuestion(q);
                                 setEditTitle(q.title);
                                 setEditText(q.text);
@@ -189,7 +191,8 @@ export function QuestionFeed({
                             <DropdownMenuItem 
                               onSelect={(e) => {
                                 e.preventDefault();
-                                handleDelete(e as any, q);
+                                // 드롭다운이 닫힌 후 confirm 창을 띄우기 위해 setTimeout 사용
+                                setTimeout(() => handleDelete(q), 100);
                               }} 
                               className="rounded-lg font-black text-xs gap-2 py-2.5 cursor-pointer text-red-500 hover:text-red-600 hover:bg-red-50"
                             >
@@ -200,7 +203,7 @@ export function QuestionFeed({
                           <DropdownMenuItem 
                             onSelect={(e) => {
                               e.preventDefault();
-                              handleShare(e as any, q);
+                              handleShare(q);
                             }} 
                             className="rounded-lg font-black text-xs gap-2 py-2.5 cursor-pointer"
                           >
@@ -256,7 +259,7 @@ export function QuestionFeed({
                       <MessageCircle className="w-3.5 h-3.5 md:w-4 md:h-4 text-accent" />
                       <span>댓글 {q.answerCount}</span>
                     </div>
-                    <button onClick={(e) => handleShare(e, q)} className="flex items-center gap-1.5 md:gap-2 text-[12px] md:text-[13px] font-bold text-muted-foreground hover:text-accent transition-colors">
+                    <button onClick={(e) => { e.stopPropagation(); handleShare(q); }} className="flex items-center gap-1.5 md:gap-2 text-[12px] md:text-[13px] font-bold text-muted-foreground hover:text-accent transition-colors">
                       <Share2 className="w-3.5 h-3.5 md:w-4 md:h-4" />
                       공유
                     </button>

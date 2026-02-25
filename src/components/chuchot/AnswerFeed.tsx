@@ -32,10 +32,10 @@ export function AnswerFeed({ answers, isAdminMode = false }: AnswerFeedProps) {
 
   const sortedAnswers = [...answers].sort((a, b) => b.createdAt - a.createdAt)
 
-  const handleDeleteAnswer = (id: string) => {
-    if (!db) return;
-    if (confirm("이 답글을 삭제하시겠습니까?")) {
-      deleteDocumentNonBlocking(doc(db, "questions", sortedAnswers.find(a => a.id === id)!.questionId, "answers", id));
+  const handleDeleteAnswer = (ans: Answer) => {
+    if (!db || !ans) return;
+    if (window.confirm("이 답글을 삭제하시겠습니까?")) {
+      deleteDocumentNonBlocking(doc(db, "questions", ans.questionId, "answers", ans.id));
       toast({ title: "삭제 완료", description: "답글이 삭제되었습니다." });
     }
   }
@@ -81,7 +81,7 @@ export function AnswerFeed({ answers, isAdminMode = false }: AnswerFeedProps) {
                       {isMounted ? formatDistanceToNow(a.createdAt, { addSuffix: true, locale: ko }) : '...'}
                     </span>
                     {(isAdminMode || isOwner) && (
-                      <Button variant="ghost" size="icon" className="w-6 h-6 text-red-300 hover:text-red-500 hover:bg-red-50 rounded-full" onClick={() => handleDeleteAnswer(a.id)}>
+                      <Button variant="ghost" size="icon" className="w-6 h-6 text-red-300 hover:text-red-500 hover:bg-red-50 rounded-full" onClick={() => handleDeleteAnswer(a)}>
                         <Trash2 className="w-3.5 h-3.5" />
                       </Button>
                     )}
