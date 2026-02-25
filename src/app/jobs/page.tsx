@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo, useRef } from "react"
@@ -11,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking } from "@/firebase"
 import { collection, query, orderBy, doc } from "firebase/firestore"
 import { JobListing } from "@/lib/types"
-import { MapPin, Plus, Search, Award, Clock, Camera, Sparkles } from "lucide-react"
+import { MapPin, Plus, Search, Award, Clock, Camera, Sparkles, Building2, Bookmark, Share2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
@@ -23,10 +24,10 @@ const MOCK_JOBS: JobListing[] = [
     id: "job-sample-1",
     companyName: "(주)테크핀코리아",
     title: "HRD Manager (교육 기획 및 조직문화 총괄)",
-    location: "서울 영등포구 (여의도)",
+    location: "서울 영등포구",
     experience: "7년 - 12년",
     deadline: "2024-12-31",
-    tags: ["HRD", "조직문화", "시니어"],
+    tags: ["HRD", "조직문화", "정규직"],
     logoUrl: "https://images.unsplash.com/photo-1551288049-bbbda536339a?q=80&w=200",
     category: "HRD/교육",
     createdAt: 1714521600000,
@@ -54,7 +55,7 @@ const MOCK_JOBS: JobListing[] = [
     location: "서울 중구",
     experience: "3년 - 7년",
     deadline: "2024-12-25",
-    tags: ["급여", "평가보상", "제도설계"],
+    tags: ["급여", "평가보상", "시니어"],
     logoUrl: "https://images.unsplash.com/photo-1454165833762-01049369290d?q=80&w=200",
     category: "급여/보상",
     createdAt: 1714694400000,
@@ -131,88 +132,88 @@ export default function JobsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F6F7]">
+    <div className="min-h-screen bg-[#F8F9FA]">
       <Header />
-      <main className="max-w-7xl mx-auto px-4 py-8 md:py-16">
-        <div className="flex flex-col gap-8 mb-16">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div className="space-y-1">
-              <h1 className="text-3xl md:text-4xl font-black text-[#1E1E23] tracking-tighter">채용 인텔리전스</h1>
-              <p className="text-sm md:text-base font-bold text-[#888]">HR 전문가만을 위한 엄선된 커리어 기회와 채용 소식</p>
+      <main className="max-w-5xl mx-auto px-4 py-10 md:py-16">
+        <div className="flex flex-col gap-10 mb-12">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div className="space-y-2">
+              <h1 className="text-3xl md:text-4xl font-black text-accent tracking-tighter">채용 인텔리전스</h1>
+              <p className="text-sm md:text-base font-bold text-accent/40">전문성이 검증된 HR 담당자를 위한 커리어 큐레이션</p>
             </div>
 
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button className="naver-button h-14 px-10 rounded-xl shadow-xl transition-all gap-3 text-base">
-                  <Plus className="w-5 h-5" />
-                  공고 등록하기
+                <Button className="naver-button h-12 px-8 rounded-none shadow-sm transition-all gap-2 text-sm">
+                  <Plus className="w-4 h-4" />
+                  채용 공고 게시하기
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-2xl bg-white border-none rounded-[2.5rem] p-0 shadow-2xl overflow-hidden">
-                <DialogHeader className="bg-white border-b border-black/5 p-8">
-                  <DialogTitle className="text-2xl font-black text-accent">채용 공고 게시</DialogTitle>
-                  <p className="text-black/40 text-[10px] font-bold mt-1 uppercase tracking-widest">Post HR Job Opportunity</p>
+              <DialogContent className="max-w-2xl bg-white border-none rounded-none p-0 shadow-2xl overflow-hidden">
+                <DialogHeader className="bg-white border-b border-black/5 p-8 text-left">
+                  <DialogTitle className="text-xl font-black text-accent">신규 채용 공고 등록</DialogTitle>
+                  <p className="text-black/40 text-[10px] font-bold mt-1 uppercase tracking-widest">Recruitment Intelligence Registration</p>
                 </DialogHeader>
-                <form onSubmit={handleAddJob} className="p-10 space-y-8 overflow-y-auto max-h-[80vh]">
-                  <div onClick={() => fileInputRef.current?.click()} className="relative aspect-video bg-[#F5F6F7] border-2 border-dashed border-black/10 flex items-center justify-center cursor-pointer rounded-2xl overflow-hidden group hover:border-primary shadow-inner">
-                    {adImageUrl ? <img src={adImageUrl} className="w-full h-full object-contain" alt="preview" /> : <Camera className="w-10 h-10 text-black/10 group-hover:text-primary transition-colors" />}
+                <form onSubmit={handleAddJob} className="p-8 space-y-8 overflow-y-auto max-h-[75vh]">
+                  <div onClick={() => fileInputRef.current?.click()} className="relative aspect-[21/9] bg-[#F5F6F7] border-2 border-dashed border-black/10 flex items-center justify-center cursor-pointer overflow-hidden group hover:border-primary">
+                    {adImageUrl ? <img src={adImageUrl} className="w-full h-full object-contain" alt="preview" /> : <div className="text-center"><Camera className="w-8 h-8 text-black/10 group-hover:text-primary transition-colors mx-auto mb-2" /><p className="text-[10px] font-bold text-black/20">공고 포스터 또는 로고 (21:9)</p></div>}
                   </div>
                   <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={(e) => {
                     const file = e.target.files?.[0]; if (file) { const reader = new FileReader(); reader.onloadend = () => setAdImageUrl(reader.result as string); reader.readAsDataURL(file); }
                   }} />
                   <div className="grid grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest ml-1">기업명</label>
-                      <Input value={companyName} onChange={e => setCompanyName(e.target.value)} required placeholder="회사명을 입력하세요" className="h-12 bg-[#F5F6F7] border-none rounded-xl font-bold shadow-inner" />
+                      <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest">기업명</label>
+                      <Input value={companyName} onChange={e => setCompanyName(e.target.value)} required placeholder="회사명" className="h-11 bg-[#F5F6F7] border-none rounded-none font-bold" />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest ml-1">직무 분류</label>
+                      <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest">직무 분류</label>
                       <Select onValueChange={setCategory} required>
-                        <SelectTrigger className="h-12 bg-[#F5F6F7] border-none rounded-xl font-bold shadow-inner"><SelectValue placeholder="분류 선택" /></SelectTrigger>
+                        <SelectTrigger className="h-11 bg-[#F5F6F7] border-none rounded-none font-bold"><SelectValue placeholder="카테고리" /></SelectTrigger>
                         <SelectContent>{JOB_CATEGORIES.filter(c => c !== "전체").map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
                       </Select>
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest ml-1">공고 제목</label>
-                    <Input value={title} onChange={e => setTitle(e.target.value)} required placeholder="채용 포지션 및 등급" className="h-14 bg-[#F5F6F7] border-none rounded-xl font-black text-lg shadow-inner" />
+                    <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest">공고 제목</label>
+                    <Input value={title} onChange={e => setTitle(e.target.value)} required placeholder="예: [토스] 채용 브랜딩 리더" className="h-12 bg-[#F5F6F7] border-none rounded-none font-black text-base" />
                   </div>
                   <div className="grid grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest ml-1">근무지</label>
-                      <Input value={location} onChange={e => setLocation(e.target.value)} required placeholder="예: 서울 강남구" className="h-12 bg-[#F5F6F7] border-none rounded-xl shadow-inner" />
+                      <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest">근무지역</label>
+                      <Input value={location} onChange={e => setLocation(e.target.value)} required placeholder="예: 서울 강남구" className="h-11 bg-[#F5F6F7] border-none rounded-none" />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest ml-1">마감일</label>
-                      <Input value={deadline} onChange={e => setDeadline(e.target.value)} required placeholder="예: 2024-12-31" className="h-12 bg-[#F5F6F7] border-none rounded-xl shadow-inner" />
+                      <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest">마감기한</label>
+                      <Input value={deadline} onChange={e => setDeadline(e.target.value)} required placeholder="예: 2024-12-31 또는 상시" className="h-11 bg-[#F5F6F7] border-none rounded-none" />
                     </div>
                   </div>
-                  <Button type="submit" disabled={isSubmitting} className="w-full h-14 naver-button text-lg rounded-xl shadow-xl">채용 공고 게시 완료</Button>
+                  <Button type="submit" disabled={isSubmitting} className="w-full h-12 naver-button text-sm rounded-none shadow-md">작성 완료 및 게시</Button>
                 </form>
               </DialogContent>
             </Dialog>
           </div>
 
-          <div className="flex flex-col gap-6">
+          <div className="space-y-6">
             <div className="relative group">
-              <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-6 h-6 text-black/20 group-focus-within:text-primary transition-colors" />
+              <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-black/20 group-focus-within:text-primary transition-colors" />
               <Input 
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                placeholder="기업명 또는 직무 키워드로 채용 소식을 검색해 보세요" 
-                className="h-16 pl-16 pr-8 bg-white border-2 border-primary rounded-2xl shadow-lg focus-visible:ring-0 text-lg font-black placeholder:text-black/10"
+                placeholder="관심 있는 기업이나 채용 키워드를 입력하세요" 
+                className="h-14 pl-14 pr-6 bg-white border-2 border-primary rounded-none shadow-sm focus-visible:ring-0 text-base font-bold placeholder:text-black/10"
               />
             </div>
-            <div className="flex overflow-x-auto gap-3 scrollbar-hide py-2">
+            <div className="flex overflow-x-auto gap-2 scrollbar-hide py-1">
               {JOB_CATEGORIES.map((cat) => (
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
                   className={cn(
-                    "px-8 py-3.5 rounded-full text-sm font-black transition-all border-2 whitespace-nowrap",
+                    "px-6 py-2.5 rounded-none text-xs font-black transition-all border whitespace-nowrap",
                     selectedCategory === cat 
-                      ? "bg-primary text-white border-primary shadow-lg" 
-                      : "bg-white text-black/30 border-black/5 hover:border-primary/30"
+                      ? "bg-accent text-white border-accent shadow-sm" 
+                      : "bg-white text-black/40 border-black/5 hover:border-accent/20"
                   )}
                 >
                   {cat}
@@ -222,79 +223,116 @@ export default function JobsPage() {
           </div>
         </div>
 
-        <div className="bg-white border border-black/[0.06] rounded-[3rem] shadow-xl overflow-hidden">
-          <div className="divide-y divide-black/[0.06]">
-            {isLoading ? (
-              <div className="flex justify-center py-40"><Sparkles className="w-14 h-14 animate-spin text-primary" /></div>
-            ) : filteredJobs.length === 0 ? (
-              <div className="py-40 text-center">
-                <p className="text-black/20 font-black text-xl">현재 진행 중인 채용 공고가 없습니다.</p>
+        <div className="space-y-1">
+          {isLoading ? (
+            <div className="flex justify-center py-40"><Sparkles className="w-10 h-10 animate-spin text-primary" /></div>
+          ) : filteredJobs.length === 0 ? (
+            <div className="py-40 text-center bg-white border border-black/5">
+              <p className="text-black/20 font-black text-lg">진행 중인 채용 공고를 찾을 수 없습니다.</p>
+            </div>
+          ) : filteredJobs.map((job) => (
+            <div 
+              key={job.id} 
+              className="p-6 md:p-8 bg-white border-b border-black/[0.06] hover:bg-black/[0.01] transition-all group flex items-start md:items-center gap-6 md:gap-10 cursor-pointer" 
+              onClick={() => setViewJob(job)}
+            >
+              <div className="w-16 h-16 md:w-20 md:h-20 rounded-lg bg-[#F5F6F7] flex items-center justify-center overflow-hidden border border-black/5 shrink-0 transition-transform group-hover:scale-105">
+                <img src={job.logoUrl} alt={job.companyName} className="w-full h-full object-cover" />
               </div>
-            ) : filteredJobs.map((job) => (
-              <div key={job.id} className="p-10 hover:bg-[#FBFBFC] transition-all group flex flex-col md:flex-row md:items-center gap-10 cursor-pointer" onClick={() => setViewJob(job)}>
-                <div className="w-24 h-24 rounded-2xl bg-[#F5F6F7] flex items-center justify-center overflow-hidden border border-black/5 shrink-0 shadow-sm transition-transform group-hover:scale-105">
-                  <img src={job.logoUrl} alt={job.companyName} className="w-full h-full object-cover" />
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <span className="text-[11px] font-black text-primary uppercase tracking-wider">{job.companyName}</span>
+                  {job.deadline === '상시채용' && <Badge className="bg-primary/10 text-primary border-none rounded-none text-[9px] h-4 font-black">상시</Badge>}
                 </div>
-                <div className="flex-1 space-y-3">
-                  <p className="text-xs font-black text-primary uppercase tracking-widest">{job.companyName}</p>
-                  <h3 className="text-2xl font-black text-accent group-hover:text-primary transition-colors leading-tight">{job.title}</h3>
-                  <div className="flex flex-wrap items-center gap-6 text-[12px] font-bold text-black/30 uppercase tracking-tighter">
-                    <span className="flex items-center gap-2"><MapPin className="w-4 h-4 text-primary/30" /> {job.location}</span>
-                    <span className="flex items-center gap-2"><Award className="w-4 h-4 text-primary/30" /> {job.experience}</span>
-                    <span className="flex items-center gap-2"><Clock className="w-4 h-4 text-primary/30" /> {job.deadline}</span>
+                <h3 className="text-lg md:text-xl font-black text-accent group-hover:text-primary transition-colors leading-tight mb-3 truncate">{job.title}</h3>
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                  <div className="flex items-center gap-1.5 text-[11px] font-bold text-black/30">
+                    <MapPin className="w-3 h-3" /> {job.location}
+                  </div>
+                  <div className="flex items-center gap-1.5 text-[11px] font-bold text-black/30">
+                    <Award className="w-3 h-3" /> {job.experience}
+                  </div>
+                  <div className="flex items-center gap-1.5 text-[11px] font-bold text-black/30">
+                    <Clock className="w-3 h-3" /> {job.deadline}
+                  </div>
+                  <div className="ml-auto hidden md:flex gap-1.5">
+                    {job.tags?.slice(0, 3).map(tag => (
+                      <Badge key={tag} variant="secondary" className="bg-[#F5F6F7] text-black/40 border-none rounded-none text-[9px] font-bold px-2 py-0">#{tag}</Badge>
+                    ))}
                   </div>
                 </div>
-                <Button onClick={(e) => { e.stopPropagation(); setViewJob(job); }} className="h-14 px-10 rounded-xl naver-button text-sm font-black shadow-lg">
-                  공고 상세 보기
-                </Button>
               </div>
-            ))}
-          </div>
+              <div className="hidden lg:flex items-center gap-3">
+                <Button variant="ghost" size="icon" className="text-black/10 hover:text-accent rounded-full"><Bookmark className="w-5 h-5" /></Button>
+                <Button variant="ghost" size="icon" className="text-black/10 hover:text-accent rounded-full"><Share2 className="w-5 h-5" /></Button>
+              </div>
+            </div>
+          ))}
         </div>
       </main>
 
       {viewJob && (
         <Dialog open={!!viewJob} onOpenChange={() => setViewJob(null)}>
-          <DialogContent className="max-w-3xl bg-white border-none rounded-[2.5rem] p-0 shadow-2xl overflow-hidden">
-            <DialogHeader className="bg-white border-b border-black/5 p-10 text-left space-y-3">
-              <div className="flex items-center justify-between">
-                <Badge className="bg-primary text-white border-none px-4 py-1.5 rounded-full text-[10px] font-black shadow-lg">RECRUITING</Badge>
-                <span className="text-black/20 text-[10px] font-bold uppercase tracking-widest">Whisper Job Intelligence</span>
+          <DialogContent className="max-w-3xl bg-white border-none rounded-none p-0 shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+            <DialogHeader className="bg-white border-b border-black/5 p-8 md:p-12 text-left space-y-4 shrink-0">
+              <div className="flex items-center justify-between mb-2">
+                <Badge className="bg-accent text-white border-none px-3 py-1 rounded-none text-[10px] font-black tracking-widest">RECRUITING</Badge>
+                <div className="flex gap-2">
+                  <Button variant="ghost" size="icon" className="h-8 w-8 text-black/20 hover:text-accent"><Bookmark className="w-4 h-4" /></Button>
+                  <Button variant="ghost" size="icon" className="h-8 w-8 text-black/20 hover:text-accent"><Share2 className="w-4 h-4" /></Button>
+                </div>
               </div>
-              <DialogTitle className="text-3xl font-black text-accent leading-tight">{viewJob.title}</DialogTitle>
-              <p className="text-primary font-black text-lg">@{viewJob.companyName}</p>
+              <div className="space-y-2">
+                <DialogTitle className="text-2xl md:text-3xl font-black text-accent leading-tight">{viewJob.title}</DialogTitle>
+                <p className="text-primary font-black text-lg flex items-center gap-2">
+                  <Building2 className="w-5 h-5" /> @{viewJob.companyName}
+                </p>
+              </div>
             </DialogHeader>
-            <div className="p-10 max-h-[60vh] overflow-y-auto bg-white">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12 pb-12 border-b border-black/5">
+            <div className="flex-1 overflow-y-auto bg-white p-8 md:p-12">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12 pb-12 border-b border-black/5">
                 <div className="space-y-1.5">
-                  <p className="text-[10px] font-black text-black/20 uppercase tracking-widest">Location</p>
+                  <p className="text-[10px] font-black text-black/20 uppercase tracking-widest">근무지</p>
                   <p className="text-sm font-bold text-accent">{viewJob.location}</p>
                 </div>
                 <div className="space-y-1.5">
-                  <p className="text-[10px] font-black text-black/20 uppercase tracking-widest">Experience</p>
+                  <p className="text-[10px] font-black text-black/20 uppercase tracking-widest">경력조건</p>
                   <p className="text-sm font-bold text-accent">{viewJob.experience}</p>
                 </div>
                 <div className="space-y-1.5">
-                  <p className="text-[10px] font-black text-black/20 uppercase tracking-widest">Deadline</p>
+                  <p className="text-[10px] font-black text-black/20 uppercase tracking-widest">마감기한</p>
                   <p className="text-sm font-bold text-accent">{viewJob.deadline}</p>
                 </div>
                 <div className="space-y-1.5">
-                  <p className="text-[10px] font-black text-black/20 uppercase tracking-widest">Category</p>
-                  <p className="text-sm font-bold text-accent">{viewJob.category}</p>
+                  <p className="text-[10px] font-black text-black/20 uppercase tracking-widest">직무분류</p>
+                  <p className="text-sm font-bold text-accent">{viewJob.category || "일반"}</p>
                 </div>
               </div>
+              
               {viewJob.adImageUrl ? (
-                <div className="relative w-full border border-black/5 shadow-xl rounded-2xl overflow-hidden">
+                <div className="relative w-full border border-black/5 shadow-sm overflow-hidden">
                   <img src={viewJob.adImageUrl} className="w-full h-auto" alt="job poster" />
                 </div>
               ) : (
-                <div className="py-24 text-center bg-[#F5F6F7] border border-dashed border-black/10 rounded-[2rem]">
-                  <p className="text-black/20 font-black">상세 모집 공고 이미지가 없습니다.</p>
+                <div className="py-24 text-center bg-[#F5F6F7] border border-dashed border-black/10">
+                  <p className="text-black/20 font-black text-sm">상세 공고 이미지가 등록되지 않았습니다.</p>
                 </div>
               )}
+
+              <div className="mt-12 space-y-6">
+                <h4 className="text-base font-black text-accent flex items-center gap-2">
+                  <div className="w-1.5 h-4 bg-primary"></div> 주요 요건 및 복지
+                </h4>
+                <div className="flex flex-wrap gap-2">
+                  {viewJob.tags?.map(tag => (
+                    <Badge key={tag} className="bg-accent/5 text-accent/60 border-none rounded-none px-4 py-1.5 font-bold text-xs">#{tag}</Badge>
+                  ))}
+                </div>
+              </div>
             </div>
-            <div className="p-8 bg-[#F5F6F7] border-t border-black/5 flex justify-end">
-              <Button onClick={() => setViewJob(null)} className="h-14 px-12 rounded-xl naver-button text-lg shadow-xl">창 닫기</Button>
+            <div className="p-8 bg-[#FBFBFC] border-t border-black/5 flex justify-end gap-3 shrink-0">
+              <Button onClick={() => setViewJob(null)} variant="ghost" className="h-12 px-8 rounded-none font-black text-black/30 hover:bg-black/5">닫기</Button>
+              <Button className="h-12 px-12 naver-button text-sm rounded-none shadow-xl">입사 지원하기</Button>
             </div>
           </DialogContent>
         </Dialog>
