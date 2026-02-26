@@ -11,7 +11,7 @@ import { BannerData } from "./MainBanner"
 import { PremiumAd, SiteBranding } from "@/lib/types"
 import { useFirestore, setDocumentNonBlocking } from "@/firebase"
 import { doc } from "firebase/firestore"
-import { Trash2, Plus, Save, RefreshCcw, ExternalLink, ImageIcon, Camera, LayoutText, Monitor, Globe } from "lucide-react"
+import { Trash2, Plus, Save, RefreshCcw, ExternalLink, ImageIcon, Camera, FileText, Monitor, Globe } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
 interface AdminCMSProps {
@@ -94,7 +94,7 @@ export function AdminCMS({ initialBanners, initialPremiumAds, initialBranding, o
       {/* 사이트 텍스트 정보 관리 */}
       <section className="space-y-6">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-primary/10 rounded-lg text-primary"><LayoutText className="w-5 h-5" /></div>
+          <div className="p-2 bg-primary/10 rounded-lg text-primary"><FileText className="w-5 h-5" /></div>
           <div>
             <h3 className="text-xl font-black text-accent">전역 사이트 문구 설정</h3>
             <p className="text-xs font-bold text-accent/30">각 페이지의 제목과 설명을 실시간으로 제어합니다.</p>
