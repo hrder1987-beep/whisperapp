@@ -265,7 +265,7 @@ function HomePageContent() {
             )}
           </main>
           {!deferredSearchQuery && (
-            <aside className="lg:col-span-4 hidden lg:block sticky top-32 h-fit self-start space-y-8">
+            <aside className="lg:col-span-4 hidden lg:block space-y-8 h-fit">
               <AldiChat />
               <PremiumAds ads={premiumAds} />
               <RankingList questions={questions.slice(0, 5)} onSelectQuestion={id => setSelectedId(id)} />
