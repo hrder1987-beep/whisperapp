@@ -97,7 +97,7 @@ export default function AdminPage() {
                 <Input type="password" placeholder="ADMIN ACCESS KEY" value={adminKeyInput} onChange={(e) => setAdminKeyInput(e.target.value)} className="h-12 pl-11 bg-white border-accent/10 rounded-xl text-center font-bold focus:ring-primary shadow-sm" onKeyDown={(e) => e.key === 'Enter' && handleAdminPromotion()} />
               </div>
             )}
-            <Button onClick={handleAdminPromotion} disabled={isPromoting || (!isMasterEmail && !adminKeyInput)} className="w-full h-12 bg-primary text-white font-black rounded-xl shadow-lg">
+            <Button onClick={handleAdminPromotion} disabled={isPromoting || (!isMasterEmail && !adminKeyInput)} className="w-full h-12 bg-primary text-accent font-black rounded-xl shadow-lg">
               {isPromoting ? "인증 중..." : isMasterEmail ? "관리자 권한 활성화" : "권한 획득"}
             </Button>
             <Button variant="ghost" onClick={() => router.push("/")} className="w-full text-accent/30 font-bold text-xs">홈으로 돌아가기</Button>
@@ -126,10 +126,10 @@ export default function AdminPage() {
 
         <Tabs defaultValue="cms" className="space-y-10">
           <TabsList className="bg-white border border-accent/5 p-1 rounded-2xl h-16 md:h-20 w-full md:w-fit grid grid-cols-2 md:flex md:gap-2 shadow-sm">
-            <TabsTrigger value="cms" className="rounded-xl font-black gap-2 data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-md px-8"><LayoutDashboard className="w-4 h-4" /> 사이트 구성</TabsTrigger>
-            <TabsTrigger value="members" className="rounded-xl font-black gap-2 data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-md px-8"><Users className="w-4 h-4" /> 회원 관리</TabsTrigger>
-            <TabsTrigger value="content" className="rounded-xl font-black gap-2 data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-md px-8"><FileText className="w-4 h-4" /> 콘텐츠 현황</TabsTrigger>
-            <TabsTrigger value="aldi" className="rounded-xl font-black gap-2 data-[state=active]:bg-primary data-[state=active]:text-white data-[state=active]:shadow-md px-8"><Sparkles className="w-4 h-4" /> AI 봇 관리</TabsTrigger>
+            <TabsTrigger value="cms" className="rounded-xl font-black gap-2 data-[state=active]:bg-primary data-[state=active]:text-accent data-[state=active]:shadow-md px-8"><LayoutDashboard className="w-4 h-4" /> 사이트 구성</TabsTrigger>
+            <TabsTrigger value="members" className="rounded-xl font-black gap-2 data-[state=active]:bg-primary data-[state=active]:text-accent data-[state=active]:shadow-md px-8"><Users className="w-4 h-4" /> 회원 관리</TabsTrigger>
+            <TabsTrigger value="content" className="rounded-xl font-black gap-2 data-[state=active]:bg-primary data-[state=active]:text-accent data-[state=active]:shadow-md px-8"><FileText className="w-4 h-4" /> 콘텐츠 현황</TabsTrigger>
+            <TabsTrigger value="aldi" className="rounded-xl font-black gap-2 data-[state=active]:bg-primary data-[state=active]:text-accent data-[state=active]:shadow-md px-8"><Sparkles className="w-4 h-4" /> AI 봇 관리</TabsTrigger>
           </TabsList>
 
           <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
