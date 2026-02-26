@@ -66,7 +66,7 @@ function HomePageContent() {
   const { user } = useUser()
   const db = useFirestore()
   const { toast } = useToast()
-  searchParams = useSearchParams()
+  const searchParams = useSearchParams()
   
   const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "")
   const deferredSearchQuery = useDeferredValue(searchQuery)
@@ -248,10 +248,10 @@ function HomePageContent() {
                           onClick={() => setCurrentPage(p)} 
                           variant={currentPage === p ? "default" : "outline"}
                           className={cn(
-                            "w-10 h-10 rounded-xl font-black transition-all", 
+                            "w-10 h-10 rounded-xl font-black transition-all border-2", 
                             currentPage === p 
                               ? "bg-primary text-accent border-primary shadow-md" 
-                              : "bg-white text-accent/40 border-black/5 hover:border-primary/30 hover:text-primary"
+                              : "bg-white text-accent/70 border-black/5 hover:border-primary/30 hover:text-primary"
                           )}
                         >
                           {p}

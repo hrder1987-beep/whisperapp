@@ -253,7 +253,7 @@ export function QuestionFeed({
               </CardContent>
               
               {!isExpanded && (
-                <CardFooter className="px-5 md:px-8 py-3 md:py-4 border-t border-primary/10 flex items-center justify-between bg-primary/5">
+                <CardFooter className="px-5 md:px-8 py-3 md:py-4 border-t border-primary/10 flex items-center justify-between bg-primary/10">
                   <div className="flex gap-4 md:gap-6">
                     <div className="flex items-center gap-1.5 md:gap-2 text-[12px] md:text-[13px] font-black text-accent/60">
                       <MessageCircle className="w-3.5 h-3.5 md:w-4 md:h-4 text-accent" />
