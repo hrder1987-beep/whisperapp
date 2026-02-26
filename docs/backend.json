@@ -5,16 +5,16 @@
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "UserProfile",
       "type": "object",
-      "description": "Whisper 플랫폼의 HR 전문가 상세 프로필 (개인정보 보안 적용)",
+      "description": "Whisper 플랫폼의 HR 전문가 상세 프로필 (본인 및 관리자 전용 보안 구역)",
       "properties": {
         "id": { "type": "string", "description": "Firebase UID" },
         "username": { "type": "string", "description": "사용자 닉네임" },
-        "email": { "type": "string", "format": "email", "description": "이메일 (민감 정보)" },
-        "name": { "type": "string", "description": "성함 (민감 정보)" },
+        "email": { "type": "string", "format": "email", "description": "이메일 (민감 정보, 보안 적용)" },
+        "name": { "type": "string", "description": "성함 (민감 정보, 보안 적용)" },
         "company": { "type": "string", "description": "소속 회사" },
         "department": { "type": "string", "description": "소속 부서" },
         "jobTitle": { "type": "string", "description": "직함" },
-        "phoneNumber": { "type": "string", "description": "휴대전화 (민감 정보)" },
+        "phoneNumber": { "type": "string", "description": "휴대전화 (민감 정보, 보안 적용)" },
         "role": { "type": "string", "enum": ["member", "mentor", "admin"], "description": "사용자 권한" },
         "registrationDate": { "type": "string", "format": "date-time" },
         "profilePictureUrl": { "type": "string" }
@@ -25,7 +25,7 @@
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Question",
       "type": "object",
-      "description": "HR 집단지성 피드 게시글",
+      "description": "HR 집단지성 피드 게시글 (공개)",
       "properties": {
         "id": { "type": "string" },
         "title": { "type": "string" },
@@ -46,7 +46,7 @@
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Gathering",
       "type": "object",
-      "description": "HR 전문가 모임 데이터",
+      "description": "HR 전문가 모임 데이터 (공개)",
       "properties": {
         "id": { "type": "string" },
         "title": { "type": "string" },
@@ -80,7 +80,7 @@
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "GatheringApplication",
       "type": "object",
-      "description": "모임 참여 신청 데이터",
+      "description": "모임 참여 신청 데이터 (개인정보 포함, 접근 제한 적용)",
       "properties": {
         "id": { "type": "string" },
         "gatheringId": { "type": "string" },
@@ -96,7 +96,7 @@
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "JobListing",
       "type": "object",
-      "description": "HR 전문 채용 공고 정보",
+      "description": "HR 전문 채용 공고 정보 (공개)",
       "properties": {
         "id": { "type": "string" },
         "companyName": { "type": "string" },
@@ -117,7 +117,7 @@
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "PrivateMessage",
       "type": "object",
-      "description": "사용자 간 1:1 개인 쪽지",
+      "description": "사용자 간 1:1 개인 쪽지 (송수신자만 접근 가능)",
       "properties": {
         "id": { "type": "string" },
         "senderId": { "type": "string" },
@@ -134,7 +134,7 @@
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Notification",
       "type": "object",
-      "description": "사용자 알림 데이터",
+      "description": "사용자 알림 데이터 (본인 전용)",
       "properties": {
         "id": { "type": "string" },
         "userId": { "type": "string" },
@@ -154,7 +154,7 @@
   "firestore": {
     "/users/{userId}": {
       "schema": { "$ref": "#/entities/UserProfile" },
-      "description": "HR 전문가 개인 프로필 정보 (보안 구역)"
+      "description": "HR 전문가 개인 프로필 정보 (본인/관리자 전용 보안 구역)"
     },
     "/questions/{questionId}": {
       "schema": { "$ref": "#/entities/Question" },
@@ -166,7 +166,7 @@
     },
     "/gatherings/{gatheringId}/applications/{appId}": {
       "schema": { "$ref": "#/entities/GatheringApplication" },
-      "description": "모임 개별 신청 목록"
+      "description": "모임 개별 신청 목록 (개인정보 보호 적용)"
     },
     "/jobs/{jobId}": {
       "schema": { "$ref": "#/entities/JobListing" },
@@ -174,7 +174,7 @@
     },
     "/messages/{messageId}": {
       "schema": { "$ref": "#/entities/PrivateMessage" },
-      "description": "1:1 개인 쪽지 데이터"
+      "description": "1:1 개인 쪽지 데이터 (비밀 대화)"
     },
     "/notifications/{notifId}": {
       "schema": { "$ref": "#/entities/Notification" },
