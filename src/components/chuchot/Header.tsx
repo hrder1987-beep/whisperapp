@@ -158,11 +158,11 @@ export function Header({ onSearch }: HeaderProps) {
         <div className="flex items-center gap-2 md:gap-5">
           <div className="hidden md:flex items-center gap-3">
             {isAdmin && (
-              <Link href="/admin" asChild>
-                <Button variant="outline" size="sm" className="border-accent/10 text-accent font-black h-11 px-5 gap-2 rounded-xl hover:bg-primary/10 transition-all">
+              <Button variant="outline" size="sm" asChild className="border-accent/10 text-accent font-black h-11 px-5 gap-2 rounded-xl hover:bg-primary/10 transition-all">
+                <Link href="/admin">
                   <ShieldCheck className="w-4 h-4" /> 관리 센터
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             )}
             {user && (
               <div className="flex items-center gap-2">
