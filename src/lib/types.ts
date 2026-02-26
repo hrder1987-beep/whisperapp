@@ -204,6 +204,9 @@ export interface SiteBranding {
 export type BotType = 'whisperra' | 'aldi' | 'dongsan';
 
 export interface BotConfig {
+  name?: string;
+  intro?: string;
+  iconUrl?: string;
   content: string;
   persona?: string;
   autoReplyInstruction?: string;
