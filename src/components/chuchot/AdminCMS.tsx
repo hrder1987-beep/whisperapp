@@ -41,7 +41,6 @@ export function AdminCMS({ initialBanners, initialPremiumAds, initialBranding, o
   const db = useFirestore()
   const { toast } = useToast()
 
-  // 데이터 로드 지연 시 상태를 명시적으로 동기화하기 위한 훅
   useEffect(() => {
     if (initialBanners.length > 0) setBanners(initialBanners)
     if (initialPremiumAds && initialPremiumAds.length > 0) setPremiumAds(initialPremiumAds)
@@ -98,7 +97,6 @@ export function AdminCMS({ initialBanners, initialPremiumAds, initialBranding, o
 
   return (
     <div className="space-y-12 pb-32">
-      {/* 사이트 텍스트 정보 관리 */}
       <section className="space-y-6">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-primary/10 rounded-lg text-primary"><FileText className="w-5 h-5" /></div>
@@ -151,7 +149,6 @@ export function AdminCMS({ initialBanners, initialPremiumAds, initialBranding, o
         </Card>
       </section>
 
-      {/* 메인 배너 관리 */}
       <section className="space-y-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -191,11 +188,12 @@ export function AdminCMS({ initialBanners, initialPremiumAds, initialBranding, o
                       <Textarea value={banner.description} onChange={(e) => handleBannerChange(idx, "description", e.target.value)} className="bg-accent/5 border-none h-20 rounded-xl font-medium resize-none" />
                     </div>
                   </div>
-                  <div className="lg:w-80 shrink-0 space-y-3">
+                  <div className="lg:w-80 shrink-0 space-y-3 text-center">
                     <div onClick={() => document.getElementById(`banner-img-${idx}`)?.click()} className="w-full aspect-[2/1] bg-accent/5 rounded-2xl border-2 border-dashed border-accent/10 flex flex-col items-center justify-center cursor-pointer overflow-hidden relative group">
                       {banner.image ? <img src={banner.image} className="w-full h-full object-cover" alt="preview" /> : <Camera className="w-8 h-8 text-accent/10" />}
                       <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all text-white text-[10px] font-black">이미지 업로드</div>
                     </div>
+                    <p className="text-[9px] font-black text-accent/20 uppercase tracking-tighter">권장: 1920 x 960px (2:1)</p>
                     <input type="file" id={`banner-img-${idx}`} className="hidden" accept="image/*" onChange={(e) => handleImageUpload('banner', idx, e)} />
                   </div>
                 </div>
@@ -205,7 +203,6 @@ export function AdminCMS({ initialBanners, initialPremiumAds, initialBranding, o
         </div>
       </section>
 
-      {/* 프리미엄 광고 관리 */}
       <section className="space-y-6">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-primary/10 rounded-lg text-primary"><ImageIcon className="w-5 h-5" /></div>
@@ -227,8 +224,12 @@ export function AdminCMS({ initialBanners, initialPremiumAds, initialBranding, o
                   <Input value={ad.badge} onChange={(e) => handleAdChange(idx, "badge", e.target.value)} placeholder="배지" className="bg-accent/5 border-none h-10 rounded-xl font-bold" />
                   <Input value={ad.title} onChange={(e) => handleAdChange(idx, "title", e.target.value)} placeholder="광고 제목" className="bg-accent/5 border-none h-10 rounded-xl font-black" />
                 </div>
-                <div onClick={() => document.getElementById(`ad-img-${idx}`)?.click()} className="relative aspect-[16/9] bg-accent/5 rounded-xl border-2 border-dashed border-accent/10 flex flex-col items-center justify-center cursor-pointer overflow-hidden group">
-                  {ad.webImage ? <img src={ad.webImage} className="w-full h-full object-cover" alt="preview" /> : <Camera className="w-6 h-6 text-accent/10" />}
+                <div className="space-y-2">
+                  <div onClick={() => document.getElementById(`ad-img-${idx}`)?.click()} className="relative aspect-[16/9] bg-accent/5 rounded-xl border-2 border-dashed border-accent/10 flex flex-col items-center justify-center cursor-pointer overflow-hidden group">
+                    {ad.webImage ? <img src={ad.webImage} className="w-full h-full object-cover" alt="preview" /> : <Camera className="w-6 h-6 text-accent/10" />}
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all text-white text-[9px] font-black">이미지 업로드</div>
+                  </div>
+                  <p className="text-[9px] font-black text-accent/20 text-center uppercase tracking-tighter">권장: 800 x 450px (16:9)</p>
                 </div>
                 <input type="file" id={`ad-img-${idx}`} className="hidden" accept="image/*" onChange={(e) => handleImageUpload('ad-web', idx, e)} />
                 <div className="relative">

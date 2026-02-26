@@ -32,7 +32,6 @@ export function AldiTrainer() {
   const [persona, setPersona] = useState("")
   const [isSaving, setIsSaving] = useState(false)
 
-  // 봇 설정 변경 시 상태 동기화
   useEffect(() => {
     if (botConfig) {
       setName(botConfig.name || "")
@@ -139,19 +138,20 @@ export function AldiTrainer() {
                   <span className="text-[11px] font-black text-accent/40 uppercase tracking-widest">봇 브랜딩 및 인터페이스</span>
                 </div>
                 <div className="flex flex-col md:flex-row gap-8 bg-primary/5 p-8 rounded-3xl border border-primary/10 shadow-inner">
-                  <div className="space-y-3 shrink-0">
-                    <label className="text-[10px] font-black text-accent/30 uppercase tracking-widest text-center block">프로필 아이콘</label>
+                  <div className="space-y-3 shrink-0 text-center">
+                    <label className="text-[10px] font-black text-accent/30 uppercase tracking-widest block">프로필 아이콘</label>
                     <div 
                       onClick={() => fileInputRef.current?.click()}
-                      className="w-24 h-24 rounded-2xl bg-white border-2 border-dashed border-accent/10 flex items-center justify-center cursor-pointer overflow-hidden group hover:border-primary relative transition-all"
+                      className="w-24 h-24 rounded-2xl bg-white border-2 border-dashed border-accent/10 flex items-center justify-center cursor-pointer overflow-hidden group hover:border-primary relative transition-all shadow-sm"
                     >
                       {iconUrl ? (
                         <img src={iconUrl} className="w-full h-full object-cover" alt="bot icon" />
                       ) : (
                         <Camera className="w-8 h-8 text-accent/10 group-hover:text-primary transition-colors" />
                       )}
-                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all text-white text-[8px] font-black">이미지 변경</div>
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all text-white text-[8px] font-black">이미지 업로드</div>
                     </div>
+                    <p className="text-[8px] font-black text-accent/20 uppercase tracking-tighter">권장: 400x400px</p>
                     <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleIconUpload} />
                   </div>
                   <div className="flex-1 space-y-4">
@@ -239,17 +239,17 @@ export function AldiTrainer() {
             <div className="space-y-6 text-xs font-bold leading-relaxed">
               <div className="bg-white/30 p-5 rounded-2xl">
                 <p className="font-black mb-1.5 text-[11px] uppercase tracking-tighter text-accent">🎨 봇 브랜딩</p>
-                <p className="text-accent">이름과 프로필 사진을 설정하면 사용자 채팅창과 답변 시 실시간으로 반영되어 신뢰도를 높입니다.</p>
+                <p className="text-accent opacity-100 font-black">이름과 프로필 사진을 설정하면 사용자 채팅창과 답변 시 실시간으로 반영되어 신뢰도를 높입니다.</p>
               </div>
               <div className="h-px bg-accent/5" />
               <div>
                 <p className="font-black mb-1.5 text-[11px] uppercase tracking-tighter text-accent">📚 데이터 우선순위</p>
-                <p className="text-accent">전문가가 직접 입력하거나 업로드한 데이터는 AI의 일반적인 지식보다 우선적으로 답변에 인용됩니다.</p>
+                <p className="text-accent opacity-100 font-black">전문가가 직접 입력하거나 업로드한 데이터는 AI의 일반적인 지식보다 우선적으로 답변에 인용됩니다.</p>
               </div>
               <div className="h-px bg-accent/5" />
               <div>
                 <p className="font-black mb-1.5 text-[11px] uppercase tracking-tighter text-accent">🎭 페르소나의 역할</p>
-                <p className="text-accent">봇의 말투(존댓말, 반말, 전문용어 사용 등)를 구체적으로 지시할수록 더욱 전문적인 느낌을 줄 수 있습니다.</p>
+                <p className="text-accent opacity-100 font-black">봇의 말투(존댓말, 반말, 전문용어 사용 등)를 구체적으로 지시할수록 더욱 전문적인 느낌을 줄 수 있습니다.</p>
               </div>
             </div>
           </Card>
