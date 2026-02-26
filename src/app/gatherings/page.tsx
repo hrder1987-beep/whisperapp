@@ -44,7 +44,6 @@ export default function GatheringsPage() {
   const [type, setType] = useState<"online" | "offline">("online")
   const [location, setLocation] = useState("")
   
-  // 수기 입력 방식 (HTML Date & Time Input 전용)
   const [startDateStr, setStartDateStr] = useState("")
   const [endDateStr, setEndDateStr] = useState("")
   const [startTime, setStartTime] = useState("14:00")
@@ -134,8 +133,6 @@ export default function GatheringsPage() {
     try {
       const tags = tagInput.split(/[, ]+/).filter(t => t.startsWith('#')).map(t => t.replace('#', ''))
       const finalDescription = description + (detailImages.length > 0 ? "\n\n[첨부 이미지]\n" + detailImages.join("\n") : "");
-
-      // 일정 문자열 조합
       const scheduleStr = `${startDateStr} ${startTime} ~ ${endDateStr} ${endTime}`
 
       await addDocumentNonBlocking(collection(db, "gatherings"), {
@@ -163,7 +160,6 @@ export default function GatheringsPage() {
       
       toast({ title: "모임 개설 완료", description: "새로운 HR 지식 모임이 개설되었습니다!" })
       setIsDialogOpen(false)
-      // 상태 초기화
       setTitle(""); setSummary(""); setTagInput(""); setDescription(""); setLocation(""); 
       setStartDateStr(""); setEndDateStr(""); setCapacity("10"); setSessionCount("6"); 
       setQuestions([]); setImageUrl(null); setDetailImages([]);
@@ -186,274 +182,275 @@ export default function GatheringsPage() {
               <p className="text-sm md:text-base font-bold text-[#888]">대한민국 HR 전문가들의 오프라인/온라인 동행</p>
             </div>
 
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              <DialogTrigger asChild>
-                <Button className="naver-button h-14 px-10 rounded-xl shadow-xl transition-all gap-3 text-base">
-                  <Plus className="w-5 h-5" />
-                  신규 모임 만들기
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-4xl bg-white border-none rounded-none p-0 shadow-2xl overflow-hidden max-h-[95vh] flex flex-col">
-                <DialogHeader className="bg-white border-b border-black/5 p-8 shrink-0 text-left">
-                  <DialogTitle className="text-2xl font-black text-accent">새로운 지식 모임 개설</DialogTitle>
-                  <p className="text-black/40 text-[10px] font-bold mt-1 uppercase tracking-widest">Create Professional Gathering</p>
-                </DialogHeader>
-                
-                <div className="flex-1 overflow-y-auto">
-                  <form onSubmit={handleCreateGathering} className="p-8 md:p-12 space-y-12 pb-32">
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-2">
-                        <label className="text-sm font-black text-[#1E1E23]">썸네일 이미지</label>
-                        <Badge className="bg-primary text-accent border-none rounded-sm px-2 py-0.5 text-[10px] font-black">필수</Badge>
-                      </div>
-                      <div className="flex flex-col md:flex-row gap-8">
-                        <div className="w-48 h-48 bg-[#F5F6F7] border border-black/5 rounded-xl flex items-center justify-center overflow-hidden shrink-0 shadow-inner">
-                          {imageUrl ? <img src={imageUrl} className="w-full h-full object-cover" alt="preview" /> : <div className="text-center p-4"><ImageIcon className="w-10 h-10 text-black/10 mx-auto mb-2" /><p className="text-[10px] text-black/20 font-bold">PREVIEW</p></div>}
-                        </div>
-                        <div onClick={() => fileInputRef.current?.click()} className="flex-1 border-2 border-dashed border-black/10 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-primary transition-all p-8 bg-[#FBFBFC] group">
-                          <div className="text-center">
-                            <ImageIcon className="w-8 h-8 text-black/10 mx-auto mb-4 group-hover:text-primary transition-colors" />
-                            <p className="text-sm font-bold text-primary mb-1">파일 선택 또는 드래그 앤 드롭</p>
-                            <p className="text-xs text-black/30 font-medium">권장 크기: 800px × 600px (4:3 비율)</p>
-                          </div>
-                        </div>
-                        <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleImageChange} />
-                      </div>
-                    </div>
-
-                    <div className="bg-[#FBFBFC] p-8 space-y-10 border border-black/5 rounded-2xl">
-                      <h3 className="text-base font-black text-accent flex items-center gap-2">
-                        <div className="w-1.5 h-5 bg-primary rounded-full"></div>
-                        기본 모임 정보
-                      </h3>
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                        <div className="space-y-6">
-                          <div className="space-y-3">
-                            <label className="text-[11px] font-black text-[#1E1E23]/40 uppercase tracking-widest ml-1">카테고리</label>
-                            <Select value={category} onValueChange={setCategory}>
-                              <SelectTrigger className="h-12 bg-white border-black/10 rounded-xl font-bold shadow-sm">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {GATHERING_CATEGORIES.filter(c => c !== "전체").map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          
-                          <div className="space-y-3">
-                            <label className="text-[11px] font-black text-[#1E1E23]/40 uppercase tracking-widest ml-1">진행 방식</label>
-                            <div className="grid grid-cols-2 gap-3">
-                              <Button 
-                                type="button" 
-                                onClick={() => setType('online')} 
-                                variant={type === 'online' ? 'default' : 'outline'} 
-                                className={cn("rounded-xl font-black h-12 gap-2 transition-all", type === 'online' ? "bg-primary text-accent shadow-lg" : "bg-white border-black/10 text-black/30")}
-                              >
-                                <Globe className="w-4 h-4" /> 온라인
-                              </Button>
-                              <Button 
-                                type="button" 
-                                onClick={() => setType('offline')} 
-                                variant={type === 'offline' ? 'default' : 'outline'} 
-                                className={cn("rounded-xl font-black h-12 gap-2 transition-all", type === 'offline' ? "bg-primary text-accent shadow-lg" : "bg-white border-black/10 text-black/30")}
-                              >
-                                <MapPin className="w-4 h-4" /> 오프라인
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="space-y-6">
-                          <div className="space-y-3">
-                            <label className="text-[11px] font-black text-[#1E1E23]/40 uppercase tracking-widest ml-1">모임 일정 및 시간</label>
-                            <div className="space-y-3">
-                              <div className="grid grid-cols-2 gap-2">
-                                <div className="space-y-1">
-                                  <span className="text-[9px] font-bold text-black/30 ml-1">시작일</span>
-                                  <Input 
-                                    type="date" 
-                                    value={startDateStr} 
-                                    onChange={(e) => setStartDateStr(e.target.value)}
-                                    className="h-12 bg-white border-black/10 rounded-xl font-bold shadow-sm"
-                                  />
-                                </div>
-                                <div className="space-y-1">
-                                  <span className="text-[9px] font-bold text-black/30 ml-1">종료일</span>
-                                  <Input 
-                                    type="date" 
-                                    value={endDateStr} 
-                                    onChange={(e) => {
-                                      setEndDateStr(e.target.value)
-                                    }}
-                                    className="h-12 bg-white border-black/10 rounded-xl font-bold shadow-sm"
-                                  />
-                                </div>
-                              </div>
-                              <div className="grid grid-cols-2 gap-2">
-                                <div className="space-y-1">
-                                  <span className="text-[9px] font-bold text-black/30 ml-1">시작시간</span>
-                                  <div className="flex items-center gap-2 bg-white border border-black/10 rounded-xl px-3 h-12 shadow-sm">
-                                    <Clock className="w-4 h-4 text-black/20" />
-                                    <Input 
-                                      type="time" 
-                                      value={startTime} 
-                                      onChange={(e) => setStartTime(e.target.value)} 
-                                      className="border-none shadow-none focus-visible:ring-0 p-0 font-bold"
-                                    />
-                                  </div>
-                                </div>
-                                <div className="space-y-1">
-                                  <span className="text-[9px] font-bold text-black/30 ml-1">종료시간</span>
-                                  <div className="flex items-center gap-2 bg-white border border-black/10 rounded-xl px-3 h-12 shadow-sm">
-                                    <Clock className="w-4 h-4 text-black/20" />
-                                    <Input 
-                                      type="time" 
-                                      value={endTime} 
-                                      onChange={(e) => setEndTime(e.target.value)} 
-                                      className="border-none shadow-none focus-visible:ring-0 p-0 font-bold"
-                                    />
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-3">
-                              <label className="text-[11px] font-black text-[#1E1E23]/40 uppercase tracking-widest ml-1">정원(명)</label>
-                              <Input type="number" value={capacity} onChange={e => setCapacity(e.target.value)} required className="h-12 bg-white border-black/10 rounded-xl font-bold shadow-sm" />
-                            </div>
-                            <div className="space-y-3">
-                              <label className="text-[11px] font-black text-[#1E1E23]/40 uppercase tracking-widest ml-1">총 회차(회)</label>
-                              <Input type="number" value={sessionCount} onChange={e => setSessionCount(e.target.value)} required className="h-12 bg-white border-black/10 rounded-xl font-bold shadow-sm" />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {type === 'offline' && (
-                        <div className="space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
-                          <label className="text-[11px] font-black text-[#1E1E23]/40 uppercase tracking-widest ml-1">오프라인 장소</label>
-                          <Input value={location} onChange={e => setLocation(e.target.value)} placeholder="상세 주소를 입력하세요" className="h-12 bg-white border-black/10 rounded-xl font-bold shadow-sm" />
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="space-y-8">
+            {/* 웹에서만 모임 개설 가능 */}
+            <div className="hidden md:block">
+              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button className="naver-button h-14 px-10 rounded-xl shadow-xl transition-all gap-3 text-base">
+                    <Plus className="w-5 h-5" />
+                    신규 모임 만들기
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-4xl bg-white border-none rounded-none p-0 shadow-2xl overflow-hidden max-h-[95vh] flex flex-col">
+                  <DialogHeader className="bg-white border-b border-black/5 p-8 shrink-0 text-left">
+                    <DialogTitle className="text-2xl font-black text-accent">새로운 지식 모임 개설</DialogTitle>
+                    <p className="text-black/40 text-[10px] font-bold mt-1 uppercase tracking-widest">Create Professional Gathering</p>
+                  </DialogHeader>
+                  
+                  <div className="flex-1 overflow-y-auto">
+                    <form onSubmit={handleCreateGathering} className="p-8 md:p-12 space-y-12 pb-32">
                       <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2"><label className="text-sm font-black text-[#1E1E23]">모임 제목</label><Badge className="bg-primary text-accent border-none rounded-sm px-2 py-0.5 text-[10px] font-black">필수</Badge></div>
-                          <span className="text-[11px] font-bold text-black/20">{title.length}/50</span>
-                        </div>
-                        <Input value={title} onChange={e => setTitle(e.target.value.slice(0, 50))} required placeholder="모임의 목적이 잘 드러나는 제목" className="h-14 bg-white border-black/10 rounded-xl font-black text-lg focus-visible:ring-primary/30 shadow-sm" />
-                      </div>
-
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2"><label className="text-sm font-black text-[#1E1E23]">한 줄 요약</label><Badge className="bg-primary text-accent border-none rounded-sm px-2 py-0.5 text-[10px] font-black">필수</Badge></div>
-                          <span className="text-[11px] font-bold text-black/20">{summary.length}/100</span>
-                        </div>
-                        <Input value={summary} onChange={e => setSummary(e.target.value.slice(0, 100))} required placeholder="카드 리스트에 노출될 요약 문구" className="h-12 bg-white border-black/10 rounded-xl font-bold text-base focus-visible:ring-primary/30 shadow-sm" />
-                      </div>
-                    </div>
-
-                    <div className="space-y-6">
-                      <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <label className="text-sm font-black text-[#1E1E23]">참가 신청자 사전 설문</label>
-                          <Badge className="bg-blue-500 text-white border-none rounded-sm px-2 py-0.5 text-[10px] font-black">최대 10개</Badge>
+                          <label className="text-sm font-black text-[#1E1E23]">썸네일 이미지</label>
+                          <Badge className="bg-primary text-accent border-none rounded-sm px-2 py-0.5 text-[10px] font-black">필수</Badge>
                         </div>
-                        <Button type="button" variant="outline" onClick={addQuestion} className="h-9 gap-2 border-primary/20 text-primary font-black rounded-lg">
-                          <ListPlus className="w-4 h-4" /> 질문 추가
-                        </Button>
-                      </div>
-                      
-                      <div className="space-y-4">
-                        {questions.length === 0 ? (
-                          <div className="py-10 text-center border-2 border-dashed border-black/5 rounded-2xl bg-[#FBFBFC]">
-                            <p className="text-[11px] font-bold text-black/20 uppercase tracking-widest">설문 질문이 없습니다.</p>
+                        <div className="flex flex-col md:flex-row gap-8">
+                          <div className="w-48 h-48 bg-[#F5F6F7] border border-black/5 rounded-xl flex items-center justify-center overflow-hidden shrink-0 shadow-inner">
+                            {imageUrl ? <img src={imageUrl} className="w-full h-full object-cover" alt="preview" /> : <div className="text-center p-4"><ImageIcon className="w-10 h-10 text-black/10 mx-auto mb-2" /><p className="text-[10px] text-black/20 font-bold">PREVIEW</p></div>}
                           </div>
-                        ) : (
-                          questions.map((q, idx) => (
-                            <div key={q.id} className="p-6 bg-[#FBFBFC] border border-black/5 rounded-2xl space-y-4 animate-in fade-in slide-in-from-top-2">
-                              <div className="flex items-center justify-between gap-4">
-                                <Badge className="bg-black/10 text-black/40 font-black border-none h-6 w-6 p-0 flex items-center justify-center rounded-full text-[10px] shrink-0">{idx + 1}</Badge>
-                                <Input 
-                                  value={q.text} 
-                                  onChange={e => updateQuestion(q.id, { text: e.target.value })} 
-                                  placeholder="질문 내용을 입력하세요" 
-                                  className="flex-1 h-11 border-black/10 rounded-xl font-bold text-sm shadow-sm"
-                                />
-                                <Select value={q.type} onValueChange={(val: any) => updateQuestion(q.id, { type: val })}>
-                                  <SelectTrigger className="w-32 h-11 border-black/10 rounded-xl font-bold shadow-sm">
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="text">주관식</SelectItem>
-                                    <SelectItem value="multiple">객관식</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                                <Button type="button" variant="ghost" size="icon" onClick={() => removeQuestion(q.id)} className="text-red-400 hover:text-red-600 hover:bg-red-50 shrink-0">
-                                  <Trash2 className="w-4 h-4" />
+                          <div onClick={() => fileInputRef.current?.click()} className="flex-1 border-2 border-dashed border-black/10 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-primary transition-all p-8 bg-[#FBFBFC] group">
+                            <div className="text-center">
+                              <ImageIcon className="w-8 h-8 text-black/10 mx-auto mb-4 group-hover:text-primary transition-colors" />
+                              <p className="text-sm font-bold text-primary mb-1 text-accent">파일 선택 또는 드래그 앤 드롭</p>
+                              <p className="text-xs text-black/30 font-medium">권장 크기: 800px × 600px (4:3 비율)</p>
+                            </div>
+                          </div>
+                          <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleImageChange} />
+                        </div>
+                      </div>
+
+                      <div className="bg-[#FBFBFC] p-8 space-y-10 border border-black/5 rounded-2xl">
+                        <h3 className="text-base font-black text-accent flex items-center gap-2">
+                          <div className="w-1.5 h-5 bg-primary rounded-full"></div>
+                          기본 모임 정보
+                        </h3>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                          <div className="space-y-6">
+                            <div className="space-y-3">
+                              <label className="text-[11px] font-black text-[#1E1E23]/40 uppercase tracking-widest ml-1">카테고리</label>
+                              <Select value={category} onValueChange={setCategory}>
+                                <SelectTrigger className="h-12 bg-white border-black/10 rounded-xl font-bold shadow-sm">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {GATHERING_CATEGORIES.filter(c => c !== "전체").map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            
+                            <div className="space-y-3">
+                              <label className="text-[11px] font-black text-[#1E1E23]/40 uppercase tracking-widest ml-1">진행 방식</label>
+                              <div className="grid grid-cols-2 gap-3">
+                                <Button 
+                                  type="button" 
+                                  onClick={() => setType('online')} 
+                                  variant={type === 'online' ? 'default' : 'outline'} 
+                                  className={cn("rounded-xl font-black h-12 gap-2 transition-all", type === 'online' ? "bg-primary text-accent shadow-lg" : "bg-white border-black/10 text-black/30")}
+                                >
+                                  <Globe className="w-4 h-4" /> 온라인
+                                </Button>
+                                <Button 
+                                  type="button" 
+                                  onClick={() => setType('offline')} 
+                                  variant={type === 'offline' ? 'default' : 'outline'} 
+                                  className={cn("rounded-xl font-black h-12 gap-2 transition-all", type === 'offline' ? "bg-primary text-accent shadow-lg" : "bg-white border-black/10 text-black/30")}
+                                >
+                                  <MapPin className="w-4 h-4" /> 오프라인
                                 </Button>
                               </div>
-                              
-                              {q.type === 'multiple' && (
-                                <div className="pl-10 space-y-3">
-                                  <label className="text-[10px] font-black text-black/30 uppercase tracking-widest">선택지 입력 (콤마로 구분)</label>
-                                  <Input 
-                                    value={q.options?.join(', ') || ""} 
-                                    onChange={e => updateQuestion(q.id, { options: e.target.value.split(',').map(s => s.trim()).filter(s => s) })} 
-                                    placeholder="예: 초급, 중급, 고급" 
-                                    className="h-10 border-black/10 rounded-xl font-medium text-xs bg-white"
-                                  />
-                                </div>
-                              )}
                             </div>
-                          ))
+                          </div>
+
+                          <div className="space-y-6">
+                            <div className="space-y-3">
+                              <label className="text-[11px] font-black text-[#1E1E23]/40 uppercase tracking-widest ml-1">모임 일정 및 시간</label>
+                              <div className="space-y-3">
+                                <div className="grid grid-cols-2 gap-2">
+                                  <div className="space-y-1">
+                                    <span className="text-[9px] font-bold text-black/30 ml-1">시작일</span>
+                                    <Input 
+                                      type="date" 
+                                      value={startDateStr} 
+                                      onChange={(e) => setStartDateStr(e.target.value)}
+                                      className="h-12 bg-white border-black/10 rounded-xl font-bold shadow-sm"
+                                    />
+                                  </div>
+                                  <div className="space-y-1">
+                                    <span className="text-[9px] font-bold text-black/30 ml-1">종료일</span>
+                                    <Input 
+                                      type="date" 
+                                      value={endDateStr} 
+                                      onChange={(e) => setEndDateStr(e.target.value)}
+                                      className="h-12 bg-white border-black/10 rounded-xl font-bold shadow-sm"
+                                    />
+                                  </div>
+                                </div>
+                                <div className="grid grid-cols-2 gap-2">
+                                  <div className="space-y-1">
+                                    <span className="text-[9px] font-bold text-black/30 ml-1">시작시간</span>
+                                    <div className="flex items-center gap-2 bg-white border border-black/10 rounded-xl px-3 h-12 shadow-sm">
+                                      <Clock className="w-4 h-4 text-black/20" />
+                                      <Input 
+                                        type="time" 
+                                        value={startTime} 
+                                        onChange={(e) => setStartTime(e.target.value)} 
+                                        className="border-none shadow-none focus-visible:ring-0 p-0 font-bold"
+                                      />
+                                    </div>
+                                  </div>
+                                  <div className="space-y-1">
+                                    <span className="text-[9px] font-bold text-black/30 ml-1">종료시간</span>
+                                    <div className="flex items-center gap-2 bg-white border border-black/10 rounded-xl px-3 h-12 shadow-sm">
+                                      <Clock className="w-4 h-4 text-black/20" />
+                                      <Input 
+                                        type="time" 
+                                        value={endTime} 
+                                        onChange={(e) => setEndTime(e.target.value)} 
+                                        className="border-none shadow-none focus-visible:ring-0 p-0 font-bold"
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                              <div className="space-y-3">
+                                <label className="text-[11px] font-black text-[#1E1E23]/40 uppercase tracking-widest ml-1">정원(명)</label>
+                                <Input type="number" value={capacity} onChange={e => setCapacity(e.target.value)} required className="h-12 bg-white border-black/10 rounded-xl font-bold shadow-sm" />
+                              </div>
+                              <div className="space-y-3">
+                                <label className="text-[11px] font-black text-[#1E1E23]/40 uppercase tracking-widest ml-1">총 회차(회)</label>
+                                <Input type="number" value={sessionCount} onChange={e => setSessionCount(e.target.value)} required className="h-12 bg-white border-black/10 rounded-xl font-bold shadow-sm" />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {type === 'offline' && (
+                          <div className="space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                            <label className="text-[11px] font-black text-[#1E1E23]/40 uppercase tracking-widest ml-1">오프라인 장소</label>
+                            <Input value={location} onChange={e => setLocation(e.target.value)} placeholder="상세 주소를 입력하세요" className="h-12 bg-white border-black/10 rounded-xl font-bold shadow-sm" />
+                          </div>
                         )}
                       </div>
-                    </div>
 
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-2">
-                        <label className="text-sm font-black text-[#1E1E23]">해시태그</label>
-                        <Badge className="bg-primary text-accent border-none rounded-sm px-2 py-0.5 text-[10px] font-black">필수</Badge>
-                      </div>
-                      <Input value={tagInput} onChange={e => setTagInput(e.target.value)} required placeholder="#인사전략 #네트워킹 #데이터분석" className="h-12 bg-white border-black/10 rounded-xl font-bold text-sm shadow-sm" />
-                    </div>
-
-                    <div className="space-y-4">
-                      <label className="text-sm font-black text-[#1E1E23]">모임 상세 소개</label>
-                      <div className="border border-black/10 rounded-2xl overflow-hidden shadow-sm">
-                        <div className="bg-[#FBFBFC] border-b border-black/10 p-3 flex items-center gap-2">
-                          <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-black/40 hover:text-primary" onClick={() => detailImageInputRef.current?.click()}><ImageIcon className="w-5 h-5" /></Button>
-                          <input type="file" ref={detailImageInputRef} className="hidden" accept="image/*" onChange={handleDetailImageChange} />
-                          <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-black/40 hover:text-primary"><FileText className="w-5 h-5" /></Button>
-                          <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-black/40 hover:text-primary"><Video className="w-5 h-5" /></Button>
-                          <div className="w-px h-5 bg-black/10 mx-2" />
-                          <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-black/40 hover:text-primary"><Type className="w-5 h-5" /></Button>
+                      <div className="space-y-8">
+                        <div className="space-y-4">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2"><label className="text-sm font-black text-[#1E1E23]">모임 제목</label><Badge className="bg-primary text-accent border-none rounded-sm px-2 py-0.5 text-[10px] font-black">필수</Badge></div>
+                            <span className="text-[11px] font-bold text-black/20">{title.length}/50</span>
+                          </div>
+                          <Input value={title} onChange={e => setTitle(e.target.value.slice(0, 50))} required placeholder="모임의 목적이 잘 드러나는 제목" className="h-14 bg-white border-black/10 rounded-xl font-black text-lg focus-visible:ring-primary/30 shadow-sm" />
                         </div>
-                        <Textarea 
-                          value={description} 
-                          onChange={e => setDescription(e.target.value)} 
-                          required 
-                          placeholder="프로그램 내용 등을 작성해 주세요." 
-                          className="min-h-[400px] border-none shadow-none focus-visible:ring-0 p-8 text-base font-medium leading-relaxed resize-none" 
-                        />
-                      </div>
-                    </div>
 
-                    <div className="fixed bottom-0 left-0 right-0 p-6 bg-white/80 backdrop-blur-md border-t border-black/5 flex justify-end z-50">
-                      <Button type="submit" disabled={isSubmitting} className="h-14 px-16 naver-button text-lg shadow-2xl rounded-xl">
-                        {isSubmitting ? "모임 개설 중..." : "모임 개설 완료하기"}
-                      </Button>
-                    </div>
-                  </form>
-                </div>
-              </DialogContent>
-            </Dialog>
+                        <div className="space-y-4">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2"><label className="text-sm font-black text-[#1E1E23]">한 줄 요약</label><Badge className="bg-primary text-accent border-none rounded-sm px-2 py-0.5 text-[10px] font-black">필수</Badge></div>
+                            <span className="text-[11px] font-bold text-black/20">{summary.length}/100</span>
+                          </div>
+                          <Input value={summary} onChange={e => setSummary(e.target.value.slice(0, 100))} required placeholder="카드 리스트에 노출될 요약 문구" className="h-12 bg-white border-black/10 rounded-xl font-bold text-base focus-visible:ring-primary/30 shadow-sm" />
+                        </div>
+                      </div>
+
+                      <div className="space-y-6">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <label className="text-sm font-black text-[#1E1E23]">참가 신청자 사전 설문</label>
+                            <Badge className="bg-blue-500 text-white border-none rounded-sm px-2 py-0.5 text-[10px] font-black">최대 10개</Badge>
+                          </div>
+                          <Button type="button" variant="outline" onClick={addQuestion} className="h-9 gap-2 border-primary/20 text-primary font-black rounded-lg">
+                            <ListPlus className="w-4 h-4" /> 질문 추가
+                          </Button>
+                        </div>
+                        
+                        <div className="space-y-4">
+                          {questions.length === 0 ? (
+                            <div className="py-10 text-center border-2 border-dashed border-black/5 rounded-2xl bg-[#FBFBFC]">
+                              <p className="text-[11px] font-bold text-black/20 uppercase tracking-widest">설문 질문이 없습니다.</p>
+                            </div>
+                          ) : (
+                            questions.map((q, idx) => (
+                              <div key={q.id} className="p-6 bg-[#FBFBFC] border border-black/5 rounded-2xl space-y-4 animate-in fade-in slide-in-from-top-2">
+                                <div className="flex items-center justify-between gap-4">
+                                  <Badge className="bg-black/10 text-black/40 font-black border-none h-6 w-6 p-0 flex items-center justify-center rounded-full text-[10px] shrink-0">{idx + 1}</Badge>
+                                  <Input 
+                                    value={q.text} 
+                                    onChange={e => updateQuestion(q.id, { text: e.target.value })} 
+                                    placeholder="질문 내용을 입력하세요" 
+                                    className="flex-1 h-11 border-black/10 rounded-xl font-bold text-sm shadow-sm"
+                                  />
+                                  <Select value={q.type} onValueChange={(val: any) => updateQuestion(q.id, { type: val })}>
+                                    <SelectTrigger className="w-32 h-11 border-black/10 rounded-xl font-bold shadow-sm">
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="text">주관식</SelectItem>
+                                      <SelectItem value="multiple">객관식</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                  <Button type="button" variant="ghost" size="icon" onClick={() => removeQuestion(q.id)} className="text-red-400 hover:text-red-600 hover:bg-red-50 shrink-0">
+                                    <Trash2 className="w-4 h-4" />
+                                  </Button>
+                                </div>
+                                
+                                {q.type === 'multiple' && (
+                                  <div className="pl-10 space-y-3">
+                                    <label className="text-[10px] font-black text-black/30 uppercase tracking-widest">선택지 입력 (콤마로 구분)</label>
+                                    <Input 
+                                      value={q.options?.join(', ') || ""} 
+                                      onChange={e => updateQuestion(q.id, { options: e.target.value.split(',').map(s => s.trim()).filter(s => s) })} 
+                                      placeholder="예: 초급, 중급, 고급" 
+                                      className="h-10 border-black/10 rounded-xl font-medium text-xs bg-white"
+                                    />
+                                  </div>
+                                )}
+                              </div>
+                            ))
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-2">
+                          <label className="text-sm font-black text-[#1E1E23]">해시태그</label>
+                          <Badge className="bg-primary text-accent border-none rounded-sm px-2 py-0.5 text-[10px] font-black">필수</Badge>
+                        </div>
+                        <Input value={tagInput} onChange={e => setTagInput(e.target.value)} required placeholder="#인사전략 #네트워킹 #데이터분석" className="h-12 bg-white border-black/10 rounded-xl font-bold text-sm shadow-sm" />
+                      </div>
+
+                      <div className="space-y-4">
+                        <label className="text-sm font-black text-[#1E1E23]">모임 상세 소개</label>
+                        <div className="border border-black/10 rounded-2xl overflow-hidden shadow-sm">
+                          <div className="bg-[#FBFBFC] border-b border-black/10 p-3 flex items-center gap-2">
+                            <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-black/40 hover:text-primary" onClick={() => detailImageInputRef.current?.click()}><ImageIcon className="w-5 h-5" /></Button>
+                            <input type="file" ref={detailImageInputRef} className="hidden" accept="image/*" onChange={handleDetailImageChange} />
+                            <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-black/40 hover:text-primary"><FileText className="w-5 h-5" /></Button>
+                            <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-black/40 hover:text-primary"><Video className="w-5 h-5" /></Button>
+                            <div className="w-px h-5 bg-black/10 mx-2" />
+                            <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-black/40 hover:text-primary"><Type className="w-5 h-5" /></Button>
+                          </div>
+                          <Textarea 
+                            value={description} 
+                            onChange={e => setDescription(e.target.value)} 
+                            required 
+                            placeholder="프로그램 내용 등을 작성해 주세요." 
+                            className="min-h-[400px] border-none shadow-none focus-visible:ring-0 p-8 text-base font-medium leading-relaxed resize-none" 
+                          />
+                        </div>
+                      </div>
+
+                      <div className="fixed bottom-0 left-0 right-0 p-6 bg-white/80 backdrop-blur-md border-t border-black/5 flex justify-end z-50">
+                        <Button type="submit" disabled={isSubmitting} className="h-14 px-16 naver-button text-lg shadow-2xl rounded-xl">
+                          {isSubmitting ? "모임 개설 중..." : "모임 개설 완료하기"}
+                        </Button>
+                      </div>
+                    </form>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
           </div>
 
           <div className="flex flex-col gap-6">

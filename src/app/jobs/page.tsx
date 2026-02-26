@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking } from "@/firebase"
-import { collection, query, orderBy, doc } from "firebase/firestore"
+import { collection, query, orderBy } from "firebase/firestore"
 import { JobListing } from "@/lib/types"
 import { MapPin, Plus, Search, Award, Clock, Camera, Sparkles, Building2, Bookmark, Share2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
@@ -77,7 +77,6 @@ export default function JobsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [viewJob, setViewJob] = useState<JobListing | null>(null)
 
-  // Registration Form States
   const [companyName, setCompanyName] = useState("")
   const [title, setTitle] = useState("")
   const [location, setLocation] = useState("")
@@ -112,25 +111,14 @@ export default function JobsPage() {
     setIsSubmitting(true)
     try {
       await addDocumentNonBlocking(collection(db, "jobs"), {
-        companyName, 
-        title, 
-        location, 
-        experience, 
-        deadline, 
-        category,
-        tags: [experience, category], 
-        createdAt: Date.now(), 
-        userId: user.uid,
-        logoUrl: adImageUrl || `https://picsum.photos/seed/${companyName}/100/100`, 
-        adImageUrl
+        companyName, title, location, experience, deadline, category,
+        tags: [experience, category], createdAt: Date.now(), userId: user.uid,
+        logoUrl: adImageUrl || `https://picsum.photos/seed/${companyName}/100/100`, adImageUrl
       })
       toast({ title: "공고 등록 완료", description: "채용 공고가 게시되었습니다." })
       setIsDialogOpen(false); setTitle(""); setCompanyName(""); setAdImageUrl(null)
-    } catch (error) { 
-      toast({ title: "오류", description: "문제가 발생했습니다.", variant: "destructive" }) 
-    } finally { 
-      setIsSubmitting(false) 
-    }
+    } catch (error) { toast({ title: "오류", description: "문제가 발생했습니다.", variant: "destructive" }) }
+    finally { setIsSubmitting(false) }
   }
 
   return (
@@ -144,56 +132,59 @@ export default function JobsPage() {
               <p className="text-sm md:text-base font-bold text-accent/40">전문성이 검증된 HR 담당자를 위한 커리어 큐레이션</p>
             </div>
 
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              <DialogTrigger asChild>
-                <Button className="naver-button h-12 px-8 rounded-none shadow-sm transition-all gap-2 text-sm">
-                  <Plus className="w-4 h-4" />
-                  채용 공고 게시하기
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-2xl bg-white border-none rounded-none p-0 shadow-2xl overflow-hidden">
-                <DialogHeader className="bg-white border-b border-black/5 p-8 text-left">
-                  <DialogTitle className="text-xl font-black text-accent">신규 채용 공고 등록</DialogTitle>
-                  <p className="text-black/40 text-[10px] font-bold mt-1 uppercase tracking-widest">Recruitment Intelligence Registration</p>
-                </DialogHeader>
-                <form onSubmit={handleAddJob} className="p-8 space-y-8 overflow-y-auto max-h-[75vh]">
-                  <div onClick={() => fileInputRef.current?.click()} className="relative aspect-[21/9] bg-[#F5F6F7] border-2 border-dashed border-black/10 flex items-center justify-center cursor-pointer overflow-hidden group hover:border-primary">
-                    {adImageUrl ? <img src={adImageUrl} className="w-full h-full object-contain" alt="preview" /> : <div className="text-center"><Camera className="w-8 h-8 text-black/10 group-hover:text-primary transition-colors mx-auto mb-2" /><p className="text-[10px] font-bold text-black/20">공고 포스터 또는 로고 (21:9)</p></div>}
-                  </div>
-                  <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={(e) => {
-                    const file = e.target.files?.[0]; if (file) { const reader = new FileReader(); reader.onloadend = () => setAdImageUrl(reader.result as string); reader.readAsDataURL(file); }
-                  }} />
-                  <div className="grid grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest">기업명</label>
-                      <Input value={companyName} onChange={e => setCompanyName(e.target.value)} required placeholder="회사명" className="h-11 bg-[#F5F6F7] border-none rounded-none font-bold" />
+            {/* 웹에서만 공고 게시 가능 */}
+            <div className="hidden md:block">
+              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button className="naver-button h-12 px-8 rounded-none shadow-sm transition-all gap-2 text-sm text-accent">
+                    <Plus className="w-4 h-4" />
+                    채용 공고 게시하기
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-2xl bg-white border-none rounded-none p-0 shadow-2xl overflow-hidden">
+                  <DialogHeader className="bg-white border-b border-black/5 p-8 text-left">
+                    <DialogTitle className="text-xl font-black text-accent">신규 채용 공고 등록</DialogTitle>
+                    <p className="text-black/40 text-[10px] font-bold mt-1 uppercase tracking-widest">Recruitment Intelligence Registration</p>
+                  </DialogHeader>
+                  <form onSubmit={handleAddJob} className="p-8 space-y-8 overflow-y-auto max-h-[75vh]">
+                    <div onClick={() => fileInputRef.current?.click()} className="relative aspect-[21/9] bg-[#F5F6F7] border-2 border-dashed border-black/10 flex items-center justify-center cursor-pointer overflow-hidden group hover:border-primary">
+                      {adImageUrl ? <img src={adImageUrl} className="w-full h-full object-contain" alt="preview" /> : <div className="text-center"><Camera className="w-8 h-8 text-black/10 group-hover:text-primary transition-colors mx-auto mb-2" /><p className="text-[10px] font-bold text-black/20">공고 포스터 또는 로고 (21:9)</p></div>}
+                    </div>
+                    <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={(e) => {
+                      const file = e.target.files?.[0]; if (file) { const reader = new FileReader(); reader.onloadend = () => setAdImageUrl(reader.result as string); reader.readAsDataURL(file); }
+                    }} />
+                    <div className="grid grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest">기업명</label>
+                        <Input value={companyName} onChange={e => setCompanyName(e.target.value)} required placeholder="회사명" className="h-11 bg-[#F5F6F7] border-none rounded-none font-bold" />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest">직무 분류</label>
+                        <Select onValueChange={setCategory} required>
+                          <SelectTrigger className="h-11 bg-[#F5F6F7] border-none rounded-none font-bold"><SelectValue placeholder="카테고리" /></SelectTrigger>
+                          <SelectContent>{JOB_CATEGORIES.filter(c => c !== "전체").map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+                        </Select>
+                      </div>
                     </div>
                     <div className="space-y-2">
-                      <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest">직무 분류</label>
-                      <Select onValueChange={setCategory} required>
-                        <SelectTrigger className="h-11 bg-[#F5F6F7] border-none rounded-none font-bold"><SelectValue placeholder="카테고리" /></SelectTrigger>
-                        <SelectContent>{JOB_CATEGORIES.filter(c => c !== "전체").map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
-                      </Select>
+                      <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest">공고 제목</label>
+                      <Input value={title} onChange={e => setTitle(e.target.value)} required placeholder="예: [토스] 채용 브랜딩 리더" className="h-12 bg-[#F5F6F7] border-none rounded-none font-black text-base" />
                     </div>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest">공고 제목</label>
-                    <Input value={title} onChange={e => setTitle(e.target.value)} required placeholder="예: [토스] 채용 브랜딩 리더" className="h-12 bg-[#F5F6F7] border-none rounded-none font-black text-base" />
-                  </div>
-                  <div className="grid grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest">근무지역</label>
-                      <Input value={location} onChange={e => setLocation(e.target.value)} required placeholder="예: 서울 강남구" className="h-11 bg-[#F5F6F7] border-none rounded-none" />
+                    <div className="grid grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest">근무지역</label>
+                        <Input value={location} onChange={e => setLocation(e.target.value)} required placeholder="예: 서울 강남구" className="h-11 bg-[#F5F6F7] border-none rounded-none" />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest">마감기한</label>
+                        <Input value={deadline} onChange={e => setDeadline(e.target.value)} required placeholder="예: 2024-12-31 또는 상시" className="h-11 bg-[#F5F6F7] border-none rounded-none" />
+                      </div>
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest">마감기한</label>
-                      <Input value={deadline} onChange={e => setDeadline(e.target.value)} required placeholder="예: 2024-12-31 또는 상시" className="h-11 bg-[#F5F6F7] border-none rounded-none" />
-                    </div>
-                  </div>
-                  <Button type="submit" disabled={isSubmitting} className="w-full h-12 naver-button text-sm rounded-none shadow-md">작성 완료 및 게시</Button>
-                </form>
-              </DialogContent>
-            </Dialog>
+                    <Button type="submit" disabled={isSubmitting} className="w-full h-12 naver-button text-accent text-sm rounded-none shadow-md">작성 완료 및 게시</Button>
+                  </form>
+                </DialogContent>
+              </Dialog>
+            </div>
           </div>
 
           <div className="space-y-6">
@@ -214,7 +205,7 @@ export default function JobsPage() {
                   className={cn(
                     "px-6 py-2.5 rounded-none text-xs font-black transition-all border whitespace-nowrap",
                     selectedCategory === cat 
-                      ? "bg-accent text-white border-accent shadow-sm" 
+                      ? "bg-primary text-accent border-primary shadow-sm" 
                       : "bg-white text-black/40 border-black/5 hover:border-accent/20"
                   )}
                 >
@@ -287,7 +278,7 @@ export default function JobsPage() {
               <div className="space-y-2">
                 <DialogTitle className="text-2xl md:text-3xl font-black text-accent leading-tight">{viewJob.title}</DialogTitle>
                 <p className="text-primary font-black text-lg flex items-center gap-2">
-                  <Building2 className="w-5 h-5" /> @{viewJob.companyName}
+                  <Building2 className="w-5 h-5 text-accent" /> @{viewJob.companyName}
                 </p>
               </div>
             </DialogHeader>
@@ -334,7 +325,7 @@ export default function JobsPage() {
             </div>
             <div className="p-8 bg-[#FBFBFC] border-t border-black/5 flex justify-end gap-3 shrink-0">
               <Button onClick={() => setViewJob(null)} variant="ghost" className="h-12 px-8 rounded-none font-black text-black/30 hover:bg-black/5">닫기</Button>
-              <Button className="h-12 px-12 naver-button text-sm rounded-none shadow-xl">입사 지원하기</Button>
+              <Button className="h-12 px-12 naver-button text-accent font-black text-sm rounded-none shadow-xl">입사 지원하기</Button>
             </div>
           </DialogContent>
         </Dialog>

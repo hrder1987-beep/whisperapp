@@ -68,7 +68,6 @@ export default function InstructorsPage() {
   const [viewTarget, setViewTarget] = useState<Instructor | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  // Registration Form States
   const [name, setName] = useState("")
   const [specialty, setSpecialty] = useState("")
   const [company, setCompany] = useState("")
@@ -122,7 +121,6 @@ export default function InstructorsPage() {
       })
       toast({ title: "등록 완료", description: "강사 프로필이 생성되었습니다. 검토 후 공식 등록됩니다." })
       setIsDialogOpen(false)
-      // Reset
       setName(""); setSpecialty(""); setCompany(""); setPhone(""); setEmail("");
       setCareer(""); setCertifications(""); setBio(""); setProfilePictureUrl(null);
       setDetailImageUrl(null); setVideoUrl(""); setShowVideoInput(false);
@@ -147,105 +145,108 @@ export default function InstructorsPage() {
               <p className="text-sm md:text-base font-bold text-[#888]">분야별 최고의 전문 강사진 프로필 및 섭외 정보</p>
             </div>
 
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              <DialogTrigger asChild>
-                <Button className="naver-button h-14 px-10 rounded-xl shadow-xl transition-all gap-3 text-base">
-                  <Plus className="w-5 h-5" />
-                  전문 강사 등록
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-4xl bg-white border-none rounded-none p-0 shadow-2xl overflow-hidden max-h-[95vh] flex flex-col">
-                <DialogHeader className="bg-white border-b border-black/5 p-8 shrink-0">
-                  <DialogTitle className="text-2xl font-black text-accent">전문 강사 프로필 게시</DialogTitle>
-                  <p className="text-black/40 text-[10px] font-bold mt-1 uppercase tracking-widest">Register Professional Instructor</p>
-                </DialogHeader>
-                
-                <div className="flex-1 overflow-y-auto">
-                  <form onSubmit={handleAddInstructor} className="p-10 space-y-12 pb-24">
-                    <div className="flex flex-col md:flex-row gap-10">
-                      <div className="space-y-4">
-                        <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest ml-1 flex items-center gap-2"><Camera className="w-3.5 h-3.5" /> 프로필 사진</label>
-                        <div onClick={() => fileInputRef.current?.click()} className="w-40 h-40 rounded-2xl bg-[#F5F6F7] border-2 border-dashed border-black/10 flex items-center justify-center cursor-pointer hover:border-primary overflow-hidden shrink-0 shadow-inner group">
-                          {profilePictureUrl ? <img src={profilePictureUrl} className="w-full h-full object-cover" alt="preview" /> : <Camera className="w-10 h-10 text-black/10 group-hover:text-primary transition-colors" />}
-                        </div>
-                        <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={(e) => handleImageChange(e, setProfilePictureUrl)} />
-                      </div>
-                      <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                          <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest ml-1">강사 성함</label>
-                          <Input value={name} onChange={e => setName(e.target.value)} required placeholder="실명 입력" className="h-12 bg-[#F5F6F7] border-none rounded-xl font-bold shadow-inner" />
-                        </div>
-                        <div className="space-y-2">
-                          <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest ml-1">전문 분야</label>
-                          <Select onValueChange={setSpecialty} required>
-                            <SelectTrigger className="h-12 bg-[#F5F6F7] border-none rounded-xl font-bold shadow-inner"><SelectValue placeholder="카테고리 선택" /></SelectTrigger>
-                            <SelectContent>{INSTRUCTOR_CATEGORIES.filter(c => c !== "전체").map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
-                          </Select>
-                        </div>
-                        <div className="space-y-2">
-                          <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest ml-1">소속 (기업/연구소)</label>
-                          <Input value={company} onChange={e => setCompany(e.target.value)} placeholder="예: 위스퍼 컨설팅" className="h-12 bg-[#F5F6F7] border-none rounded-xl font-bold shadow-inner" />
-                        </div>
-                        <div className="space-y-2">
-                          <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest ml-1">연락처</label>
-                          <Input value={phone} onChange={e => setPhone(e.target.value)} placeholder="010-0000-0000" className="h-12 bg-[#F5F6F7] border-none rounded-xl font-bold shadow-inner" />
-                        </div>
-                        <div className="md:col-span-2 space-y-2">
-                          <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest ml-1">공식 이메일</label>
-                          <Input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="example@email.com" className="h-12 bg-[#F5F6F7] border-none rounded-xl font-bold shadow-inner" />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-[#F5F6F7] p-8 rounded-3xl border border-black/5 shadow-inner">
-                      <div className="space-y-4">
-                        <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest ml-1 flex items-center gap-2"><Briefcase className="w-3.5 h-3.5 text-primary" /> 주요 경력 사항</label>
-                        <Textarea value={career} onChange={e => setCareer(e.target.value)} placeholder="시기별 주요 이력을 작성해 주세요." className="min-h-[120px] bg-white border-none rounded-xl p-4 font-bold text-sm shadow-sm" />
-                      </div>
-                      <div className="space-y-4">
-                        <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest ml-1 flex items-center gap-2"><Award className="w-3.5 h-3.5 text-primary" /> 보유 자격증 및 수료 사항</label>
-                        <Textarea value={certifications} onChange={e => setCertifications(e.target.value)} placeholder="전문 자격증 및 학위 정보를 입력하세요." className="min-h-[120px] bg-white border-none rounded-xl p-4 font-bold text-sm shadow-sm" />
-                      </div>
-                    </div>
-
-                    <div className="space-y-10">
-                      <div className="space-y-4">
-                        <label className="text-sm font-black text-[#1E1E23]">강사 상세 소개 및 포트폴리오</label>
-                        <div className="border border-black/10 rounded-2xl overflow-hidden shadow-sm">
-                          <div className="bg-[#FBFBFC] border-b border-black/10 p-3 flex items-center gap-2">
-                            <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-black/40 hover:text-primary" onClick={(e) => { e.preventDefault(); detailImageInputRef.current?.click(); }}><ImageIcon className="w-5 h-5" /></Button>
-                            <input type="file" ref={detailImageInputRef} className="hidden" accept="image/*" onChange={(e) => handleImageChange(e, setDetailImageUrl)} />
-                            <Button type="button" variant="ghost" size="icon" className={cn("h-9 w-9", showVideoInput ? "text-primary bg-primary/5" : "text-black/40 hover:text-primary")} onClick={(e) => { e.preventDefault(); setShowVideoInput(!showVideoInput); }}><Video className="w-5 h-5" /></Button>
-                            <div className="w-px h-5 bg-black/10 mx-2" />
-                            <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-black/40 hover:text-primary"><Type className="w-5 h-5" /></Button>
-                            <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-black/40 hover:text-primary"><Bold className="w-4 h-4" /></Button>
-                            <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-black/40 hover:text-primary"><List className="w-4 h-4" /></Button>
+            {/* 웹에서만 강사 등록 가능 */}
+            <div className="hidden md:block">
+              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button className="naver-button h-14 px-10 rounded-xl shadow-xl transition-all gap-3 text-base">
+                    <Plus className="w-5 h-5" />
+                    전문 강사 등록
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-4xl bg-white border-none rounded-none p-0 shadow-2xl overflow-hidden max-h-[95vh] flex flex-col">
+                  <DialogHeader className="bg-white border-b border-black/5 p-8 shrink-0 text-left">
+                    <DialogTitle className="text-2xl font-black text-accent">전문 강사 프로필 게시</DialogTitle>
+                    <p className="text-black/40 text-[10px] font-bold mt-1 uppercase tracking-widest">Register Professional Instructor</p>
+                  </DialogHeader>
+                  
+                  <div className="flex-1 overflow-y-auto">
+                    <form onSubmit={handleAddInstructor} className="p-10 space-y-12 pb-24">
+                      <div className="flex flex-col md:flex-row gap-10">
+                        <div className="space-y-4">
+                          <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest ml-1 flex items-center gap-2"><Camera className="w-3.5 h-3.5" /> 프로필 사진</label>
+                          <div onClick={() => fileInputRef.current?.click()} className="w-40 h-40 rounded-2xl bg-[#F5F6F7] border-2 border-dashed border-black/10 flex items-center justify-center cursor-pointer hover:border-primary overflow-hidden shrink-0 shadow-inner group">
+                            {profilePictureUrl ? <img src={profilePictureUrl} className="w-full h-full object-cover" alt="preview" /> : <Camera className="w-10 h-10 text-black/10 group-hover:text-primary transition-colors" />}
                           </div>
-
-                          {showVideoInput && (
-                            <div className="bg-primary/5 p-4 border-b border-black/5 flex items-center gap-3">
-                              <Youtube className="w-5 h-5 text-[#FF0000]" />
-                              <Input value={videoUrl} onChange={e => setVideoUrl(e.target.value)} placeholder="유튜브 영상 주소를 입력하세요" className="h-10 bg-white border-black/10 rounded-lg text-sm font-bold" />
-                            </div>
-                          )}
-
-                          {detailImageUrl && (
-                            <div className="p-4 border-b border-black/5 bg-white flex justify-center relative group">
-                              <img src={detailImageUrl} alt="detail preview" className="max-h-60 rounded-lg object-contain shadow-md" />
-                              <Button type="button" variant="destructive" size="icon" className="absolute top-6 right-6 h-8 w-8 rounded-full opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => setDetailImageUrl(null)}><X className="w-4 h-4" /></Button>
-                            </div>
-                          )}
-
-                          <Textarea value={bio} onChange={e => setBio(e.target.value)} required placeholder="강의 철학, 주요 강의 주제, 수강 후기 등을 자유롭게 작성해 주세요." className="min-h-[400px] border-none shadow-none focus-visible:ring-0 p-8 text-base font-medium leading-relaxed resize-none bg-white" />
+                          <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={(e) => handleImageChange(e, setProfilePictureUrl)} />
+                        </div>
+                        <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div className="space-y-2">
+                            <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest ml-1">강사 성함</label>
+                            <Input value={name} onChange={e => setName(e.target.value)} required placeholder="실명 입력" className="h-12 bg-[#F5F6F7] border-none rounded-xl font-bold shadow-inner" />
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest ml-1">전문 분야</label>
+                            <Select onValueChange={setSpecialty} required>
+                              <SelectTrigger className="h-12 bg-[#F5F6F7] border-none rounded-xl font-bold shadow-inner"><SelectValue placeholder="카테고리 선택" /></SelectTrigger>
+                              <SelectContent>{INSTRUCTOR_CATEGORIES.filter(c => c !== "전체").map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+                            </Select>
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest ml-1">소속 (기업/연구소)</label>
+                            <Input value={company} onChange={e => setCompany(e.target.value)} placeholder="예: 위스퍼 컨설팅" className="h-12 bg-[#F5F6F7] border-none rounded-xl font-bold shadow-inner" />
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest ml-1">연락처</label>
+                            <Input value={phone} onChange={e => setPhone(e.target.value)} placeholder="010-0000-0000" className="h-12 bg-[#F5F6F7] border-none rounded-xl font-bold shadow-inner" />
+                          </div>
+                          <div className="md:col-span-2 space-y-2">
+                            <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest ml-1">공식 이메일</label>
+                            <Input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="example@email.com" className="h-12 bg-[#F5F6F7] border-none rounded-xl font-bold shadow-inner" />
+                          </div>
                         </div>
                       </div>
-                    </div>
 
-                    <Button type="submit" disabled={isSubmitting} className="w-full h-16 naver-button text-lg rounded-xl shadow-2xl hover:scale-[1.01] transition-all">강사 프로필 등록 요청 완료</Button>
-                  </form>
-                </div>
-              </DialogContent>
-            </Dialog>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-[#F5F6F7] p-8 rounded-3xl border border-black/5 shadow-inner">
+                        <div className="space-y-4">
+                          <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest ml-1 flex items-center gap-2"><Briefcase className="w-3.5 h-3.5 text-primary" /> 주요 경력 사항</label>
+                          <Textarea value={career} onChange={e => setCareer(e.target.value)} placeholder="시기별 주요 이력을 작성해 주세요." className="min-h-[120px] bg-white border-none rounded-xl p-4 font-bold text-sm shadow-sm" />
+                        </div>
+                        <div className="space-y-4">
+                          <label className="text-[11px] font-black text-accent/40 uppercase tracking-widest ml-1 flex items-center gap-2"><Award className="w-3.5 h-3.5 text-primary" /> 보유 자격증 및 수료 사항</label>
+                          <Textarea value={certifications} onChange={e => setCertifications(e.target.value)} placeholder="전문 자격증 및 학위 정보를 입력하세요." className="min-h-[120px] bg-white border-none rounded-xl p-4 font-bold text-sm shadow-sm" />
+                        </div>
+                      </div>
+
+                      <div className="space-y-10">
+                        <div className="space-y-4">
+                          <label className="text-sm font-black text-[#1E1E23]">강사 상세 소개 및 포트폴리오</label>
+                          <div className="border border-black/10 rounded-2xl overflow-hidden shadow-sm">
+                            <div className="bg-[#FBFBFC] border-b border-black/10 p-3 flex items-center gap-2">
+                              <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-black/40 hover:text-primary" onClick={(e) => { e.preventDefault(); detailImageInputRef.current?.click(); }}><ImageIcon className="w-5 h-5" /></Button>
+                              <input type="file" ref={detailImageInputRef} className="hidden" accept="image/*" onChange={(e) => handleImageChange(e, setDetailImageUrl)} />
+                              <Button type="button" variant="ghost" size="icon" className={cn("h-9 w-9", showVideoInput ? "text-primary bg-primary/5" : "text-black/40 hover:text-primary")} onClick={(e) => { e.preventDefault(); setShowVideoInput(!showVideoInput); }}><Video className="w-5 h-5" /></Button>
+                              <div className="w-px h-5 bg-black/10 mx-2" />
+                              <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-black/40 hover:text-primary"><Type className="w-5 h-5" /></Button>
+                              <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-black/40 hover:text-primary"><Bold className="w-4 h-4" /></Button>
+                              <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-black/40 hover:text-primary"><List className="w-4 h-4" /></Button>
+                            </div>
+
+                            {showVideoInput && (
+                              <div className="bg-primary/5 p-4 border-b border-black/5 flex items-center gap-3">
+                                <Youtube className="w-5 h-5 text-[#FF0000]" />
+                                <Input value={videoUrl} onChange={e => setVideoUrl(e.target.value)} placeholder="유튜브 영상 주소를 입력하세요" className="h-10 bg-white border-black/10 rounded-lg text-sm font-bold" />
+                              </div>
+                            )}
+
+                            {detailImageUrl && (
+                              <div className="p-4 border-b border-black/5 bg-white flex justify-center relative group">
+                                <img src={detailImageUrl} alt="detail preview" className="max-h-60 rounded-lg object-contain shadow-md" />
+                                <Button type="button" variant="destructive" size="icon" className="absolute top-6 right-6 h-8 w-8 rounded-full opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => setDetailImageUrl(null)}><X className="w-4 h-4" /></Button>
+                              </div>
+                            )}
+
+                            <Textarea value={bio} onChange={e => setBio(e.target.value)} required placeholder="내용을 입력하세요" className="min-h-[400px] border-none shadow-none focus-visible:ring-0 p-8 text-base font-medium leading-relaxed resize-none bg-white" />
+                          </div>
+                        </div>
+                      </div>
+
+                      <Button type="submit" disabled={isSubmitting} className="w-full h-16 naver-button text-lg rounded-xl shadow-2xl hover:scale-[1.01] transition-all">강사 등록 요청 완료</Button>
+                    </form>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
           </div>
 
           <div className="flex flex-col gap-6">
@@ -298,7 +299,7 @@ export default function InstructorsPage() {
                   {i.company && <p className="text-xs font-bold text-black/30 mb-4">{i.company}</p>}
                   <Badge variant="outline" className="mb-8 border-primary/20 text-primary font-black text-xs px-5 py-1 rounded-full">#{i.specialty}</Badge>
                   <p className="text-sm text-black/50 line-clamp-3 mb-10 font-medium leading-relaxed italic px-4">"{i.bio}"</p>
-                  <Button onClick={() => setViewTarget(i)} className="w-full h-12 rounded-xl naver-button text-sm gap-2 shadow-lg group-hover:scale-[1.02] transition-transform">상세 프로필 확인</Button>
+                  <Button onClick={() => setViewTarget(i)} className="w-full h-12 rounded-xl naver-button text-accent text-sm gap-2 shadow-lg group-hover:scale-[1.02] transition-transform">상세 프로필 확인</Button>
                 </CardContent>
               </Card>
             ))}
@@ -322,7 +323,7 @@ export default function InstructorsPage() {
                     <div>
                       <div className="flex items-center justify-center md:justify-start gap-3 mb-2">
                         <h2 className="text-4xl font-black text-accent">{viewTarget.name} 강사</h2>
-                        {viewTarget.isVerified && <Badge className="bg-primary text-white font-black border-none text-[10px]">공식 인증</Badge>}
+                        {viewTarget.isVerified && <Badge className="bg-primary text-accent font-black border-none text-[10px]">공식 인증</Badge>}
                       </div>
                       <p className="text-xl font-bold text-primary">@{viewTarget.company || "전문 강사"}</p>
                     </div>
@@ -375,7 +376,7 @@ export default function InstructorsPage() {
               </div>
             </div>
             <div className="p-8 bg-[#F5F6F7] border-t border-black/5 flex justify-end">
-              <Button onClick={() => setViewTarget(null)} className="h-14 px-12 rounded-xl naver-button text-lg shadow-xl hover:scale-105 transition-all">프로필 창 닫기</Button>
+              <Button onClick={() => setViewTarget(null)} className="h-14 px-12 rounded-xl naver-button text-accent font-black text-lg shadow-xl hover:scale-105 transition-all">프로필 창 닫기</Button>
             </div>
           </DialogContent>
         </Dialog>
