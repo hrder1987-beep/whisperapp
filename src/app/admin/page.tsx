@@ -15,7 +15,7 @@ import { MemberManager } from "@/components/chuchot/admin/MemberManager"
 import { ContentManager } from "@/components/chuchot/admin/ContentManager"
 import { AldiTrainer } from "@/components/chuchot/admin/AldiTrainer"
 import { BannerData } from "@/components/chuchot/MainBanner"
-import { PremiumAd } from "@/lib/types"
+import { PremiumAd, SiteBranding } from "@/lib/types"
 import { useToast } from "@/hooks/use-toast"
 
 export default function AdminPage() {
@@ -48,7 +48,14 @@ export default function AdminPage() {
 
   const initialPremiumAds = useMemo(() => {
     if (config?.premiumAdsSettings) {
-      try { return JSON.parse(config.premiumAdsSettings) as PremiumAd[] } catch (e) { return undefined }
+      try { return JSON.parse(config.premiumAdsSettings) as PremiumAd[] } catch (e) { return [] }
+    }
+    return []
+  }, [config])
+
+  const initialBranding = useMemo(() => {
+    if (config?.brandingSettings) {
+      try { return JSON.parse(config.brandingSettings) as SiteBranding } catch (e) { return undefined }
     }
     return undefined
   }, [config])
@@ -127,7 +134,12 @@ export default function AdminPage() {
 
           <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
             <TabsContent value="cms">
-              <AdminCMS initialBanners={initialBanners} initialPremiumAds={initialPremiumAds} onUpdate={() => router.refresh()} />
+              <AdminCMS 
+                initialBanners={initialBanners} 
+                initialPremiumAds={initialPremiumAds} 
+                initialBranding={initialBranding}
+                onUpdate={() => router.refresh()} 
+              />
             </TabsContent>
             <TabsContent value="members"><MemberManager /></TabsContent>
             <TabsContent value="content"><ContentManager /></TabsContent>

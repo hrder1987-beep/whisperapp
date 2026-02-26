@@ -188,6 +188,19 @@ export interface PremiumAd {
   link: string;
 }
 
+export interface SiteBranding {
+  homeTitle: string;
+  homeSubtitle: string;
+  gatheringTitle: string;
+  gatheringSubtitle: string;
+  mentorTitle: string;
+  mentorSubtitle: string;
+  programTitle: string;
+  programSubtitle: string;
+  jobTitle: string;
+  jobSubtitle: string;
+}
+
 export type BotType = 'whisperra' | 'aldi' | 'dongsan';
 
 export interface BotConfig {
