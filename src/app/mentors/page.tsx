@@ -190,7 +190,7 @@ export default function MentorsPage() {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="space-y-1">
               <h1 className="text-3xl md:text-4xl font-black text-[#1E1E23] tracking-tighter">위스퍼러 (Whisperer)</h1>
-              <p className="text-sm md:text-base font-bold text-[#888]">대한민국 최고의 실무 시니어 전문가들과의 1:1 인사이트 연결</p>
+              <p className="text-sm md:text-base font-bold text-[#888]">대한민국 최고의 실무 전문가들과의 1:1 인사이트 연결</p>
             </div>
 
             {/* 위스퍼러 신청은 모바일에서도 가능 */}
