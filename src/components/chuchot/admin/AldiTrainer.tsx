@@ -32,7 +32,7 @@ export function AldiTrainer() {
   const [persona, setPersona] = useState("")
   const [isSaving, setIsSaving] = useState(false)
 
-  // 봇 설정 변경 시 상태 동기화 (단, 사용자가 수정 중인 상태를 고려하여 비어있을 때만 우선 동기화)
+  // 봇 설정 변경 시 상태 동기화
   useEffect(() => {
     if (botConfig) {
       setName(botConfig.name || "")
@@ -133,7 +133,6 @@ export function AldiTrainer() {
               </Tabs>
             </CardHeader>
             <CardContent className="p-10 space-y-12">
-              {/* 봇 기본 프로필 설정 */}
               <section className="space-y-6">
                 <div className="flex items-center gap-2 px-1">
                   <Sparkles className="w-4 h-4 text-primary" />
@@ -178,7 +177,6 @@ export function AldiTrainer() {
                 </div>
               </section>
 
-              {/* 페르소나 설정 */}
               <section className="space-y-4">
                 <div className="flex items-center gap-2 px-1">
                   <UserCog className="w-4 h-4 text-primary" />
@@ -192,7 +190,6 @@ export function AldiTrainer() {
                 />
               </section>
 
-              {/* 지식 베이스 설정 */}
               <section className="space-y-4">
                 <div className="flex items-center justify-between px-1">
                   <div className="flex items-center gap-2">

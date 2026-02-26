@@ -94,7 +94,7 @@ export function AvatarIcon({ src, seed, avatarId, className }: AvatarIconProps) 
     )
   }
 
-  // 봇 전용 아이콘 식별 (배경색 제거)
+  // 봇 전용 아이콘 식별
   if (avatarId === "aldi" || seed?.toLowerCase() === "aldi" || seed === "알디") {
     return (
       <div className={cn(
