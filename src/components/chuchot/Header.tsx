@@ -119,6 +119,11 @@ export function Header({ onSearch }: HeaderProps) {
                   <div className="h-px bg-black/[0.05] my-6" />
                   {user ? (
                     <div className="flex flex-col gap-2">
+                      {isAdmin && (
+                        <Link href="/admin" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-black py-3 px-5 text-primary bg-accent rounded-xl mb-2 flex items-center gap-2">
+                          <ShieldCheck className="w-4 h-4" /> 통합 관리 센터
+                        </Link>
+                      )}
                       <Link href="/profile" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-bold py-3 px-5 text-accent/60 hover:text-accent">내 정보</Link>
                       <Link href="/my-posts" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-bold py-3 px-5 text-accent/60 hover:text-accent">내가 쓴 글</Link>
                       <Link href="/notifications" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-bold py-3 px-5 text-accent/60 hover:text-accent">알림 센터</Link>
@@ -153,7 +158,7 @@ export function Header({ onSearch }: HeaderProps) {
         <div className="flex items-center gap-2 md:gap-5">
           <div className="hidden md:flex items-center gap-3">
             {isAdmin && (
-              <Link href="/admin">
+              <Link href="/admin" asChild>
                 <Button variant="outline" size="sm" className="border-accent/10 text-accent font-black h-11 px-5 gap-2 rounded-xl hover:bg-primary/10 transition-all">
                   <ShieldCheck className="w-4 h-4" /> 관리 센터
                 </Button>
@@ -207,3 +212,4 @@ export function Header({ onSearch }: HeaderProps) {
       </nav>
     </header>
   )
+}
