@@ -238,7 +238,7 @@ function HomePageContent() {
                 <QuestionFeed questions={paginated} onSelectQuestion={id => setSelectedId(id === selectedId ? null : id)} selectedId={selectedId} answers={answers} onAddAnswer={handleAddAnswer} activeTab={activeTab as any} onTabChange={setActiveTab as any} />
                 {totalPages > 1 && (
                   <div className="flex justify-center items-center gap-2 mt-10">
-                    <Button variant="ghost" disabled={currentPage === 1} onClick={() => setCurrentPage(1)} className="text-accent/40 hover:text-accent"><ChevronsLeft className="w-4" /></Button>
+                    <Button variant="ghost" disabled={currentPage === 1} onClick={() => setCurrentPage(1)} className="text-accent/70 hover:text-accent"><ChevronsLeft className="w-4" /></Button>
                     {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                       const p = Math.max(1, Math.min(totalPages - 4, currentPage - 2)) + i;
                       if (p > totalPages) return null;
@@ -258,14 +258,14 @@ function HomePageContent() {
                         </Button>
                       );
                     })}
-                    <Button variant="ghost" disabled={currentPage === totalPages} onClick={() => setCurrentPage(totalPages)} className="text-accent/40 hover:text-accent"><ChevronsRight className="w-4" /></Button>
+                    <Button variant="ghost" disabled={currentPage === totalPages} onClick={() => setCurrentPage(totalPages)} className="text-accent/70 hover:text-accent"><ChevronsRight className="w-4" /></Button>
                   </div>
                 )}
               </>
             )}
           </main>
           {!deferredSearchQuery && (
-            <aside className="lg:col-span-4 hidden lg:block space-y-8 h-fit">
+            <aside className="lg:col-span-4 hidden lg:block space-y-8 h-fit self-start">
               <AldiChat />
               <PremiumAds ads={premiumAds} />
               <RankingList questions={questions.slice(0, 5)} onSelectQuestion={id => setSelectedId(id)} />

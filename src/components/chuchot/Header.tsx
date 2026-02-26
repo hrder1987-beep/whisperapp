@@ -1,3 +1,4 @@
+
 "use client"
 
 import { Logo } from "./Logo"
@@ -46,11 +47,8 @@ export function Header({ onSearch }: HeaderProps) {
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      if (pathname !== '/') {
-        router.push(`/?search=${encodeURIComponent(searchQuery)}`)
-      } else {
-        onSearch?.(searchQuery)
-      }
+      if (pathname !== '/') router.push(`/?search=${encodeURIComponent(searchQuery)}`)
+      else onSearch?.(searchQuery)
     }
   }
 
@@ -67,17 +65,12 @@ export function Header({ onSearch }: HeaderProps) {
 
   return (
     <header className="naver-header">
-      {/* Top Utility Nav - PC Only */}
       <div className="bg-[#F7FAF2] border-b border-black/[0.03] hidden md:block">
         <div className="max-w-7xl mx-auto px-4 h-10 flex items-center justify-end gap-6 text-[11px] font-bold text-accent/40">
           {user ? (
             <>
-              <Link href="/profile" className="hover:text-accent transition-colors flex items-center gap-1.5">
-                <UserIcon className="w-3.5 h-3.5" /> 내 정보
-              </Link>
-              <Link href="/my-posts" className="hover:text-accent transition-colors flex items-center gap-1.5">
-                <FileText className="w-3.5 h-3.5" /> 내가 쓴 글
-              </Link>
+              <Link href="/profile" className="hover:text-accent transition-colors flex items-center gap-1.5"><UserIcon className="w-3.5 h-3.5" /> 내 정보</Link>
+              <Link href="/my-posts" className="hover:text-accent transition-colors flex items-center gap-1.5"><FileText className="w-3.5 h-3.5" /> 내가 쓴 글</Link>
               <button onClick={handleLogout} className="hover:text-red-500 transition-colors">로그아웃</button>
             </>
           ) : (
@@ -89,41 +82,22 @@ export function Header({ onSearch }: HeaderProps) {
         </div>
       </div>
 
-      {/* Main Header Content */}
       <div className="max-w-7xl mx-auto px-4 h-16 md:h-20 flex items-center justify-between gap-4 md:gap-10">
         <div className="flex items-center gap-2 md:gap-8">
           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="md:hidden text-accent -ml-2 hover:bg-primary/10"><Menu className="w-6 h-6" /></Button>
-            </SheetTrigger>
+            <SheetTrigger asChild><Button variant="ghost" size="icon" className="md:hidden text-accent -ml-2 hover:bg-primary/10"><Menu className="w-6 h-6" /></Button></SheetTrigger>
             <SheetContent side="left" className="bg-white border-none p-0 w-[300px]">
-              <SheetHeader className="sr-only">
-                <SheetTitle>메뉴</SheetTitle>
-              </SheetHeader>
+              <SheetHeader className="sr-only"><SheetTitle>메뉴</SheetTitle></SheetHeader>
               <div className="flex flex-col h-full pt-12 px-8">
                 <Logo className="mb-12" />
                 <nav className="flex flex-col gap-2">
                   {navLinks.map((link) => (
-                    <Link 
-                      key={link.href} 
-                      href={link.href} 
-                      onClick={() => setIsMobileMenuOpen(false)} 
-                      className={cn(
-                        "text-base font-black py-3.5 px-5 rounded-2xl transition-all", 
-                        pathname === link.href ? "bg-primary text-accent" : "text-accent/60 hover:bg-primary/10 hover:text-accent"
-                      )}
-                    >
-                      {link.name}
-                    </Link>
+                    <Link key={link.href} href={link.href} onClick={() => setIsMobileMenuOpen(false)} className={cn("text-base font-black py-3.5 px-5 rounded-2xl transition-all", pathname === link.href ? "bg-primary text-accent" : "text-accent/60 hover:bg-primary/10 hover:text-accent")}>{link.name}</Link>
                   ))}
                   <div className="h-px bg-black/[0.05] my-6" />
                   {user ? (
                     <div className="flex flex-col gap-2">
-                      {isAdmin && (
-                        <Link href="/admin" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-black py-3 px-5 text-primary bg-accent rounded-xl mb-2 flex items-center gap-2">
-                          <ShieldCheck className="w-4 h-4" /> 통합 관리 센터
-                        </Link>
-                      )}
+                      {isAdmin && <Button asChild className="bg-accent text-primary font-black rounded-xl h-12 mb-2"><Link href="/admin"><ShieldCheck className="w-4 h-4" /> 통합 관리 센터</Link></Button>}
                       <Link href="/profile" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-bold py-3 px-5 text-accent/60 hover:text-accent">내 정보</Link>
                       <Link href="/my-posts" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-bold py-3 px-5 text-accent/60 hover:text-accent">내가 쓴 글</Link>
                       <Link href="/notifications" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-bold py-3 px-5 text-accent/60 hover:text-accent">알림 센터</Link>
@@ -139,75 +113,30 @@ export function Header({ onSearch }: HeaderProps) {
           <Link href="/"><Logo className="scale-90 md:scale-105" /></Link>
         </div>
 
-        {/* Improved Whisper Style Search Bar - PC Only */}
         <div className="hidden md:flex flex-1 max-w-2xl">
           <div className="naver-search-bar w-full h-12 focus-within:ring-4 focus-within:ring-primary/20">
-            <Input 
-              placeholder="HR 고민이나 전문가 소식을 검색해 보세요" 
-              className="border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 text-[15px] font-black h-full placeholder:text-accent/20 bg-transparent px-2 outline-none"
-              value={searchQuery} 
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={handleKeyDown}
-            />
-            <button onClick={() => onSearch?.(searchQuery)} className="text-accent hover:scale-110 transition-transform pl-4">
-              <Search className="w-6 h-6" />
-            </button>
+            <Input placeholder="HR 고민이나 전문가 소식을 검색해 보세요" className="border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 text-[15px] font-black h-full placeholder:text-accent/20 bg-transparent px-2 outline-none" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} onKeyDown={handleKeyDown} />
+            <button onClick={() => onSearch?.(searchQuery)} className="text-accent hover:scale-110 transition-transform pl-4"><Search className="w-6 h-6" /></button>
           </div>
         </div>
 
         <div className="flex items-center gap-2 md:gap-5">
           <div className="hidden md:flex items-center gap-3">
-            {isAdmin && (
-              <Button variant="outline" size="sm" asChild className="border-accent/10 text-accent font-black h-11 px-5 gap-2 rounded-xl hover:bg-primary/10 transition-all">
-                <Link href="/admin">
-                  <ShieldCheck className="w-4 h-4" /> 관리 센터
-                </Link>
-              </Button>
-            )}
+            {isAdmin && <Button asChild variant="outline" size="sm" className="border-accent/10 text-accent font-black h-11 px-5 gap-2 rounded-xl hover:bg-primary/10 transition-all"><Link href="/admin"><ShieldCheck className="w-4 h-4" /> 관리 센터</Link></Button>}
             {user && (
               <div className="flex items-center gap-2">
-                <Link href="/notifications">
-                  <Button variant="ghost" size="icon" className="relative text-accent/40 hover:text-accent hover:bg-primary/10 h-11 w-11 rounded-xl">
-                    <Bell className="w-5.5 h-5.5" />
-                    {unreadNotifs && unreadNotifs.length > 0 && (
-                      <Badge className="absolute top-1.5 right-1.5 bg-red-500 text-white border-none h-4.5 w-4.5 p-0 flex items-center justify-center text-[9px] rounded-full font-black animate-bounce">{unreadNotifs.length}</Badge>
-                    )}
-                  </Button>
-                </Link>
-                <Link href="/messages">
-                  <Button variant="ghost" size="icon" className="relative text-accent/40 hover:text-accent hover:bg-primary/10 h-11 w-11 rounded-xl">
-                    <Mail className="w-5.5 h-5.5" />
-                    {unreadMessages && unreadMessages.length > 0 && (
-                      <Badge className="absolute top-1.5 right-1.5 bg-red-500 text-white border-none h-4.5 w-4.5 p-0 flex items-center justify-center text-[9px] rounded-full font-black animate-bounce">{unreadMessages.length}</Badge>
-                    )}
-                  </Button>
-                </Link>
+                <Link href="/notifications"><Button variant="ghost" size="icon" className="relative text-accent/40 hover:text-accent hover:bg-primary/10 h-11 w-11 rounded-xl"><Bell className="w-5.5 h-5.5" />{unreadNotifs && unreadNotifs.length > 0 && (<Badge className="absolute top-1.5 right-1.5 bg-red-500 text-white border-none h-4.5 w-4.5 p-0 flex items-center justify-center text-[9px] rounded-full font-black animate-bounce">{unreadNotifs.length}</Badge>)}</Button></Link>
+                <Link href="/messages"><Button variant="ghost" size="icon" className="relative text-accent/40 hover:text-accent hover:bg-primary/10 h-11 w-11 rounded-xl"><Mail className="w-5.5 h-5.5" />{unreadMessages && unreadMessages.length > 0 && (<Badge className="absolute top-1.5 right-1.5 bg-red-500 text-white border-none h-4.5 w-4.5 p-0 flex items-center justify-center text-[9px] rounded-full font-black animate-bounce">{unreadMessages.length}</Badge>)}</Button></Link>
               </div>
             )}
           </div>
-          {!user && (
-            <Link href="/auth?mode=login">
-              <Button className="naver-button h-11 px-8 hidden md:block shadow-lg">로그인</Button>
-            </Link>
-          )}
+          {!user && (<Link href="/auth?mode=login"><Button className="naver-button h-11 px-8 hidden md:block shadow-lg">로그인</Button></Link>)}
         </div>
       </div>
 
-      {/* Sub Nav Menu - PC Only */}
       <nav className="border-t border-black/[0.03] hidden md:block bg-white/50">
         <div className="max-w-7xl mx-auto px-4 h-14 flex items-center gap-10">
-          {navLinks.map((link) => (
-            <Link 
-              key={link.href} 
-              href={link.href} 
-              className={cn(
-                "text-[15px] font-black transition-all h-full flex items-center border-b-4 px-1.5 pt-1", 
-                pathname === link.href ? "text-accent border-primary" : "text-accent/40 border-transparent hover:text-accent"
-              )}
-            >
-              {link.name}
-            </Link>
-          ))}
+          {navLinks.map((link) => (<Link key={link.href} href={link.href} className={cn("text-[15px] font-black transition-all h-full flex items-center border-b-4 px-1.5 pt-1", pathname === link.href ? "text-accent border-primary" : "text-accent/40 border-transparent hover:text-accent")}>{link.name}</Link>))}
         </div>
       </nav>
     </header>

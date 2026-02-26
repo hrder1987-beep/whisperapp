@@ -113,15 +113,10 @@ export default function AdminPage() {
       <main className="max-w-7xl mx-auto px-4 py-10 md:py-16">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
           <div className="space-y-1">
-            <div className="flex items-center gap-2 mb-1">
-              <Settings className="w-5 h-5 text-primary" />
-              <span className="text-[10px] font-black text-accent/30 uppercase tracking-widest">Platform Admin Dashboard</span>
-            </div>
+            <div className="flex items-center gap-2 mb-1"><Settings className="w-5 h-5 text-primary" /><span className="text-[10px] font-black text-accent/30 uppercase tracking-widest">Platform Admin Dashboard</span></div>
             <h1 className="text-3xl font-black text-accent tracking-tighter">통합 관리 센터</h1>
           </div>
-          <Button onClick={() => router.push("/")} variant="outline" className="border-accent/10 text-accent font-black rounded-xl gap-2 h-11 px-6">
-            <ArrowLeft className="w-4 h-4" /> 서비스 페이지로 이동
-          </Button>
+          <Button onClick={() => router.push("/")} variant="outline" className="border-accent/10 text-accent font-black rounded-xl gap-2 h-11 px-6"><ArrowLeft className="w-4 h-4" /> 서비스 페이지로 이동</Button>
         </div>
 
         <Tabs defaultValue="cms" className="space-y-10">
@@ -134,13 +129,7 @@ export default function AdminPage() {
 
           <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
             <TabsContent value="cms">
-              <AdminCMS 
-                key={isConfigLoading ? 'loading' : 'loaded'} 
-                initialBanners={initialBanners} 
-                initialPremiumAds={initialPremiumAds} 
-                initialBranding={initialBranding}
-                onUpdate={() => router.refresh()} 
-              />
+              <AdminCMS key={isConfigLoading ? 'loading' : 'loaded'} initialBanners={initialBanners} initialPremiumAds={initialPremiumAds} initialBranding={initialBranding} onUpdate={() => router.refresh()} />
             </TabsContent>
             <TabsContent value="members"><MemberManager /></TabsContent>
             <TabsContent value="content"><ContentManager /></TabsContent>
