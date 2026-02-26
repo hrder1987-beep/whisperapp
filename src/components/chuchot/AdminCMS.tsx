@@ -41,6 +41,13 @@ export function AdminCMS({ initialBanners, initialPremiumAds, initialBranding, o
   const db = useFirestore()
   const { toast } = useToast()
 
+  // 데이터 로드 지연 시 상태를 명시적으로 동기화하기 위한 훅
+  useEffect(() => {
+    if (initialBanners.length > 0) setBanners(initialBanners)
+    if (initialPremiumAds && initialPremiumAds.length > 0) setPremiumAds(initialPremiumAds)
+    if (initialBranding) setBranding(initialBranding)
+  }, [initialBanners, initialPremiumAds, initialBranding])
+
   const handleBannerChange = (index: number, field: keyof BannerData, value: string) => {
     const newBanners = [...banners]
     newBanners[index] = { ...newBanners[index], [field]: value }

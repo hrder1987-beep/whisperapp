@@ -37,7 +37,7 @@ export default function AdminPage() {
   }, [user, profile])
 
   const configDocRef = useMemoFirebase(() => db ? doc(db, "admin_configuration", "site_settings") : null, [db])
-  const { data: config } = useDoc<any>(configDocRef)
+  const { data: config, isLoading: isConfigLoading } = useDoc<any>(configDocRef)
 
   const initialBanners = useMemo(() => {
     if (config?.bannerSettings) {
@@ -135,6 +135,7 @@ export default function AdminPage() {
           <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
             <TabsContent value="cms">
               <AdminCMS 
+                key={isConfigLoading ? 'loading' : 'loaded'} 
                 initialBanners={initialBanners} 
                 initialPremiumAds={initialPremiumAds} 
                 initialBranding={initialBranding}

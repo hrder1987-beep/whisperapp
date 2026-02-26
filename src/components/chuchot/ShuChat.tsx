@@ -183,21 +183,18 @@ export function AldiChat({ forceOpenTrigger, onTriggerClose, hideCard = false }:
     dongsan: []
   })
 
-  // 봇 설정 로딩 시 초기 멘트 주입
+  // 봇 설정 변경 시 실시간 반영 (첫 인사말 업데이트)
   useEffect(() => {
-    if (botConfig && conversations[activeBot].length === 0) {
-      const initialIntro = botConfig.intro || DEFAULT_BOT_INFO[activeBot].intro
+    const currentIntro = botConfig?.intro || DEFAULT_BOT_INFO[activeBot].intro
+    
+    // 대화 내역이 없거나, 기존 인사말만 있는 경우 새로운 인사말로 교체
+    if (conversations[activeBot].length <= 1) {
       setConversations(prev => ({
         ...prev,
-        [activeBot]: [{ role: "bot", text: initialIntro }]
-      }))
-    } else if (!botConfig && conversations[activeBot].length === 0) {
-      setConversations(prev => ({
-        ...prev,
-        [activeBot]: [{ role: "bot", text: DEFAULT_BOT_INFO[activeBot].intro }]
+        [activeBot]: [{ role: "bot", text: currentIntro }]
       }))
     }
-  }, [botConfig, activeBot, conversations])
+  }, [botConfig, activeBot])
 
   const [input, setInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
