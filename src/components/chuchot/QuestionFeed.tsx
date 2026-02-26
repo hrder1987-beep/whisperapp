@@ -253,18 +253,18 @@ export function QuestionFeed({
               </CardContent>
               
               {!isExpanded && (
-                <CardFooter className="px-5 md:px-8 py-3 md:py-4 border-t border-black/[0.03] flex items-center justify-between bg-[#FBFBFC]">
+                <CardFooter className="px-5 md:px-8 py-3 md:py-4 border-t border-primary/10 flex items-center justify-between bg-primary/5">
                   <div className="flex gap-4 md:gap-6">
-                    <div className="flex items-center gap-1.5 md:gap-2 text-[12px] md:text-[13px] font-bold text-muted-foreground">
+                    <div className="flex items-center gap-1.5 md:gap-2 text-[12px] md:text-[13px] font-black text-accent/60">
                       <MessageCircle className="w-3.5 h-3.5 md:w-4 md:h-4 text-accent" />
                       <span>댓글 {q.answerCount}</span>
                     </div>
-                    <button onClick={(e) => { e.stopPropagation(); handleShare(q); }} className="flex items-center gap-1.5 md:gap-2 text-[12px] md:text-[13px] font-bold text-muted-foreground hover:text-accent transition-colors">
+                    <button onClick={(e) => { e.stopPropagation(); handleShare(q); }} className="flex items-center gap-1.5 md:gap-2 text-[12px] md:text-[13px] font-black text-accent/60 hover:text-accent transition-colors">
                       <Share2 className="w-3.5 h-3.5 md:w-4 md:h-4" />
                       공유
                     </button>
                   </div>
-                  <Bookmark className="w-3.5 h-3.5 md:w-4 md:h-4 text-black/10 hover:text-accent cursor-pointer transition-colors" />
+                  <Bookmark className="w-3.5 h-3.5 md:w-4 md:h-4 text-accent/20 hover:text-accent cursor-pointer transition-colors" />
                 </CardFooter>
               )}
             </Card>

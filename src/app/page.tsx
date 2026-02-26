@@ -66,7 +66,7 @@ function HomePageContent() {
   const { user } = useUser()
   const db = useFirestore()
   const { toast } = useToast()
-  const searchParams = useSearchParams()
+  searchParams = useSearchParams()
   
   const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "")
   const deferredSearchQuery = useDeferredValue(searchQuery)
@@ -238,13 +238,27 @@ function HomePageContent() {
                 <QuestionFeed questions={paginated} onSelectQuestion={id => setSelectedId(id === selectedId ? null : id)} selectedId={selectedId} answers={answers} onAddAnswer={handleAddAnswer} activeTab={activeTab as any} onTabChange={setActiveTab as any} />
                 {totalPages > 1 && (
                   <div className="flex justify-center items-center gap-2 mt-10">
-                    <Button variant="ghost" disabled={currentPage === 1} onClick={() => setCurrentPage(1)}><ChevronsLeft className="w-4" /></Button>
+                    <Button variant="ghost" disabled={currentPage === 1} onClick={() => setCurrentPage(1)} className="text-accent/40 hover:text-accent"><ChevronsLeft className="w-4" /></Button>
                     {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                       const p = Math.max(1, Math.min(totalPages - 4, currentPage - 2)) + i;
                       if (p > totalPages) return null;
-                      return <Button key={p} onClick={() => setCurrentPage(p)} className={cn("w-10", currentPage === p ? "bg-primary text-accent" : "bg-white text-primary/20")}>{p}</Button>;
+                      return (
+                        <Button 
+                          key={p} 
+                          onClick={() => setCurrentPage(p)} 
+                          variant={currentPage === p ? "default" : "outline"}
+                          className={cn(
+                            "w-10 h-10 rounded-xl font-black transition-all", 
+                            currentPage === p 
+                              ? "bg-primary text-accent border-primary shadow-md" 
+                              : "bg-white text-accent/40 border-black/5 hover:border-primary/30 hover:text-primary"
+                          )}
+                        >
+                          {p}
+                        </Button>
+                      );
                     })}
-                    <Button variant="ghost" disabled={currentPage === totalPages} onClick={() => setCurrentPage(totalPages)}><ChevronsRight className="w-4" /></Button>
+                    <Button variant="ghost" disabled={currentPage === totalPages} onClick={() => setCurrentPage(totalPages)} className="text-accent/40 hover:text-accent"><ChevronsRight className="w-4" /></Button>
                   </div>
                 )}
               </>
