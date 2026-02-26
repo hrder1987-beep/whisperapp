@@ -121,17 +121,38 @@ function HomePageContent() {
       try { return JSON.parse(config.bannerSettings) as BannerData[] } catch (e) { return [] }
     }
     return [
-      { id: "def-1", title: branding?.homeTitle || "HR실무자들의\n품격 있는 속삭임", description: branding?.homeSubtitle || "교육부터 조직문화 인사전략까지\nHR실무자를 위한 지식 허브 Whisper", image: "https://images.unsplash.com/photo-1521737711867-e3b97375f902?q=80&w=1080", badge: "집단 지성의 힘" },
-      { id: "def-2", title: "고민을 나누고,\n함께 성장하자", description: "우리의 작은 속삭임이 모여\n내일을 바꾸는 큰 울림으로 돌아옵니다.", image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=1080", badge: "교학상장의 장" }
+      { 
+        id: "def-1", 
+        title: "HR 실무자의 밤:\n인사이트 네트워킹", 
+        description: "대한민국 HR 리더들이 한자리에 모여\n현업의 고민과 해결책을 나눕니다.", 
+        image: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=1080", 
+        badge: "OFFLINE EVENT" 
+      },
+      { 
+        id: "def-2", 
+        title: "2025 채용 시장\n핵심 트렌드 리포트 발간", 
+        description: "데이터로 분석한 새로운 채용 패러다임.\n지금 위스퍼에서 독점 공개합니다.", 
+        image: "https://images.unsplash.com/photo-1454165833762-01049369290d?q=80&w=1080", 
+        badge: "KNOWLEDGE" 
+      },
+      { 
+        id: "def-3", 
+        title: "전문가와 함께하는\n1:1 실무 커리어 코칭", 
+        description: "인사 전문가로서의 다음 단계,\n검증된 위스퍼러가 직접 가이드해 드립니다.", 
+        image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1080", 
+        badge: "WHISPERER CARE" 
+      }
     ]
-  }, [config, branding])
+  }, [config])
 
   const premiumAds = useMemo(() => {
     if (config?.premiumAdsSettings) {
       try { return JSON.parse(config.premiumAdsSettings) as PremiumAd[] } catch (e) { return [] }
     }
     return [
-      { id: "ad1", title: "HR 전문가를 위한\n커리어 엑셀러레이팅", badge: "SPECIAL EVENT", webImage: "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=400", mobileImage: "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=400", link: "#" }
+      { id: "ad1", title: "HR Tech Conference 2025\n사전 예약 안내", badge: "SPECIAL", webImage: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?q=80&w=400", mobileImage: "", link: "#" },
+      { id: "ad2", title: "글로벌 인재 채용을 위한\n올인원 솔루션 '위스퍼'", badge: "SOLUTION", webImage: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=400", mobileImage: "", link: "#" },
+      { id: "ad3", title: "차세대 C&B 전문가를 위한\n실무 마스터 클래스", badge: "EDUCATION", webImage: "https://images.unsplash.com/photo-1551288049-bbbda536339a?q=80&w=400", mobileImage: "", link: "#" }
     ]
   }, [config])
 

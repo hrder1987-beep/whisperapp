@@ -1,3 +1,4 @@
+
 "use client"
 
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
@@ -21,17 +22,24 @@ export function MainBanner({ banners: propBanners }: MainBannerProps) {
   const defaultBanners: BannerData[] = [
     {
       id: 1,
-      title: "HR실무자들의\n품격 있는 속삭임",
-      description: "교육부터 조직문화 인사전략까지\nHR실무자를 위한 지식 허브 Whisper",
-      image: "https://images.unsplash.com/photo-1521737711867-e3b97375f902?q=80&w=1080",
-      badge: "집단 지성의 힘"
+      title: "HR 실무자의 밤:\n인사이트 네트워킹",
+      description: "대한민국 HR 리더들이 한자리에 모여\n현업의 고민과 해결책을 나눕니다.",
+      image: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=1080",
+      badge: "OFFLINE EVENT"
     },
     {
       id: 2,
-      title: "고민을 나누고,\n함께 성장하자",
-      description: "우리의 작은 속삭임이 모여\n내일을 바꾸는 큰 울림으로 돌아옵니다.",
-      image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=1080",
-      badge: "교학상장의 장"
+      title: "2025 채용 시장\n핵심 트렌드 리포트 발간",
+      description: "데이터로 분석한 새로운 채용 패러다임.\n지금 위스퍼에서 독점 공개합니다.",
+      image: "https://images.unsplash.com/photo-1454165833762-01049369290d?q=80&w=1080",
+      badge: "KNOWLEDGE"
+    },
+    {
+      id: 3,
+      title: "전문가와 함께하는\n1:1 실무 커리어 코칭",
+      description: "인사 전문가로서의 다음 단계,\n검증된 위스퍼러가 직접 가이드해 드립니다.",
+      image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1080",
+      badge: "WHISPERER CARE"
     }
   ]
 
@@ -58,7 +66,7 @@ export function MainBanner({ banners: propBanners }: MainBannerProps) {
                   </p>
 
                   <button className="mt-5 md:mt-8 flex items-center gap-1.5 text-[11px] md:text-[13px] font-black text-accent hover:text-primary transition-colors drop-shadow-sm">
-                    프로그램 살펴보기 <ChevronRight className="w-4 h-4" />
+                    상세보기 <ChevronRight className="w-4 h-4" />
                   </button>
                 </div>
                 
@@ -70,7 +78,7 @@ export function MainBanner({ banners: propBanners }: MainBannerProps) {
                     fill 
                     className="object-cover opacity-40 md:opacity-100"
                     priority
-                    data-ai-hint="hr meeting office"
+                    data-ai-hint="business event office"
                   />
                 </div>
               </div>
