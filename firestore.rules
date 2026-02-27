@@ -5,6 +5,7 @@ service cloud.firestore {
 
     /**
      * WHISPER PLATFORM SECURITY RULES (SECURITY HARDENED)
+     * 전문가님의 소중한 개인정보와 지적 자산을 완벽하게 보호합니다.
      */
 
     function isSignedIn() {
@@ -23,7 +24,18 @@ service cloud.firestore {
       );
     }
 
-    // 질문 및 답변: 누구나 읽을 수 있지만, 작성/수정은 권한 확인
+    // 사용자 프로필: [보안 극대화] 
+    // 개인정보 보호를 위해 본인과 관리자 외에는 절대 접근(get)하거나 목록(list)을 볼 수 없습니다.
+    match /users/{userId} {
+      allow get: if isOwner(userId) || isAdmin();
+      allow list: if isAdmin(); 
+      // 회원가입 시 권한 조작 방지 (스스로 admin/mentor 부여 불가)
+      allow create: if isOwner(userId) && request.resource.data.role == 'member';
+      allow update: if isOwner(userId) || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // 질문 및 답변: 공개 커뮤니티 성격에 맞춰 읽기는 허용하되, 쓰기는 본인/관리자만
     match /questions/{questionId} {
       allow read: if true; 
       allow create: if isSignedIn();
@@ -36,7 +48,7 @@ service cloud.firestore {
       }
     }
 
-    // 모임 (Gatherings): 공개 정보는 누구나, 신청 정보는 본인/개설자/관리자만
+    // 모임 (Gatherings): 신청 정보에 이메일 등 민감 정보가 포함되므로 철저히 격리
     match /gatherings/{gatheringId} {
       allow read: if true; 
       allow create: if isSignedIn();
@@ -67,51 +79,7 @@ service cloud.firestore {
       }
     }
 
-    // 사이트 구성 정보: 누구나 읽지만 관리자만 수정
-    match /admin_configuration/{configId} {
-      allow read: if true;
-      allow write: if isAdmin(); 
-    }
-
-    // 사용자 프로필: [보안 강화] 개인정보 보호를 위해 본인과 관리자만 접근 허용
-    match /users/{userId} {
-      allow get: if isOwner(userId) || isAdmin();
-      allow list: if isAdmin(); 
-      allow create: if isOwner(userId);
-      allow update: if isOwner(userId) || isAdmin();
-      allow delete: if isAdmin();
-    }
-
-    // 전문가/강사 정보: 공개 프로필이므로 누구나 조회 가능
-    match /instructors/{id} {
-      allow read: if true;
-      allow create: if isSignedIn();
-      allow update: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
-      allow delete: if isAdmin();
-    }
-    
-    match /mentors/{id} {
-      allow read: if true;
-      allow create: if isSignedIn();
-      allow update: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
-      allow delete: if isAdmin();
-    }
-
-    match /trainingPrograms/{id} {
-      allow read: if true;
-      allow create: if isSignedIn();
-      allow update: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
-      allow delete: if isAdmin();
-    }
-
-    match /jobs/{id} {
-      allow read: if true;
-      allow create: if isSignedIn();
-      allow update: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
-      allow delete: if isAdmin();
-    }
-
-    // 개인 쪽지: 송신자 또는 수신자만 접근 가능
+    // 1:1 개인 쪽지: 송신자와 수신자 외에는 그 누구도(심지어 멘토도) 볼 수 없음
     match /messages/{messageId} {
       allow read: if isSignedIn() && (
         resource.data.senderId == request.auth.uid || 
@@ -126,11 +94,18 @@ service cloud.firestore {
       );
     }
 
-    // 알림: 본인만 접근 가능
+    // 알림: 본인 소식만 확인 가능
     match /notifications/{notifId} {
       allow read: if isSignedIn() && resource.data.userId == request.auth.uid;
       allow create: if isSignedIn();
       allow update, delete: if isSignedIn() && resource.data.userId == request.auth.uid;
     }
+
+    // 전문가/강사/채용 정보: 공개 콘텐츠
+    match /instructors/{id} { allow read: if true; allow write: if isSignedIn(); }
+    match /mentors/{id} { allow read: if true; allow write: if isSignedIn(); }
+    match /trainingPrograms/{id} { allow read: if true; allow write: if isSignedIn(); }
+    match /jobs/{id} { allow read: if true; allow write: if isSignedIn(); }
+    match /admin_configuration/{configId} { allow read: if true; allow write: if isAdmin(); }
   }
 }

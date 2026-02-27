@@ -55,8 +55,8 @@ function AuthContent() {
   const [name, setName] = useState("")
   const [company, setCompany] = useState("")
   const [department, setDepartment] = useState("")
-  const [jobRole, setJobRole] = useState("") // 직무 (Function)
-  const [jobTitle, setJobTitle] = useState("") // 직함 (Title)
+  const [jobRole, setJobRole] = useState("") 
+  const [jobTitle, setJobTitle] = useState("") 
   const [phone, setPhone] = useState("")
   const [profilePicture, setProfilePicture] = useState<string | null>(null)
 
@@ -66,7 +66,9 @@ function AuthContent() {
   const [foundEmail, setFoundEmail] = useState<string | null>(null)
   const [resetEmail, setResetEmail] = useState("")
 
+  const [isMounted, setIsMounted] = useState(false)
   useEffect(() => {
+    setIsMounted(true)
     if (user && !isUserLoading) router.push("/")
     if (auth) auth.languageCode = "ko"
   }, [user, isUserLoading, router, auth])
@@ -112,7 +114,7 @@ function AuthContent() {
         registrationDate: new Date().toISOString(),
         profilePictureUrl: profilePicture || null
       })
-      sendWelcomeEmail({ name, email }).catch(err => console.error("Welcome email failed:", err));
+      sendWelcomeEmail({ name, email }).catch(err => {});
       toast({ title: "가입 완료!", description: "Whisper의 일원이 되신 것을 환영합니다." })
       router.push("/")
     } catch (error: any) {
@@ -138,7 +140,7 @@ function AuthContent() {
     finally { setIsLoading(false) }
   }
 
-  if (isUserLoading) {
+  if (!isMounted || isUserLoading) {
     return <div className="flex flex-col items-center justify-center py-48 gap-6"><Sparkles className="w-14 h-14 animate-spin text-accent" /><p className="text-accent/40 font-black text-lg">안전하게 연결 중...</p></div>
   }
 
@@ -153,7 +155,6 @@ function AuthContent() {
         <CardContent className="px-8 md:px-16 pb-16">
           <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="w-full">
             <TabsList className="grid w-full grid-cols-2 bg-[#F5F6F7] p-1.5 rounded-2xl mb-14 h-16 md:h-18 shadow-inner relative border-none">
-              {/* 슬라이딩 프리미엄 탭 배경 */}
               <div className={cn(
                 "absolute top-1.5 bottom-1.5 w-[calc(50%-6px)] bg-white rounded-xl shadow-xl transition-all duration-500 ease-in-out",
                 activeTab === "signup" ? "translate-x-[calc(100%+6px)]" : "translate-x-0"
@@ -203,7 +204,6 @@ function AuthContent() {
                   <div className="space-y-2.5"><Label className="text-[11px] font-black text-accent/60 uppercase ml-1">소속 회사</Label><Input placeholder="회사명" value={company} onChange={(e) => setCompany(e.target.value)} required className="h-14 bg-[#FBFBFC] border-accent/5 rounded-2xl px-6 font-bold text-accent shadow-sm" /></div>
                   <div className="space-y-2.5"><Label className="text-[11px] font-black text-accent/60 uppercase ml-1">부서</Label><Input placeholder="부서명" value={department} onChange={(e) => setDepartment(e.target.value)} required className="h-14 bg-[#FBFBFC] border-accent/5 rounded-2xl px-6 font-bold text-accent shadow-sm" /></div>
                 </div>
-                {/* 직무와 직함 분리 입력란 */}
                 <div className="grid grid-cols-2 gap-6">
                   <div className="space-y-2.5"><Label className="text-[11px] font-black text-accent/60 uppercase ml-1">직무 (Role)</Label><Input placeholder="예: 채용" value={jobRole} onChange={(e) => setJobRole(e.target.value)} required className="h-14 bg-[#FBFBFC] border-accent/5 rounded-2xl px-6 font-bold text-accent shadow-sm" /></div>
                   <div className="space-y-2.5"><Label className="text-[11px] font-black text-accent/60 uppercase ml-1">직함 (Title)</Label><Input placeholder="예: 팀장" value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} required className="h-14 bg-[#FBFBFC] border-accent/5 rounded-2xl px-6 font-bold text-accent shadow-sm" /></div>
