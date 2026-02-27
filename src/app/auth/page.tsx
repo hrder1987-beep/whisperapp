@@ -142,10 +142,10 @@ function AuthContent() {
         </CardHeader>
         <CardContent className="px-8 md:px-16 pb-16">
           <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="w-full">
-            <TabsList className="grid w-full grid-cols-2 bg-[#F5F6F7] p-1.5 rounded-2xl mb-14 h-16 md:h-18 shadow-inner relative">
+            <TabsList className="grid w-full grid-cols-2 bg-[#F5F6F7] p-1.5 rounded-2xl mb-14 h-16 md:h-18 shadow-inner relative border-none">
               <div className={cn("absolute top-1.5 bottom-1.5 w-[calc(50%-6px)] bg-white rounded-xl shadow-xl transition-all duration-500 ease-in-out", activeTab === "signup" ? "translate-x-[calc(100%+6px)]" : "translate-x-0")} />
-              <TabsTrigger value="login" className="relative z-10 rounded-xl font-black text-base md:text-lg py-3 transition-all data-[state=active]:text-accent data-[state=inactive]:text-accent/30 hover:text-accent/60 active:scale-95">로그인</TabsTrigger>
-              <TabsTrigger value="signup" className="relative z-10 rounded-xl font-black text-base md:text-lg py-3 transition-all data-[state=active]:text-accent data-[state=inactive]:text-accent/30 hover:text-accent/60 active:scale-95">회원가입</TabsTrigger>
+              <TabsTrigger value="login" className="relative z-10 rounded-xl font-black text-base md:text-lg py-3 transition-all data-[state=active]:text-accent data-[state=inactive]:text-accent/30 hover:text-accent/60 active:scale-95 border-none shadow-none">로그인</TabsTrigger>
+              <TabsTrigger value="signup" className="relative z-10 rounded-xl font-black text-base md:text-lg py-3 transition-all data-[state=active]:text-accent data-[state=inactive]:text-accent/30 hover:text-accent/60 active:scale-95 border-none shadow-none">회원가입</TabsTrigger>
             </TabsList>
             
             <TabsContent value="login" className="animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -180,20 +180,20 @@ function AuthContent() {
                   <input type="file" ref={fileInputRef} onChange={handleImageChange} accept="image/*" className="hidden" />
                 </div>
                 <div className="grid grid-cols-2 gap-6">
-                  <div className="space-y-2.5"><Label className="text-[11px] font-black text-accent/60 uppercase ml-1">닉네임</Label><Input placeholder="사용자명" value={username} onChange={(e) => setUsername(e.target.value)} required className="h-14 bg-[#FBFBFC] border-accent/5 rounded-2xl px-6 font-bold" /></div>
-                  <div className="space-y-2.5"><Label className="text-[11px] font-black text-accent/60 uppercase ml-1">성함</Label><Input placeholder="실명" value={name} onChange={(e) => setName(e.target.value)} required className="h-14 bg-[#FBFBFC] border-accent/5 rounded-2xl px-6 font-bold" /></div>
+                  <div className="space-y-2.5"><Label className="text-[11px] font-black text-accent/60 uppercase ml-1">닉네임</Label><Input placeholder="사용자명" value={username} onChange={(e) => setUsername(e.target.value)} required className="h-14 bg-[#FBFBFC] border-accent/5 rounded-2xl px-6 font-bold text-accent" /></div>
+                  <div className="space-y-2.5"><Label className="text-[11px] font-black text-accent/60 uppercase ml-1">성함</Label><Input placeholder="실명" value={name} onChange={(e) => setName(e.target.value)} required className="h-14 bg-[#FBFBFC] border-accent/5 rounded-2xl px-6 font-bold text-accent" /></div>
                 </div>
-                <div className="space-y-2.5"><Label className="text-[11px] font-black text-accent/60 uppercase ml-1">이메일 (ID)</Label><Input type="email" placeholder="example@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required className="h-14 bg-[#FBFBFC] border-accent/5 rounded-2xl px-6 font-bold" /></div>
-                <div className="space-y-2.5"><Label className="text-[11px] font-black text-accent/60 uppercase ml-1">비밀번호</Label><Input type="password" placeholder="6자리 이상" value={password} onChange={(e) => setPassword(e.target.value)} required className="h-14 bg-[#FBFBFC] border-accent/5 rounded-2xl px-6 font-bold" /></div>
+                <div className="space-y-2.5"><Label className="text-[11px] font-black text-accent/60 uppercase ml-1">이메일 (ID)</Label><Input type="email" placeholder="example@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required className="h-14 bg-[#FBFBFC] border-accent/5 rounded-2xl px-6 font-bold text-accent" /></div>
+                <div className="space-y-2.5"><Label className="text-[11px] font-black text-accent/60 uppercase ml-1">비밀번호</Label><Input type="password" placeholder="6자리 이상" value={password} onChange={(e) => setPassword(e.target.value)} required className="h-14 bg-[#FBFBFC] border-accent/5 rounded-2xl px-6 font-bold text-accent" /></div>
                 <div className="grid grid-cols-2 gap-6">
-                  <div className="space-y-2.5"><Label className="text-[11px] font-black text-accent/60 uppercase ml-1">소속 회사</Label><Input placeholder="회사명" value={company} onChange={(e) => setCompany(e.target.value)} required className="h-14 bg-[#FBFBFC] border-accent/5 rounded-2xl px-6 font-bold" /></div>
-                  <div className="space-y-2.5"><Label className="text-[11px] font-black text-accent/60 uppercase ml-1">부서</Label><Input placeholder="부서명" value={department} onChange={(e) => setDepartment(e.target.value)} required className="h-14 bg-[#FBFBFC] border-accent/5 rounded-2xl px-6 font-bold" /></div>
+                  <div className="space-y-2.5"><Label className="text-[11px] font-black text-accent/60 uppercase ml-1">소속 회사</Label><Input placeholder="회사명" value={company} onChange={(e) => setCompany(e.target.value)} required className="h-14 bg-[#FBFBFC] border-accent/5 rounded-2xl px-6 font-bold text-accent" /></div>
+                  <div className="space-y-2.5"><Label className="text-[11px] font-black text-accent/60 uppercase ml-1">부서</Label><Input placeholder="부서명" value={department} onChange={(e) => setDepartment(e.target.value)} required className="h-14 bg-[#FBFBFC] border-accent/5 rounded-2xl px-6 font-bold text-accent" /></div>
                 </div>
                 <div className="grid grid-cols-2 gap-6">
-                  <div className="space-y-2.5"><Label className="text-[11px] font-black text-accent/60 uppercase ml-1">직무 (Role)</Label><Input placeholder="예: 채용" value={jobRole} onChange={(e) => setJobRole(e.target.value)} required className="h-14 bg-[#FBFBFC] border-accent/5 rounded-2xl px-6 font-bold" /></div>
-                  <div className="space-y-2.5"><Label className="text-[11px] font-black text-accent/60 uppercase ml-1">직함 (Title)</Label><Input placeholder="예: 팀장" value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} required className="h-14 bg-[#FBFBFC] border-accent/5 rounded-2xl px-6 font-bold" /></div>
+                  <div className="space-y-2.5"><Label className="text-[11px] font-black text-accent/60 uppercase ml-1">직무 (Role)</Label><Input placeholder="예: 채용" value={jobRole} onChange={(e) => setJobRole(e.target.value)} required className="h-14 bg-[#FBFBFC] border-accent/5 rounded-2xl px-6 font-bold text-accent" /></div>
+                  <div className="space-y-2.5"><Label className="text-[11px] font-black text-accent/60 uppercase ml-1">직함 (Title)</Label><Input placeholder="예: 팀장" value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} required className="h-14 bg-[#FBFBFC] border-accent/5 rounded-2xl px-6 font-bold text-accent" /></div>
                 </div>
-                <div className="space-y-2.5"><Label className="text-[11px] font-black text-accent/60 uppercase ml-1">휴대전화</Label><Input placeholder="010-0000-0000" value={phone} onChange={(e) => setPhone(e.target.value)} required className="h-14 bg-[#FBFBFC] border-accent/5 rounded-2xl px-6 font-bold" /></div>
+                <div className="space-y-2.5"><Label className="text-[11px] font-black text-accent/60 uppercase ml-1">휴대전화</Label><Input placeholder="010-0000-0000" value={phone} onChange={(e) => setPhone(e.target.value)} required className="h-14 bg-[#FBFBFC] border-accent/5 rounded-2xl px-6 font-bold text-accent" /></div>
                 <Button type="submit" disabled={isLoading} className="w-full h-18 gold-gradient text-accent font-black rounded-[1.5rem] mt-10 shadow-3xl text-xl hover:scale-[1.01] transition-all active:scale-[0.97]">{isLoading ? "전문가 등록 처리 중..." : "전문가 등록 완료"}<UserPlus className="w-6 h-6 ml-3" /></Button>
               </form>
             </TabsContent>

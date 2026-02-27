@@ -1,4 +1,3 @@
-
 "use client"
 
 import { cn } from "@/lib/utils"
@@ -10,7 +9,7 @@ interface LogoProps {
 }
 
 export function Logo({ className = "", isLight = false, onClick }: LogoProps) {
-  // 전문가님이 요청하신 가장 찐한 딥 그린 컬러 (시인성 최상)
+  // 요청하신 가장 찐한 딥 그린 컬러 (시인성 최상)
   const logoGreen = isLight ? "text-white" : "text-[#163300]"
   const accentLime = "#CDECB1" // 포인트 라임 컬러
 
@@ -20,7 +19,7 @@ export function Logo({ className = "", isLight = false, onClick }: LogoProps) {
       onClick={onClick}
     >
       <div className="relative flex items-center justify-center">
-        {/* 심볼 아이콘: 면(Solid) 중심으로 변경하여 시인성 극대화 */}
+        {/* 심볼 아이콘: 면(Solid) 중심의 볼드 디자인 */}
         <div className={cn(
           "w-11 h-11 flex items-center justify-center transition-all duration-500 group-hover:scale-110",
           logoGreen
@@ -31,19 +30,15 @@ export function Logo({ className = "", isLight = false, onClick }: LogoProps) {
             xmlns="http://www.w3.org/2000/svg" 
             className="w-10 h-10"
           >
-            {/* 볼드한 말풍선 심볼 */}
             <path 
               d="M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 13.4876 3.36093 14.891 4 16.1272L3 21L7.8728 20C9.10897 20.6391 10.5124 21 12 21Z" 
               fill="currentColor"
             />
-            {/* 인텔리전스를 상징하는 포인트 도트 (크기 키움) */}
             <circle cx="8" cy="12" r="1.8" fill={accentLime} className="group-hover:animate-pulse" />
             <circle cx="12" cy="12" r="1.8" fill={accentLime} className="group-hover:animate-pulse [animation-delay:200ms]" />
             <circle cx="16" cy="12" r="1.8" fill={accentLime} className="group-hover:animate-pulse [animation-delay:400ms]" />
           </svg>
         </div>
-        
-        {/* 호버 시 은은한 광채 효과 */}
         {!isLight && (
           <div className="absolute inset-0 bg-primary/30 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
         )}

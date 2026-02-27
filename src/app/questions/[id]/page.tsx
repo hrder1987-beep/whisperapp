@@ -7,7 +7,7 @@ type Props = {
 }
 
 /**
- * [중요] 전문가님이 구매하신 실제 도메인으로 변경해 주세요.
+ * [중요] 전문가님의 실제 도메인 주소입니다.
  */
 const SITE_URL = "https://whisper-hr.com"; 
 

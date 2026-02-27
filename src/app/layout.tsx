@@ -5,8 +5,7 @@ import { FirebaseClientProvider } from "@/firebase/client-provider"
 import { BottomNav } from "@/components/chuchot/BottomNav"
 
 /**
- * [중요] 전문가님이 구매하신 실제 도메인으로 변경해 주세요.
- * 예: "https://www.yourdomain.com"
+ * [중요] 전문가님이 구매하신 실제 도메인입니다.
  */
 const SITE_URL = "https://whisper-hr.com"; 
 
