@@ -2,55 +2,39 @@
 "use client"
 
 import { usePathname, useRouter } from "next/navigation"
-import { MessageSquareQuote, Award, GraduationCap, Briefcase, Mail, Sparkles, Users } from "lucide-react"
+import { MessageSquareQuote, Award, GraduationCap, Sparkles, Users } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useState, useEffect } from "react"
 import { AldiChat } from "./ShuChat"
-import { useUser, useCollection, useMemoFirebase, useFirestore } from "@/firebase"
-import { collection, query, where } from "firebase/firestore"
-import { Badge } from "@/components/ui/badge"
+import { useIsMobile } from "@/hooks/use-mobile"
 
 export function BottomNav() {
   const pathname = usePathname()
   const router = useRouter()
-  const { user } = useUser()
-  const db = useFirestore()
+  const isMobile = useIsMobile()
   const [isChatOpen, setIsChatOpen] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
 
   useEffect(() => setIsMounted(true), [])
 
-  const unreadMessagesQuery = useMemoFirebase(() => {
-    if (!db || !user || !user.uid) return null
-    return query(
-      collection(db, "messages"),
-      where("receiverId", "==", user.uid),
-      where("isRead", "==", false)
-    )
-  }, [db, user])
-  
-  const { data: unreadMessages } = useCollection(unreadMessagesQuery)
+  if (!isMounted || !isMobile) return null
 
-  if (!isMounted) return null
-
+  // 전문가님이 요청하신 5가지 핵심 메뉴 구성
   const navItems = [
-    { name: "지식", href: "/", icon: MessageSquareQuote },
+    { name: "피드", href: "/", icon: MessageSquareQuote },
     { name: "모임", href: "/gatherings", icon: Users },
-    { name: "위스퍼러", href: "/mentors", icon: Award },
-    { name: "쪽지", href: "/messages", icon: Mail, badgeCount: unreadMessages?.length || 0 },
-    { name: "채용", href: "/jobs", icon: Briefcase },
+    { name: "프로그램", href: "/programs", icon: GraduationCap },
+    { name: "강사", href: "/instructors", icon: Award },
   ]
 
   return (
     <>
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-xl border-t border-black/[0.05] pb-safe shadow-[0_-8px_30px_rgba(0,0,0,0.1)]">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-xl border-t border-black/[0.05] pb-safe shadow-[0_-8px_30px_rgba(0,0,0,0.1)]">
         <div className="flex justify-around items-center h-16 px-2">
           {navItems.map((item) => {
             const isActive = pathname === item.href
             const Icon = item.icon
             
-            if (item.name === "쪽지" && !user) return null;
-
             return (
               <button
                 key={item.href}
@@ -62,11 +46,6 @@ export function BottomNav() {
                     "w-6 h-6 mb-1 transition-all duration-300",
                     isActive ? "text-[#163300] scale-110" : "text-[#163300]/20"
                   )} />
-                  {item.badgeCount && item.badgeCount > 0 ? (
-                    <Badge className="absolute -top-1.5 -right-2.5 bg-red-500 text-white border-2 border-white text-[8px] h-4.5 w-4.5 p-0 flex items-center justify-center rounded-full font-black animate-pulse">
-                      {item.badgeCount}
-                    </Badge>
-                  ) : null}
                 </div>
                 <span className={cn(
                   "text-[9px] font-black transition-colors uppercase tracking-tighter",
@@ -79,6 +58,7 @@ export function BottomNav() {
             )
           })}
           
+          {/* AI 챗봇 버튼 (마지막 5번째 탭) */}
           <button
             onClick={() => setIsChatOpen(true)}
             className="flex flex-col items-center justify-center w-full h-full pt-1"
@@ -86,7 +66,7 @@ export function BottomNav() {
             <div className="relative">
               <Sparkles className="w-6 h-6 mb-1 text-primary animate-pulse" />
             </div>
-            <span className="text-[9px] font-black text-primary uppercase tracking-tighter">AI 상담</span>
+            <span className="text-[9px] font-black text-primary uppercase tracking-tighter">AI 챗봇</span>
           </button>
         </div>
       </nav>
