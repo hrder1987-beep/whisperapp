@@ -10,7 +10,7 @@ interface LogoProps {
 }
 
 export function Logo({ className = "", isLight = false, onClick }: LogoProps) {
-  // 전문가님이 요청하신 가장 찐한 딥 그린 컬러 (가독성 최상)
+  // 전문가님이 요청하신 가장 찐한 딥 그린 컬러 (시인성 최상)
   const logoGreen = isLight ? "text-white" : "text-[#163300]"
   const accentLime = "#CDECB1" // 포인트 라임 컬러
 

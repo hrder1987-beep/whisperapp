@@ -147,18 +147,18 @@ function HomePageContent() {
   }, [config])
 
   const premiumAds = useMemo(() => {
+    const defaultAds = [
+      { id: "ad1", title: "HR Tech Conference 2025\n사전 예약 안내", badge: "SPECIAL", webImage: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?q=80&w=400", mobileImage: "", link: "#" },
+      { id: "ad2", title: "글로벌 인재 채용을 위한\n올인원 솔루션 '위스퍼'", badge: "SOLUTION", webImage: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=400", mobileImage: "", link: "#" },
+      { id: "ad3", title: "차세대 C&B 전문가를 위한\n실무 마스터 클래스", badge: "EDUCATION", webImage: "https://images.unsplash.com/photo-1551288049-bbbda536339a?q=80&w=400", mobileImage: "", link: "#" }
+    ]
     if (config?.premiumAdsSettings) {
       try { 
         const parsed = JSON.parse(config.premiumAdsSettings) as PremiumAd[];
         if (parsed && parsed.length > 0) return parsed;
       } catch (e) { }
     }
-    // 기본 샘플 데이터 (복구)
-    return [
-      { id: "ad1", title: "HR Tech Conference 2025\n사전 예약 안내", badge: "SPECIAL", webImage: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?q=80&w=400", mobileImage: "", link: "#" },
-      { id: "ad2", title: "글로벌 인재 채용을 위한\n올인원 솔루션 '위스퍼'", badge: "SOLUTION", webImage: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=400", mobileImage: "", link: "#" },
-      { id: "ad3", title: "차세대 C&B 전문가를 위한\n실무 마스터 클래스", badge: "EDUCATION", webImage: "https://images.unsplash.com/photo-1551288049-bbbda536339a?q=80&w=400", mobileImage: "", link: "#" }
-    ]
+    return defaultAds;
   }, [config])
 
   const answersQuery = useMemoFirebase(() => (!db || !selectedId) ? null : query(collection(db, "questions", selectedId, "answers"), orderBy("createdAt", "desc")), [db, selectedId])
