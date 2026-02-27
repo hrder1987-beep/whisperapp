@@ -1,4 +1,3 @@
-
 import { Metadata, ResolvingMetadata } from 'next'
 import { Header } from "@/components/chuchot/Header"
 import { QuestionViewClient } from "./client-view"
@@ -8,17 +7,15 @@ type Props = {
 }
 
 /**
- * [런칭 전 확인!] 실제 구매하신 도메인 주소로 변경해 주세요.
- * 예: "https://www.chuchot.kr"
+ * [중요] 전문가님이 구매하신 실제 도메인으로 변경해 주세요.
  */
-const SITE_URL = "https://whisper-hr.vercel.app"; 
+const SITE_URL = "https://whisper-hr.com"; 
 
 /**
  * 동적 메타데이터 생성을 위해 Firestore REST API를 사용하여 질문 데이터를 가져옵니다.
  */
 async function getQuestionData(id: string) {
   try {
-    // 프로젝트 ID는 firebase/config.ts의 projectId와 동일해야 합니다.
     const projectId = "studio-1249189958-2be09";
     const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/questions/${id}`;
     
@@ -53,8 +50,7 @@ export async function generateMetadata(
     }
   }
 
-  const previousImages = (await parent).openGraph?.images || []
-  const ogImage = question.imageUrl || "https://images.unsplash.com/photo-1521737711867-e3b97375f902?q=80&w=1200&h=630&auto=format&fit=crop";
+  const ogImage = question.imageUrl || "/og-image.jpg";
 
   return {
     title: `${question.title} | Whisper`,
@@ -71,7 +67,6 @@ export async function generateMetadata(
           height: 630,
           alt: question.title,
         },
-        ...previousImages,
       ],
       locale: 'ko_KR',
       type: 'article',

@@ -4,17 +4,27 @@ import { Toaster } from "@/components/ui/toaster"
 import { FirebaseClientProvider } from "@/firebase/client-provider"
 import { BottomNav } from "@/components/chuchot/BottomNav"
 
+/**
+ * [중요] 전문가님이 구매하신 실제 도메인으로 변경해 주세요.
+ * 예: "https://www.yourdomain.com"
+ */
+const SITE_URL = "https://whisper-hr.com"; 
+
 export const metadata: Metadata = {
   title: 'Whisper (위스퍼) - HR Intelligence Hub',
   description: 'HR실무자들의 품격 있는 속삭임. 교육부터 조직문화, 인사전략까지 HR 전문가를 위한 지식 허브 Whisper',
+  metadataBase: new URL(SITE_URL),
+  alternates: {
+    canonical: '/',
+  },
   openGraph: {
     title: 'Whisper (위스퍼) - HR Intelligence Hub',
     description: 'HR실무자들의 품격 있는 속삭임. 교육부터 조직문화, 인사전략까지 HR 실무자를 위한 지식 허브입니다.',
-    url: 'https://whisper-hr.vercel.app',
+    url: SITE_URL,
     siteName: 'Whisper',
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1521737711867-e3b97375f902?q=80&w=1200&h=630&auto=format&fit=crop',
+        url: '/og-image.jpg', // public 폴더에 위치한 대표 이미지
         width: 1200,
         height: 630,
         alt: 'Whisper - HR실무자들의 품격 있는 속삭임',
@@ -27,7 +37,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Whisper (위스퍼) - HR Intelligence Hub',
     description: 'HR실무자들의 품격 있는 속삭임. 교육부터 조직문화, 인사전략까지 HR 전문가를 위한 지식 허브 Whisper',
-    images: ['https://images.unsplash.com/photo-1521737711867-e3b97375f902?q=80&w=1200&h=630&auto=format&fit=crop'],
+    images: ['/og-image.jpg'],
   },
 };
 
