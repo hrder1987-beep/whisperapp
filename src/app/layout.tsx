@@ -1,18 +1,33 @@
-import type {Metadata} from 'next';
+
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 import { FirebaseClientProvider } from "@/firebase/client-provider"
 import { BottomNav } from "@/components/chuchot/BottomNav"
 
-/**
- * [중요] 전문가님이 구매하신 실제 도메인입니다.
- */
 const SITE_URL = "https://whisper-hr.com"; 
+
+export const viewport: Viewport = {
+  themeColor: '#163300',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: 'cover',
+}
 
 export const metadata: Metadata = {
   title: 'Whisper (위스퍼) - HR Intelligence Hub',
   description: 'HR실무자들의 품격 있는 속삭임. 교육부터 조직문화, 인사전략까지 HR 전문가를 위한 지식 허브 Whisper',
   metadataBase: new URL(SITE_URL),
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'Whisper',
+  },
+  formatDetection: {
+    telephone: false,
+  },
   alternates: {
     canonical: '/',
   },
@@ -51,9 +66,11 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+        {/* 모바일 앱 아이콘 설정 */}
+        <link rel="apple-touch-icon" href="https://picsum.photos/seed/whisper-icon/180/180" />
       </head>
       <body 
-        className="font-body antialiased selection:bg-primary selection:text-primary-foreground bg-[#F8F9FA]"
+        className="font-body antialiased selection:bg-primary selection:text-primary-foreground bg-[#F8F9FA] touch-pan-y"
         suppressHydrationWarning
       >
         <FirebaseClientProvider>
