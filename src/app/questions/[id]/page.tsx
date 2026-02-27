@@ -11,30 +11,22 @@ type Props = {
  */
 const SITE_URL = "https://whisper-hr.com"; 
 
-/**
- * 동적 메타데이터 생성을 위해 Firestore REST API를 사용하여 질문 데이터를 가져옵니다.
- */
 async function getQuestionData(id: string) {
   try {
     const projectId = "studio-1249189958-2be09";
     const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/questions/${id}`;
-    
     const response = await fetch(url, { next: { revalidate: 60 } });
     if (!response.ok) return null;
-    
     const data = await response.json();
     const fields = data.fields;
     if (!fields) return null;
-    
     return {
       title: fields.title?.stringValue || "Whisper 지식 속삭임",
-      text: fields.text?.stringValue || "HR실무자들의 품격 있는 속삭임. HR 전문가들의 집단지성 허브 Whisper에서 지혜를 나눠보세요.",
+      text: fields.text?.stringValue || "HR실무자들의 품격 있는 속삭임.",
       imageUrl: fields.imageUrl?.stringValue || null,
       nickname: fields.nickname?.stringValue || "익명전문가"
     };
-  } catch (error) {
-    return null;
-  }
+  } catch (error) { return null; }
 }
 
 export async function generateMetadata(
@@ -43,15 +35,8 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   const id = (await params).id
   const question = await getQuestionData(id)
-
-  if (!question) {
-    return {
-      title: "질문을 찾을 수 없습니다 | Whisper",
-    }
-  }
-
+  if (!question) return { title: "질문을 찾을 수 없습니다 | Whisper" };
   const ogImage = question.imageUrl || "/og-image.jpg";
-
   return {
     title: `${question.title} | Whisper`,
     description: question.text.substring(0, 160),
@@ -60,14 +45,7 @@ export async function generateMetadata(
       description: question.text.substring(0, 160),
       url: `${SITE_URL}/questions/${id}`,
       siteName: 'Whisper (위스퍼) - HR Intelligence Hub',
-      images: [
-        {
-          url: ogImage,
-          width: 1200,
-          height: 630,
-          alt: question.title,
-        },
-      ],
+      images: [{ url: ogImage, width: 1200, height: 630, alt: question.title }],
       locale: 'ko_KR',
       type: 'article',
     },
@@ -82,7 +60,6 @@ export async function generateMetadata(
 
 export default async function QuestionPage({ params }: Props) {
   const id = (await params).id
-  
   return (
     <div className="min-h-screen bg-[#F8F9FA]">
       <Header />

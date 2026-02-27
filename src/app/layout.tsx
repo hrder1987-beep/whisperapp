@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     siteName: 'Whisper',
     images: [
       {
-        url: '/og-image.jpg', // public 폴더에 위치한 대표 이미지
+        url: '/og-image.jpg',
         width: 1200,
         height: 630,
         alt: 'Whisper - HR실무자들의 품격 있는 속삭임',
@@ -51,7 +51,7 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
       </head>
       <body 
         className="font-body antialiased selection:bg-primary selection:text-primary-foreground bg-[#F8F9FA]"
