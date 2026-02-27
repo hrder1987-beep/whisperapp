@@ -8,10 +8,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Trash2, MessageSquare, Briefcase, GraduationCap, Award, Check, UserCheck, AlertCircle, CheckSquare, Square, RefreshCcw, Info } from "lucide-react"
+import { Trash2, MessageSquare, Briefcase, GraduationCap, Award, RefreshCcw } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { Question, JobListing, TrainingProgram, Instructor } from "@/lib/types"
-import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 
 export function ContentManager() {
@@ -70,10 +69,13 @@ export function ContentManager() {
     }
   }
 
-  const handleBulkDelete = () => {
+  const handleBulkDelete = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
     if (!db || !currentCollection || selectedIds.length === 0) return
     
-    const confirmMessage = `선택한 ${selectedIds.length}개의 항목을 일괄 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.`
+    const confirmMessage = `선택한 ${selectedIds.length}개의 항목을 일괄 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.`;
     if (!window.confirm(confirmMessage)) return
 
     setIsDeleting(true)
@@ -109,121 +111,118 @@ export function ContentManager() {
   return (
     <Card className="bg-white border-accent/5 shadow-sm rounded-[2.5rem] overflow-hidden">
       <CardContent className="p-0">
-        {/* Bulk Action Bar - 상단 고정 및 이벤트 간섭 방지를 위해 탭 외부에 배치 */}
-        {selectedIds.length > 0 && (
-          <div className="bg-primary/10 border-b border-primary/20 px-10 py-5 flex items-center justify-between animate-in slide-in-from-top duration-300">
-            <div className="flex items-center gap-4">
-              <Checkbox 
-                checked={selectedIds.length === currentList.length} 
-                onCheckedChange={toggleSelectAll}
-                className="h-5 w-5 border-primary"
-              />
-              <span className="text-sm font-black text-primary">
-                {selectedIds.length}개의 콘텐츠가 선택되었습니다.
-              </span>
+        <div className="relative">
+          {/* Bulk Action Bar - 레이아웃 간섭을 피하기 위해 최상단에 확실히 배치 */}
+          {selectedIds.length > 0 && (
+            <div className="bg-primary/10 border-b border-primary/20 px-10 py-6 flex items-center justify-between sticky top-0 z-50 animate-in slide-in-from-top duration-200">
+              <div className="flex items-center gap-4">
+                <Checkbox 
+                  checked={selectedIds.length === currentList.length} 
+                  onCheckedChange={toggleSelectAll}
+                  className="h-5 w-5 border-primary"
+                />
+                <span className="text-base font-black text-primary">
+                  {selectedIds.length}개의 콘텐츠 선택됨
+                </span>
+              </div>
+              <Button 
+                type="button"
+                onClick={handleBulkDelete}
+                disabled={isDeleting}
+                className="h-12 px-8 rounded-xl font-black gap-2 shadow-2xl transition-all bg-red-500 hover:bg-red-600 text-white cursor-pointer active:scale-95"
+              >
+                {isDeleting ? <RefreshCcw className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                일괄 삭제 실행하기
+              </Button>
             </div>
-            <Button 
-              type="button"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                handleBulkDelete();
-              }}
-              disabled={isDeleting}
-              variant="destructive" 
-              className="h-12 px-8 rounded-xl font-black gap-2 shadow-xl hover:scale-105 transition-all bg-red-500 hover:bg-red-600"
-            >
-              {isDeleting ? <RefreshCcw className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
-              선택된 {selectedIds.length}개 일괄 삭제
-            </Button>
-          </div>
-        )}
+          )}
 
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <div className="bg-accent/[0.02] border-b border-accent/5">
-            <TabsList className="w-full justify-start gap-10 px-10 h-16 bg-transparent rounded-none border-none">
-              <TabsTrigger value="q" className="bg-transparent data-[state=active]:bg-transparent data-[state=active]:text-primary font-black text-sm border-b-2 border-transparent data-[state=active]:border-primary rounded-none h-full px-0">지식 게시물</TabsTrigger>
-              <TabsTrigger value="j" className="bg-transparent data-[state=active]:bg-transparent data-[state=active]:text-primary font-black text-sm border-b-2 border-transparent data-[state=active]:border-primary rounded-none h-full px-0">채용 공고</TabsTrigger>
-              <TabsTrigger value="p" className="bg-transparent data-[state=active]:bg-transparent data-[state=active]:text-primary font-black text-sm border-b-2 border-transparent data-[state=active]:border-primary rounded-none h-full px-0">프로그램</TabsTrigger>
-              <TabsTrigger value="m" className="bg-transparent data-[state=active]:bg-transparent data-[state=active]:text-primary font-black text-sm border-b-2 border-transparent data-[state=active]:border-primary rounded-none h-full px-0 relative">
-                위스퍼러 신청 
-                {mentors.filter(m => !m.isVerified).length > 0 && (
-                  <span className="absolute -top-1 -right-4 bg-primary text-white text-[8px] font-black w-4 h-4 rounded-full flex items-center justify-center animate-bounce">
-                    {mentors.filter(m => !m.isVerified).length}
-                  </span>
-                )}
-              </TabsTrigger>
-            </TabsList>
-          </div>
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <div className="bg-accent/[0.02] border-b border-accent/5">
+              <TabsList className="w-full justify-start gap-10 px-10 h-16 bg-transparent rounded-none border-none">
+                <TabsTrigger value="q" className="bg-transparent data-[state=active]:bg-transparent data-[state=active]:text-primary font-black text-sm border-b-2 border-transparent data-[state=active]:border-primary rounded-none h-full px-0">지식 게시물</TabsTrigger>
+                <TabsTrigger value="j" className="bg-transparent data-[state=active]:bg-transparent data-[state=active]:text-primary font-black text-sm border-b-2 border-transparent data-[state=active]:border-primary rounded-none h-full px-0">채용 공고</TabsTrigger>
+                <TabsTrigger value="p" className="bg-transparent data-[state=active]:bg-transparent data-[state=active]:text-primary font-black text-sm border-b-2 border-transparent data-[state=active]:border-primary rounded-none h-full px-0">프로그램</TabsTrigger>
+                <TabsTrigger value="m" className="bg-transparent data-[state=active]:bg-transparent data-[state=active]:text-primary font-black text-sm border-b-2 border-transparent data-[state=active]:border-primary rounded-none h-full px-0 relative">
+                  위스퍼러 신청 
+                  {mentors.filter(m => !m.isVerified).length > 0 && (
+                    <span className="absolute -top-1 -right-4 bg-primary text-white text-[8px] font-black w-4 h-4 rounded-full flex items-center justify-center animate-bounce">
+                      {mentors.filter(m => !m.isVerified).length}
+                    </span>
+                  )}
+                </TabsTrigger>
+              </TabsList>
+            </div>
 
-          <div className="divide-y divide-accent/5">
-            <TabsContent value="q" className="mt-0">
-              {questions.length === 0 ? <div className="py-24 text-center text-accent/10 font-black">데이터가 없습니다.</div> : questions.map(item => (
-                <div key={item.id} className={cn("flex items-center justify-between p-6 border-b border-accent/5 transition-all", selectedIds.includes(item.id) && "bg-primary/5")}>
-                  <div className="flex items-center gap-5 flex-1">
-                    <Checkbox checked={selectedIds.includes(item.id)} onCheckedChange={() => toggleSelect(item.id)} className="h-5 w-5" />
-                    <div className="w-12 h-12 flex items-center justify-center rounded-2xl bg-accent/5 text-accent/30"><MessageSquare className="w-5 h-5" /></div>
-                    <div className="min-w-0 flex-1">
-                      <h4 className="font-black text-accent leading-tight line-clamp-1">{item.title}</h4>
-                      <p className="text-[11px] text-accent/30 font-bold mt-1">등록일: {new Date(item.createdAt).toLocaleDateString()}</p>
+            <div className="divide-y divide-accent/5">
+              <TabsContent value="q" className="mt-0">
+                {questions.length === 0 ? <div className="py-24 text-center text-accent/10 font-black">데이터가 없습니다.</div> : questions.map(item => (
+                  <div key={item.id} className={cn("flex items-center justify-between p-6 border-b border-accent/5 transition-all", selectedIds.includes(item.id) && "bg-primary/5")}>
+                    <div className="flex items-center gap-5 flex-1">
+                      <Checkbox checked={selectedIds.includes(item.id)} onCheckedChange={() => toggleSelect(item.id)} className="h-5 w-5" />
+                      <div className="w-12 h-12 flex items-center justify-center rounded-2xl bg-accent/5 text-accent/30"><MessageSquare className="w-5 h-5" /></div>
+                      <div className="min-w-0 flex-1">
+                        <h4 className="font-black text-accent leading-tight line-clamp-1">{item.title}</h4>
+                        <p className="text-[11px] text-accent/30 font-bold mt-1">등록일: {new Date(item.createdAt).toLocaleDateString()}</p>
+                      </div>
+                    </div>
+                    <Button variant="ghost" size="icon" className="text-red-300 hover:text-red-500" onClick={() => handleDeleteSingle("questions", item.id)}><Trash2 className="w-4 h-4" /></Button>
+                  </div>
+                ))}
+              </TabsContent>
+              <TabsContent value="j" className="mt-0">
+                {jobs.length === 0 ? <div className="py-24 text-center text-accent/10 font-black">데이터가 없습니다.</div> : jobs.map(item => (
+                  <div key={item.id} className={cn("flex items-center justify-between p-6 border-b border-accent/5 transition-all", selectedIds.includes(item.id) && "bg-primary/5")}>
+                    <div className="flex items-center gap-5 flex-1">
+                      <Checkbox checked={selectedIds.includes(item.id)} onCheckedChange={() => toggleSelect(item.id)} className="h-5 w-5" />
+                      <div className="w-12 h-12 flex items-center justify-center rounded-2xl bg-accent/5 text-accent/30"><Briefcase className="w-5 h-5" /></div>
+                      <div className="min-w-0 flex-1">
+                        <h4 className="font-black text-accent leading-tight line-clamp-1">{item.title}</h4>
+                        <p className="text-[11px] text-accent/30 font-bold mt-1">등록일: {new Date(item.createdAt).toLocaleDateString()}</p>
+                      </div>
+                    </div>
+                    <Button variant="ghost" size="icon" className="text-red-300 hover:text-red-500" onClick={() => handleDeleteSingle("jobs", item.id)}><Trash2 className="w-4 h-4" /></Button>
+                  </div>
+                ))}
+              </TabsContent>
+              <TabsContent value="p" className="mt-0">
+                {programs.length === 0 ? <div className="py-24 text-center text-accent/10 font-black">데이터가 없습니다.</div> : programs.map(item => (
+                  <div key={item.id} className={cn("flex items-center justify-between p-6 border-b border-accent/5 transition-all", selectedIds.includes(item.id) && "bg-primary/5")}>
+                    <div className="flex items-center gap-5 flex-1">
+                      <Checkbox checked={selectedIds.includes(item.id)} onCheckedChange={() => toggleSelect(item.id)} className="h-5 w-5" />
+                      <div className="w-12 h-12 flex items-center justify-center rounded-2xl bg-accent/5 text-accent/30"><GraduationCap className="w-5 h-5" /></div>
+                      <div className="min-w-0 flex-1">
+                        <h4 className="font-black text-accent leading-tight line-clamp-1">{item.title}</h4>
+                        <p className="text-[11px] text-accent/30 font-bold mt-1">등록일: {new Date(item.createdAt).toLocaleDateString()}</p>
+                      </div>
+                    </div>
+                    <Button variant="ghost" size="icon" className="text-red-300 hover:text-red-500" onClick={() => handleDeleteSingle("trainingPrograms", item.id)}><Trash2 className="w-4 h-4" /></Button>
+                  </div>
+                ))}
+              </TabsContent>
+              <TabsContent value="m" className="mt-0">
+                {mentors.length === 0 ? <div className="py-24 text-center text-accent/10 font-black">데이터가 없습니다.</div> : mentors.map(item => (
+                  <div key={item.id} className={cn("flex items-center justify-between p-6 border-b border-accent/5 transition-all", selectedIds.includes(item.id) && "bg-primary/5")}>
+                    <div className="flex items-center gap-5 flex-1">
+                      <Checkbox checked={selectedIds.includes(item.id)} onCheckedChange={() => toggleSelect(item.id)} className="h-5 w-5" />
+                      <div className="w-12 h-12 flex items-center justify-center rounded-2xl bg-accent/5 text-accent/30"><Award className="w-5 h-5" /></div>
+                      <div className="min-w-0 flex-1">
+                        <h4 className="font-black text-accent leading-tight line-clamp-1">{item.name} 전문가</h4>
+                        <p className="text-[11px] text-accent/30 font-bold mt-1">{item.company} · {item.specialty}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      {!item.isVerified && (
+                        <Button onClick={() => handleApproveMentor(item)} className="bg-primary text-white font-black h-10 px-5 rounded-xl text-xs">승인하기</Button>
+                      )}
+                      <Button variant="ghost" size="icon" className="text-red-300 hover:text-red-500" onClick={() => handleDeleteSingle("mentors", item.id)}><Trash2 className="w-4 h-4" /></Button>
                     </div>
                   </div>
-                  <Button variant="ghost" size="icon" className="text-red-300 hover:text-red-500" onClick={() => handleDeleteSingle("questions", item.id)}><Trash2 className="w-4 h-4" /></Button>
-                </div>
-              ))}
-            </TabsContent>
-            <TabsContent value="j" className="mt-0">
-              {jobs.length === 0 ? <div className="py-24 text-center text-accent/10 font-black">데이터가 없습니다.</div> : jobs.map(item => (
-                <div key={item.id} className={cn("flex items-center justify-between p-6 border-b border-accent/5 transition-all", selectedIds.includes(item.id) && "bg-primary/5")}>
-                  <div className="flex items-center gap-5 flex-1">
-                    <Checkbox checked={selectedIds.includes(item.id)} onCheckedChange={() => toggleSelect(item.id)} className="h-5 w-5" />
-                    <div className="w-12 h-12 flex items-center justify-center rounded-2xl bg-accent/5 text-accent/30"><Briefcase className="w-5 h-5" /></div>
-                    <div className="min-w-0 flex-1">
-                      <h4 className="font-black text-accent leading-tight line-clamp-1">{item.title}</h4>
-                      <p className="text-[11px] text-accent/30 font-bold mt-1">등록일: {new Date(item.createdAt).toLocaleDateString()}</p>
-                    </div>
-                  </div>
-                  <Button variant="ghost" size="icon" className="text-red-300 hover:text-red-500" onClick={() => handleDeleteSingle("jobs", item.id)}><Trash2 className="w-4 h-4" /></Button>
-                </div>
-              ))}
-            </TabsContent>
-            <TabsContent value="p" className="mt-0">
-              {programs.length === 0 ? <div className="py-24 text-center text-accent/10 font-black">데이터가 없습니다.</div> : programs.map(item => (
-                <div key={item.id} className={cn("flex items-center justify-between p-6 border-b border-accent/5 transition-all", selectedIds.includes(item.id) && "bg-primary/5")}>
-                  <div className="flex items-center gap-5 flex-1">
-                    <Checkbox checked={selectedIds.includes(item.id)} onCheckedChange={() => toggleSelect(item.id)} className="h-5 w-5" />
-                    <div className="w-12 h-12 flex items-center justify-center rounded-2xl bg-accent/5 text-accent/30"><GraduationCap className="w-5 h-5" /></div>
-                    <div className="min-w-0 flex-1">
-                      <h4 className="font-black text-accent leading-tight line-clamp-1">{item.title}</h4>
-                      <p className="text-[11px] text-accent/30 font-bold mt-1">등록일: {new Date(item.createdAt).toLocaleDateString()}</p>
-                    </div>
-                  </div>
-                  <Button variant="ghost" size="icon" className="text-red-300 hover:text-red-500" onClick={() => handleDeleteSingle("trainingPrograms", item.id)}><Trash2 className="w-4 h-4" /></Button>
-                </div>
-              ))}
-            </TabsContent>
-            <TabsContent value="m" className="mt-0">
-              {mentors.length === 0 ? <div className="py-24 text-center text-accent/10 font-black">데이터가 없습니다.</div> : mentors.map(item => (
-                <div key={item.id} className={cn("flex items-center justify-between p-6 border-b border-accent/5 transition-all", selectedIds.includes(item.id) && "bg-primary/5")}>
-                  <div className="flex items-center gap-5 flex-1">
-                    <Checkbox checked={selectedIds.includes(item.id)} onCheckedChange={() => toggleSelect(item.id)} className="h-5 w-5" />
-                    <div className="w-12 h-12 flex items-center justify-center rounded-2xl bg-accent/5 text-accent/30"><Award className="w-5 h-5" /></div>
-                    <div className="min-w-0 flex-1">
-                      <h4 className="font-black text-accent leading-tight line-clamp-1">{item.name} 전문가</h4>
-                      <p className="text-[11px] text-accent/30 font-bold mt-1">{item.company} · {item.specialty}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    {!item.isVerified && (
-                      <Button onClick={() => handleApproveMentor(item)} className="bg-primary text-white font-black h-10 px-5 rounded-xl text-xs">승인하기</Button>
-                    )}
-                    <Button variant="ghost" size="icon" className="text-red-300 hover:text-red-500" onClick={() => handleDeleteSingle("mentors", item.id)}><Trash2 className="w-4 h-4" /></Button>
-                  </div>
-                </div>
-              ))}
-            </TabsContent>
-          </div>
-        </Tabs>
+                ))}
+              </TabsContent>
+            </div>
+          </Tabs>
+        </div>
       </CardContent>
     </Card>
   )
