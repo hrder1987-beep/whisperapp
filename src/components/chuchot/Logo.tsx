@@ -11,7 +11,8 @@ interface LogoProps {
 
 export function Logo({ className = "", isLight = false, onClick }: LogoProps) {
   // 브랜드의 깊이감을 더해주는 가장 찐한 연두색(다크 그린)
-  const logoGreen = "text-[#2D4A1E]"
+  const logoGreen = isLight ? "text-white" : "text-[#2D4A1E]"
+  const accentLime = "#CDECB1" // 라이트 라임 포인트 컬러
 
   return (
     <div 
@@ -22,7 +23,7 @@ export function Logo({ className = "", isLight = false, onClick }: LogoProps) {
         {/* 심볼 아이콘 컨테이너 */}
         <div className={cn(
           "w-10 h-10 flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:rotate-6",
-          isLight ? "text-white" : logoGreen
+          logoGreen
         )}>
           <svg 
             viewBox="0 0 24 24" 
@@ -38,10 +39,10 @@ export function Logo({ className = "", isLight = false, onClick }: LogoProps) {
               strokeLinecap="round" 
               strokeLinejoin="round" 
             />
-            {/* 인텔리전스를 상징하는 펄스 도트 */}
-            <circle cx="8" cy="12" r="1" fill="#CDECB1" className="animate-pulse" />
-            <circle cx="12" cy="12" r="1" fill="#CDECB1" className="animate-pulse [animation-delay:200ms]" />
-            <circle cx="16" cy="12" r="1" fill="#CDECB1" className="animate-pulse [animation-delay:400ms]" />
+            {/* 인텔리전스를 상징하는 포인트 도트 */}
+            <circle cx="8" cy="12" r="1.2" fill={accentLime} className="group-hover:animate-pulse" />
+            <circle cx="12" cy="12" r="1.2" fill={accentLime} className="group-hover:animate-pulse [animation-delay:200ms]" />
+            <circle cx="16" cy="12" r="1.2" fill={accentLime} className="group-hover:animate-pulse [animation-delay:400ms]" />
           </svg>
         </div>
         
@@ -53,16 +54,16 @@ export function Logo({ className = "", isLight = false, onClick }: LogoProps) {
 
       <div className="flex flex-col -space-y-1.5">
         <span className={cn(
-          "font-headline text-[22px] font-black tracking-tighter transition-colors duration-300",
-          isLight ? "text-white" : logoGreen
+          "font-headline text-[24px] font-black tracking-tighter transition-colors duration-300",
+          logoGreen
         )}>
           WHISPER
         </span>
-        <div className="flex items-center gap-1.5">
-          <div className={cn("h-0.5 w-3 rounded-full shrink-0", isLight ? "bg-white/40" : "bg-primary")}></div>
+        <div className="flex items-center gap-2">
+          <div className={cn("h-[2px] w-4 rounded-full shrink-0", isLight ? "bg-white/40" : "bg-[#CDECB1]")}></div>
           <span className={cn(
-            "text-[9px] font-black tracking-[0.25em] uppercase whitespace-nowrap",
-            isLight ? "text-white/60" : "text-[#2D4A1E]/40"
+            "text-[10px] font-bold tracking-[0.15em] uppercase whitespace-nowrap",
+            isLight ? "text-white/60" : "text-[#2D4A1E]/50"
           )}>
             HR Intelligence
           </span>
