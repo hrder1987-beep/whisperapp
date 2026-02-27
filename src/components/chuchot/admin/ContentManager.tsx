@@ -110,12 +110,11 @@ export function ContentManager() {
 
   return (
     <div className="relative">
-      {/* 일괄 삭제 바: 최상단 레이어로 배치하여 클릭 간섭 차단 */}
       <div className={cn(
         "fixed bottom-10 left-1/2 -translate-x-1/2 z-[9999] transition-all duration-500",
         selectedIds.length > 0 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10 pointer-events-none"
       )}>
-        <div className="bg-accent text-white px-8 py-5 rounded-full shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex items-center gap-8 border border-white/10 backdrop-blur-2xl">
+        <div className="bg-[#163300] text-white px-8 py-5 rounded-full shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex items-center gap-8 border border-white/10 backdrop-blur-2xl">
           <div className="flex items-center gap-3">
             <span className="text-xl font-black text-primary">{selectedIds.length}</span>
             <span className="text-sm font-bold opacity-60">항목 선택됨</span>
@@ -132,10 +131,10 @@ export function ContentManager() {
         </div>
       </div>
 
-      <Card className="bg-white border-accent/5 shadow-2xl rounded-[3rem] overflow-hidden">
+      <Card className="bg-white border-[#163300]/5 shadow-2xl rounded-[3rem] overflow-hidden">
         <CardContent className="p-0">
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <div className="bg-accent/[0.02] border-b border-accent/5 sticky top-0 z-50 backdrop-blur-md">
+            <div className="bg-[#163300]/[0.02] border-b border-[#163300]/5 sticky top-0 z-50 backdrop-blur-md">
               <TabsList className="w-full justify-start gap-12 px-10 h-20 bg-transparent rounded-none border-none">
                 <TabsTrigger value="q" className="bg-transparent data-[state=active]:bg-transparent data-[state=active]:text-primary font-black text-base border-b-[3px] border-transparent data-[state=active]:border-primary rounded-none h-full px-0">지식 피드</TabsTrigger>
                 <TabsTrigger value="j" className="bg-transparent data-[state=active]:bg-transparent data-[state=active]:text-primary font-black text-base border-b-[3px] border-transparent data-[state=active]:border-primary rounded-none h-full px-0">채용 공고</TabsTrigger>
@@ -151,25 +150,25 @@ export function ContentManager() {
               </TabsList>
             </div>
 
-            <div className="divide-y divide-accent/5 min-h-[400px]">
-              <div className="p-6 bg-primary/10 border-b border-accent/5 flex items-center gap-4">
+            <div className="divide-y divide-[#163300]/5 min-h-[400px]">
+              <div className="p-6 bg-primary/10 border-b border-[#163300]/5 flex items-center gap-4">
                 <Checkbox 
                   checked={selectedIds.length === currentList.length && currentList.length > 0} 
                   onCheckedChange={toggleSelectAll}
                   className="h-5 w-5 border-primary data-[state=checked]:bg-primary"
                 />
-                <span className="text-xs font-black text-accent/60 uppercase tracking-widest">전체 선택 / 해제</span>
+                <span className="text-xs font-black text-[#163300]/60 uppercase tracking-widest">전체 선택 / 해제</span>
               </div>
 
               <TabsContent value="q" className="mt-0">
-                {questions.length === 0 ? <div className="py-40 text-center text-accent/10 font-black text-xl">등록된 게시물이 없습니다.</div> : questions.map(item => (
-                  <div key={item.id} className={cn("flex items-center justify-between p-8 border-b border-accent/5 transition-all hover:bg-accent/[0.01]", selectedIds.includes(item.id) && "bg-primary/5")}>
+                {questions.length === 0 ? <div className="py-40 text-center text-[#163300]/10 font-black text-xl">등록된 게시물이 없습니다.</div> : questions.map(item => (
+                  <div key={item.id} className={cn("flex items-center justify-between p-8 border-b border-[#163300]/5 transition-all hover:bg-[#163300]/[0.01]", selectedIds.includes(item.id) && "bg-primary/5")}>
                     <div className="flex items-center gap-6 flex-1">
-                      <Checkbox checked={selectedIds.includes(item.id)} onCheckedChange={() => toggleSelect(item.id)} className="h-6 w-6 border-accent/10" />
-                      <div className="w-14 h-14 flex items-center justify-center rounded-2xl bg-accent/5 text-accent/30"><MessageSquare className="w-6 h-6" /></div>
+                      <Checkbox checked={selectedIds.includes(item.id)} onCheckedChange={() => toggleSelect(item.id)} className="h-6 w-6 border-[#163300]/10" />
+                      <div className="w-14 h-14 flex items-center justify-center rounded-2xl bg-[#163300]/5 text-[#163300]/30"><MessageSquare className="w-6 h-6" /></div>
                       <div className="min-w-0 flex-1">
-                        <h4 className="font-black text-accent text-lg leading-tight line-clamp-1">{item.title}</h4>
-                        <p className="text-xs text-accent/30 font-bold mt-1.5 flex items-center gap-2">@{item.nickname} <span className="w-1 h-1 rounded-full bg-accent/10"></span> {new Date(item.createdAt).toLocaleDateString()}</p>
+                        <h4 className="font-black text-[#163300] text-lg leading-tight line-clamp-1">{item.title}</h4>
+                        <p className="text-xs text-[#163300]/30 font-bold mt-1.5 flex items-center gap-2">@{item.nickname} <span className="w-1 h-1 rounded-full bg-[#163300]/10"></span> {new Date(item.createdAt).toLocaleDateString()}</p>
                       </div>
                     </div>
                     <Button variant="ghost" size="icon" className="text-red-300 hover:text-red-500 transition-colors" onClick={() => handleDeleteSingle("questions", item.id)}><Trash2 className="w-5 h-5" /></Button>
@@ -177,14 +176,14 @@ export function ContentManager() {
                 ))}
               </TabsContent>
               <TabsContent value="j" className="mt-0">
-                {jobs.length === 0 ? <div className="py-40 text-center text-accent/10 font-black text-xl">등록된 공고가 없습니다.</div> : jobs.map(item => (
-                  <div key={item.id} className={cn("flex items-center justify-between p-8 border-b border-accent/5 transition-all hover:bg-accent/[0.01]", selectedIds.includes(item.id) && "bg-primary/5")}>
+                {jobs.length === 0 ? <div className="py-40 text-center text-[#163300]/10 font-black text-xl">등록된 공고가 없습니다.</div> : jobs.map(item => (
+                  <div key={item.id} className={cn("flex items-center justify-between p-8 border-b border-[#163300]/5 transition-all hover:bg-[#163300]/[0.01]", selectedIds.includes(item.id) && "bg-primary/5")}>
                     <div className="flex items-center gap-6 flex-1">
-                      <Checkbox checked={selectedIds.includes(item.id)} onCheckedChange={() => toggleSelect(item.id)} className="h-6 w-6 border-accent/10" />
-                      <div className="w-14 h-14 flex items-center justify-center rounded-2xl bg-accent/5 text-accent/30"><Briefcase className="w-6 h-6" /></div>
+                      <Checkbox checked={selectedIds.includes(item.id)} onCheckedChange={() => toggleSelect(item.id)} className="h-6 w-6 border-[#163300]/10" />
+                      <div className="w-14 h-14 flex items-center justify-center rounded-2xl bg-[#163300]/5 text-[#163300]/30"><Briefcase className="w-6 h-6" /></div>
                       <div className="min-w-0 flex-1">
-                        <h4 className="font-black text-accent text-lg leading-tight line-clamp-1">{item.title}</h4>
-                        <p className="text-xs text-accent/30 font-bold mt-1.5 flex items-center gap-2">{item.companyName} <span className="w-1 h-1 rounded-full bg-accent/10"></span> {new Date(item.createdAt).toLocaleDateString()}</p>
+                        <h4 className="font-black text-[#163300] text-lg leading-tight line-clamp-1">{item.title}</h4>
+                        <p className="text-xs text-[#163300]/30 font-bold mt-1.5 flex items-center gap-2">{item.companyName} <span className="w-1 h-1 rounded-full bg-[#163300]/10"></span> {new Date(item.createdAt).toLocaleDateString()}</p>
                       </div>
                     </div>
                     <Button variant="ghost" size="icon" className="text-red-300 hover:text-red-500 transition-colors" onClick={() => handleDeleteSingle("jobs", item.id)}><Trash2 className="w-5 h-5" /></Button>
@@ -192,14 +191,14 @@ export function ContentManager() {
                 ))}
               </TabsContent>
               <TabsContent value="p" className="mt-0">
-                {programs.length === 0 ? <div className="py-40 text-center text-accent/10 font-black text-xl">등록된 콘텐츠가 없습니다.</div> : programs.map(item => (
-                  <div key={item.id} className={cn("flex items-center justify-between p-8 border-b border-accent/5 transition-all hover:bg-accent/[0.01]", selectedIds.includes(item.id) && "bg-primary/5")}>
+                {programs.length === 0 ? <div className="py-40 text-center text-[#163300]/10 font-black text-xl">등록된 콘텐츠가 없습니다.</div> : programs.map(item => (
+                  <div key={item.id} className={cn("flex items-center justify-between p-8 border-b border-[#163300]/5 transition-all hover:bg-[#163300]/[0.01]", selectedIds.includes(item.id) && "bg-primary/5")}>
                     <div className="flex items-center gap-6 flex-1">
-                      <Checkbox checked={selectedIds.includes(item.id)} onCheckedChange={() => toggleSelect(item.id)} className="h-6 w-6 border-accent/10" />
-                      <div className="w-14 h-14 flex items-center justify-center rounded-2xl bg-accent/5 text-accent/30"><GraduationCap className="w-6 h-6" /></div>
+                      <Checkbox checked={selectedIds.includes(item.id)} onCheckedChange={() => toggleSelect(item.id)} className="h-6 w-6 border-[#163300]/10" />
+                      <div className="w-14 h-14 flex items-center justify-center rounded-2xl bg-[#163300]/5 text-[#163300]/30"><GraduationCap className="w-6 h-6" /></div>
                       <div className="min-w-0 flex-1">
-                        <h4 className="font-black text-accent text-lg leading-tight line-clamp-1">{item.title}</h4>
-                        <p className="text-xs text-accent/30 font-bold mt-1.5 flex items-center gap-2">{item.instructorName} <span className="w-1 h-1 rounded-full bg-accent/10"></span> {new Date(item.createdAt).toLocaleDateString()}</p>
+                        <h4 className="font-black text-[#163300] text-lg leading-tight line-clamp-1">{item.title}</h4>
+                        <p className="text-xs text-[#163300]/30 font-bold mt-1.5 flex items-center gap-2">{item.instructorName} <span className="w-1 h-1 rounded-full bg-[#163300]/10"></span> {new Date(item.createdAt).toLocaleDateString()}</p>
                       </div>
                     </div>
                     <Button variant="ghost" size="icon" className="text-red-300 hover:text-red-500 transition-colors" onClick={() => handleDeleteSingle("trainingPrograms", item.id)}><Trash2 className="w-5 h-5" /></Button>
@@ -207,19 +206,19 @@ export function ContentManager() {
                 ))}
               </TabsContent>
               <TabsContent value="m" className="mt-0">
-                {mentors.length === 0 ? <div className="py-40 text-center text-accent/10 font-black text-xl">신청자가 없습니다.</div> : mentors.map(item => (
-                  <div key={item.id} className={cn("flex items-center justify-between p-8 border-b border-accent/5 transition-all hover:bg-accent/[0.01]", selectedIds.includes(item.id) && "bg-primary/5")}>
+                {mentors.length === 0 ? <div className="py-40 text-center text-[#163300]/10 font-black text-xl">신청자가 없습니다.</div> : mentors.map(item => (
+                  <div key={item.id} className={cn("flex items-center justify-between p-8 border-b border-[#163300]/5 transition-all hover:bg-[#163300]/[0.01]", selectedIds.includes(item.id) && "bg-primary/5")}>
                     <div className="flex items-center gap-6 flex-1">
-                      <Checkbox checked={selectedIds.includes(item.id)} onCheckedChange={() => toggleSelect(item.id)} className="h-6 w-6 border-accent/10" />
-                      <div className="w-14 h-14 flex items-center justify-center rounded-2xl bg-accent/5 text-accent/30"><Award className="w-6 h-6" /></div>
+                      <Checkbox checked={selectedIds.includes(item.id)} onCheckedChange={() => toggleSelect(item.id)} className="h-6 w-6 border-[#163300]/10" />
+                      <div className="w-14 h-14 flex items-center justify-center rounded-2xl bg-[#163300]/5 text-[#163300]/30"><Award className="w-6 h-6" /></div>
                       <div className="min-w-0 flex-1">
-                        <h4 className="font-black text-accent text-lg leading-tight line-clamp-1">{item.name} 전문가 신청</h4>
-                        <p className="text-xs text-accent/30 font-bold mt-1.5">{item.company} · {item.specialty} · {new Date(item.createdAt).toLocaleDateString()}</p>
+                        <h4 className="font-black text-[#163300] text-lg leading-tight line-clamp-1">{item.name} 전문가 신청</h4>
+                        <p className="text-xs text-[#163300]/30 font-bold mt-1.5">{item.company} · {item.specialty} · {new Date(item.createdAt).toLocaleDateString()}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-4">
                       {!item.isVerified && (
-                        <Button onClick={() => handleApproveMentor(item)} className="bg-primary text-accent font-black h-12 px-8 rounded-xl shadow-lg hover:scale-105 transition-all text-sm">승인하기</Button>
+                        <Button onClick={() => handleApproveMentor(item)} className="bg-primary text-[#163300] font-black h-12 px-8 rounded-xl shadow-lg hover:scale-105 transition-all text-sm">승인하기</Button>
                       )}
                       <Button variant="ghost" size="icon" className="text-red-300 hover:text-red-500 transition-colors" onClick={() => handleDeleteSingle("mentors", item.id)}><Trash2 className="w-5 h-5" /></Button>
                     </div>
