@@ -66,7 +66,6 @@ export function AnswerFeed({ answers, isAdminMode = false }: AnswerFeedProps) {
                     </div>
                     <div className="flex items-center gap-1.5">
                       <span className={cn("font-bold text-sm", isMentor ? "text-accent" : "text-primary")}>@{a.nickname}</span>
-                      {/* 직무(Role) 노출 추가 */}
                       {a.jobTitle && <span className="text-[10px] font-bold text-primary italic">#{a.jobTitle}</span>}
                       {isMentor && <Badge className="bg-accent text-primary text-[9px] font-black border-none px-1.5 py-0">WHISPERER</Badge>}
                       {user && !isOwner && (
@@ -82,7 +81,7 @@ export function AnswerFeed({ answers, isAdminMode = false }: AnswerFeedProps) {
                       {isMounted ? formatDistanceToNow(a.createdAt, { addSuffix: true, locale: ko }) : '...'}
                     </span>
                     {(isAdminMode || isOwner) && (
-                      <Button variant="ghost" size="icon" className="w-6 h-6 text-red-300 hover:text-red-500 hover:bg-red-50 rounded-full" onClick={() => handleDeleteAnswer(a)}>
+                      <Button variant="ghost" size="icon" className="w-6 h-6 text-red-300 hover:text-red-50 hover:bg-red-50 rounded-full" onClick={() => handleDeleteAnswer(a)}>
                         <Trash2 className="w-3.5 h-3.5" />
                       </Button>
                     )}

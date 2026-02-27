@@ -8,7 +8,7 @@ type Props = {
 }
 
 /**
- * [중요] 전문가님의 실제 도메인 주소로 업데이트했습니다.
+ * 전문가님의 실제 도메인 주소 whisperapp.kr로 동기화되었습니다.
  */
 const SITE_URL = "https://whisperapp.kr"; 
 

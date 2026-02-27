@@ -110,7 +110,7 @@ export function ContentManager() {
 
   return (
     <div className="relative">
-      {/* 일괄 삭제 바: 탭 외부 최상단 레이어로 배치하여 클릭 간섭 차단 */}
+      {/* 일괄 삭제 바: 최상단 레이어로 배치하여 클릭 간섭 차단 */}
       <div className={cn(
         "fixed bottom-10 left-1/2 -translate-x-1/2 z-[9999] transition-all duration-500",
         selectedIds.length > 0 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10 pointer-events-none"
