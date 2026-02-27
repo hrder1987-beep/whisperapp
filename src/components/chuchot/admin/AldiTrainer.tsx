@@ -151,14 +151,14 @@ export function AldiTrainer() {
                       )}
                       <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all text-white text-[8px] font-black">이미지 업로드</div>
                     </div>
-                    <p className="text-[8px] font-black text-accent/20 uppercase tracking-tighter">권장: 400x400px</p>
+                    <p className="text-[8px] font-black text-accent/20 uppercase tracking-tighter">권장: 400x400px (1:1)</p>
                     <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleIconUpload} />
                   </div>
                   <div className="flex-1 space-y-4">
                     <div className="space-y-2">
                       <label className="text-[10px] font-black text-accent/30 uppercase tracking-widest ml-1">봇 표시 이름</label>
                       <Input 
-                        value={name}
+                        value={name ?? ""}
                         onChange={e => setName(e.target.value)}
                         placeholder="예: 위스퍼라 리서처"
                         className="bg-white border-none h-11 rounded-xl font-black text-sm shadow-sm"
@@ -167,7 +167,7 @@ export function AldiTrainer() {
                     <div className="space-y-2">
                       <label className="text-[10px] font-black text-accent/30 uppercase tracking-widest ml-1">첫 인사말 (Intro Message)</label>
                       <Input 
-                        value={intro}
+                        value={intro ?? ""}
                         onChange={e => setIntro(e.target.value)}
                         placeholder="채팅방 진입 시 가장 먼저 노출될 문구입니다."
                         className="bg-white border-none h-11 rounded-xl font-bold text-xs shadow-sm"
@@ -183,7 +183,7 @@ export function AldiTrainer() {
                   <span className="text-[11px] font-black text-accent/40 uppercase tracking-widest">봇 페르소나 (역할 및 말투 지침)</span>
                 </div>
                 <Textarea 
-                  value={persona}
+                  value={persona ?? ""}
                   onChange={e => setPersona(e.target.value)}
                   placeholder="예: 당신은 채용 전문 AI입니다. 구체적인 면접 질문 예시를 포함하여 정중한 말투로 답변하세요."
                   className="min-h-[120px] bg-accent/[0.02] border-accent/5 rounded-2xl p-6 text-sm font-medium focus-visible:ring-primary/20 resize-none shadow-inner"
@@ -203,7 +203,7 @@ export function AldiTrainer() {
                 </div>
                 <div className="relative">
                   <Textarea 
-                    value={knowledge}
+                    value={knowledge ?? ""}
                     onChange={e => setKnowledge(e.target.value)}
                     placeholder="학습시킬 텍스트 데이터를 입력하거나 엑셀/TXT 파일을 업로드하세요."
                     className="min-h-[400px] bg-accent/[0.02] border-accent/5 rounded-2xl p-8 text-xs font-medium focus-visible:ring-primary/20 leading-relaxed scrollbar-hide shadow-inner"
@@ -236,20 +236,20 @@ export function AldiTrainer() {
         <div className="lg:col-span-4 space-y-6">
           <Card className="bg-primary text-accent p-8 rounded-[2.5rem] shadow-xl border border-primary/20">
             <h4 className="font-black text-base mb-6 flex items-center gap-2"><Info className="w-5 h-5" /> 관리 및 학습 가이드</h4>
-            <div className="space-y-6 text-xs font-bold leading-relaxed">
+            <div className="space-y-6 text-xs font-black leading-relaxed">
               <div className="bg-white/30 p-5 rounded-2xl">
                 <p className="font-black mb-1.5 text-[11px] uppercase tracking-tighter text-accent">🎨 봇 브랜딩</p>
-                <p className="text-accent opacity-100 font-black">이름과 프로필 사진을 설정하면 사용자 채팅창과 답변 시 실시간으로 반영되어 신뢰도를 높입니다.</p>
+                <p className="text-accent opacity-100">이름과 프로필 사진을 설정하면 사용자 채팅창과 답변 시 실시간으로 반영되어 신뢰도를 높입니다.</p>
               </div>
               <div className="h-px bg-accent/5" />
               <div>
                 <p className="font-black mb-1.5 text-[11px] uppercase tracking-tighter text-accent">📚 데이터 우선순위</p>
-                <p className="text-accent opacity-100 font-black">전문가가 직접 입력하거나 업로드한 데이터는 AI의 일반적인 지식보다 우선적으로 답변에 인용됩니다.</p>
+                <p className="text-accent opacity-100">전문가가 직접 입력하거나 업로드한 데이터는 AI의 일반적인 지식보다 우선적으로 답변에 인용됩니다.</p>
               </div>
               <div className="h-px bg-accent/5" />
               <div>
                 <p className="font-black mb-1.5 text-[11px] uppercase tracking-tighter text-accent">🎭 페르소나의 역할</p>
-                <p className="text-accent opacity-100 font-black">봇의 말투(존댓말, 반말, 전문용어 사용 등)를 구체적으로 지시할수록 더욱 전문적인 느낌을 줄 수 있습니다.</p>
+                <p className="text-accent opacity-100">봇의 말투(존댓말, 반말, 전문용어 사용 등)를 구체적으로 지시할수록 더욱 전문적인 느낌을 줄 수 있습니다.</p>
               </div>
             </div>
           </Card>
