@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { useUser, useDoc, useMemoFirebase, useFirestore, useCollection, updateDocumentNonBlocking } from "@/firebase"
-import { doc, collection, query, where } from "firebase/firestore"
+import { doc, collection, query, where, getDocs } from "firebase/firestore"
 import { Header } from "@/components/chuchot/Header"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { AvatarIcon } from "@/components/chuchot/AvatarIcon"
@@ -78,7 +78,26 @@ export default function ProfilePage() {
     if (!user || !db || !formData) return
     setIsSaving(true)
     try {
-      updateDocumentNonBlocking(doc(db, "users", user.uid), formData)
+      // 닉네임이 변경된 경우 중복 체크
+      if (formData.username.trim() !== profile.username) {
+        const usernameQuery = query(collection(db, "users"), where("username", "==", formData.username.trim()))
+        const usernameSnapshot = await getDocs(usernameQuery)
+        
+        if (!usernameSnapshot.empty) {
+          toast({
+            title: "닉네임 중복",
+            description: "이미 다른 전문가님이 사용 중인 닉네임입니다.",
+            variant: "destructive"
+          })
+          setIsSaving(false)
+          return
+        }
+      }
+
+      updateDocumentNonBlocking(doc(db, "users", user.uid), {
+        ...formData,
+        username: formData.username.trim()
+      })
       toast({ title: "저장 완료", description: "전문가 프로필 정보가 성공적으로 업데이트되었습니다." })
       setIsEditing(false)
     } catch (error) {
@@ -175,7 +194,7 @@ export default function ProfilePage() {
             
             {isEditing ? (
               <div className="w-full max-w-sm space-y-3 text-center">
-                <Label className="text-[11px] font-black text-accent/40 uppercase tracking-widest">활동 닉네임</Label>
+                <Label className="text-[11px] font-black text-accent/40 uppercase tracking-widest">활동 닉네임 (중복불가)</Label>
                 <Input 
                   value={formData?.username || ""} 
                   onChange={(e) => setFormData({ ...formData, username: e.target.value })}

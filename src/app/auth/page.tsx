@@ -14,7 +14,7 @@ import { signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswor
 import { doc, setDoc, collection, query, where, getDocs } from "firebase/firestore"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
-import { LogIn, UserPlus, Camera, X, Sparkles, Search, KeyRound } from "lucide-react"
+import { LogIn, UserPlus, Camera, X, Sparkles, Search, KeyRound, AlertCircle } from "lucide-react"
 import { sendWelcomeEmail } from "@/ai/flows/send-welcome-email-flow"
 import { cn } from "@/lib/utils"
 
@@ -98,11 +98,26 @@ function AuthContent() {
     e.preventDefault()
     setIsLoading(true)
     try {
+      // 1. 닉네임 중복 체크
+      const usernameQuery = query(collection(db, "users"), where("username", "==", username.trim()))
+      const usernameSnapshot = await getDocs(usernameQuery)
+      
+      if (!usernameSnapshot.empty) {
+        toast({
+          title: "닉네임 중복",
+          description: "이미 사용 중인 닉네임입니다. 다른 닉네임을 입력해 주세요.",
+          variant: "destructive"
+        })
+        setIsLoading(false)
+        return
+      }
+
+      // 2. 회원가입 진행
       const userCredential = await createUserWithEmailAndPassword(auth, email, password)
       const newUser = userCredential.user
       await setDoc(doc(db, "users", newUser.uid), {
         id: newUser.uid, 
-        username, 
+        username: username.trim(), 
         email, 
         name, 
         company, 
@@ -173,7 +188,10 @@ function AuthContent() {
                   <Label className="text-[12px] font-black text-[#163300]/60 uppercase tracking-widest ml-1">비밀번호</Label>
                   <Input type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required className="h-16 bg-[#FBFBFC] border-[#163300]/5 focus:border-primary focus:ring-4 focus:ring-primary/10 rounded-2xl px-6 font-bold text-[#163300] shadow-sm transition-all" />
                 </div>
-                <Button type="submit" disabled={isLoading} className="w-full h-18 bg-[#163300] text-primary font-black rounded-[1.5rem] mt-8 hover:brightness-110 shadow-2xl text-xl transition-all active:scale-[0.97]">{isLoading ? "인증 확인 중..." : "플랫폼 접속하기"}<LogIn className="w-6 h-6 ml-3" /></Button>
+                <Button type="submit" disabled={isLoading} className="w-full h-18 bg-[#163300] text-primary font-black rounded-[1.5rem] mt-8 hover:brightness-110 shadow-2xl text-xl transition-all active:scale-[0.97]">
+                  {isLoading ? "인증 확인 중..." : "플랫폼 접속하기"}
+                  <LogIn className="w-6 h-6 ml-3" />
+                </Button>
                 <div className="flex items-center justify-center gap-10 mt-12">
                   <button type="button" onClick={() => setRecoveryMode("id")} className="text-[14px] font-black text-[#163300]/40 hover:text-[#163300] transition-colors">아이디 찾기</button>
                   <div className="w-1.5 h-1.5 bg-[#163300]/10 rounded-full"></div>
@@ -195,8 +213,14 @@ function AuthContent() {
                   <input type="file" ref={fileInputRef} onChange={handleImageChange} accept="image/*" className="hidden" />
                 </div>
                 <div className="grid grid-cols-2 gap-6">
-                  <div className="space-y-2.5"><Label className="text-[11px] font-black text-[#163300]/60 uppercase ml-1">닉네임</Label><Input placeholder="사용자명" value={username} onChange={(e) => setUsername(e.target.value)} required className="h-14 bg-[#FBFBFC] border-[#163300]/5 rounded-2xl px-6 font-bold text-[#163300] shadow-sm" /></div>
-                  <div className="space-y-2.5"><Label className="text-[11px] font-black text-[#163300]/60 uppercase ml-1">성함</Label><Input placeholder="실명" value={name} onChange={(e) => setName(e.target.value)} required className="h-14 bg-[#FBFBFC] border-[#163300]/5 rounded-2xl px-6 font-bold text-[#163300] shadow-sm" /></div>
+                  <div className="space-y-2.5">
+                    <Label className="text-[11px] font-black text-[#163300]/60 uppercase ml-1">닉네임 (중복불가)</Label>
+                    <Input placeholder="사용자명" value={username} onChange={(e) => setUsername(e.target.value)} required className="h-14 bg-[#FBFBFC] border-[#163300]/5 rounded-2xl px-6 font-bold text-[#163300] shadow-sm" />
+                  </div>
+                  <div className="space-y-2.5">
+                    <Label className="text-[11px] font-black text-[#163300]/60 uppercase ml-1">성함 (실명)</Label>
+                    <Input placeholder="실명" value={name} onChange={(e) => setName(e.target.value)} required className="h-14 bg-[#FBFBFC] border-[#163300]/5 rounded-2xl px-6 font-bold text-[#163300] shadow-sm" />
+                  </div>
                 </div>
                 <div className="space-y-2.5"><Label className="text-[11px] font-black text-[#163300]/60 uppercase ml-1">이메일 (ID)</Label><Input type="email" placeholder="example@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required className="h-14 bg-[#FBFBFC] border-[#163300]/5 rounded-2xl px-6 font-bold text-[#163300] shadow-sm" /></div>
                 <div className="space-y-2.5"><Label className="text-[11px] font-black text-[#163300]/60 uppercase ml-1">비밀번호</Label><Input type="password" placeholder="6자리 이상" value={password} onChange={(e) => setPassword(e.target.value)} required className="h-14 bg-[#FBFBFC] border-[#163300]/5 rounded-2xl px-6 font-bold text-[#163300] shadow-sm" /></div>
@@ -209,7 +233,11 @@ function AuthContent() {
                   <div className="space-y-2.5"><Label className="text-[11px] font-black text-[#163300]/60 uppercase ml-1">직함 (Title)</Label><Input placeholder="예: 팀장" value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} required className="h-14 bg-[#FBFBFC] border-[#163300]/5 rounded-2xl px-6 font-bold text-[#163300] shadow-sm" /></div>
                 </div>
                 <div className="space-y-2.5"><Label className="text-[11px] font-black text-[#163300]/60 uppercase ml-1">휴대전화</Label><Input placeholder="010-0000-0000" value={phone} onChange={(e) => setPhone(e.target.value)} required className="h-14 bg-[#FBFBFC] border-[#163300]/5 rounded-2xl px-6 font-bold text-[#163300] shadow-sm" /></div>
-                <Button type="submit" disabled={isLoading} className="w-full h-18 gold-gradient text-[#163300] font-black rounded-[1.5rem] mt-10 shadow-3xl text-xl hover:scale-[1.01] transition-all active:scale-[0.97]">{isLoading ? "전문가 등록 처리 중..." : "전문가 등록 완료"}<UserPlus className="w-6 h-6 ml-3" /></Button>
+                
+                <Button type="submit" disabled={isLoading} className="w-full h-18 gold-gradient text-[#163300] font-black rounded-[1.5rem] mt-10 shadow-3xl text-xl hover:scale-[1.01] transition-all active:scale-[0.97]">
+                  {isLoading ? "전문가 등록 처리 중..." : "전문가 등록 완료"}
+                  <UserPlus className="w-6 h-6 ml-3" />
+                </Button>
               </form>
             </TabsContent>
           </Tabs>
