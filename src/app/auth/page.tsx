@@ -14,7 +14,7 @@ import { signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswor
 import { doc, setDoc, collection, query, where, getDocs } from "firebase/firestore"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
-import { LogIn, UserPlus, Camera, X, Sparkles, Search, KeyRound, AlertCircle } from "lucide-react"
+import { LogIn, UserPlus, Camera, X, Sparkles, Search, KeyRound, AlertCircle, CheckCircle2 } from "lucide-react"
 import { sendWelcomeEmail } from "@/ai/flows/send-welcome-email-flow"
 import { cn } from "@/lib/utils"
 
@@ -60,6 +60,9 @@ function AuthContent() {
   const [phone, setPhone] = useState("")
   const [profilePicture, setProfilePicture] = useState<string | null>(null)
 
+  // 닉네임 중복 체크 상태
+  const [usernameStatus, setUsernameStatus] = useState<"idle" | "checking" | "available" | "duplicate">("idle")
+
   const [recoveryMode, setRecoveryMode] = useState<null | "id" | "password">(null)
   const [findName, setFindName] = useState("")
   const [findPhone, setFindPhone] = useState("")
@@ -72,6 +75,27 @@ function AuthContent() {
     if (user && !isUserLoading) router.replace("/")
     if (auth) auth.languageCode = "ko"
   }, [user, isUserLoading, router, auth])
+
+  // 닉네임 중복 실시간 체크 (Debounce 적용 가능)
+  useEffect(() => {
+    if (activeTab !== "signup" || !username.trim()) {
+      setUsernameStatus("idle")
+      return
+    }
+
+    const checkTimeout = setTimeout(async () => {
+      setUsernameStatus("checking")
+      try {
+        const q = query(collection(db, "users"), where("username", "==", username.trim()))
+        const snapshot = await getDocs(q)
+        setUsernameStatus(snapshot.empty ? "available" : "duplicate")
+      } catch (e) {
+        setUsernameStatus("idle")
+      }
+    }, 500)
+
+    return () => clearTimeout(checkTimeout)
+  }, [username, activeTab, db])
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -96,23 +120,23 @@ function AuthContent() {
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (usernameStatus === "duplicate") {
+      toast({ title: "닉네임 중복", description: "이미 사용 중인 닉네임입니다.", variant: "destructive" })
+      return
+    }
     setIsLoading(true)
     try {
-      // 1. 닉네임 중복 체크
+      // 최종 한 번 더 체크
       const usernameQuery = query(collection(db, "users"), where("username", "==", username.trim()))
       const usernameSnapshot = await getDocs(usernameQuery)
       
       if (!usernameSnapshot.empty) {
-        toast({
-          title: "닉네임 중복",
-          description: "이미 사용 중인 닉네임입니다. 다른 닉네임을 입력해 주세요.",
-          variant: "destructive"
-        })
+        toast({ title: "닉네임 중복", description: "이미 사용 중인 닉네임입니다.", variant: "destructive" })
+        setUsernameStatus("duplicate")
         setIsLoading(false)
         return
       }
 
-      // 2. 회원가입 진행
       const userCredential = await createUserWithEmailAndPassword(auth, email, password)
       const newUser = userCredential.user
       await setDoc(doc(db, "users", newUser.uid), {
@@ -181,21 +205,21 @@ function AuthContent() {
             <TabsContent value="login" className="animate-in fade-in slide-in-from-bottom-4 duration-500">
               <form onSubmit={handleLogin} className="space-y-8">
                 <div className="space-y-3">
-                  <Label className="text-[12px] font-black text-[#163300]/60 uppercase tracking-widest ml-1">이메일 계정 (ID)</Label>
-                  <Input type="email" placeholder="example@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required className="h-16 bg-[#FBFBFC] border-[#163300]/5 focus:border-primary focus:ring-4 focus:ring-primary/10 rounded-2xl px-6 font-bold text-[#163300] shadow-sm transition-all" />
+                  <Label className="text-[12px] font-black text-[#163300]/80 uppercase tracking-widest ml-1">이메일 계정 (ID)</Label>
+                  <Input type="email" placeholder="example@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required className="h-16 bg-[#FBFBFC] border-[#163300]/10 focus:border-primary focus:ring-4 focus:ring-primary/10 rounded-2xl px-6 font-bold text-[#163300] shadow-sm transition-all" />
                 </div>
                 <div className="space-y-3">
-                  <Label className="text-[12px] font-black text-[#163300]/60 uppercase tracking-widest ml-1">비밀번호</Label>
-                  <Input type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required className="h-16 bg-[#FBFBFC] border-[#163300]/5 focus:border-primary focus:ring-4 focus:ring-primary/10 rounded-2xl px-6 font-bold text-[#163300] shadow-sm transition-all" />
+                  <Label className="text-[12px] font-black text-[#163300]/80 uppercase tracking-widest ml-1">비밀번호</Label>
+                  <Input type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required className="h-16 bg-[#FBFBFC] border-[#163300]/10 focus:border-primary focus:ring-4 focus:ring-primary/10 rounded-2xl px-6 font-bold text-[#163300] shadow-sm transition-all" />
                 </div>
                 <Button type="submit" disabled={isLoading} className="w-full h-18 bg-[#163300] text-primary font-black rounded-[1.5rem] mt-8 hover:brightness-110 shadow-2xl text-xl transition-all active:scale-[0.97]">
                   {isLoading ? "인증 확인 중..." : "플랫폼 접속하기"}
                   <LogIn className="w-6 h-6 ml-3" />
                 </Button>
                 <div className="flex items-center justify-center gap-10 mt-12">
-                  <button type="button" onClick={() => setRecoveryMode("id")} className="text-[14px] font-black text-[#163300]/40 hover:text-[#163300] transition-colors">아이디 찾기</button>
+                  <button type="button" onClick={() => setRecoveryMode("id")} className="text-[14px] font-black text-[#163300]/60 hover:text-[#163300] transition-colors">아이디 찾기</button>
                   <div className="w-1.5 h-1.5 bg-[#163300]/10 rounded-full"></div>
-                  <button type="button" onClick={() => setRecoveryMode("password")} className="text-[14px] font-black text-[#163300]/40 hover:text-[#163300] transition-colors">비밀번호 재설정</button>
+                  <button type="button" onClick={() => setRecoveryMode("password")} className="text-[14px] font-black text-[#163300]/60 hover:text-[#163300] transition-colors">비밀번호 재설정</button>
                 </div>
               </form>
             </TabsContent>
@@ -209,32 +233,44 @@ function AuthContent() {
                     </div>
                     {profilePicture && <button type="button" onClick={(e) => { e.stopPropagation(); setProfilePicture(null); }} className="absolute -top-3 -right-3 bg-red-500 text-white p-2.5 rounded-full shadow-2xl hover:scale-110 transition-transform"><X className="w-5 h-5" /></button>}
                   </div>
-                  <span className="text-[12px] font-black text-[#163300]/30 mt-5 uppercase tracking-widest">전문가 프로필 사진 (선택)</span>
+                  <span className="text-[12px] font-black text-[#163300]/40 mt-5 uppercase tracking-widest">전문가 프로필 사진 (선택)</span>
                   <input type="file" ref={fileInputRef} onChange={handleImageChange} accept="image/*" className="hidden" />
                 </div>
                 <div className="grid grid-cols-2 gap-6">
                   <div className="space-y-2.5">
-                    <Label className="text-[11px] font-black text-[#163300]/60 uppercase ml-1">닉네임 (중복불가)</Label>
-                    <Input placeholder="사용자명" value={username} onChange={(e) => setUsername(e.target.value)} required className="h-14 bg-[#FBFBFC] border-[#163300]/5 rounded-2xl px-6 font-bold text-[#163300] shadow-sm" />
+                    <Label className="text-[11px] font-black text-[#163300]/80 uppercase ml-1">닉네임 (중복불가)</Label>
+                    <Input 
+                      placeholder="사용자명" 
+                      value={username} 
+                      onChange={(e) => setUsername(e.target.value)} 
+                      required 
+                      className={cn(
+                        "h-14 bg-[#FBFBFC] border-[#163300]/10 rounded-2xl px-6 font-bold text-[#163300] shadow-sm transition-all",
+                        usernameStatus === "duplicate" && "border-red-500 ring-2 ring-red-100",
+                        usernameStatus === "available" && "border-emerald-500 ring-2 ring-emerald-100"
+                      )} 
+                    />
+                    {usernameStatus === "duplicate" && <p className="text-[10px] font-bold text-red-500 ml-2">이미 사용 중인 닉네임입니다.</p>}
+                    {usernameStatus === "available" && <p className="text-[10px] font-bold text-emerald-600 ml-2 flex items-center gap-1"><CheckCircle2 className="w-3 h-3" /> 사용 가능한 닉네임입니다.</p>}
                   </div>
                   <div className="space-y-2.5">
-                    <Label className="text-[11px] font-black text-[#163300]/60 uppercase ml-1">성함 (실명)</Label>
-                    <Input placeholder="실명" value={name} onChange={(e) => setName(e.target.value)} required className="h-14 bg-[#FBFBFC] border-[#163300]/5 rounded-2xl px-6 font-bold text-[#163300] shadow-sm" />
+                    <Label className="text-[11px] font-black text-[#163300]/80 uppercase ml-1">성함 (실명)</Label>
+                    <Input placeholder="실명" value={name} onChange={(e) => setName(e.target.value)} required className="h-14 bg-[#FBFBFC] border-[#163300]/10 rounded-2xl px-6 font-bold text-[#163300] shadow-sm" />
                   </div>
                 </div>
-                <div className="space-y-2.5"><Label className="text-[11px] font-black text-[#163300]/60 uppercase ml-1">이메일 (ID)</Label><Input type="email" placeholder="example@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required className="h-14 bg-[#FBFBFC] border-[#163300]/5 rounded-2xl px-6 font-bold text-[#163300] shadow-sm" /></div>
-                <div className="space-y-2.5"><Label className="text-[11px] font-black text-[#163300]/60 uppercase ml-1">비밀번호</Label><Input type="password" placeholder="6자리 이상" value={password} onChange={(e) => setPassword(e.target.value)} required className="h-14 bg-[#FBFBFC] border-[#163300]/5 rounded-2xl px-6 font-bold text-[#163300] shadow-sm" /></div>
+                <div className="space-y-2.5"><Label className="text-[11px] font-black text-[#163300]/80 uppercase ml-1">이메일 (ID)</Label><Input type="email" placeholder="example@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required className="h-14 bg-[#FBFBFC] border-[#163300]/10 rounded-2xl px-6 font-bold text-[#163300] shadow-sm" /></div>
+                <div className="space-y-2.5"><Label className="text-[11px] font-black text-[#163300]/80 uppercase ml-1">비밀번호</Label><Input type="password" placeholder="6자리 이상" value={password} onChange={(e) => setPassword(e.target.value)} required className="h-14 bg-[#FBFBFC] border-[#163300]/10 rounded-2xl px-6 font-bold text-[#163300] shadow-sm" /></div>
                 <div className="grid grid-cols-2 gap-6">
-                  <div className="space-y-2.5"><Label className="text-[11px] font-black text-[#163300]/60 uppercase ml-1">소속 회사</Label><Input placeholder="회사명" value={company} onChange={(e) => setCompany(e.target.value)} required className="h-14 bg-[#FBFBFC] border-[#163300]/5 rounded-2xl px-6 font-bold text-[#163300] shadow-sm" /></div>
-                  <div className="space-y-2.5"><Label className="text-[11px] font-black text-[#163300]/60 uppercase ml-1">부서</Label><Input placeholder="부서명" value={department} onChange={(e) => setDepartment(e.target.value)} required className="h-14 bg-[#FBFBFC] border-[#163300]/5 rounded-2xl px-6 font-bold text-[#163300] shadow-sm" /></div>
+                  <div className="space-y-2.5"><Label className="text-[11px] font-black text-[#163300]/80 uppercase ml-1">소속 회사</Label><Input placeholder="회사명" value={company} onChange={(e) => setCompany(e.target.value)} required className="h-14 bg-[#FBFBFC] border-[#163300]/10 rounded-2xl px-6 font-bold text-[#163300] shadow-sm" /></div>
+                  <div className="space-y-2.5"><Label className="text-[11px] font-black text-[#163300]/80 uppercase ml-1">부서</Label><Input placeholder="부서명" value={department} onChange={(e) => setDepartment(e.target.value)} required className="h-14 bg-[#FBFBFC] border-[#163300]/10 rounded-2xl px-6 font-bold text-[#163300] shadow-sm" /></div>
                 </div>
                 <div className="grid grid-cols-2 gap-6">
-                  <div className="space-y-2.5"><Label className="text-[11px] font-black text-[#163300]/60 uppercase ml-1">직무 (Role)</Label><Input placeholder="예: 채용" value={jobRole} onChange={(e) => setJobRole(e.target.value)} required className="h-14 bg-[#FBFBFC] border-[#163300]/5 rounded-2xl px-6 font-bold text-[#163300] shadow-sm" /></div>
-                  <div className="space-y-2.5"><Label className="text-[11px] font-black text-[#163300]/60 uppercase ml-1">직함 (Title)</Label><Input placeholder="예: 팀장" value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} required className="h-14 bg-[#FBFBFC] border-[#163300]/5 rounded-2xl px-6 font-bold text-[#163300] shadow-sm" /></div>
+                  <div className="space-y-2.5"><Label className="text-[11px] font-black text-[#163300]/80 uppercase ml-1">직무 (Role)</Label><Input placeholder="예: 채용" value={jobRole} onChange={(e) => setJobRole(e.target.value)} required className="h-14 bg-[#FBFBFC] border-[#163300]/10 rounded-2xl px-6 font-bold text-[#163300] shadow-sm" /></div>
+                  <div className="space-y-2.5"><Label className="text-[11px] font-black text-[#163300]/80 uppercase ml-1">직함 (Title)</Label><Input placeholder="예: 팀장" value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} required className="h-14 bg-[#FBFBFC] border-[#163300]/10 rounded-2xl px-6 font-bold text-[#163300] shadow-sm" /></div>
                 </div>
-                <div className="space-y-2.5"><Label className="text-[11px] font-black text-[#163300]/60 uppercase ml-1">휴대전화</Label><Input placeholder="010-0000-0000" value={phone} onChange={(e) => setPhone(e.target.value)} required className="h-14 bg-[#FBFBFC] border-[#163300]/5 rounded-2xl px-6 font-bold text-[#163300] shadow-sm" /></div>
+                <div className="space-y-2.5"><Label className="text-[11px] font-black text-[#163300]/80 uppercase ml-1">휴대전화</Label><Input placeholder="010-0000-0000" value={phone} onChange={(e) => setPhone(e.target.value)} required className="h-14 bg-[#FBFBFC] border-[#163300]/10 rounded-2xl px-6 font-bold text-[#163300] shadow-sm" /></div>
                 
-                <Button type="submit" disabled={isLoading} className="w-full h-18 gold-gradient text-[#163300] font-black rounded-[1.5rem] mt-10 shadow-3xl text-xl hover:scale-[1.01] transition-all active:scale-[0.97]">
+                <Button type="submit" disabled={isLoading || usernameStatus === "duplicate"} className="w-full h-18 gold-gradient text-[#163300] font-black rounded-[1.5rem] mt-10 shadow-3xl text-xl hover:scale-[1.01] transition-all active:scale-[0.97]">
                   {isLoading ? "전문가 등록 처리 중..." : "전문가 등록 완료"}
                   <UserPlus className="w-6 h-6 ml-3" />
                 </Button>
@@ -248,12 +284,12 @@ function AuthContent() {
         <DialogContent className="max-w-md bg-white border-none rounded-[3.5rem] p-12 shadow-4xl overflow-hidden">
           <DialogHeader className="text-left">
             <DialogTitle className="text-3xl font-black text-[#163300] flex items-center gap-4">{recoveryMode === "id" ? <Search className="w-8 h-8 text-primary" /> : <KeyRound className="w-8 h-8 text-primary" />}{recoveryMode === "id" ? "아이디 찾기" : "비밀번호 재설정"}</DialogTitle>
-            <DialogDescription className="font-bold text-[#163300]/40 mt-3">{recoveryMode === "id" ? "가입 시 등록하신 실명과 번호를 확인합니다." : "등록된 이메일로 안전한 재설정 링크를 보내드립니다."}</DialogDescription>
+            <DialogDescription className="font-bold text-[#163300]/60 mt-3">{recoveryMode === "id" ? "가입 시 등록하신 실명과 번호를 확인합니다." : "등록된 이메일로 안전한 재설정 링크를 보내드립니다."}</DialogDescription>
           </DialogHeader>
           <div className="py-10 space-y-8">
             {recoveryMode === "id" ? (
-              <>{foundEmail ? <div className="bg-primary/5 p-12 rounded-[3rem] text-center space-y-5 shadow-inner border border-primary/10"><p className="text-[12px] font-black text-[#163300]/30 uppercase tracking-widest">인증된 아이디입니다</p><p className="text-3xl font-black text-[#163300] tracking-tight">{foundEmail}</p><Button onClick={() => setRecoveryMode(null)} className="mt-10 naver-button h-14 px-12 rounded-2xl shadow-xl">로그인하러 가기</Button></div> : <><div className="space-y-3"><Label className="text-[12px] font-black text-[#163300]/50 uppercase ml-1">가입자 실명</Label><Input placeholder="이름 입력" value={findName} onChange={(e) => setFindName(e.target.value)} className="bg-[#FBFBFC] border-none h-16 rounded-2xl font-bold px-6 text-[#163300] shadow-inner" /></div><div className="space-y-3"><Label className="text-[12px] font-black text-[#163300]/50 uppercase ml-1">휴대전화 번호</Label><Input placeholder="010-0000-0000" value={findPhone} onChange={(e) => setFindPhone(e.target.value)} className="bg-[#FBFBFC] border-none h-16 rounded-2xl font-bold px-6 text-[#163300] shadow-inner" /></div></>}</>
-            ) : <div className="space-y-3"><Label className="text-[12px] font-black text-[#163300]/50 uppercase ml-1">가입된 이메일 계정</Label><Input placeholder="example@email.com" value={resetEmail} onChange={(e) => setResetEmail(e.target.value)} className="bg-[#FBFBFC] border-none h-16 rounded-2xl font-bold px-6 text-[#163300] shadow-inner" /></div>}
+              <>{foundEmail ? <div className="bg-primary/5 p-12 rounded-[3rem] text-center space-y-5 shadow-inner border border-primary/10"><p className="text-[12px] font-black text-[#163300]/40 uppercase tracking-widest">인증된 아이디입니다</p><p className="text-3xl font-black text-[#163300] tracking-tight">{foundEmail}</p><Button onClick={() => setRecoveryMode(null)} className="mt-10 naver-button h-14 px-12 rounded-2xl shadow-xl">로그인하러 가기</Button></div> : <><div className="space-y-3"><Label className="text-[12px] font-black text-[#163300]/60 uppercase ml-1">가입자 실명</Label><Input placeholder="이름 입력" value={findName} onChange={(e) => setFindName(e.target.value)} className="bg-[#FBFBFC] border-none h-16 rounded-2xl font-bold px-6 text-[#163300] shadow-inner" /></div><div className="space-y-3"><Label className="text-[12px] font-black text-[#163300]/60 uppercase ml-1">휴대전화 번호</Label><Input placeholder="010-0000-0000" value={findPhone} onChange={(e) => setFindPhone(e.target.value)} className="bg-[#FBFBFC] border-none h-16 rounded-2xl font-bold px-6 text-[#163300] shadow-inner" /></div></>}</>
+            ) : <div className="space-y-3"><Label className="text-[12px] font-black text-[#163300]/60 uppercase ml-1">가입된 이메일 계정</Label><Input placeholder="example@email.com" value={resetEmail} onChange={(e) => setResetEmail(e.target.value)} className="bg-[#FBFBFC] border-none h-16 rounded-2xl font-bold px-6 text-[#163300] shadow-inner" /></div>}
           </div>
           <DialogFooter>{!foundEmail && <Button onClick={recoveryMode === "id" ? handleFindId : () => { sendPasswordResetEmail(auth, resetEmail); setRecoveryMode(null); }} disabled={isLoading} className="w-full h-18 bg-[#163300] text-primary font-black rounded-[1.5rem] shadow-2xl text-xl hover:brightness-110 transition-all active:scale-[0.97]">{isLoading ? "정보 확인 중..." : recoveryMode === "id" ? "정보 확인하기" : "재설정 링크 발송"}</Button>}</DialogFooter>
         </DialogContent>

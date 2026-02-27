@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Building2, User as UserIcon, Phone, Briefcase, Calendar, Sparkles, Settings, ArrowRight, Edit3, Camera, Save, X, Tag, Info } from "lucide-react"
+import { Building2, User as UserIcon, Phone, Briefcase, Calendar, Sparkles, Settings, ArrowRight, Edit3, Camera, Save, X, Tag, Info, CheckCircle2 } from "lucide-react"
 import Link from "next/link"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
@@ -25,11 +25,11 @@ export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false)
   const [formData, setFormData] = useState<any>(null)
   const [isSaving, setIsSaving] = useState(false)
+  const [usernameStatus, setUsernameStatus] = useState<"idle" | "available" | "duplicate">("idle")
 
   const userDocRef = useMemoFirebase(() => (user && db) ? doc(db, "users", user.uid) : null, [user, db])
   const { data: profile, isLoading: isProfileLoading } = useDoc<any>(userDocRef)
 
-  // 활동 지수 계산을 위한 데이터 조회
   const myQuestionsQuery = useMemoFirebase(() => 
     (user && db) ? query(collection(db, "questions"), where("userId", "==", user.uid)) : null, 
     [user, db]
@@ -44,6 +44,26 @@ export default function ProfilePage() {
       setFormData({ ...profile })
     }
   }, [profile, formData])
+
+  // 닉네임 실시간 중복 체크
+  useEffect(() => {
+    if (!isEditing || !formData?.username || formData.username === profile?.username) {
+      setUsernameStatus("idle")
+      return
+    }
+
+    const checkTimeout = setTimeout(async () => {
+      try {
+        const q = query(collection(db, "users"), where("username", "==", formData.username.trim()))
+        const snapshot = await getDocs(q)
+        setUsernameStatus(snapshot.empty ? "available" : "duplicate")
+      } catch (e) {
+        setUsernameStatus("idle")
+      }
+    }, 500)
+
+    return () => clearTimeout(checkTimeout)
+  }, [formData?.username, isEditing, profile?.username, db])
 
   if (isUserLoading || isProfileLoading) {
     return (
@@ -68,32 +88,18 @@ export default function ProfilePage() {
   }
 
   const isAdmin = user?.email === 'forum@khrd.co.kr' || profile.role === 'admin'
-
-  // 활동 지수 산출 로직
   const points = (postCount * 10) + (answerCount * 5)
   const level = Math.floor(points / 20) + 1
   const influenceRank = Math.max(1, 100 - Math.floor(points / 5))
 
   const handleSave = async () => {
     if (!user || !db || !formData) return
+    if (usernameStatus === "duplicate") {
+      toast({ title: "닉네임 중복", description: "이미 사용 중인 닉네임입니다.", variant: "destructive" })
+      return
+    }
     setIsSaving(true)
     try {
-      // 닉네임이 변경된 경우 중복 체크
-      if (formData.username.trim() !== profile.username) {
-        const usernameQuery = query(collection(db, "users"), where("username", "==", formData.username.trim()))
-        const usernameSnapshot = await getDocs(usernameQuery)
-        
-        if (!usernameSnapshot.empty) {
-          toast({
-            title: "닉네임 중복",
-            description: "이미 다른 전문가님이 사용 중인 닉네임입니다.",
-            variant: "destructive"
-          })
-          setIsSaving(false)
-          return
-        }
-      }
-
       updateDocumentNonBlocking(doc(db, "users", user.uid), {
         ...formData,
         username: formData.username.trim()
@@ -127,7 +133,7 @@ export default function ProfilePage() {
           <h1 className="text-4xl font-black text-accent tracking-tighter">
             {isEditing ? "프로필 수정" : "마이 프로필"}
           </h1>
-          <p className="text-sm font-bold text-accent/30 mt-2 uppercase tracking-[0.3em]">
+          <p className="text-sm font-bold text-accent/40 mt-2 uppercase tracking-[0.3em]">
             {isEditing ? "Update Your Expert Identity" : "Expert Intelligence Identity"}
           </p>
         </div>
@@ -154,7 +160,7 @@ export default function ProfilePage() {
                 </Button>
                 <Button 
                   onClick={handleSave}
-                  disabled={isSaving}
+                  disabled={isSaving || usernameStatus === "duplicate"}
                   className="rounded-2xl bg-[#163300] text-primary font-black gap-2 h-14 px-10 shadow-2xl hover:brightness-110 transition-all"
                 >
                   {isSaving ? <Sparkles className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
@@ -193,24 +199,30 @@ export default function ProfilePage() {
             </div>
 
             {isEditing && (
-              <p className="text-[10px] font-black text-accent/30 uppercase tracking-tighter mb-8 flex items-center gap-1.5 bg-accent/5 px-3 py-1.5 rounded-full">
+              <p className="text-[10px] font-black text-accent/40 uppercase tracking-tighter mb-8 flex items-center gap-1.5 bg-accent/5 px-3 py-1.5 rounded-full">
                 <Info className="w-3 h-3" /> 권장 사이즈: 정비율 400x400px 이상
               </p>
             )}
             
             {isEditing ? (
               <div className="w-full max-w-sm space-y-3 text-center">
-                <Label className="text-[11px] font-black text-accent/40 uppercase tracking-widest">활동 닉네임 (중복불가)</Label>
+                <Label className="text-[11px] font-black text-accent/80 uppercase tracking-widest">활동 닉네임 (중복불가)</Label>
                 <Input 
                   value={formData?.username || ""} 
                   onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                  className="text-center bg-[#F5F6F7] border-none rounded-2xl font-black text-2xl h-16 shadow-inner focus:ring-2 focus:ring-primary" 
+                  className={cn(
+                    "text-center bg-[#F5F6F7] border-none rounded-2xl font-black text-2xl h-16 shadow-inner focus:ring-2 focus:ring-primary",
+                    usernameStatus === "duplicate" && "ring-2 ring-red-500",
+                    usernameStatus === "available" && "ring-2 ring-emerald-500"
+                  )}
                 />
+                {usernameStatus === "duplicate" && <p className="text-xs font-bold text-red-500">이미 사용 중인 닉네임입니다.</p>}
+                {usernameStatus === "available" && <p className="text-xs font-bold text-emerald-600 flex items-center justify-center gap-1"><CheckCircle2 className="w-3 h-3" /> 사용 가능한 닉네임입니다.</p>}
               </div>
             ) : (
               <>
                 <CardTitle className="text-4xl font-black text-accent tracking-tighter">@{profile.username}</CardTitle>
-                <p className="text-accent/40 font-bold mt-2 text-lg">{profile.email}</p>
+                <p className="text-accent/60 font-bold mt-2 text-lg">{profile.email}</p>
               </>
             )}
           </CardHeader>
@@ -221,7 +233,7 @@ export default function ProfilePage() {
                 <div className="flex items-start gap-5">
                   <div className="mt-1 p-3 bg-primary/10 rounded-2xl text-accent"><UserIcon className="w-6 h-6" /></div>
                   <div className="flex-1 space-y-2">
-                    <p className="text-[11px] font-black text-accent/30 uppercase tracking-[0.2em]">성함 (실명)</p>
+                    <p className="text-[11px] font-black text-accent/60 uppercase tracking-[0.2em]">성함 (실명)</p>
                     {isEditing ? (
                       <Input 
                         value={formData?.name || ""} 
@@ -237,7 +249,7 @@ export default function ProfilePage() {
                 <div className="flex items-start gap-5">
                   <div className="mt-1 p-3 bg-primary/10 rounded-2xl text-accent"><Building2 className="w-6 h-6" /></div>
                   <div className="flex-1 space-y-2">
-                    <p className="text-[11px] font-black text-accent/30 uppercase tracking-[0.2em]">소속 회사</p>
+                    <p className="text-[11px] font-black text-accent/60 uppercase tracking-[0.2em]">소속 회사</p>
                     {isEditing ? (
                       <Input 
                         value={formData?.company || ""} 
@@ -253,7 +265,7 @@ export default function ProfilePage() {
                 <div className="flex items-start gap-5">
                   <div className="mt-1 p-3 bg-primary/10 rounded-2xl text-accent"><Tag className="w-6 h-6" /></div>
                   <div className="flex-1 space-y-2">
-                    <p className="text-[11px] font-black text-accent/30 uppercase tracking-[0.2em]">소속 부서</p>
+                    <p className="text-[11px] font-black text-accent/60 uppercase tracking-[0.2em]">소속 부서</p>
                     {isEditing ? (
                       <Input 
                         value={formData?.department || ""} 
@@ -271,7 +283,7 @@ export default function ProfilePage() {
                 <div className="flex items-start gap-5">
                   <div className="mt-1 p-3 bg-primary/10 rounded-2xl text-accent"><Briefcase className="w-6 h-6" /></div>
                   <div className="flex-1 space-y-2">
-                    <p className="text-[11px] font-black text-accent/30 uppercase tracking-[0.2em]">직함 (Position)</p>
+                    <p className="text-[11px] font-black text-accent/60 uppercase tracking-[0.2em]">직함 (Position)</p>
                     {isEditing ? (
                       <Input 
                         value={formData?.jobTitle || ""} 
@@ -287,7 +299,7 @@ export default function ProfilePage() {
                 <div className="flex items-start gap-5">
                   <div className="mt-1 p-3 bg-primary/10 rounded-2xl text-accent"><Sparkles className="w-6 h-6" /></div>
                   <div className="flex-1 space-y-2">
-                    <p className="text-[11px] font-black text-accent/30 uppercase tracking-[0.2em]">직무 (Role)</p>
+                    <p className="text-[11px] font-black text-accent/60 uppercase tracking-[0.2em]">직무 (Role)</p>
                     {isEditing ? (
                       <Input 
                         value={formData?.jobRole || ""} 
@@ -303,7 +315,7 @@ export default function ProfilePage() {
                 <div className="flex items-start gap-5">
                   <div className="mt-1 p-3 bg-primary/10 rounded-2xl text-accent"><Phone className="w-6 h-6" /></div>
                   <div className="flex-1 space-y-2">
-                    <p className="text-[11px] font-black text-accent/30 uppercase tracking-[0.2em]">휴대전화</p>
+                    <p className="text-[11px] font-black text-accent/60 uppercase tracking-[0.2em]">휴대전화</p>
                     {isEditing ? (
                       <Input 
                         value={formData?.phoneNumber || ""} 
