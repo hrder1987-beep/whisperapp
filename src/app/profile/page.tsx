@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Building2, User as UserIcon, Phone, Briefcase, Calendar, Sparkles, Settings, ArrowRight, Edit3, Camera, Save, X, Tag } from "lucide-react"
+import { Building2, User as UserIcon, Phone, Briefcase, Calendar, Sparkles, Settings, ArrowRight, Edit3, Camera, Save, X, Tag, Info } from "lucide-react"
 import Link from "next/link"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
@@ -139,7 +139,7 @@ export default function ProfilePage() {
             {!isEditing ? (
               <Button 
                 onClick={() => setIsEditing(true)}
-                className="rounded-2xl bg-accent text-primary hover:scale-105 transition-all font-black gap-2 h-14 px-8 shadow-xl"
+                className="rounded-2xl naver-button text-[#163300] hover:scale-105 transition-all font-black gap-2 h-14 px-8 shadow-xl"
               >
                 <Edit3 className="w-5 h-5" /> 정보 수정하기
               </Button>
@@ -165,7 +165,7 @@ export default function ProfilePage() {
           </div>
 
           <CardHeader className="flex flex-col items-center pt-16 pb-10">
-            <div className="relative mb-8 group">
+            <div className="relative mb-4 group">
               <div className="absolute inset-0 bg-primary blur-3xl opacity-20 group-hover:opacity-40 transition-opacity"></div>
               <div className="relative">
                 <AvatarIcon 
@@ -175,11 +175,11 @@ export default function ProfilePage() {
                 />
                 {isEditing && (
                   <div 
-                    className="absolute inset-0 bg-black/50 rounded-full flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer border-4 border-white" 
+                    className="absolute inset-0 bg-black/40 rounded-full flex flex-col items-center justify-center cursor-pointer border-4 border-white transition-all hover:bg-black/60" 
                     onClick={() => fileInputRef.current?.click()}
                   >
                     <Camera className="w-10 h-10 text-white mb-2" />
-                    <span className="text-xs text-white font-black uppercase tracking-widest">Change</span>
+                    <span className="text-xs text-white font-black uppercase tracking-widest">사진 변경</span>
                   </div>
                 )}
               </div>
@@ -191,6 +191,12 @@ export default function ProfilePage() {
                 </Badge>
               )}
             </div>
+
+            {isEditing && (
+              <p className="text-[10px] font-black text-accent/30 uppercase tracking-tighter mb-8 flex items-center gap-1.5 bg-accent/5 px-3 py-1.5 rounded-full">
+                <Info className="w-3 h-3" /> 권장 사이즈: 정비율 400x400px 이상
+              </p>
+            )}
             
             {isEditing ? (
               <div className="w-full max-w-sm space-y-3 text-center">
