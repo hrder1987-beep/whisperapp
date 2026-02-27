@@ -115,7 +115,13 @@ export function Header({ onSearch }: HeaderProps) {
 
         <div className="hidden md:flex flex-1 max-w-2xl">
           <div className="naver-search-bar w-full h-12 focus-within:ring-4 focus-within:ring-primary/20">
-            <Input placeholder="HR 고민이나 전문가 소식을 검색해 보세요" className="border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 text-[15px] font-black h-full placeholder:text-accent/20 bg-transparent px-2 outline-none" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} onKeyDown={handleKeyDown} />
+            <Input 
+              placeholder="검색어를 입력해 주세요" 
+              className="border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 text-[15px] font-black h-full placeholder:text-accent/20 bg-transparent px-2 outline-none" 
+              value={searchQuery} 
+              onChange={(e) => setSearchQuery(e.target.value)} 
+              onKeyDown={handleKeyDown} 
+            />
             <button onClick={() => onSearch?.(searchQuery)} className="text-accent hover:scale-110 transition-transform pl-4"><Search className="w-6 h-6" /></button>
           </div>
         </div>
