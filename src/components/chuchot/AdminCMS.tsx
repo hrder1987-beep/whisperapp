@@ -11,7 +11,7 @@ import { BannerData } from "./MainBanner"
 import { PremiumAd, SiteBranding } from "@/lib/types"
 import { useFirestore, setDocumentNonBlocking } from "@/firebase"
 import { doc } from "firebase/firestore"
-import { Trash2, Plus, Save, RefreshCcw, ExternalLink, ImageIcon, Camera, FileText, Monitor, Globe } from "lucide-react"
+import { Trash2, Plus, Save, RefreshCcw, ExternalLink, ImageIcon, Camera, FileText, Monitor, Globe, Clock } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
 interface AdminCMSProps {
@@ -34,7 +34,8 @@ export function AdminCMS({ initialBanners, initialPremiumAds, initialBranding, o
     programTitle: "솔루션 및 프로그램",
     programSubtitle: "전문가가 엄선한 프리미엄 교육 프로그램과 HR IT 솔루션",
     jobTitle: "채용 인텔리전스",
-    jobSubtitle: "전문성이 검증된 HR 담당자를 위한 커리어 큐레이션"
+    jobSubtitle: "전문성이 검증된 HR 담당자를 위한 커리어 큐레이션",
+    bannerAutoSlideDuration: 3
   })
   
   const [isSaving, setIsSaving] = useState(false)
@@ -44,7 +45,12 @@ export function AdminCMS({ initialBanners, initialPremiumAds, initialBranding, o
   useEffect(() => {
     if (initialBanners.length > 0) setBanners(initialBanners)
     if (initialPremiumAds && initialPremiumAds.length > 0) setPremiumAds(initialPremiumAds)
-    if (initialBranding) setBranding(initialBranding)
+    if (initialBranding) {
+      setBranding({
+        ...initialBranding,
+        bannerAutoSlideDuration: initialBranding.bannerAutoSlideDuration || 3
+      })
+    }
   }, [initialBanners, initialPremiumAds, initialBranding])
 
   const handleBannerChange = (index: number, field: keyof BannerData, value: string) => {
@@ -59,7 +65,7 @@ export function AdminCMS({ initialBanners, initialPremiumAds, initialBranding, o
     setPremiumAds(newAds)
   }
 
-  const handleBrandingChange = (field: keyof SiteBranding, value: string) => {
+  const handleBrandingChange = (field: keyof SiteBranding, value: string | number) => {
     setBranding(prev => ({ ...prev, [field]: value }))
   }
 
@@ -154,13 +160,26 @@ export function AdminCMS({ initialBanners, initialPremiumAds, initialBranding, o
           <div className="flex items-center gap-3">
             <div className="p-2 bg-primary/10 rounded-lg text-primary"><Monitor className="w-5 h-5" /></div>
             <div>
-              <h3 className="text-xl font-black text-accent">메인 히어로 배너</h3>
-              <p className="text-xs font-bold text-accent/30">홈페이지 상단 롤링 배너 설정</p>
+              <h3 className="text-xl font-black text-accent">메인 히어로 배너 & 슬라이드</h3>
+              <p className="text-xs font-bold text-accent/30">홈페이지 상단 롤링 배너 및 슬라이드 속도 설정</p>
             </div>
           </div>
-          <Button variant="outline" onClick={() => setBanners([...banners, { id: Date.now(), title: "새로운 배너", description: "상세 내용", image: "", badge: "NEW" }])} className="border-accent/10 font-black rounded-xl h-10 px-5 gap-2">
-            <Plus className="w-4 h-4" /> 배너 추가
-          </Button>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-xl border border-accent/5 shadow-sm">
+              <Clock className="w-4 h-4 text-primary" />
+              <label className="text-[10px] font-black text-accent/40 uppercase tracking-tighter">자동 슬라이드 간격</label>
+              <Input 
+                type="number" 
+                value={branding.bannerAutoSlideDuration} 
+                onChange={(e) => handleBrandingChange("bannerAutoSlideDuration", parseInt(e.target.value) || 0)} 
+                className="w-16 h-8 bg-accent/5 border-none text-center font-black text-sm rounded-lg p-0"
+              />
+              <span className="text-[10px] font-black text-accent/40">초</span>
+            </div>
+            <Button variant="outline" onClick={() => setBanners([...banners, { id: Date.now(), title: "새로운 배너", description: "상세 내용", image: "", badge: "NEW" }])} className="border-accent/10 font-black rounded-xl h-10 px-5 gap-2">
+              <Plus className="w-4 h-4" /> 배너 추가
+            </Button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 gap-6">

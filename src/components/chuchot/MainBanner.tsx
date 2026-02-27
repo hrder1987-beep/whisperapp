@@ -1,10 +1,11 @@
 
 "use client"
 
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
+import { useState, useEffect } from "react"
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel"
 import { Badge } from "@/components/ui/badge"
 import Image from "next/image"
-import { Sparkles, ChevronRight } from "lucide-react"
+import { ChevronRight } from "lucide-react"
 
 export interface BannerData {
   id: string | number;
@@ -16,9 +17,12 @@ export interface BannerData {
 
 interface MainBannerProps {
   banners?: BannerData[]
+  autoSlideDuration?: number
 }
 
-export function MainBanner({ banners: propBanners }: MainBannerProps) {
+export function MainBanner({ banners: propBanners, autoSlideDuration = 3 }: MainBannerProps) {
+  const [api, setApi] = useState<CarouselApi>()
+
   const defaultBanners: BannerData[] = [
     {
       id: 1,
@@ -45,9 +49,20 @@ export function MainBanner({ banners: propBanners }: MainBannerProps) {
 
   const banners = propBanners && propBanners.length > 0 ? propBanners : defaultBanners
 
+  // 자동 슬라이드 로직
+  useEffect(() => {
+    if (!api || !autoSlideDuration || autoSlideDuration <= 0) return
+
+    const interval = setInterval(() => {
+      api.scrollNext()
+    }, autoSlideDuration * 1000)
+
+    return () => clearInterval(interval)
+  }, [api, autoSlideDuration])
+
   return (
     <div className="w-full mb-6 md:mb-8 relative">
-      <Carousel className="w-full overflow-hidden rounded-[2rem] shadow-lg border border-black/5" opts={{ loop: true }}>
+      <Carousel setApi={setApi} className="w-full overflow-hidden rounded-[2rem] shadow-lg border border-black/5" opts={{ loop: true }}>
         <CarouselContent>
           {banners.map((banner) => (
             <CarouselItem key={banner.id}>
@@ -73,7 +88,7 @@ export function MainBanner({ banners: propBanners }: MainBannerProps) {
                 <div className="absolute top-0 right-0 w-full md:w-1/2 h-full">
                   <div className="absolute inset-0 bg-gradient-to-r from-white via-white/90 md:via-white/95 to-transparent z-10"></div>
                   <Image 
-                    src={banner.image} 
+                    src={banner.image || "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=1080"} 
                     alt={banner.title} 
                     fill 
                     className="object-cover opacity-40 md:opacity-100"

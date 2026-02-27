@@ -199,6 +199,7 @@ export interface SiteBranding {
   programSubtitle: string;
   jobTitle: string;
   jobSubtitle: string;
+  bannerAutoSlideDuration?: number; // 배너 자동 슬라이드 간격(초)
 }
 
 export type BotType = 'whisperra' | 'aldi' | 'dongsan';

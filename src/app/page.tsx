@@ -11,15 +11,13 @@ import { AldiChat } from "@/components/chuchot/ShuChat"
 import { PremiumAds } from "@/components/chuchot/PremiumAds"
 import { Question, Answer, TrainingProgram, Instructor, JobListing, PremiumAd, SiteBranding } from "@/lib/types"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Sparkles, ChevronsLeft, ChevronsRight, Search, FileText, GraduationCap, User, Briefcase, ArrowRight } from "lucide-react"
+import { Sparkles, ChevronsLeft, ChevronsRight, Search, FileText } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { generateAiReply } from "@/ai/flows/generate-ai-reply-flow"
 import { cn } from "@/lib/utils"
 import { useFirestore, useCollection, useDoc, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking, useUser } from "@/firebase"
 import { collection, query, orderBy, doc, increment } from "firebase/firestore"
 import mockData from "@/lib/mock-data.json"
-import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 
 const ITEMS_PER_PAGE = 7
@@ -118,7 +116,10 @@ function HomePageContent() {
 
   const banners = useMemo(() => {
     if (config?.bannerSettings) {
-      try { return JSON.parse(config.bannerSettings) as BannerData[] } catch (e) { return [] }
+      try { 
+        const parsed = JSON.parse(config.bannerSettings) as BannerData[];
+        if (parsed.length > 0) return parsed;
+      } catch (e) { }
     }
     return [
       { 
@@ -147,7 +148,10 @@ function HomePageContent() {
 
   const premiumAds = useMemo(() => {
     if (config?.premiumAdsSettings) {
-      try { return JSON.parse(config.premiumAdsSettings) as PremiumAd[] } catch (e) { return [] }
+      try { 
+        const parsed = JSON.parse(config.premiumAdsSettings) as PremiumAd[];
+        if (parsed.length > 0) return parsed;
+      } catch (e) { }
     }
     return [
       { id: "ad1", title: "HR Tech Conference 2025\n사전 예약 안내", badge: "SPECIAL", webImage: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?q=80&w=400", mobileImage: "", link: "#" },
@@ -228,7 +232,7 @@ function HomePageContent() {
               </div>
             ) : (
               <>
-                <MainBanner banners={banners} />
+                <MainBanner banners={banners} autoSlideDuration={branding?.bannerAutoSlideDuration || 3} />
                 <SubmissionForm type="question" placeholder={branding?.homeTitle ? `${branding.homeTitle}에서 고민을 나눠보세요` : "HR 고민을 속삭여보세요."} onSubmit={handleAddQuestion} />
                 <div className="flex flex-wrap gap-x-6 gap-y-2 pb-2 border-b border-black/[0.05]">
                   {[{ id: "all", label: "전체 피드" }, { id: "hrm", label: "인사/총무" }, { id: "hrd", label: "HRD/교육" }, { id: "culture", label: "조직문화" }, { id: "popular", label: "인기" }, { id: "waiting", label: "대기" }].map(t => (
