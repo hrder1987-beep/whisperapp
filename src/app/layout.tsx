@@ -6,7 +6,7 @@ import { FirebaseClientProvider } from "@/firebase/client-provider"
 import { BottomNav } from "@/components/chuchot/BottomNav"
 
 /**
- * [중요] 전문가님의 실제 구매 도메인으로 최종 설정했습니다.
+ * 전문가님의 실제 구매 도메인으로 최종 설정되었습니다.
  */
 const SITE_URL = "https://whisperapp.kr"; 
 

@@ -10,6 +10,7 @@ interface LogoProps {
 }
 
 export function Logo({ className = "", isLight = false, onClick }: LogoProps) {
+  // 가장 찐한 딥 포레스트 그린 컬러 확정
   const logoGreen = isLight ? "text-white" : "text-[#163300]"
   const accentLime = "#CDECB1" 
 

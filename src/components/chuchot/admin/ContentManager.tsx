@@ -110,14 +110,14 @@ export function ContentManager() {
 
   return (
     <div className="relative">
-      {/* BulkActionBar: UI 상단에 독립 배치하여 클릭 간섭 최소화 */}
+      {/* 일괄 삭제 바: 탭 외부 최상단 레이어로 배치하여 클릭 간섭 차단 */}
       <div className={cn(
-        "fixed bottom-10 left-1/2 -translate-x-1/2 z-[999] transition-all duration-500",
-        selectedIds.length > 0 ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"
+        "fixed bottom-10 left-1/2 -translate-x-1/2 z-[9999] transition-all duration-500",
+        selectedIds.length > 0 ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10 pointer-events-none"
       )}>
-        <div className="bg-accent text-white px-8 py-5 rounded-full shadow-4xl flex items-center gap-8 border border-white/10 backdrop-blur-xl">
+        <div className="bg-accent text-white px-8 py-5 rounded-full shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex items-center gap-8 border border-white/10 backdrop-blur-2xl">
           <div className="flex items-center gap-3">
-            <span className="text-lg font-black text-primary">{selectedIds.length}</span>
+            <span className="text-xl font-black text-primary">{selectedIds.length}</span>
             <span className="text-sm font-bold opacity-60">항목 선택됨</span>
           </div>
           <div className="w-px h-6 bg-white/10" />
@@ -152,18 +152,18 @@ export function ContentManager() {
             </div>
 
             <div className="divide-y divide-accent/5 min-h-[400px]">
-              <div className="p-6 bg-primary/5 border-b border-accent/5 flex items-center gap-4">
+              <div className="p-6 bg-primary/10 border-b border-accent/5 flex items-center gap-4">
                 <Checkbox 
                   checked={selectedIds.length === currentList.length && currentList.length > 0} 
                   onCheckedChange={toggleSelectAll}
                   className="h-5 w-5 border-primary data-[state=checked]:bg-primary"
                 />
-                <span className="text-xs font-black text-accent/40 uppercase tracking-widest">전체 선택 / 해제</span>
+                <span className="text-xs font-black text-accent/60 uppercase tracking-widest">전체 선택 / 해제</span>
               </div>
 
               <TabsContent value="q" className="mt-0">
                 {questions.length === 0 ? <div className="py-40 text-center text-accent/10 font-black text-xl">등록된 게시물이 없습니다.</div> : questions.map(item => (
-                  <div key={item.id} className={cn("flex items-center justify-between p-8 border-b border-accent/5 transition-all hover:bg-accent/[0.01]", selectedIds.includes(item.id) && "bg-primary/10")}>
+                  <div key={item.id} className={cn("flex items-center justify-between p-8 border-b border-accent/5 transition-all hover:bg-accent/[0.01]", selectedIds.includes(item.id) && "bg-primary/5")}>
                     <div className="flex items-center gap-6 flex-1">
                       <Checkbox checked={selectedIds.includes(item.id)} onCheckedChange={() => toggleSelect(item.id)} className="h-6 w-6 border-accent/10" />
                       <div className="w-14 h-14 flex items-center justify-center rounded-2xl bg-accent/5 text-accent/30"><MessageSquare className="w-6 h-6" /></div>
@@ -178,7 +178,7 @@ export function ContentManager() {
               </TabsContent>
               <TabsContent value="j" className="mt-0">
                 {jobs.length === 0 ? <div className="py-40 text-center text-accent/10 font-black text-xl">등록된 공고가 없습니다.</div> : jobs.map(item => (
-                  <div key={item.id} className={cn("flex items-center justify-between p-8 border-b border-accent/5 transition-all hover:bg-accent/[0.01]", selectedIds.includes(item.id) && "bg-primary/10")}>
+                  <div key={item.id} className={cn("flex items-center justify-between p-8 border-b border-accent/5 transition-all hover:bg-accent/[0.01]", selectedIds.includes(item.id) && "bg-primary/5")}>
                     <div className="flex items-center gap-6 flex-1">
                       <Checkbox checked={selectedIds.includes(item.id)} onCheckedChange={() => toggleSelect(item.id)} className="h-6 w-6 border-accent/10" />
                       <div className="w-14 h-14 flex items-center justify-center rounded-2xl bg-accent/5 text-accent/30"><Briefcase className="w-6 h-6" /></div>
@@ -193,7 +193,7 @@ export function ContentManager() {
               </TabsContent>
               <TabsContent value="p" className="mt-0">
                 {programs.length === 0 ? <div className="py-40 text-center text-accent/10 font-black text-xl">등록된 콘텐츠가 없습니다.</div> : programs.map(item => (
-                  <div key={item.id} className={cn("flex items-center justify-between p-8 border-b border-accent/5 transition-all hover:bg-accent/[0.01]", selectedIds.includes(item.id) && "bg-primary/10")}>
+                  <div key={item.id} className={cn("flex items-center justify-between p-8 border-b border-accent/5 transition-all hover:bg-accent/[0.01]", selectedIds.includes(item.id) && "bg-primary/5")}>
                     <div className="flex items-center gap-6 flex-1">
                       <Checkbox checked={selectedIds.includes(item.id)} onCheckedChange={() => toggleSelect(item.id)} className="h-6 w-6 border-accent/10" />
                       <div className="w-14 h-14 flex items-center justify-center rounded-2xl bg-accent/5 text-accent/30"><GraduationCap className="w-6 h-6" /></div>
@@ -208,7 +208,7 @@ export function ContentManager() {
               </TabsContent>
               <TabsContent value="m" className="mt-0">
                 {mentors.length === 0 ? <div className="py-40 text-center text-accent/10 font-black text-xl">신청자가 없습니다.</div> : mentors.map(item => (
-                  <div key={item.id} className={cn("flex items-center justify-between p-8 border-b border-accent/5 transition-all hover:bg-accent/[0.01]", selectedIds.includes(item.id) && "bg-primary/10")}>
+                  <div key={item.id} className={cn("flex items-center justify-between p-8 border-b border-accent/5 transition-all hover:bg-accent/[0.01]", selectedIds.includes(item.id) && "bg-primary/5")}>
                     <div className="flex items-center gap-6 flex-1">
                       <Checkbox checked={selectedIds.includes(item.id)} onCheckedChange={() => toggleSelect(item.id)} className="h-6 w-6 border-accent/10" />
                       <div className="w-14 h-14 flex items-center justify-center rounded-2xl bg-accent/5 text-accent/30"><Award className="w-6 h-6" /></div>
