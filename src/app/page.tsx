@@ -22,7 +22,6 @@ import { useSearchParams } from "next/navigation"
 
 const ITEMS_PER_PAGE = 7
 
-// 무거운 데이터 생성 로직을 컴포넌트 외부로 이동하여 리렌더링 시 재실행 방지
 const generateMocks = () => {
   const list: Question[] = [];
   const mockAnswerIds = new Set((mockData.answers as any[]).map(a => a.questionId));
@@ -70,7 +69,7 @@ function HomePageContent() {
   const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "")
   const deferredSearchQuery = useDeferredValue(searchQuery)
   
-  const [activeTab, setActiveTab] = useState<"all" | "hrm" | "hrd" | "culture" | "popular" | "waiting">("all")
+  const [activeTab, setActiveTab] = useState<"all" | "hrm" | "hrd" | "culture" | "popular">("all")
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
 
@@ -173,7 +172,6 @@ function HomePageContent() {
     if (activeTab === "hrd") res = res.filter(q => q.category === "HRD/교육");
     if (activeTab === "culture") res = res.filter(q => q.category === "조직문화/EVP");
     if (activeTab === "popular") res.sort((a, b) => b.viewCount - a.viewCount);
-    if (activeTab === "waiting") res = res.filter(q => q.answerCount === 0);
     return res
   }, [questions, deferredSearchQuery, activeTab, searchResults])
 
@@ -188,7 +186,7 @@ function HomePageContent() {
     addDocumentNonBlocking(collection(db, "questions"), {
       title, text, nickname, userId: user.uid, category: category || "기타",
       viewCount: 0, answerCount: 0, createdAt: Date.now(), imageUrl: imageUrl || null, videoUrl: videoUrl || null,
-      jobTitle: jobRole || null // 피드 표시용 '직무' 저장
+      jobTitle: jobRole || null 
     }).then(ref => {
       if (ref) {
         generateAiReply({ title, text, instruction: aldiConfig?.autoReplyInstruction }).then(res => {
@@ -237,8 +235,8 @@ function HomePageContent() {
               <>
                 <MainBanner banners={banners} autoSlideDuration={branding?.bannerAutoSlideDuration || 3} />
                 <SubmissionForm type="question" placeholder={branding?.homeTitle ? `${branding.homeTitle}에서 고민을 나눠보세요` : "HR 고민을 속삭여보세요."} onSubmit={handleAddQuestion} />
-                <div className="flex flex-wrap gap-x-6 gap-y-2 pb-2 border-b border-black/[0.05]">
-                  {[{ id: "all", label: "전체 피드" }, { id: "hrm", label: "인사/총무" }, { id: "hrd", label: "HRD/교육" }, { id: "culture", label: "조직문화" }, { id: "popular", label: "인기" }, { id: "waiting", label: "대기" }].map(t => (
+                <div className="flex flex-nowrap overflow-x-auto scrollbar-hide gap-x-6 pb-2 border-b border-black/[0.05]">
+                  {[{ id: "all", label: "전체 피드" }, { id: "hrm", label: "인사/총무" }, { id: "hrd", label: "HRD/교육" }, { id: "culture", label: "조직문화" }, { id: "popular", label: "인기" }].map(t => (
                     <button key={t.id} onClick={() => setActiveTab(t.id as any)} className={cn("pb-3 text-[15px] transition-all border-b-2 whitespace-nowrap shrink-0", activeTab === t.id ? "font-black text-primary border-accent" : "font-bold text-black/60 border-transparent hover:text-black/80")}>{t.label}</button>
                   ))}
                 </div>
