@@ -69,7 +69,7 @@ function AuthContent() {
   const [isMounted, setIsMounted] = useState(false)
   useEffect(() => {
     setIsMounted(true)
-    if (user && !isUserLoading) router.push("/")
+    if (user && !isUserLoading) router.replace("/")
     if (auth) auth.languageCode = "ko"
   }, [user, isUserLoading, router, auth])
 
