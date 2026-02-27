@@ -17,6 +17,28 @@ import { useToast } from "@/hooks/use-toast"
 import { LogIn, UserPlus, Camera, X, Sparkles, Info, Search, KeyRound } from "lucide-react"
 import { sendWelcomeEmail } from "@/ai/flows/send-welcome-email-flow"
 
+/**
+ * Firebase 인증 에러 코드를 친절한 한국어 메시지로 변환합니다.
+ */
+const getAuthErrorMessage = (code: string) => {
+  switch (code) {
+    case 'auth/user-not-found':
+    case 'auth/wrong-password':
+    case 'auth/invalid-credential':
+      return '이메일 또는 비밀번호가 일치하지 않습니다.';
+    case 'auth/email-already-in-use':
+      return '이미 사용 중인 이메일 주소입니다.';
+    case 'auth/invalid-email':
+      return '유효하지 않은 이메일 형식입니다.';
+    case 'auth/weak-password':
+      return '비밀번호가 너무 취약합니다. 6자리 이상으로 설정해 주세요.';
+    case 'auth/network-request-failed':
+      return '네트워크 연결이 원활하지 않습니다. 잠시 후 다시 시도해 주세요.';
+    default:
+      return '인증 처리 중 알 수 없는 오류가 발생했습니다.';
+  }
+}
+
 function AuthContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -51,7 +73,11 @@ function AuthContent() {
     if (user && !isUserLoading) {
       router.push("/")
     }
-  }, [user, isUserLoading, router])
+    // 시스템 언어를 한국어로 설정하여 발송되는 메일을 한글화합니다.
+    if (auth) {
+      auth.languageCode = "ko"
+    }
+  }, [user, isUserLoading, router, auth])
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -72,7 +98,11 @@ function AuthContent() {
       toast({ title: "환영합니다!", description: "Whisper에 로그인했습니다." })
       router.push("/")
     } catch (error: any) {
-      toast({ title: "로그인 실패", description: "정보를 확인해주세요.", variant: "destructive" })
+      toast({ 
+        title: "로그인 실패", 
+        description: getAuthErrorMessage(error.code), 
+        variant: "destructive" 
+      })
     } finally {
       setIsLoading(false)
     }
@@ -83,10 +113,10 @@ function AuthContent() {
     setIsLoading(true)
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password)
-      const user = userCredential.user
+      const newUser = userCredential.user
 
-      await setDoc(doc(db, "users", user.uid), {
-        id: user.uid,
+      await setDoc(doc(db, "users", newUser.uid), {
+        id: newUser.uid,
         username,
         email,
         name,
@@ -107,7 +137,11 @@ function AuthContent() {
       })
       router.push("/")
     } catch (error: any) {
-      toast({ title: "가입 실패", description: error.message, variant: "destructive" })
+      toast({ 
+        title: "가입 실패", 
+        description: getAuthErrorMessage(error.code), 
+        variant: "destructive" 
+      })
     } finally {
       setIsLoading(false)
     }
@@ -127,8 +161,8 @@ function AuthContent() {
       } else {
         const userData = querySnapshot.docs[0].data()
         const fullEmail = userData.email
-        const [id, domain] = fullEmail.split('@')
-        const maskedId = id.substring(0, 2) + '*'.repeat(id.length - 2)
+        const [idPart, domain] = fullEmail.split('@')
+        const maskedId = idPart.substring(0, 2) + '*'.repeat(idPart.length - 2)
         setFoundEmail(`${maskedId}@${domain}`)
       }
     } catch (err) {
@@ -142,11 +176,17 @@ function AuthContent() {
     if (!resetEmail) return
     setIsLoading(true)
     try {
+      // 명시적으로 한국어 설정 적용 후 메일 발송
+      auth.languageCode = "ko"
       await sendPasswordResetEmail(auth, resetEmail)
       toast({ title: "메일 발송 완료", description: "입력하신 이메일로 비밀번호 재설정 링크를 보냈습니다." })
       setRecoveryMode(null)
     } catch (error: any) {
-      toast({ title: "발송 실패", description: "가입된 이메일인지 확인해 주세요.", variant: "destructive" })
+      toast({ 
+        title: "발송 실패", 
+        description: error.code === 'auth/user-not-found' ? "가입되지 않은 이메일 주소입니다." : "메일 발송 중 오류가 발생했습니다.", 
+        variant: "destructive" 
+      })
     } finally {
       setIsLoading(false)
     }
@@ -170,7 +210,7 @@ function AuthContent() {
           <CardDescription className="font-bold text-accent/60 mt-2">대한민국 HR 전문가들의 집단지성 허브</CardDescription>
         </CardHeader>
         <CardContent className="px-8 md:px-12 pb-12">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="w-full">
             <TabsList className="grid w-full grid-cols-2 bg-accent/5 p-1.5 rounded-2xl mb-10">
               <TabsTrigger value="login" className="rounded-xl font-black text-sm py-3 data-[state=active]:bg-white data-[state=active]:text-accent data-[state=active]:shadow-sm data-[state=inactive]:text-accent/40">로그인</TabsTrigger>
               <TabsTrigger value="signup" className="rounded-xl font-black text-sm py-3 data-[state=active]:bg-white data-[state=active]:text-accent data-[state=active]:shadow-sm data-[state=inactive]:text-accent/40">회원가입</TabsTrigger>
@@ -180,11 +220,11 @@ function AuthContent() {
               <form onSubmit={handleLogin} className="space-y-6">
                 <div className="space-y-2">
                   <Label className="text-xs font-black text-accent/60 ml-1">이메일 (ID)</Label>
-                  <Input type="email" placeholder="example@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required className="h-14 bg-accent/[0.03] border-accent/10 focus:border-primary rounded-xl px-5 font-bold" />
+                  <Input type="email" placeholder="example@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required className="h-14 bg-accent/[0.03] border-accent/10 focus:border-primary rounded-xl px-5 font-bold text-accent" />
                 </div>
                 <div className="space-y-2">
                   <Label className="text-xs font-black text-accent/60 ml-1">비밀번호</Label>
-                  <Input type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required className="h-14 bg-accent/[0.03] border-accent/10 focus:border-primary rounded-xl px-5 font-bold" />
+                  <Input type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required className="h-14 bg-accent/[0.03] border-accent/10 focus:border-primary rounded-xl px-5 font-bold text-accent" />
                 </div>
                 <Button type="submit" disabled={isLoading} className="w-full h-14 bg-primary text-accent font-black rounded-xl mt-4 hover:brightness-105 shadow-xl text-base transition-all active:scale-95">
                   {isLoading ? "처리 중..." : "위스퍼 시작하기"}
@@ -192,9 +232,9 @@ function AuthContent() {
                 </Button>
                 
                 <div className="flex items-center justify-center gap-6 mt-8">
-                  <button type="button" onClick={() => setRecoveryMode("id")} className="text-[12px] font-bold text-accent/40 hover:text-accent transition-colors">아이디 찾기</button>
+                  <button type="button" onClick={() => setRecoveryMode("id")} className="text-[12px] font-bold text-accent/60 hover:text-accent transition-colors">아이디 찾기</button>
                   <div className="w-px h-3 bg-accent/10"></div>
-                  <button type="button" onClick={() => setRecoveryMode("password")} className="text-[12px] font-bold text-accent/40 hover:text-accent transition-colors">비밀번호 재설정</button>
+                  <button type="button" onClick={() => setRecoveryMode("password")} className="text-[12px] font-bold text-accent/60 hover:text-accent transition-colors">비밀번호 재설정</button>
                 </div>
               </form>
             </TabsContent>
@@ -227,43 +267,43 @@ function AuthContent() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label className="text-xs font-black text-accent/60 ml-1">닉네임</Label>
-                    <Input placeholder="사용할 닉네임" value={username} onChange={(e) => setUsername(e.target.value)} required className="h-12 bg-accent/[0.03] border-accent/10 rounded-xl px-4 font-bold" />
+                    <Input placeholder="사용할 닉네임" value={username} onChange={(e) => setUsername(e.target.value)} required className="h-12 bg-accent/[0.03] border-accent/10 rounded-xl px-4 font-bold text-accent" />
                   </div>
                   <div className="space-y-2">
                     <Label className="text-xs font-black text-accent/60 ml-1">성함</Label>
-                    <Input placeholder="실명" value={name} onChange={(e) => setName(e.target.value)} required className="h-12 bg-accent/[0.03] border-accent/10 rounded-xl px-4 font-bold" />
+                    <Input placeholder="실명" value={name} onChange={(e) => setName(e.target.value)} required className="h-12 bg-accent/[0.03] border-accent/10 rounded-xl px-4 font-bold text-accent" />
                   </div>
                 </div>
                 
                 <div className="space-y-2">
                   <Label className="text-xs font-black text-accent/60 ml-1">이메일 (ID로 사용됨)</Label>
-                  <Input type="email" placeholder="example@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required className="h-12 bg-accent/[0.03] border-accent/10 rounded-xl px-4 font-bold" />
+                  <Input type="email" placeholder="example@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required className="h-12 bg-accent/[0.03] border-accent/10 rounded-xl px-4 font-bold text-accent" />
                 </div>
 
                 <div className="space-y-2">
                   <Label className="text-xs font-black text-accent/60 ml-1">비밀번호</Label>
-                  <Input type="password" placeholder="6자리 이상 입력" value={password} onChange={(e) => setPassword(e.target.value)} required className="h-12 bg-accent/[0.03] border-accent/10 rounded-xl px-4 font-bold" />
+                  <Input type="password" placeholder="6자리 이상 입력" value={password} onChange={(e) => setPassword(e.target.value)} required className="h-12 bg-accent/[0.03] border-accent/10 rounded-xl px-4 font-bold text-accent" />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label className="text-xs font-black text-accent/60 ml-1">소속(회사)</Label>
-                    <Input placeholder="회사명" value={company} onChange={(e) => setCompany(e.target.value)} required className="h-12 bg-accent/[0.03] border-accent/10 rounded-xl px-4 font-bold" />
+                    <Input placeholder="회사명" value={company} onChange={(e) => setCompany(e.target.value)} required className="h-12 bg-accent/[0.03] border-accent/10 rounded-xl px-4 font-bold text-accent" />
                   </div>
                   <div className="space-y-2">
                     <Label className="text-xs font-black text-accent/60 ml-1">부서</Label>
-                    <Input placeholder="부서명" value={department} onChange={(e) => setDepartment(e.target.value)} required className="h-12 bg-accent/[0.03] border-accent/10 rounded-xl px-4 font-bold" />
+                    <Input placeholder="부서명" value={department} onChange={(e) => setDepartment(e.target.value)} required className="h-12 bg-accent/[0.03] border-accent/10 rounded-xl px-4 font-bold text-accent" />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label className="text-xs font-black text-accent/60 ml-1">직무/직함</Label>
-                    <Input placeholder="예: 채용담당자" value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} required className="h-12 bg-accent/[0.03] border-accent/10 rounded-xl px-4 font-bold" />
+                    <Input placeholder="예: 채용담당자" value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} required className="h-12 bg-accent/[0.03] border-accent/10 rounded-xl px-4 font-bold text-accent" />
                   </div>
                   <div className="space-y-2">
                     <Label className="text-xs font-black text-accent/60 ml-1">휴대전화</Label>
-                    <Input placeholder="010-0000-0000" value={phone} onChange={(e) => setPhone(e.target.value)} required className="h-12 bg-accent/[0.03] border-accent/10 rounded-xl px-4 font-bold" />
+                    <Input placeholder="010-0000-0000" value={phone} onChange={(e) => setPhone(e.target.value)} required className="h-12 bg-accent/[0.03] border-accent/10 rounded-xl px-4 font-bold text-accent" />
                   </div>
                 </div>
 
@@ -285,7 +325,7 @@ function AuthContent() {
               {recoveryMode === "id" ? <Search className="w-7 h-7 text-primary" /> : <KeyRound className="w-7 h-7 text-primary" />}
               {recoveryMode === "id" ? "아이디 찾기" : "비밀번호 재설정"}
             </DialogTitle>
-            <DialogDescription className="font-bold text-accent/40 mt-1">
+            <DialogDescription className="font-bold text-accent/60 mt-1">
               {recoveryMode === "id" 
                 ? "가입 시 입력한 정보를 확인하여 아이디를 찾아드립니다." 
                 : "등록된 이메일로 비밀번호 재설정 링크를 보내드립니다."}
@@ -297,27 +337,27 @@ function AuthContent() {
               <>
                 {foundEmail ? (
                   <div className="bg-primary/10 p-8 rounded-3xl text-center space-y-3">
-                    <p className="text-[11px] font-black text-accent/30 uppercase tracking-widest">회원님의 아이디(이메일)입니다</p>
+                    <p className="text-[11px] font-black text-accent/40 uppercase tracking-widest">회원님의 아이디(이메일)입니다</p>
                     <p className="text-2xl font-black text-accent tracking-tight">{foundEmail}</p>
                     <Button variant="outline" onClick={() => { setEmail(foundEmail.replace(/\*/g, '')); setRecoveryMode(null); }} className="mt-6 border-accent/10 text-accent font-black rounded-xl h-11 px-8">로그인하러 가기</Button>
                   </div>
                 ) : (
                   <>
                     <div className="space-y-2">
-                      <Label className="text-[11px] font-black text-accent/40 uppercase tracking-widest ml-1">성함</Label>
-                      <Input placeholder="가입 시 입력한 이름" value={findName} onChange={(e) => setFindName(e.target.value)} className="bg-accent/[0.03] border-accent/10 h-14 rounded-xl font-bold px-5" />
+                      <Label className="text-[11px] font-black text-accent/60 uppercase tracking-widest ml-1">성함</Label>
+                      <Input placeholder="가입 시 입력한 이름" value={findName} onChange={(e) => setFindName(e.target.value)} className="bg-accent/[0.03] border-accent/10 h-14 rounded-xl font-bold px-5 text-accent" />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-[11px] font-black text-accent/40 uppercase tracking-widest ml-1">휴대전화 번호</Label>
-                      <Input placeholder="010-0000-0000" value={findPhone} onChange={(e) => setFindPhone(e.target.value)} className="bg-accent/[0.03] border-accent/10 h-14 rounded-xl font-bold px-5" />
+                      <Label className="text-[11px] font-black text-accent/60 uppercase tracking-widest ml-1">휴대전화 번호</Label>
+                      <Input placeholder="010-0000-0000" value={findPhone} onChange={(e) => setFindPhone(e.target.value)} className="bg-accent/[0.03] border-accent/10 h-14 rounded-xl font-bold px-5 text-accent" />
                     </div>
                   </>
                 )}
               </>
             ) : (
               <div className="space-y-2">
-                <Label className="text-[11px] font-black text-accent/40 uppercase tracking-widest ml-1">가입 이메일</Label>
-                <Input placeholder="example@email.com" value={resetEmail} onChange={(e) => setResetEmail(e.target.value)} className="bg-accent/[0.03] border-accent/10 h-14 rounded-xl font-bold px-5" />
+                <Label className="text-[11px] font-black text-accent/60 uppercase tracking-widest ml-1">가입 이메일</Label>
+                <Input placeholder="example@email.com" value={resetEmail} onChange={(e) => setResetEmail(e.target.value)} className="bg-accent/[0.03] border-accent/10 h-14 rounded-xl font-bold px-5 text-accent" />
               </div>
             )}
           </div>
