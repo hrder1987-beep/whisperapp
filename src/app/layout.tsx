@@ -5,7 +5,10 @@ import { Toaster } from "@/components/ui/toaster"
 import { FirebaseClientProvider } from "@/firebase/client-provider"
 import { BottomNav } from "@/components/chuchot/BottomNav"
 
-const SITE_URL = "https://whisper-hr.com"; 
+/**
+ * [중요] 전문가님의 실제 구매 도메인으로 최종 설정합니다.
+ */
+const SITE_URL = "https://whisperapp.kr"; 
 
 export const viewport: Viewport = {
   themeColor: '#163300',

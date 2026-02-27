@@ -1,3 +1,4 @@
+
 import { Metadata, ResolvingMetadata } from 'next'
 import { Header } from "@/components/chuchot/Header"
 import { QuestionViewClient } from "./client-view"
@@ -7,9 +8,9 @@ type Props = {
 }
 
 /**
- * [중요] 전문가님의 실제 도메인 주소입니다.
+ * [중요] 전문가님의 실제 도메인 주소로 업데이트했습니다.
  */
-const SITE_URL = "https://whisper-hr.com"; 
+const SITE_URL = "https://whisperapp.kr"; 
 
 async function getQuestionData(id: string) {
   try {
