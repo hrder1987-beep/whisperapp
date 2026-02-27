@@ -55,8 +55,6 @@ export function QuestionFeed({
   selectedId, 
   answers, 
   onAddAnswer,
-  activeTab,
-  onTabChange,
   isAdminMode = false
 }: QuestionFeedProps) {
   const { user } = useUser()
@@ -145,6 +143,7 @@ export function QuestionFeed({
                     <div className="flex flex-col">
                       <div className="flex items-center gap-2 md:gap-3">
                         <span className="text-[14px] md:text-[17px] font-black text-accent truncate max-w-[120px] md:max-w-none">@{q.nickname}</span>
+                        {/* 닉네임 옆에 세련된 직무 표시 (#직무) */}
                         {q.jobTitle && <span className="text-[11px] md:text-[13px] font-black text-primary italic bg-primary/5 px-2 py-0.5 rounded-md">#{q.jobTitle}</span>}
                         {isMentor && <Badge className="naver-badge bg-accent text-primary">Whisperer</Badge>}
                         {user && !isOwner && (
