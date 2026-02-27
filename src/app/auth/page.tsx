@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, Suspense, useRef, useEffect } from "react"
@@ -16,6 +15,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
 import { LogIn, UserPlus, Camera, X, Sparkles, Info, Search, KeyRound } from "lucide-react"
 import { sendWelcomeEmail } from "@/ai/flows/send-welcome-email-flow"
+import { cn } from "@/lib/utils"
 
 /**
  * Firebase 인증 에러 코드를 친절한 한국어 메시지로 변환합니다.
@@ -95,7 +95,7 @@ function AuthContent() {
     setIsLoading(true)
     try {
       await signInWithEmailAndPassword(auth, email, password)
-      toast({ title: "환영합니다!", description: "Whisper에 로그인했습니다." })
+      toast({ title: "환영합니다!", description: "Whisper Intelligence에 로그인했습니다." })
       router.push("/")
     } catch (error: any) {
       toast({ 
@@ -194,159 +194,165 @@ function AuthContent() {
 
   if (isUserLoading) {
     return (
-      <div className="flex flex-col items-center justify-center py-40 gap-4">
-        <Sparkles className="w-12 h-12 animate-spin text-accent" />
-        <p className="text-accent/40 font-black animate-pulse">인증 상태 확인 중...</p>
+      <div className="flex flex-col items-center justify-center py-48 gap-6">
+        <Sparkles className="w-14 h-14 animate-spin text-accent" />
+        <p className="text-accent/40 font-black text-lg animate-pulse">안전하게 연결 중...</p>
       </div>
     )
   }
 
   return (
-    <div className="max-w-xl mx-auto px-4 py-12 md:py-20">
-      <Card className="border-none shadow-2xl rounded-[3rem] overflow-hidden bg-white">
-        <div className="h-2 w-full gold-gradient"></div>
-        <CardHeader className="text-center pt-14 pb-10">
-          <CardTitle className="text-4xl md:text-5xl font-black text-accent tracking-tighter">Whisper Intelligence</CardTitle>
-          <CardDescription className="font-bold text-accent/60 mt-3 text-base">대한민국 HR 전문가들의 집단지성 허브</CardDescription>
+    <div className="max-w-xl mx-auto px-4 py-12 md:py-24">
+      <Card className="border-none shadow-3xl rounded-[3.5rem] overflow-hidden bg-white animate-in fade-in zoom-in-95 duration-700">
+        <div className="h-3 w-full gold-gradient"></div>
+        <CardHeader className="text-center pt-16 pb-12">
+          <CardTitle className="text-4xl md:text-6xl font-black text-accent tracking-tighter leading-tight">Whisper Intelligence</CardTitle>
+          <CardDescription className="font-bold text-accent/50 mt-4 text-base md:text-lg">대한민국 최고 HR 전문가들의 지식 허브</CardDescription>
         </CardHeader>
-        <CardContent className="px-8 md:px-14 pb-14">
+        <CardContent className="px-8 md:px-16 pb-16">
           <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="w-full">
-            <TabsList className="grid w-full grid-cols-2 bg-[#F5F6F7] p-1.5 rounded-2xl mb-12 h-16 shadow-inner">
+            <TabsList className="grid w-full grid-cols-2 bg-[#F5F6F7] p-1.5 rounded-2xl mb-14 h-16 md:h-18 shadow-inner relative">
+              <div 
+                className={cn(
+                  "absolute top-1.5 bottom-1.5 w-[calc(50%-6px)] bg-white rounded-xl shadow-xl transition-all duration-500 ease-in-out",
+                  activeTab === "signup" ? "translate-x-[calc(100%+6px)]" : "translate-x-0"
+                )}
+              />
               <TabsTrigger 
                 value="login" 
-                className="rounded-xl font-black text-base py-3 transition-all data-[state=active]:bg-white data-[state=active]:text-accent data-[state=active]:shadow-md data-[state=inactive]:text-accent/30 hover:text-accent/60"
+                className="relative z-10 rounded-xl font-black text-base md:text-lg py-3 transition-all data-[state=active]:text-accent data-[state=inactive]:text-accent/30 hover:text-accent/60 active:scale-95"
               >
                 로그인
               </TabsTrigger>
               <TabsTrigger 
                 value="signup" 
-                className="rounded-xl font-black text-base py-3 transition-all data-[state=active]:bg-white data-[state=active]:text-accent data-[state=active]:shadow-md data-[state=inactive]:text-accent/30 hover:text-accent/60"
+                className="relative z-10 rounded-xl font-black text-base md:text-lg py-3 transition-all data-[state=active]:text-accent data-[state=inactive]:text-accent/30 hover:text-accent/60 active:scale-95"
               >
                 회원가입
               </TabsTrigger>
             </TabsList>
             
-            <TabsContent value="login" className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-              <form onSubmit={handleLogin} className="space-y-7">
+            <TabsContent value="login" className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <form onSubmit={handleLogin} className="space-y-8">
                 <div className="space-y-3">
-                  <Label className="text-[11px] font-black text-accent/50 uppercase tracking-widest ml-1">이메일 (ID)</Label>
+                  <Label className="text-[12px] font-black text-accent/60 uppercase tracking-widest ml-1">이메일 계정 (ID)</Label>
                   <Input 
                     type="email" 
                     placeholder="example@email.com" 
                     value={email ?? ""} 
                     onChange={(e) => setEmail(e.target.value)} 
                     required 
-                    className="h-14 bg-[#FBFBFC] border-accent/10 focus:border-primary rounded-xl px-6 font-bold text-accent shadow-sm" 
+                    className="h-16 bg-[#FBFBFC] border-accent/5 focus:border-primary/50 focus:ring-4 focus:ring-primary/10 rounded-2xl px-6 font-bold text-accent shadow-sm transition-all" 
                   />
                 </div>
                 <div className="space-y-3">
-                  <Label className="text-[11px] font-black text-accent/50 uppercase tracking-widest ml-1">비밀번호</Label>
+                  <Label className="text-[12px] font-black text-accent/60 uppercase tracking-widest ml-1">비밀번호</Label>
                   <Input 
                     type="password" 
                     placeholder="••••••••" 
                     value={password ?? ""} 
                     onChange={(e) => setPassword(e.target.value)} 
                     required 
-                    className="h-14 bg-[#FBFBFC] border-accent/10 focus:border-primary rounded-xl px-6 font-bold text-accent shadow-sm" 
+                    className="h-16 bg-[#FBFBFC] border-accent/5 focus:border-primary/50 focus:ring-4 focus:ring-primary/10 rounded-2xl px-6 font-bold text-accent shadow-sm transition-all" 
                   />
                 </div>
                 <Button 
                   type="submit" 
                   disabled={isLoading} 
-                  className="w-full h-16 bg-primary text-accent font-black rounded-2xl mt-6 hover:brightness-105 shadow-xl text-lg transition-all active:scale-[0.98]"
+                  className="w-full h-18 bg-accent text-primary font-black rounded-[1.5rem] mt-8 hover:brightness-110 shadow-2xl text-xl transition-all active:scale-[0.97]"
                 >
-                  {isLoading ? "인증 처리 중..." : "위스퍼 시작하기"}
-                  <LogIn className="w-5 h-5 ml-2" />
+                  {isLoading ? "인증 확인 중..." : "플랫폼 접속하기"}
+                  <LogIn className="w-6 h-6 ml-3" />
                 </Button>
                 
-                <div className="flex items-center justify-center gap-8 mt-10">
-                  <button type="button" onClick={() => setRecoveryMode("id")} className="text-[13px] font-bold text-accent/40 hover:text-accent transition-colors">아이디 찾기</button>
-                  <div className="w-px h-3 bg-accent/10"></div>
-                  <button type="button" onClick={() => setRecoveryMode("password")} className="text-[13px] font-bold text-accent/40 hover:text-accent transition-colors">비밀번호 재설정</button>
+                <div className="flex items-center justify-center gap-10 mt-12">
+                  <button type="button" onClick={() => setRecoveryMode("id")} className="text-[14px] font-black text-accent/40 hover:text-accent transition-colors">아이디 찾기</button>
+                  <div className="w-1.5 h-1.5 bg-accent/10 rounded-full"></div>
+                  <button type="button" onClick={() => setRecoveryMode("password")} className="text-[14px] font-black text-accent/40 hover:text-accent transition-colors">비밀번호 재설정</button>
                 </div>
               </form>
             </TabsContent>
 
-            <TabsContent value="signup" className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-              <form onSubmit={handleSignup} className="space-y-6">
-                <div className="flex flex-col items-center mb-10">
+            <TabsContent value="signup" className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <form onSubmit={handleSignup} className="space-y-7">
+                <div className="flex flex-col items-center mb-12">
                   <div className="relative group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
-                    <div className="w-32 h-28 rounded-[2rem] bg-[#F5F6F7] border-2 border-dashed border-accent/10 flex items-center justify-center overflow-hidden transition-all group-hover:border-primary shadow-inner">
+                    <div className="w-36 h-32 rounded-[2.5rem] bg-[#F5F6F7] border-2 border-dashed border-accent/10 flex items-center justify-center overflow-hidden transition-all group-hover:border-primary shadow-inner">
                       {profilePicture ? (
                         <img src={profilePicture} alt="preview" className="w-full h-full object-cover" />
                       ) : (
-                        <Camera className="w-12 h-12 text-accent/10 group-hover:text-primary transition-colors" />
+                        <Camera className="w-14 h-14 text-accent/10 group-hover:text-primary transition-colors" />
                       )}
                     </div>
                     {profilePicture && (
                       <button 
                         type="button" 
                         onClick={(e) => { e.stopPropagation(); setProfilePicture(null); }}
-                        className="absolute -top-2 -right-2 bg-red-500 text-white p-2 rounded-full shadow-lg hover:scale-110 transition-transform"
+                        className="absolute -top-3 -right-3 bg-red-500 text-white p-2.5 rounded-full shadow-2xl hover:scale-110 transition-transform"
                       >
-                        <X className="w-4 h-4" />
+                        <X className="w-5 h-5" />
                       </button>
                     )}
                   </div>
-                  <span className="text-[11px] font-black text-accent/30 mt-4 uppercase tracking-widest">프로필 사진 등록 (선택)</span>
+                  <span className="text-[12px] font-black text-accent/30 mt-5 uppercase tracking-widest">전문가 프로필 사진 (선택)</span>
                   <input type="file" ref={fileInputRef} onChange={handleImageChange} accept="image/*" className="hidden" />
                 </div>
 
-                <div className="grid grid-cols-2 gap-5">
-                  <div className="space-y-2">
-                    <Label className="text-[10px] font-black text-accent/50 uppercase ml-1">닉네임</Label>
-                    <Input placeholder="사용할 닉네임" value={username ?? ""} onChange={(e) => setUsername(e.target.value)} required className="h-12 bg-[#FBFBFC] border-accent/10 rounded-xl px-5 font-bold text-accent" />
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="space-y-2.5">
+                    <Label className="text-[11px] font-black text-accent/60 uppercase ml-1">닉네임</Label>
+                    <Input placeholder="사용자명" value={username ?? ""} onChange={(e) => setUsername(e.target.value)} required className="h-14 bg-[#FBFBFC] border-accent/5 rounded-2xl px-6 font-bold" />
                   </div>
-                  <div className="space-y-2">
-                    <Label className="text-[10px] font-black text-accent/50 uppercase ml-1">성함</Label>
-                    <Input placeholder="실명" value={name ?? ""} onChange={(e) => setName(e.target.value)} required className="h-12 bg-[#FBFBFC] border-accent/10 rounded-xl px-5 font-bold text-accent" />
+                  <div className="space-y-2.5">
+                    <Label className="text-[11px] font-black text-accent/60 uppercase ml-1">성함</Label>
+                    <Input placeholder="실명" value={name ?? ""} onChange={(e) => setName(e.target.value)} required className="h-14 bg-[#FBFBFC] border-accent/5 rounded-2xl px-6 font-bold" />
                   </div>
                 </div>
                 
-                <div className="space-y-2">
-                  <Label className="text-[10px] font-black text-accent/50 uppercase ml-1">이메일 (ID로 사용됨)</Label>
-                  <Input type="email" placeholder="example@email.com" value={email ?? ""} onChange={(e) => setEmail(e.target.value)} required className="h-12 bg-[#FBFBFC] border-accent/10 rounded-xl px-5 font-bold text-accent" />
+                <div className="space-y-2.5">
+                  <Label className="text-[11px] font-black text-accent/60 uppercase ml-1">이메일 (ID)</Label>
+                  <Input type="email" placeholder="example@email.com" value={email ?? ""} onChange={(e) => setEmail(e.target.value)} required className="h-14 bg-[#FBFBFC] border-accent/5 rounded-2xl px-6 font-bold" />
                 </div>
 
-                <div className="space-y-2">
-                  <Label className="text-[10px] font-black text-accent/50 uppercase ml-1">비밀번호</Label>
-                  <Input type="password" placeholder="6자리 이상 입력" value={password ?? ""} onChange={(e) => setPassword(e.target.value)} required className="h-12 bg-[#FBFBFC] border-accent/10 rounded-xl px-5 font-bold text-accent" />
+                <div className="space-y-2.5">
+                  <Label className="text-[11px] font-black text-accent/60 uppercase ml-1">비밀번호</Label>
+                  <Input type="password" placeholder="6자리 이상" value={password ?? ""} onChange={(e) => setPassword(e.target.value)} required className="h-14 bg-[#FBFBFC] border-accent/5 rounded-2xl px-6 font-bold" />
                 </div>
 
-                <div className="grid grid-cols-2 gap-5">
-                  <div className="space-y-2">
-                    <Label className="text-[10px] font-black text-accent/50 uppercase ml-1">소속(회사)</Label>
-                    <Input placeholder="회사명" value={company ?? ""} onChange={(e) => setCompany(e.target.value)} required className="h-12 bg-[#FBFBFC] border-accent/10 rounded-xl px-5 font-bold text-accent" />
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="space-y-2.5">
+                    <Label className="text-[11px] font-black text-accent/60 uppercase ml-1">소속 회사</Label>
+                    <Input placeholder="회사명" value={company ?? ""} onChange={(e) => setCompany(e.target.value)} required className="h-14 bg-[#FBFBFC] border-accent/5 rounded-2xl px-6 font-bold" />
                   </div>
-                  <div className="space-y-2">
-                    <Label className="text-[10px] font-black text-accent/50 uppercase ml-1">부서</Label>
-                    <Input placeholder="부서명" value={department ?? ""} onChange={(e) => setDepartment(e.target.value)} required className="h-12 bg-[#FBFBFC] border-accent/10 rounded-xl px-5 font-bold text-accent" />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-5">
-                  <div className="space-y-2">
-                    <Label className="text-[10px] font-black text-accent/50 uppercase ml-1">직무</Label>
-                    <Input placeholder="예: 채용" value={jobRole ?? ""} onChange={(e) => setJobRole(e.target.value)} required className="h-12 bg-[#FBFBFC] border-accent/10 rounded-xl px-5 font-bold text-accent" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-[10px] font-black text-accent/50 uppercase ml-1">직함</Label>
-                    <Input placeholder="예: 팀장" value={jobTitle ?? ""} onChange={(e) => setJobTitle(e.target.value)} required className="h-12 bg-[#FBFBFC] border-accent/10 rounded-xl px-5 font-bold text-accent" />
+                  <div className="space-y-2.5">
+                    <Label className="text-[11px] font-black text-accent/60 uppercase ml-1">부서</Label>
+                    <Input placeholder="부서명" value={department ?? ""} onChange={(e) => setDepartment(e.target.value)} required className="h-14 bg-[#FBFBFC] border-accent/5 rounded-2xl px-6 font-bold" />
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label className="text-[10px] font-black text-accent/50 uppercase ml-1">휴대전화</Label>
-                  <Input placeholder="010-0000-0000" value={phone ?? ""} onChange={(e) => setPhone(e.target.value)} required className="h-12 bg-[#FBFBFC] border-accent/10 rounded-xl px-5 font-bold text-accent" />
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="space-y-2.5">
+                    <Label className="text-[11px] font-black text-accent/60 uppercase ml-1">직무 (Role)</Label>
+                    <Input placeholder="예: 채용" value={jobRole ?? ""} onChange={(e) => setJobRole(e.target.value)} required className="h-14 bg-[#FBFBFC] border-accent/5 rounded-2xl px-6 font-bold" />
+                  </div>
+                  <div className="space-y-2.5">
+                    <Label className="text-[11px] font-black text-accent/60 uppercase ml-1">직함 (Title)</Label>
+                    <Input placeholder="예: 팀장" value={jobTitle ?? ""} onChange={(e) => setJobTitle(e.target.value)} required className="h-14 bg-[#FBFBFC] border-accent/5 rounded-2xl px-6 font-bold" />
+                  </div>
+                </div>
+
+                <div className="space-y-2.5">
+                  <Label className="text-[11px] font-black text-accent/60 uppercase ml-1">휴대전화</Label>
+                  <Input placeholder="010-0000-0000" value={phone ?? ""} onChange={(e) => setPhone(e.target.value)} required className="h-14 bg-[#FBFBFC] border-accent/5 rounded-2xl px-6 font-bold" />
                 </div>
 
                 <Button 
                   type="submit" 
                   disabled={isLoading} 
-                  className="w-full h-16 gold-gradient text-accent font-black rounded-2xl mt-8 shadow-2xl text-lg transition-all active:scale-[0.98]"
+                  className="w-full h-18 gold-gradient text-accent font-black rounded-[1.5rem] mt-10 shadow-3xl text-xl hover:scale-[1.01] transition-all active:scale-[0.97]"
                 >
-                  {isLoading ? "전문가 등록 중..." : "전문가 등록 완료"}
-                  <UserPlus className="w-5 h-5 ml-2" />
+                  {isLoading ? "전문가 등록 처리 중..." : "전문가 등록 완료"}
+                  <UserPlus className="w-6 h-6 ml-3" />
                 </Button>
               </form>
             </TabsContent>
@@ -356,45 +362,45 @@ function AuthContent() {
 
       {/* Recovery Dialog */}
       <Dialog open={!!recoveryMode} onOpenChange={() => { setRecoveryMode(null); setFoundEmail(null); }}>
-        <DialogContent className="max-w-md bg-white border-none rounded-[3rem] p-10 shadow-3xl overflow-hidden">
+        <DialogContent className="max-w-md bg-white border-none rounded-[3.5rem] p-12 shadow-4xl overflow-hidden">
           <DialogHeader className="text-left">
-            <DialogTitle className="text-2xl font-black text-accent flex items-center gap-3">
-              {recoveryMode === "id" ? <Search className="w-7 h-7 text-primary" /> : <KeyRound className="w-7 h-7 text-primary" />}
+            <DialogTitle className="text-3xl font-black text-accent flex items-center gap-4">
+              {recoveryMode === "id" ? <Search className="w-8 h-8 text-primary" /> : <KeyRound className="w-8 h-8 text-primary" />}
               {recoveryMode === "id" ? "아이디 찾기" : "비밀번호 재설정"}
             </DialogTitle>
-            <DialogDescription className="font-bold text-accent/50 mt-2">
+            <DialogDescription className="font-bold text-accent/40 mt-3">
               {recoveryMode === "id" 
-                ? "가입 시 입력한 정보를 확인하여 아이디를 찾아드립니다." 
-                : "등록된 이메일로 비밀번호 재설정 링크를 보내드립니다."}
+                ? "가입 시 등록하신 실명과 번호를 확인합니다." 
+                : "등록된 이메일로 안전한 재설정 링크를 보내드립니다."}
             </DialogDescription>
           </DialogHeader>
 
-          <div className="py-8 space-y-6">
+          <div className="py-10 space-y-8">
             {recoveryMode === "id" ? (
               <>
                 {foundEmail ? (
-                  <div className="bg-primary/10 p-10 rounded-[2.5rem] text-center space-y-4 shadow-inner">
-                    <p className="text-[11px] font-black text-accent/30 uppercase tracking-widest">회원님의 아이디(이메일)입니다</p>
-                    <p className="text-2xl font-black text-accent tracking-tight">{foundEmail}</p>
-                    <Button variant="outline" onClick={() => { setEmail(foundEmail.replace(/\*/g, '')); setRecoveryMode(null); }} className="mt-8 border-accent/10 text-accent font-black rounded-xl h-12 px-10 hover:bg-primary/10 transition-colors">로그인하러 가기</Button>
+                  <div className="bg-primary/5 p-12 rounded-[3rem] text-center space-y-5 shadow-inner border border-primary/10">
+                    <p className="text-[12px] font-black text-accent/30 uppercase tracking-widest">인증된 아이디입니다</p>
+                    <p className="text-3xl font-black text-accent tracking-tight">{foundEmail}</p>
+                    <Button onClick={() => { setRecoveryMode(null); }} className="mt-10 naver-button h-14 px-12 rounded-2xl shadow-xl">로그인하러 가기</Button>
                   </div>
                 ) : (
                   <>
                     <div className="space-y-3">
-                      <Label className="text-[11px] font-black text-accent/40 uppercase tracking-widest ml-1">성함</Label>
-                      <Input placeholder="가입 시 입력한 이름" value={findName ?? ""} onChange={(e) => setFindName(e.target.value)} className="bg-[#FBFBFC] border-accent/10 h-14 rounded-xl font-bold px-6 text-accent" />
+                      <Label className="text-[12px] font-black text-accent/50 uppercase ml-1">가입자 실명</Label>
+                      <Input placeholder="이름 입력" value={findName ?? ""} onChange={(e) => setFindName(e.target.value)} className="bg-[#FBFBFC] border-none h-16 rounded-2xl font-bold px-6 text-accent shadow-inner" />
                     </div>
                     <div className="space-y-3">
-                      <Label className="text-[11px] font-black text-accent/40 uppercase tracking-widest ml-1">휴대전화 번호</Label>
-                      <Input placeholder="010-0000-0000" value={findPhone ?? ""} onChange={(e) => setFindPhone(e.target.value)} className="bg-[#FBFBFC] border-accent/10 h-14 rounded-xl font-bold px-6 text-accent" />
+                      <Label className="text-[12px] font-black text-accent/50 uppercase ml-1">휴대전화 번호</Label>
+                      <Input placeholder="010-0000-0000" value={findPhone ?? ""} onChange={(e) => setFindPhone(e.target.value)} className="bg-[#FBFBFC] border-none h-16 rounded-2xl font-bold px-6 text-accent shadow-inner" />
                     </div>
                   </>
                 )}
               </>
             ) : (
               <div className="space-y-3">
-                <Label className="text-[11px] font-black text-accent/40 uppercase tracking-widest ml-1">가입 이메일</Label>
-                <Input placeholder="example@email.com" value={resetEmail ?? ""} onChange={(e) => setResetEmail(e.target.value)} className="bg-[#FBFBFC] border-accent/10 h-14 rounded-xl font-bold px-6 text-accent" />
+                <Label className="text-[12px] font-black text-accent/50 uppercase ml-1">가입된 이메일 계정</Label>
+                <Input placeholder="example@email.com" value={resetEmail ?? ""} onChange={(e) => setResetEmail(e.target.value)} className="bg-[#FBFBFC] border-none h-16 rounded-2xl font-bold px-6 text-accent shadow-inner" />
               </div>
             )}
           </div>
@@ -404,9 +410,9 @@ function AuthContent() {
               <Button 
                 onClick={recoveryMode === "id" ? handleFindId : handleResetPassword}
                 disabled={isLoading}
-                className="w-full h-16 bg-accent text-primary font-black rounded-2xl shadow-xl text-lg hover:scale-[1.02] transition-all"
+                className="w-full h-18 bg-accent text-primary font-black rounded-[1.5rem] shadow-2xl text-xl hover:brightness-110 transition-all active:scale-[0.97]"
               >
-                {isLoading ? "확인 중..." : recoveryMode === "id" ? "아이디 찾기" : "재설정 메일 발송"}
+                {isLoading ? "정보 확인 중..." : recoveryMode === "id" ? "정보 확인하기" : "재설정 링크 발송"}
               </Button>
             )}
           </DialogFooter>
@@ -420,7 +426,7 @@ export default function AuthPage() {
   return (
     <div className="min-h-screen bg-[#F8F9FA]">
       <Header />
-      <Suspense fallback={<div className="flex justify-center py-40"><Sparkles className="w-12 h-12 animate-spin text-accent" /></div>}>
+      <Suspense fallback={<div className="flex flex-col items-center justify-center py-48 gap-6"><Sparkles className="w-14 h-14 animate-spin text-accent" /><p className="text-accent/40 font-black animate-pulse">인증 모듈 로딩 중...</p></div>}>
         <AuthContent />
       </Suspense>
     </div>

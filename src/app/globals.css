@@ -23,7 +23,7 @@
     --border: 88 20% 90%;
     --input: 88 20% 90%;
     --ring: 88 63% 81%;
-    --radius: 1rem; /* More rounded for a premium feel */
+    --radius: 1.25rem; /* Slightly more rounded for a premium feel */
   }
 }
 
@@ -32,31 +32,42 @@
     @apply border-border outline-none !ring-offset-0;
   }
   body {
-    @apply bg-[#F7FAF2] text-[#1E1E23] font-body antialiased;
+    @apply bg-[#F8F9FA] text-[#1E1E23] font-body antialiased;
     -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
   }
 }
 
+/* Scrollbar Customization */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-accent/10 rounded-full hover:bg-accent/20 transition-colors;
+}
+
 /* Whisper Style Components - Refined */
 .naver-header {
-  @apply bg-white/80 backdrop-blur-xl border-b border-black/[0.04] sticky top-0 z-50;
+  @apply bg-white/90 backdrop-blur-xl border-b border-black/[0.04] sticky top-0 z-50;
 }
 
 .naver-search-bar {
-  @apply border-2 border-primary bg-white rounded-xl flex items-center px-4 transition-all focus-within:shadow-md outline-none;
+  @apply border-2 border-primary bg-white rounded-2xl flex items-center px-4 transition-all focus-within:shadow-lg focus-within:border-primary outline-none;
 }
 
 .naver-card {
-  @apply bg-white border border-black/[0.04] shadow-sm hover:shadow-xl hover:border-primary/20 transition-all rounded-[1.5rem] overflow-hidden;
+  @apply bg-white border border-black/[0.05] shadow-sm hover:shadow-2xl hover:border-primary/20 transition-all duration-500 rounded-[2rem] overflow-hidden;
 }
 
 .naver-button {
-  @apply bg-primary text-accent font-black rounded-xl hover:brightness-95 transition-all shadow-sm active:scale-95;
+  @apply bg-primary text-accent font-black rounded-2xl hover:brightness-95 transition-all shadow-md active:scale-[0.97] disabled:opacity-50;
 }
 
 .naver-badge {
-  @apply bg-primary/30 text-accent font-bold border-none px-2.5 py-0.5 rounded-full text-[10px] uppercase tracking-tighter;
+  @apply bg-primary/30 text-accent font-black border-none px-3 py-1 rounded-full text-[10px] uppercase tracking-tighter;
 }
 
 .ranking-number {
@@ -64,19 +75,11 @@
 }
 
 h1, h2, h3, h4, h5, h6 {
-  @apply text-accent tracking-tighter;
+  @apply text-accent tracking-tighter font-black;
 }
 
 p, span, div {
   @apply text-[#404040];
-}
-
-.text-neutral-title {
-  @apply text-accent font-black;
-}
-
-.text-neutral-body {
-  @apply text-[#404040] font-medium;
 }
 
 .glass-morphism {
@@ -89,6 +92,11 @@ p, span, div {
 
 .gold-gradient {
   background: linear-gradient(135deg, #CDECB1 0%, #B8E094 100%);
+}
+
+/* Mobile Safe Areas */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 input:focus, textarea:focus {

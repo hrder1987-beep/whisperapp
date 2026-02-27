@@ -1,4 +1,3 @@
-
 "use client"
 
 import { Logo } from "./Logo"
@@ -11,7 +10,7 @@ import { useUser, useAuth, useCollection, useMemoFirebase, useFirestore, useDoc 
 import { signOut } from "firebase/auth"
 import { collection, query, where, doc } from "firebase/firestore"
 import { cn } from "@/lib/utils"
-import { useState, KeyboardEvent } from "react"
+import { useState, KeyboardEvent, useEffect } from "react"
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { Badge } from "@/components/ui/badge"
 
@@ -27,6 +26,9 @@ export function Header({ onSearch }: HeaderProps) {
   const db = useFirestore()
   const [searchQuery, setSearchQuery] = useState("")
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(() => setIsMounted(true), [])
 
   const userDocRef = useMemoFirebase(() => (user && db) ? doc(db, "users", user.uid) : null, [user, db])
   const { data: profile } = useDoc<any>(userDocRef)
@@ -63,8 +65,10 @@ export function Header({ onSearch }: HeaderProps) {
     { name: "채용 정보", href: "/jobs" },
   ]
 
+  if (!isMounted) return <header className="naver-header h-16 md:h-20" />
+
   return (
-    <header className="naver-header">
+    <header className="naver-header shadow-sm">
       <div className="bg-[#F7FAF2] border-b border-black/[0.03] hidden md:block">
         <div className="max-w-7xl mx-auto px-4 h-10 flex items-center justify-end gap-6 text-[11px] font-bold text-accent/40">
           {user ? (
@@ -82,10 +86,10 @@ export function Header({ onSearch }: HeaderProps) {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 h-16 md:h-20 flex items-center justify-between gap-4 md:gap-10">
+      <div className="max-w-7xl mx-auto px-4 h-16 md:h-24 flex items-center justify-between gap-4 md:gap-10">
         <div className="flex items-center gap-2 md:gap-8">
           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-            <SheetTrigger asChild><Button variant="ghost" size="icon" className="md:hidden text-accent -ml-2 hover:bg-primary/10"><Menu className="w-6 h-6" /></Button></SheetTrigger>
+            <SheetTrigger asChild><Button variant="ghost" size="icon" className="md:hidden text-accent -ml-2 hover:bg-primary/10 rounded-full"><Menu className="w-6 h-6" /></Button></SheetTrigger>
             <SheetContent side="left" className="bg-white border-none p-0 w-[300px]">
               <SheetHeader className="sr-only"><SheetTitle>메뉴</SheetTitle></SheetHeader>
               <div className="flex flex-col h-full pt-12 px-8">
@@ -110,19 +114,19 @@ export function Header({ onSearch }: HeaderProps) {
               </div>
             </SheetContent>
           </Sheet>
-          <Link href="/"><Logo className="scale-90 md:scale-105" /></Link>
+          <Link href="/"><Logo className="scale-90 md:scale-110" /></Link>
         </div>
 
         <div className="hidden md:flex flex-1 max-w-2xl">
-          <div className="naver-search-bar w-full h-12 focus-within:ring-4 focus-within:ring-primary/20">
+          <div className="naver-search-bar w-full h-14 shadow-sm">
             <Input 
               placeholder="검색어를 입력해 주세요" 
-              className="border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 text-[15px] font-black h-full placeholder:text-accent/20 bg-transparent px-2 outline-none" 
+              className="border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 text-[16px] font-black h-full placeholder:text-accent/20 bg-transparent px-4 outline-none" 
               value={searchQuery} 
               onChange={(e) => setSearchQuery(e.target.value)} 
               onKeyDown={handleKeyDown} 
             />
-            <button onClick={() => onSearch?.(searchQuery)} className="text-accent hover:scale-110 transition-transform pl-4"><Search className="w-6 h-6" /></button>
+            <button onClick={() => onSearch?.(searchQuery)} className="text-accent hover:scale-110 transition-transform pl-4 pr-2"><Search className="w-6 h-6" /></button>
           </div>
         </div>
 
@@ -136,13 +140,13 @@ export function Header({ onSearch }: HeaderProps) {
               </div>
             )}
           </div>
-          {!user && (<Link href="/auth?mode=login"><Button className="naver-button h-11 px-8 hidden md:block shadow-lg">로그인</Button></Link>)}
+          {!user && (<Link href="/auth?mode=login"><Button className="naver-button h-11 px-10 hidden md:block shadow-lg text-sm">로그인</Button></Link>)}
         </div>
       </div>
 
       <nav className="border-t border-black/[0.03] hidden md:block bg-white/50">
         <div className="max-w-7xl mx-auto px-4 h-14 flex items-center gap-10">
-          {navLinks.map((link) => (<Link key={link.href} href={link.href} className={cn("text-[15px] font-black transition-all h-full flex items-center border-b-4 px-1.5 pt-1", pathname === link.href ? "text-accent border-primary" : "text-accent/40 border-transparent hover:text-accent")}>{link.name}</Link>))}
+          {navLinks.map((link) => (<Link key={link.href} href={link.href} className={cn("text-[15px] font-black transition-all h-full flex items-center border-b-[3px] px-1 pt-1", pathname === link.href ? "text-accent border-primary" : "text-accent/40 border-transparent hover:text-accent")}>{link.name}</Link>))}
         </div>
       </nav>
     </header>
