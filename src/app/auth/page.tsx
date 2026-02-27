@@ -58,7 +58,8 @@ function AuthContent() {
   const [name, setName] = useState("")
   const [company, setCompany] = useState("")
   const [department, setDepartment] = useState("")
-  const [jobTitle, setJobTitle] = useState("")
+  const [jobRole, setJobRole] = useState("") // 직무
+  const [jobTitle, setJobTitle] = useState("") // 직함
   const [phone, setPhone] = useState("")
   const [profilePicture, setProfilePicture] = useState<string | null>(null)
 
@@ -122,7 +123,8 @@ function AuthContent() {
         name,
         company,
         department,
-        jobTitle, 
+        jobRole, // 추가된 직무
+        jobTitle, // 분리된 직함
         phoneNumber: phone,
         role: "member",
         registrationDate: new Date().toISOString(),
@@ -298,13 +300,18 @@ function AuthContent() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label className="text-xs font-black text-accent/60 ml-1">직무/직함</Label>
-                    <Input placeholder="예: 채용담당자" value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} required className="h-12 bg-accent/[0.03] border-accent/10 rounded-xl px-4 font-bold text-accent" />
+                    <Label className="text-xs font-black text-accent/60 ml-1">직무</Label>
+                    <Input placeholder="예: 채용" value={jobRole} onChange={(e) => setJobRole(e.target.value)} required className="h-12 bg-accent/[0.03] border-accent/10 rounded-xl px-4 font-bold text-accent" />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-xs font-black text-accent/60 ml-1">휴대전화</Label>
-                    <Input placeholder="010-0000-0000" value={phone} onChange={(e) => setPhone(e.target.value)} required className="h-12 bg-accent/[0.03] border-accent/10 rounded-xl px-4 font-bold text-accent" />
+                    <Label className="text-xs font-black text-accent/60 ml-1">직함</Label>
+                    <Input placeholder="예: 팀장" value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} required className="h-12 bg-accent/[0.03] border-accent/10 rounded-xl px-4 font-bold text-accent" />
                   </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-xs font-black text-accent/60 ml-1">휴대전화</Label>
+                  <Input placeholder="010-0000-0000" value={phone} onChange={(e) => setPhone(e.target.value)} required className="h-12 bg-accent/[0.03] border-accent/10 rounded-xl px-4 font-bold text-accent" />
                 </div>
 
                 <Button type="submit" disabled={isLoading} className="w-full h-14 gold-gradient text-accent font-black rounded-xl mt-6 shadow-xl text-base transition-all active:scale-95">

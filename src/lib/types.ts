@@ -8,7 +8,8 @@ export interface UserProfile {
   name: string;
   company: string;
   department: string;
-  jobTitle: string;
+  jobTitle: string; // 직함 (Position)
+  jobRole?: string; // 직무 (Function/Role) - 추가됨
   phoneNumber: string;
   role: UserRole;
   registrationDate: string;
@@ -22,7 +23,7 @@ export interface Question {
   nickname: string;
   userId: string;
   userRole?: UserRole;
-  jobTitle?: string;
+  jobTitle?: string; // 작성 당시의 직무(또는 직함) 표시용
   viewCount: number;
   answerCount: number;
   createdAt: number;
@@ -39,7 +40,7 @@ export interface Answer {
   nickname: string;
   userId: string;
   userRole?: UserRole;
-  jobTitle?: string;
+  jobTitle?: string; // 작성 당시의 직무 표시용
   createdAt: number;
   userProfilePicture?: string;
 }

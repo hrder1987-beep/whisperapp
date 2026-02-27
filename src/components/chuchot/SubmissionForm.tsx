@@ -22,7 +22,7 @@ import {
 
 interface SubmissionFormProps {
   placeholder: string
-  onSubmit: (nickname: string, title: string, text: string, imageUrl?: string, videoUrl?: string, category?: string) => void
+  onSubmit: (nickname: string, title: string, text: string, imageUrl?: string, videoUrl?: string, category?: string, jobRole?: string) => void
   type: "question" | "answer"
 }
 
@@ -50,6 +50,7 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
   const { toast } = useToast()
 
   const nickname = profile?.username || "익명전문가"
+  const jobRole = profile?.jobRole || ""
 
   useEffect(() => {
     if (textareaRef.current) {
@@ -77,7 +78,7 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
 
     setIsSubmitting(true)
     setTimeout(() => {
-      onSubmit(nickname, title, text, imageUrl, videoUrl, selectedCategory || undefined)
+      onSubmit(nickname, title, text, imageUrl, videoUrl, selectedCategory || undefined, jobRole)
       setTitle(""); setText(""); setImageUrl(undefined); setVideoUrl(undefined); setShowVideoInput(false); setSelectedCategory(null);
       setIsSubmitting(false)
       toast({ title: "게시 완료", description: "소중한 지식이 공유되었습니다." })

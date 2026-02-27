@@ -66,7 +66,8 @@ export function AnswerFeed({ answers, isAdminMode = false }: AnswerFeedProps) {
                     </div>
                     <div className="flex items-center gap-1.5">
                       <span className={cn("font-bold text-sm", isMentor ? "text-accent" : "text-primary")}>@{a.nickname}</span>
-                      {a.jobTitle && <span className="text-[10px] font-bold text-accent/60 italic">#{a.jobTitle}</span>}
+                      {/* 직무(Role) 노출 추가 */}
+                      {a.jobTitle && <span className="text-[10px] font-bold text-primary italic">#{a.jobTitle}</span>}
                       {isMentor && <Badge className="bg-accent text-primary text-[9px] font-black border-none px-1.5 py-0">WHISPERER</Badge>}
                       {user && !isOwner && (
                         <button onClick={() => setMessageTarget({ id: a.userId, nickname: a.nickname })} className="p-1 text-primary/20 hover:text-accent transition-colors bg-primary/5 rounded-full">

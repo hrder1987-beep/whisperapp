@@ -39,7 +39,7 @@ interface QuestionFeedProps {
   onSelectQuestion: (id: string) => void
   selectedId: string | null
   answers: Answer[]
-  onAddAnswer: (nickname: string, title: string, text: string) => void
+  onAddAnswer: (nickname: string, title: string, text: string, imageUrl?: string, videoUrl?: string, category?: string, jobRole?: string) => void
   activeTab: "all" | "popular" | "waiting" | "hrd" | "culture" | "hrm"
   onTabChange: (tab: "all" | "popular" | "waiting" | "hrd" | "culture" | "hrm") => void
   isAdminMode?: boolean
@@ -142,6 +142,8 @@ export function QuestionFeed({
                     <div className="flex flex-col">
                       <div className="flex items-center gap-1.5 md:gap-2">
                         <span className="text-[13px] md:text-[15px] font-black text-foreground truncate max-w-[100px] md:max-w-none">@{q.nickname}</span>
+                        {/* 직무(Role) 노출 추가 */}
+                        {q.jobTitle && <span className="text-[10px] md:text-[12px] font-bold text-primary italic">#{q.jobTitle}</span>}
                         {isMentor && <Badge className="naver-badge scale-90 md:scale-100">Whisperer</Badge>}
                         {user && !isOwner && (
                           <button onClick={(e) => { e.stopPropagation(); setMessageTarget({ id: q.userId, nickname: q.nickname }); }} className="text-muted-foreground hover:text-accent transition-colors p-1">

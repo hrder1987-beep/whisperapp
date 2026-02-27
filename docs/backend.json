@@ -14,12 +14,13 @@
         "company": { "type": "string", "description": "소속 회사" },
         "department": { "type": "string", "description": "소속 부서" },
         "jobTitle": { "type": "string", "description": "직함" },
+        "jobRole": { "type": "string", "description": "직무" },
         "phoneNumber": { "type": "string", "description": "휴대전화 (민감 정보, 보안 적용)" },
         "role": { "type": "string", "enum": ["member", "mentor", "admin"], "description": "사용자 권한" },
         "registrationDate": { "type": "string", "format": "date-time" },
         "profilePictureUrl": { "type": "string" }
       },
-      "required": ["id", "username", "email", "name", "company", "department", "jobTitle", "phoneNumber", "role", "registrationDate"]
+      "required": ["id", "username", "email", "name", "company", "department", "jobTitle", "jobRole", "phoneNumber", "role", "registrationDate"]
     },
     "Question": {
       "$schema": "http://json-schema.org/draft-07/schema#",

@@ -182,25 +182,26 @@ function HomePageContent() {
   useEffect(() => { setCurrentPage(1); setSelectedId(null); }, [deferredSearchQuery, activeTab])
   useEffect(() => { const search = searchParams.get("search"); if (search) setSearchQuery(search) }, [searchParams])
 
-  const handleAddQuestion = (nickname: string, title: string, text: string, imageUrl?: string, videoUrl?: string, category?: string) => {
+  const handleAddQuestion = (nickname: string, title: string, text: string, imageUrl?: string, videoUrl?: string, category?: string, jobRole?: string) => {
     if (!db || !user) return;
     addDocumentNonBlocking(collection(db, "questions"), {
       title, text, nickname, userId: user.uid, category: category || "기타",
-      viewCount: 0, answerCount: 0, createdAt: Date.now(), imageUrl: imageUrl || null, videoUrl: videoUrl || null
+      viewCount: 0, answerCount: 0, createdAt: Date.now(), imageUrl: imageUrl || null, videoUrl: videoUrl || null,
+      jobTitle: jobRole || null // 피드 표시용 '직무' 저장
     }).then(ref => {
       if (ref) {
         generateAiReply({ title, text, instruction: aldiConfig?.autoReplyInstruction }).then(res => {
-          addDocumentNonBlocking(collection(db, "questions", ref.id, "answers"), { questionId: ref.id, text: res.replyText, nickname: "알디", userId: "ai", createdAt: Date.now() });
+          addDocumentNonBlocking(collection(db, "questions", ref.id, "answers"), { questionId: ref.id, text: res.replyText, nickname: "알디", userId: "ai", createdAt: Date.now(), jobTitle: "공식 AI" });
           updateDocumentNonBlocking(doc(db, "questions", ref.id), { answerCount: 1 });
         });
       }
     });
   }
 
-  const handleAddAnswer = (nickname: string, title: string, text: string) => {
+  const handleAddAnswer = (nickname: string, title: string, text: string, imageUrl?: string, videoUrl?: string, category?: string, jobRole?: string) => {
     if (!db || !selectedId || !user) return;
     const question = questions.find(q => q.id === selectedId);
-    addDocumentNonBlocking(collection(db, "questions", selectedId, "answers"), { questionId: selectedId, text, nickname, userId: user.uid, createdAt: Date.now() }).then(() => {
+    addDocumentNonBlocking(collection(db, "questions", selectedId, "answers"), { questionId: selectedId, text, nickname, userId: user.uid, createdAt: Date.now(), jobTitle: jobRole || null }).then(() => {
       if (question && question.userId !== user.uid) {
         addDocumentNonBlocking(collection(db, "notifications"), { userId: question.userId, type: "new_answer", questionId: selectedId, questionTitle: question.title, senderNickname: nickname, createdAt: Date.now(), isRead: false })
       }
