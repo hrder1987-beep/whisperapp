@@ -34,19 +34,19 @@ export function AldiTrainer() {
 
   useEffect(() => {
     if (botConfig) {
-      setName(botConfig.name || "")
-      setIntro(botConfig.intro || "")
-      setIconUrl(botConfig.iconUrl || null)
-      setKnowledge(botConfig.content || "")
-      setPersona(botConfig.persona || "")
+      setName(botConfig.name ?? "")
+      setIntro(botConfig.intro ?? "")
+      setIconUrl(botConfig.iconUrl ?? null)
+      setKnowledge(botConfig.content ?? "")
+      setPersona(botConfig.persona ?? "")
     } else if (!isLoading) {
       setName(""); setIntro(""); setIconUrl(null); setKnowledge(""); setPersona("");
     }
   }, [botConfig, activeBotTab, isLoading])
 
   const stats = useMemo(() => {
-    const lines = knowledge.split('\n').filter(l => l.trim()).length
-    const chars = knowledge.length
+    const lines = (knowledge ?? "").split('\n').filter(l => l.trim()).length
+    const chars = (knowledge ?? "").length
     const sizeKb = (chars / 1024).toFixed(1)
     return { lines, chars, sizeKb }
   }, [knowledge])
@@ -235,21 +235,21 @@ export function AldiTrainer() {
 
         <div className="lg:col-span-4 space-y-6">
           <Card className="bg-primary text-accent p-8 rounded-[2.5rem] shadow-xl border border-primary/20">
-            <h4 className="font-black text-base mb-6 flex items-center gap-2"><Info className="w-5 h-5" /> 관리 및 학습 가이드</h4>
+            <h4 className="font-black text-base mb-6 flex items-center gap-2 text-accent"><Info className="w-5 h-5" /> 관리 및 학습 가이드</h4>
             <div className="space-y-6 text-xs font-black leading-relaxed">
-              <div className="bg-white/30 p-5 rounded-2xl">
+              <div className="bg-white/30 p-5 rounded-2xl border border-white/20">
                 <p className="font-black mb-1.5 text-[11px] uppercase tracking-tighter text-accent">🎨 봇 브랜딩</p>
-                <p className="text-accent opacity-100">이름과 프로필 사진을 설정하면 사용자 채팅창과 답변 시 실시간으로 반영되어 신뢰도를 높입니다.</p>
+                <p className="text-accent">이름과 프로필 사진을 설정하면 사용자 채팅창과 답변 시 실시간으로 반영되어 신뢰도를 높입니다.</p>
               </div>
-              <div className="h-px bg-accent/5" />
+              <div className="h-px bg-accent/10" />
               <div>
                 <p className="font-black mb-1.5 text-[11px] uppercase tracking-tighter text-accent">📚 데이터 우선순위</p>
-                <p className="text-accent opacity-100">전문가가 직접 입력하거나 업로드한 데이터는 AI의 일반적인 지식보다 우선적으로 답변에 인용됩니다.</p>
+                <p className="text-accent opacity-80">전문가가 직접 입력하거나 업로드한 데이터는 AI의 일반적인 지식보다 우선적으로 답변에 인용됩니다.</p>
               </div>
-              <div className="h-px bg-accent/5" />
+              <div className="h-px bg-accent/10" />
               <div>
                 <p className="font-black mb-1.5 text-[11px] uppercase tracking-tighter text-accent">🎭 페르소나의 역할</p>
-                <p className="text-accent opacity-100">봇의 말투(존댓말, 반말, 전문용어 사용 등)를 구체적으로 지시할수록 더욱 전문적인 느낌을 줄 수 있습니다.</p>
+                <p className="text-accent opacity-80">봇의 말투(존댓말, 반말, 전문용어 사용 등)를 구체적으로 지시할수록 더욱 전문적인 느낌을 줄 수 있습니다.</p>
               </div>
             </div>
           </Card>

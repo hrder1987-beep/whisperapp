@@ -22,7 +22,7 @@ interface AdminCMSProps {
 }
 
 export function AdminCMS({ initialBanners, initialPremiumAds, initialBranding, onUpdate }: AdminCMSProps) {
-  const [banners, setBanners] = useState<BannerData[]>(initialBanners)
+  const [banners, setBanners] = useState<BannerData[]>(initialBanners || [])
   const [premiumAds, setPremiumAds] = useState<PremiumAd[]>(initialPremiumAds || [])
   const [branding, setBranding] = useState<SiteBranding>(initialBranding || {
     homeTitle: "HR실무자들의 품격 있는 속삭임",
@@ -43,7 +43,7 @@ export function AdminCMS({ initialBanners, initialPremiumAds, initialBranding, o
   const { toast } = useToast()
 
   useEffect(() => {
-    if (initialBanners.length > 0) setBanners(initialBanners)
+    if (initialBanners && initialBanners.length > 0) setBanners(initialBanners)
     if (initialPremiumAds && initialPremiumAds.length > 0) setPremiumAds(initialPremiumAds)
     if (initialBranding) {
       setBranding({
@@ -161,7 +161,7 @@ export function AdminCMS({ initialBanners, initialPremiumAds, initialBranding, o
             <div className="p-2 bg-primary/10 rounded-lg text-primary"><Monitor className="w-5 h-5" /></div>
             <div>
               <h3 className="text-xl font-black text-accent">메인 히어로 배너 & 슬라이드</h3>
-              <p className="text-xs font-bold text-accent/30">홈페이지 상단 롤링 배너 및 슬라이드 속도 설정</p>
+              <p className="text-xs font-bold text-accent/30">홈페이지 상단 롤링 배너 및 슬라이드 속도 설정 (권장: 1920x960px)</p>
             </div>
           </div>
           <div className="flex items-center gap-4">
@@ -212,7 +212,7 @@ export function AdminCMS({ initialBanners, initialPremiumAds, initialBranding, o
                       {banner.image ? <img src={banner.image} className="w-full h-full object-cover" alt="preview" /> : <Camera className="w-8 h-8 text-accent/10" />}
                       <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all text-white text-[10px] font-black">이미지 업로드</div>
                     </div>
-                    <p className="text-[9px] font-black text-accent/20 uppercase tracking-tighter">권장: 1920 x 960px (2:1)</p>
+                    <p className="text-[9px] font-black text-accent/20 uppercase tracking-tighter">권장 사이즈: 1920 x 960px (2:1)</p>
                     <input type="file" id={`banner-img-${idx}`} className="hidden" accept="image/*" onChange={(e) => handleImageUpload('banner', idx, e)} />
                   </div>
                 </div>
@@ -227,7 +227,7 @@ export function AdminCMS({ initialBanners, initialPremiumAds, initialBranding, o
           <div className="p-2 bg-primary/10 rounded-lg text-primary"><ImageIcon className="w-5 h-5" /></div>
           <div>
             <h3 className="text-xl font-black text-accent">사이드바 프리미엄 광고</h3>
-            <p className="text-xs font-bold text-accent/30">우측 고정 영역 광고 관리</p>
+            <p className="text-xs font-bold text-accent/30">우측 고정 영역 광고 관리 (권장: 800x450px)</p>
           </div>
         </div>
 
@@ -248,7 +248,7 @@ export function AdminCMS({ initialBanners, initialPremiumAds, initialBranding, o
                     {ad.webImage ? <img src={ad.webImage} className="w-full h-full object-cover" alt="preview" /> : <Camera className="w-6 h-6 text-accent/10" />}
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all text-white text-[9px] font-black">이미지 업로드</div>
                   </div>
-                  <p className="text-[9px] font-black text-accent/20 text-center uppercase tracking-tighter">권장: 800 x 450px (16:9)</p>
+                  <p className="text-[9px] font-black text-accent/20 text-center uppercase tracking-tighter">권장 사이즈: 800 x 450px (16:9)</p>
                 </div>
                 <input type="file" id={`ad-img-${idx}`} className="hidden" accept="image/*" onChange={(e) => handleImageUpload('ad-web', idx, e)} />
                 <div className="relative">
