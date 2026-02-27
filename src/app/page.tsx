@@ -22,6 +22,7 @@ import { useSearchParams } from "next/navigation"
 
 const ITEMS_PER_PAGE = 7
 
+// 무거운 데이터 생성 로직을 컴포넌트 외부로 이동하여 리렌더링 시 재실행 방지
 const generateMocks = () => {
   const list: Question[] = [];
   const mockAnswerIds = new Set((mockData.answers as any[]).map(a => a.questionId));

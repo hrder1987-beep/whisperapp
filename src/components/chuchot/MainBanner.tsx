@@ -64,7 +64,7 @@ export function MainBanner({ banners: propBanners, autoSlideDuration = 3 }: Main
     <div className="w-full mb-6 md:mb-8 relative">
       <Carousel setApi={setApi} className="w-full overflow-hidden rounded-[2rem] shadow-lg border border-black/5" opts={{ loop: true }}>
         <CarouselContent>
-          {banners.map((banner) => (
+          {banners.map((banner, index) => (
             <CarouselItem key={banner.id}>
               <div className="relative h-[220px] md:h-[360px] w-full overflow-hidden bg-white">
                 <div className="absolute inset-0 flex flex-col justify-center px-8 md:px-20 z-20">
@@ -92,7 +92,7 @@ export function MainBanner({ banners: propBanners, autoSlideDuration = 3 }: Main
                     alt={banner.title} 
                     fill 
                     className="object-cover opacity-40 md:opacity-100"
-                    priority
+                    priority={index === 0} // 첫 번째 이미지는 LCP 최적화를 위해 우선순위 부여
                     data-ai-hint="business event office"
                   />
                 </div>

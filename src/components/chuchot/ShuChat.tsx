@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useRef, useEffect, memo } from "react"
@@ -40,10 +41,24 @@ const DEFAULT_BOT_INFO: Record<BotType, { name: string, sub: string, intro: stri
   }
 }
 
+// 개별 메시지 컴포넌트를 memo로 감싸 리렌더링 최적화
 const ChatMessage = memo(({ msg, activeBot, botIconUrl }: { msg: Message, activeBot: BotType, botIconUrl?: string }) => (
   <div className={cn("flex items-start gap-3 md:gap-4", msg.role === "user" ? "flex-row-reverse" : "flex-row")}>
-    <div className="shrink-0">{msg.role === "user" ? (<div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-accent/5 flex items-center justify-center border border-accent/10"><User className="w-4 h-4 md:w-5 md:h-5 text-accent/40" /></div>) : (<AvatarIcon src={botIconUrl} avatarId={activeBot} className="w-8 h-8 md:w-10 md:h-10 shadow-md border-2 border-white" />)}</div>
-    <div className={cn("max-w-[85%] md:max-w-[75%] p-3.5 md:p-5 rounded-2xl text-[14px] md:text-[15px] leading-relaxed shadow-sm transition-all", msg.role === "user" ? "bg-accent text-primary rounded-tr-none" : "bg-white border border-black/[0.08] text-accent font-medium rounded-tl-none")}>{msg.text}</div>
+    <div className="shrink-0">
+      {msg.role === "user" ? (
+        <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-accent/5 flex items-center justify-center border border-accent/10">
+          <User className="w-4 h-4 md:w-5 md:h-5 text-accent/40" />
+        </div>
+      ) : (
+        <AvatarIcon src={botIconUrl} avatarId={activeBot} className="w-8 h-8 md:w-10 md:h-10 shadow-md border-2 border-white" />
+      )}
+    </div>
+    <div className={cn(
+      "max-w-[85%] md:max-w-[75%] p-3.5 md:p-5 rounded-2xl text-[14px] md:text-[15px] leading-relaxed shadow-sm transition-all",
+      msg.role === "user" ? "bg-accent text-primary rounded-tr-none" : "bg-white border border-black/[0.08] text-accent font-medium rounded-tl-none"
+    )}>
+      {msg.text}
+    </div>
   </div>
 ));
 ChatMessage.displayName = "ChatMessage";
@@ -55,7 +70,9 @@ function ChatInterface({ messages, input, setInput, isLoading, handleSend, isExp
   const botIconUrl = botConfig?.iconUrl
 
   useEffect(() => {
-    if (scrollRef.current) scrollRef.current.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
+    if (scrollRef.current) {
+      scrollRef.current.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
+    }
   }, [messages, isLoading]);
 
   return (
@@ -82,7 +99,9 @@ function ChatInterface({ messages, input, setInput, isLoading, handleSend, isExp
         </Tabs>
       </CardHeader>
       <CardContent ref={scrollRef} className="flex-1 overflow-y-auto p-5 md:p-8 space-y-6 md:space-y-8 scrollbar-hide">
-        {messages.map((msg: any, idx: number) => (<ChatMessage key={idx} msg={msg} activeBot={activeBot} botIconUrl={botIconUrl} />))}
+        {messages.map((msg: any, idx: number) => (
+          <ChatMessage key={idx} msg={msg} activeBot={activeBot} botIconUrl={botIconUrl} />
+        ))}
         {isLoading && (
           <div className="flex items-start gap-3 md:gap-4 animate-pulse">
             <AvatarIcon src={botIconUrl} avatarId={activeBot} className="w-8 h-8 md:w-10 md:h-10 border-2 border-white shadow-sm" />
@@ -129,21 +148,37 @@ export function AldiChat({ forceOpenTrigger, onTriggerClose, hideCard = false }:
     }))
   }, [botConfig, activeBot])
 
-  useEffect(() => { if (forceOpenTrigger) { setIsFocused(true); onTriggerClose?.(); } }, [forceOpenTrigger, onTriggerClose])
+  useEffect(() => {
+    if (forceOpenTrigger) {
+      setIsFocused(true)
+      onTriggerClose?.()
+    }
+  }, [forceOpenTrigger, onTriggerClose])
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return
     const userMsg = input.trim()
     const currentBot = activeBot
-    setConversations(prev => ({ ...prev, [currentBot]: [...prev[currentBot], { role: "user", text: userMsg }] }))
+    setConversations(prev => ({
+      ...prev,
+      [currentBot]: [...prev[currentBot], { role: "user", text: userMsg }]
+    }))
     setInput("")
     setIsLoading(true)
     try {
       const res = await chatShu({ message: userMsg, botType: currentBot, knowledge: botConfig?.content, persona: botConfig?.persona })
-      setConversations(prev => ({ ...prev, [currentBot]: [...prev[currentBot], { role: "bot", text: res.reply }] }))
+      setConversations(prev => ({
+        ...prev,
+        [currentBot]: [...prev[currentBot], { role: "bot", text: res.reply }]
+      }))
     } catch (error) {
-      setConversations(prev => ({ ...prev, [currentBot]: [...prev[currentBot], { role: "bot", text: "지능형 답변 처리 중 일시적인 오류가 발생했습니다. 잠시 후 다시 시도해 주세요." }] }))
-    } finally { setIsLoading(false) }
+      setConversations(prev => ({
+        ...prev,
+        [currentBot]: [...prev[currentBot], { role: "bot", text: "지능형 답변 처리 중 일시적인 오류가 발생했습니다. 잠시 후 다시 시도해 주세요." }]
+      }))
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -165,7 +200,9 @@ export function AldiChat({ forceOpenTrigger, onTriggerClose, hideCard = false }:
       )}
       <Dialog open={isFocused} onOpenChange={setIsFocused}>
         <DialogContent className="max-w-3xl h-[90vh] md:h-[85vh] p-0 border-none overflow-hidden rounded-[2.5rem] md:rounded-[3rem] shadow-3xl">
-          <DialogHeader className="sr-only"><DialogTitle>AI 전문가 실시간 상담</DialogTitle></DialogHeader>
+          <DialogHeader className="sr-only">
+            <DialogTitle>AI 전문가 실시간 상담</DialogTitle>
+          </DialogHeader>
           <ChatInterface 
             messages={conversations[activeBot]} 
             input={input} 
