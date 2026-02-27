@@ -16,7 +16,7 @@ export function Logo({ className = "", isLight = false, onClick }: LogoProps) {
 
   return (
     <div 
-      className={cn("flex items-center gap-4 group cursor-pointer select-none", className)}
+      className={cn("flex items-center gap-2 group cursor-pointer select-none", className)}
       onClick={onClick}
     >
       <div className="relative flex items-center justify-center">
