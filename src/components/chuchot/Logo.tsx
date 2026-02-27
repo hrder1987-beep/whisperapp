@@ -1,3 +1,4 @@
+
 "use client"
 
 import { cn } from "@/lib/utils"
@@ -9,9 +10,8 @@ interface LogoProps {
 }
 
 export function Logo({ className = "", isLight = false, onClick }: LogoProps) {
-  // 요청하신 가장 찐한 딥 그린 컬러 (시인성 최상)
   const logoGreen = isLight ? "text-white" : "text-[#163300]"
-  const accentLime = "#CDECB1" // 포인트 라임 컬러
+  const accentLime = "#CDECB1" 
 
   return (
     <div 
@@ -19,7 +19,6 @@ export function Logo({ className = "", isLight = false, onClick }: LogoProps) {
       onClick={onClick}
     >
       <div className="relative flex items-center justify-center">
-        {/* 심볼 아이콘: 면(Solid) 중심의 볼드 디자인 */}
         <div className={cn(
           "w-11 h-11 flex items-center justify-center transition-all duration-500 group-hover:scale-110",
           logoGreen

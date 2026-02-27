@@ -1,3 +1,4 @@
+
 "use client"
 
 import { Logo } from "./Logo"
@@ -146,7 +147,7 @@ export function Header({ onSearch }: HeaderProps) {
 
       <nav className="border-t border-black/[0.03] hidden md:block bg-white/50">
         <div className="max-w-7xl mx-auto px-4 h-14 flex items-center gap-10">
-          {navLinks.map((link) => (<Link key={link.href} href={link.href} className={cn("text-[15px] font-black transition-all h-full flex items-center border-b-[3px] px-1 pt-1", pathname === link.href ? "text-accent border-primary" : "text-accent/40 border-transparent hover:text-accent")}>{link.name}</Link>))}
+          {navLinks.map((link) => (<Link key={link.href} href={link.href} className={cn("text-[15px] font-black transition-all h-full flex items-center border-b-[3px] border-transparent data-[state=active]:border-primary rounded-none h-full px-1 pt-1", pathname === link.href ? "text-accent border-primary" : "text-accent/40 hover:text-accent")}>{link.name}</Link>))}
         </div>
       </nav>
     </header>

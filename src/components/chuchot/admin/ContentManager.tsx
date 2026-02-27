@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
@@ -69,7 +70,6 @@ export function ContentManager() {
   }
 
   const handleBulkDelete = (e: React.MouseEvent) => {
-    // 탭 내부 이벤트와 충돌 방지
     e.preventDefault();
     e.stopPropagation();
     
@@ -111,7 +111,6 @@ export function ContentManager() {
   return (
     <Card className="bg-white border-accent/5 shadow-2xl rounded-[3rem] overflow-hidden">
       <CardContent className="p-0 relative">
-        {/* 상단 고정 일괄 삭제 바 (탭 외부 상단 배치로 간섭 제거) */}
         <div className={cn(
           "bg-primary/10 border-b border-primary/20 px-10 py-8 flex items-center justify-between transition-all duration-500 z-[100] sticky top-0",
           selectedIds.length > 0 ? "h-auto opacity-100 visible" : "h-0 opacity-0 invisible overflow-hidden py-0 border-0"

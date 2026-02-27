@@ -9,7 +9,7 @@ export interface UserProfile {
   company: string;
   department: string;
   jobTitle: string; // 직함 (Position)
-  jobRole?: string; // 직무 (Function/Role) - 추가됨
+  jobRole?: string; // 직무 (Function/Role)
   phoneNumber: string;
   role: UserRole;
   registrationDate: string;
@@ -23,7 +23,7 @@ export interface Question {
   nickname: string;
   userId: string;
   userRole?: UserRole;
-  jobTitle?: string; // 작성 당시의 직무(또는 직함) 표시용
+  jobTitle?: string; // 작성 당시의 직무 표시용
   viewCount: number;
   answerCount: number;
   createdAt: number;
@@ -133,7 +133,7 @@ export interface Gathering {
   imageUrl?: string;
   createdAt: number;
   sessionCount: number; 
-  questions?: GatheringQuestion[]; // 다중 설문
+  questions?: GatheringQuestion[];
   resources?: { title: string; url: string; type: string; sessionId?: number }[];
 }
 
@@ -145,7 +145,7 @@ export interface GatheringApplication {
   userEmail: string;
   status: 'pending' | 'approved' | 'rejected';
   appliedAt: number;
-  answers?: { questionId: string; answer: string }[]; // 설문 답변
+  answers?: { questionId: string; answer: string }[];
 }
 
 export interface GatheringAttendance {
@@ -200,7 +200,7 @@ export interface SiteBranding {
   programSubtitle: string;
   jobTitle: string;
   jobSubtitle: string;
-  bannerAutoSlideDuration?: number; // 배너 자동 슬라이드 간격(초)
+  bannerAutoSlideDuration?: number;
 }
 
 export type BotType = 'whisperra' | 'aldi' | 'dongsan';
