@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -10,7 +11,7 @@
     --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
-    --primary: 88 63% 81%; /* The specific light green from user image */
+    --primary: 88 63% 81%; /* The specific light green */
     --primary-foreground: 222 47% 11%; /* Dark navy text on light green for contrast */
     --secondary: 88 30% 95%;
     --secondary-foreground: 222 47% 11%;
@@ -23,7 +24,7 @@
     --border: 88 20% 90%;
     --input: 88 20% 90%;
     --ring: 88 63% 81%;
-    --radius: 1.25rem; /* Slightly more rounded for a premium feel */
+    --radius: 1.25rem;
   }
 }
 
@@ -38,15 +39,9 @@
   }
 }
 
-/* Scrollbar Customization */
-::-webkit-scrollbar {
-  width: 8px;
-}
-::-webkit-scrollbar-track {
-  @apply bg-transparent;
-}
-::-webkit-scrollbar-thumb {
-  @apply bg-accent/10 rounded-full hover:bg-accent/20 transition-colors;
+/* 텍스트 가독성 강화 (Deep Navy) */
+p, span, label, h1, h2, h3, h4, h5, h6 {
+  @apply text-[#163300]; /* 모든 텍스트의 기본 대비를 강화 */
 }
 
 /* Whisper Style Components - Refined */
@@ -63,27 +58,11 @@
 }
 
 .naver-button {
-  @apply bg-primary text-accent font-black rounded-2xl hover:brightness-95 transition-all shadow-md active:scale-[0.97] disabled:opacity-50;
+  @apply bg-primary text-[#163300] font-black rounded-2xl hover:brightness-95 transition-all shadow-md active:scale-[0.97] disabled:opacity-50;
 }
 
 .naver-badge {
-  @apply bg-primary/30 text-accent font-black border-none px-3 py-1 rounded-full text-[10px] uppercase tracking-tighter;
-}
-
-.ranking-number {
-  @apply font-black text-accent italic mr-3 text-lg;
-}
-
-h1, h2, h3, h4, h5, h6 {
-  @apply text-accent tracking-tighter font-black;
-}
-
-p, span, div {
-  @apply text-[#404040];
-}
-
-.glass-morphism {
-  @apply bg-white/95 backdrop-blur-md border border-black/5 shadow-sm;
+  @apply bg-primary/30 text-[#163300] font-black border-none px-3 py-1 rounded-full text-[10px] uppercase tracking-tighter;
 }
 
 .premium-gradient {
@@ -102,10 +81,4 @@ p, span, div {
 input:focus, textarea:focus {
   outline: none !important;
   box-shadow: none !important;
-}
-
-@media (max-width: 768px) {
-  .font-body {
-    line-height: 1.6;
-  }
 }

@@ -14,7 +14,7 @@ import { signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswor
 import { doc, setDoc, collection, query, where, getDocs } from "firebase/firestore"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
-import { LogIn, UserPlus, Camera, X, Sparkles, Search, KeyRound, AlertCircle, CheckCircle2 } from "lucide-react"
+import { LogIn, UserPlus, Camera, X, Sparkles, Search, KeyRound, AlertCircle, CheckCircle2, Loader2 } from "lucide-react"
 import { sendWelcomeEmail } from "@/ai/flows/send-welcome-email-flow"
 import { cn } from "@/lib/utils"
 
@@ -76,7 +76,7 @@ function AuthContent() {
     if (auth) auth.languageCode = "ko"
   }, [user, isUserLoading, router, auth])
 
-  // 닉네임 중복 실시간 체크 (Debounce 적용 가능)
+  // 닉네임 중복 실시간 체크 (Debounce 적용)
   useEffect(() => {
     if (activeTab !== "signup" || !username.trim()) {
       setUsernameStatus("idle")
@@ -124,6 +124,8 @@ function AuthContent() {
       toast({ title: "닉네임 중복", description: "이미 사용 중인 닉네임입니다.", variant: "destructive" })
       return
     }
+    if (usernameStatus === "checking") return;
+
     setIsLoading(true)
     try {
       // 최종 한 번 더 체크
@@ -239,19 +241,22 @@ function AuthContent() {
                 <div className="grid grid-cols-2 gap-6">
                   <div className="space-y-2.5">
                     <Label className="text-[11px] font-black text-[#163300]/80 uppercase ml-1">닉네임 (중복불가)</Label>
-                    <Input 
-                      placeholder="사용자명" 
-                      value={username} 
-                      onChange={(e) => setUsername(e.target.value)} 
-                      required 
-                      className={cn(
-                        "h-14 bg-[#FBFBFC] border-[#163300]/10 rounded-2xl px-6 font-bold text-[#163300] shadow-sm transition-all",
-                        usernameStatus === "duplicate" && "border-red-500 ring-2 ring-red-100",
-                        usernameStatus === "available" && "border-emerald-500 ring-2 ring-emerald-100"
-                      )} 
-                    />
-                    {usernameStatus === "duplicate" && <p className="text-[10px] font-bold text-red-500 ml-2">이미 사용 중인 닉네임입니다.</p>}
-                    {usernameStatus === "available" && <p className="text-[10px] font-bold text-emerald-600 ml-2 flex items-center gap-1"><CheckCircle2 className="w-3 h-3" /> 사용 가능한 닉네임입니다.</p>}
+                    <div className="relative">
+                      <Input 
+                        placeholder="사용자명" 
+                        value={username} 
+                        onChange={(e) => setUsername(e.target.value)} 
+                        required 
+                        className={cn(
+                          "h-14 bg-[#FBFBFC] border-[#163300]/10 rounded-2xl px-6 font-bold text-[#163300] shadow-sm transition-all",
+                          usernameStatus === "duplicate" && "border-red-500 ring-2 ring-red-100",
+                          usernameStatus === "available" && "border-emerald-500 ring-2 ring-emerald-100"
+                        )} 
+                      />
+                      {usernameStatus === "checking" && <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-primary animate-spin" />}
+                    </div>
+                    {usernameStatus === "duplicate" && <p className="text-[10px] font-bold text-red-500 ml-2 animate-in fade-in slide-in-from-top-1">이미 사용 중인 닉네임입니다.</p>}
+                    {usernameStatus === "available" && <p className="text-[10px] font-bold text-emerald-600 ml-2 flex items-center gap-1 animate-in fade-in slide-in-from-top-1"><CheckCircle2 className="w-3 h-3" /> 사용 가능한 닉네임입니다.</p>}
                   </div>
                   <div className="space-y-2.5">
                     <Label className="text-[11px] font-black text-[#163300]/80 uppercase ml-1">성함 (실명)</Label>
@@ -270,7 +275,7 @@ function AuthContent() {
                 </div>
                 <div className="space-y-2.5"><Label className="text-[11px] font-black text-[#163300]/80 uppercase ml-1">휴대전화</Label><Input placeholder="010-0000-0000" value={phone} onChange={(e) => setPhone(e.target.value)} required className="h-14 bg-[#FBFBFC] border-[#163300]/10 rounded-2xl px-6 font-bold text-[#163300] shadow-sm" /></div>
                 
-                <Button type="submit" disabled={isLoading || usernameStatus === "duplicate"} className="w-full h-18 gold-gradient text-[#163300] font-black rounded-[1.5rem] mt-10 shadow-3xl text-xl hover:scale-[1.01] transition-all active:scale-[0.97]">
+                <Button type="submit" disabled={isLoading || usernameStatus !== "available"} className="w-full h-18 gold-gradient text-[#163300] font-black rounded-[1.5rem] mt-10 shadow-3xl text-xl hover:scale-[1.01] transition-all active:scale-[0.97]">
                   {isLoading ? "전문가 등록 처리 중..." : "전문가 등록 완료"}
                   <UserPlus className="w-6 h-6 ml-3" />
                 </Button>

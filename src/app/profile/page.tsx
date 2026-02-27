@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Building2, User as UserIcon, Phone, Briefcase, Calendar, Sparkles, Settings, ArrowRight, Edit3, Camera, Save, X, Tag, Info, CheckCircle2 } from "lucide-react"
+import { Building2, User as UserIcon, Phone, Briefcase, Calendar, Sparkles, Settings, ArrowRight, Edit3, Camera, Save, X, Tag, Info, CheckCircle2, Loader2 } from "lucide-react"
 import Link from "next/link"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
@@ -25,7 +25,7 @@ export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false)
   const [formData, setFormData] = useState<any>(null)
   const [isSaving, setIsSaving] = useState(false)
-  const [usernameStatus, setUsernameStatus] = useState<"idle" | "available" | "duplicate">("idle")
+  const [usernameStatus, setUsernameStatus] = useState<"idle" | "checking" | "available" | "duplicate">("idle")
 
   const userDocRef = useMemoFirebase(() => (user && db) ? doc(db, "users", user.uid) : null, [user, db])
   const { data: profile, isLoading: isProfileLoading } = useDoc<any>(userDocRef)
@@ -53,6 +53,7 @@ export default function ProfilePage() {
     }
 
     const checkTimeout = setTimeout(async () => {
+      setUsernameStatus("checking")
       try {
         const q = query(collection(db, "users"), where("username", "==", formData.username.trim()))
         const snapshot = await getDocs(q)
@@ -98,6 +99,8 @@ export default function ProfilePage() {
       toast({ title: "닉네임 중복", description: "이미 사용 중인 닉네임입니다.", variant: "destructive" })
       return
     }
+    if (usernameStatus === "checking") return;
+
     setIsSaving(true)
     try {
       updateDocumentNonBlocking(doc(db, "users", user.uid), {
@@ -160,10 +163,10 @@ export default function ProfilePage() {
                 </Button>
                 <Button 
                   onClick={handleSave}
-                  disabled={isSaving || usernameStatus === "duplicate"}
+                  disabled={isSaving || usernameStatus === "duplicate" || usernameStatus === "checking"}
                   className="rounded-2xl bg-[#163300] text-primary font-black gap-2 h-14 px-10 shadow-2xl hover:brightness-110 transition-all"
                 >
-                  {isSaving ? <Sparkles className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
+                  {isSaving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
                   수정 완료
                 </Button>
               </div>
@@ -207,17 +210,20 @@ export default function ProfilePage() {
             {isEditing ? (
               <div className="w-full max-w-sm space-y-3 text-center">
                 <Label className="text-[11px] font-black text-accent/80 uppercase tracking-widest">활동 닉네임 (중복불가)</Label>
-                <Input 
-                  value={formData?.username || ""} 
-                  onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                  className={cn(
-                    "text-center bg-[#F5F6F7] border-none rounded-2xl font-black text-2xl h-16 shadow-inner focus:ring-2 focus:ring-primary",
-                    usernameStatus === "duplicate" && "ring-2 ring-red-500",
-                    usernameStatus === "available" && "ring-2 ring-emerald-500"
-                  )}
-                />
-                {usernameStatus === "duplicate" && <p className="text-xs font-bold text-red-500">이미 사용 중인 닉네임입니다.</p>}
-                {usernameStatus === "available" && <p className="text-xs font-bold text-emerald-600 flex items-center justify-center gap-1"><CheckCircle2 className="w-3 h-3" /> 사용 가능한 닉네임입니다.</p>}
+                <div className="relative">
+                  <Input 
+                    value={formData?.username || ""} 
+                    onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                    className={cn(
+                      "text-center bg-[#F5F6F7] border-none rounded-2xl font-black text-2xl h-16 shadow-inner focus:ring-2 focus:ring-primary",
+                      usernameStatus === "duplicate" && "ring-2 ring-red-500",
+                      usernameStatus === "available" && "ring-2 ring-emerald-500"
+                    )}
+                  />
+                  {usernameStatus === "checking" && <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-primary animate-spin" />}
+                </div>
+                {usernameStatus === "duplicate" && <p className="text-xs font-bold text-red-500 animate-in fade-in slide-in-from-top-1">이미 사용 중인 닉네임입니다.</p>}
+                {usernameStatus === "available" && <p className="text-xs font-bold text-emerald-600 flex items-center justify-center gap-1 animate-in fade-in slide-in-from-top-1"><CheckCircle2 className="w-3 h-3" /> 사용 가능한 닉네임입니다.</p>}
               </div>
             ) : (
               <>
