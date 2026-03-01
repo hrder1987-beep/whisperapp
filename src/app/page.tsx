@@ -10,7 +10,7 @@ import { AldiChat } from "@/components/chuchot/ShuChat"
 import { PremiumAds } from "@/components/chuchot/PremiumAds"
 import { Question, Answer, TrainingProgram, Instructor, JobListing, PremiumAd, SiteBranding } from "@/lib/types"
 import { Button } from "@/components/ui/button"
-import { Sparkles, ChevronsLeft, ChevronsRight, Search, FileText } from "lucide-react"
+import { Sparkles, ChevronsLeft, ChevronsRight } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { generateAiReply } from "@/ai/flows/generate-ai-reply-flow"
 import { cn } from "@/lib/utils"
@@ -73,14 +73,7 @@ function HomePageContent() {
   const [currentPage, setCurrentPage] = useState(1)
 
   const questionsQuery = useMemoFirebase(() => db ? query(collection(db, "questions"), orderBy("createdAt", "desc")) : null, [db])
-  const programsQuery = useMemoFirebase(() => db ? query(collection(db, "trainingPrograms"), orderBy("createdAt", "desc")) : null, [db])
-  const instructorsQuery = useMemoFirebase(() => db ? query(collection(db, "instructors"), orderBy("createdAt", "desc")) : null, [db])
-  const jobsQuery = useMemoFirebase(() => db ? query(collection(db, "jobs"), orderBy("createdAt", "desc")) : null, [db])
-
   const { data: dbQuestions } = useCollection<Question>(questionsQuery)
-  const { data: dbPrograms } = useCollection<TrainingProgram>(programsQuery)
-  const { data: dbInstructors } = useCollection<Instructor>(instructorsQuery)
-  const { data: dbJobs } = useCollection<JobListing>(jobsQuery)
 
   const configDocRef = useMemoFirebase(() => db ? doc(db, "admin_configuration", "site_settings") : null, [db])
   const { data: config } = useDoc<any>(configDocRef)
@@ -101,17 +94,6 @@ function HomePageContent() {
     }
     return null;
   }, [config]);
-
-  const searchResults = useMemo(() => {
-    if (!deferredSearchQuery) return null;
-    const q = deferredSearchQuery.toLowerCase();
-    return {
-      questions: questions.filter(item => (item.title && item.title.toLowerCase().includes(q)) || (item.text && item.text.toLowerCase().includes(q))),
-      programs: (dbPrograms || []).filter(item => (item.title && item.title.toLowerCase().includes(q)) || (item.instructorName && item.instructorName.toLowerCase().includes(q))),
-      instructors: (dbInstructors || []).filter(item => (item.name && item.name.toLowerCase().includes(q)) || (item.specialty && item.specialty.toLowerCase().includes(q))),
-      jobs: (dbJobs || []).filter(item => (item.title && item.title.toLowerCase().includes(q)) || (item.companyName && item.companyName.toLowerCase().includes(q)))
-    };
-  }, [questions, dbPrograms, dbInstructors, dbJobs, deferredSearchQuery]);
 
   const banners = useMemo(() => {
     if (config?.bannerSettings) {
@@ -165,14 +147,17 @@ function HomePageContent() {
   const answers = useMemo(() => dbAnswers?.length ? dbAnswers : (mockData.answers as any[]).filter(a => a.questionId === selectedId), [dbAnswers, selectedId])
 
   const filtered = useMemo(() => {
-    if (deferredSearchQuery) return searchResults?.questions || [];
     let res = [...questions]
+    if (deferredSearchQuery) {
+      const q = deferredSearchQuery.toLowerCase();
+      res = res.filter(item => (item.title && item.title.toLowerCase().includes(q)) || (item.text && item.text.toLowerCase().includes(q)));
+    }
     if (activeTab === "hrm") res = res.filter(q => q.category === "인사전략/HRM");
     if (activeTab === "hrd") res = res.filter(q => q.category === "HRD/교육");
     if (activeTab === "culture") res = res.filter(q => q.category === "조직문화/EVP");
     if (activeTab === "popular") res.sort((a, b) => b.viewCount - a.viewCount);
     return res
-  }, [questions, deferredSearchQuery, activeTab, searchResults])
+  }, [questions, deferredSearchQuery, activeTab])
 
   const paginated = useMemo(() => filtered.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE), [filtered, currentPage])
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE)
@@ -208,16 +193,19 @@ function HomePageContent() {
   }
 
   return (
-    <>
-      <div className="space-y-6 md:space-y-10">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+      <main className="lg:col-span-8 space-y-6 md:space-y-10">
         <MainBanner banners={banners} autoSlideDuration={branding?.bannerAutoSlideDuration || 3} />
         <SubmissionForm type="question" placeholder={branding?.homeTitle ? `${branding.homeTitle}에서 고민을 나눠보세요` : "HR 고민을 속삭여보세요."} onSubmit={handleAddQuestion} />
+        
         <div className="flex flex-nowrap overflow-x-auto scrollbar-hide gap-x-6 pb-2 border-b border-black/[0.05]">
           {[{ id: "all", label: "전체 피드" }, { id: "hrm", label: "인사/총무" }, { id: "hrd", label: "HRD/교육" }, { id: "culture", label: "조직문화" }, { id: "popular", label: "인기" }].map(t => (
             <button key={t.id} onClick={() => setActiveTab(t.id as any)} className={cn("pb-3 text-[15px] transition-all border-b-2 whitespace-nowrap shrink-0", activeTab === t.id ? "font-black text-primary border-accent" : "font-bold text-black/60 border-transparent hover:text-black/80")}>{t.label}</button>
           ))}
         </div>
+
         <QuestionFeed questions={paginated} onSelectQuestion={id => setSelectedId(id === selectedId ? null : id)} selectedId={selectedId} answers={answers} onAddAnswer={handleAddAnswer} activeTab={activeTab as any} onTabChange={setActiveTab as any} />
+        
         {totalPages > 1 && (
           <div className="flex justify-center items-center gap-2 mt-10">
             <Button variant="ghost" disabled={currentPage === 1} onClick={() => setCurrentPage(1)} className="text-accent/70 hover:text-accent"><ChevronsLeft className="w-4" /></Button>
@@ -238,8 +226,14 @@ function HomePageContent() {
             <Button variant="ghost" disabled={currentPage === totalPages} onClick={() => setCurrentPage(totalPages)} className="text-accent/70 hover:text-accent"><ChevronsRight className="w-4" /></Button>
           </div>
         )}
-      </div>
-    </>
+      </main>
+
+      <aside className="lg:col-span-4 hidden lg:block space-y-8 h-fit sticky top-32">
+        <AldiChat />
+        <RankingList questions={questions.sort((a,b) => b.viewCount - a.viewCount)} onSelectQuestion={id => setSelectedId(id)} />
+        <PremiumAds ads={premiumAds} />
+      </aside>
+    </div>
   )
 }
 
@@ -248,17 +242,9 @@ export default function HomePage() {
     <div className="min-h-screen bg-[#F8F9FA]">
       <Header />
       <div className="max-w-7xl mx-auto px-4 py-6 md:py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-          <main className="lg:col-span-8 space-y-6 md:space-y-10">
-            <Suspense fallback={<div className="flex flex-col items-center justify-center py-40 gap-4"><Sparkles className="w-12 h-12 animate-spin text-accent" /><p className="text-primary/20 font-black animate-pulse">Whisper 인텔리전스 로딩 중...</p></div>}>
-              <HomePageContent />
-            </Suspense>
-          </main>
-          <aside className="lg:col-span-4 hidden lg:block space-y-8 h-fit self-start">
-            <AldiChat />
-            <PremiumAds ads={[]} />
-          </aside>
-        </div>
+        <Suspense fallback={<div className="flex flex-col items-center justify-center py-40 gap-4"><Sparkles className="w-12 h-12 animate-spin text-accent" /><p className="text-primary/20 font-black animate-pulse">Whisper 인텔리전스 로딩 중...</p></div>}>
+          <HomePageContent />
+        </Suspense>
       </div>
     </div>
   )

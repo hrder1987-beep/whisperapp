@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo, useRef } from "react"
@@ -8,13 +7,12 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useUser, useFirestore, useCollection, useDoc, useMemoFirebase, addDocumentNonBlocking } from "@/firebase"
 import { collection, query, orderBy, doc } from "firebase/firestore"
 import { Gathering, GatheringQuestion, SiteBranding } from "@/lib/types"
-import { Plus, Calendar as CalendarIcon, Search, Clock, MapPin, Globe, Image as ImageIcon, Video, FileText, Type, Sparkles, X, ListPlus, Trash2 } from "lucide-react"
+import { Plus, Search, Sparkles, Image as ImageIcon, Calendar as CalendarIcon, Clock, MapPin, Globe } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
@@ -29,7 +27,6 @@ export default function GatheringsPage() {
   const { toast } = useToast()
   const router = useRouter()
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const detailImageInputRef = useRef<HTMLInputElement>(null)
 
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("전체")
@@ -38,21 +35,13 @@ export default function GatheringsPage() {
 
   // Form States
   const [title, setTitle] = useState("")
-  const [summary, setSummary] = useState("")
-  const [tagInput, setTagInput] = useState("")
   const [description, setDescription] = useState("")
   const [type, setType] = useState<"online" | "offline">("online")
   const [location, setLocation] = useState("")
-  const [startDateStr, setStartDateStr] = useState("")
-  const [endDateStr, setEndDateStr] = useState("")
-  const [startTime, setStartTime] = useState("14:00")
-  const [endTime, setEndTime] = useState("16:00")
+  const [schedule, setSchedule] = useState("")
   const [capacity, setCapacity] = useState("10")
-  const [sessionCount, setSessionCount] = useState("6")
   const [category, setCategory] = useState("COP/학습")
-  const [questions, setQuestions] = useState<GatheringQuestion[]>([])
   const [imageUrl, setImageUrl] = useState<string | null>(null)
-  const [detailImages, setDetailImages] = useState<string[]>([])
 
   const configDocRef = useMemoFirebase(() => db ? doc(db, "admin_configuration", "site_settings") : null, [db])
   const { data: config } = useDoc<any>(configDocRef)
@@ -84,24 +73,37 @@ export default function GatheringsPage() {
   }
 
   const handleCreateGathering = async (e: React.FormEvent) => {
-    e.preventDefault(); if (!user) { router.push("/auth?mode=login"); return; }
-    if (!startDateStr || !endDateStr) { toast({ title: "일정 선택 필요", variant: "destructive" }); return; }
+    e.preventDefault(); 
+    if (!user) { router.push("/auth?mode=login"); return; }
+    
     setIsSubmitting(true)
     try {
-      const tags = tagInput.split(/[, ]+/).filter(t => t.startsWith('#')).map(t => t.replace('#', ''))
       await addDocumentNonBlocking(collection(db, "gatherings"), {
-        title, summary, description, tags: tags.length > 0 ? tags : [category],
-        creatorId: user.uid, creatorName: user.displayName || "익명전문가", type,
+        title, 
+        description, 
+        tags: [category],
+        creatorId: user.uid, 
+        creatorName: user.displayName || "익명전문가", 
+        type,
         location: type === "online" ? "온라인(상세 링크)" : location,
-        schedule: `${startDateStr} ${startTime} ~ ${endDateStr} ${endTime}`,
-        startDate: new Date(startDateStr).getTime(), endDate: new Date(endDateStr).getTime(),
-        capacity: parseInt(capacity), sessionCount: parseInt(sessionCount), participantCount: 0,
-        status: "recruiting", category, questions, imageUrl: imageUrl || `https://picsum.photos/seed/${Date.now()}/800/400`,
-        createdAt: Date.now(), resources: []
+        schedule,
+        capacity: parseInt(capacity), 
+        participantCount: 0,
+        status: "recruiting", 
+        category, 
+        imageUrl: imageUrl || `https://picsum.photos/seed/${Date.now()}/800/400`,
+        createdAt: Date.now(), 
+        sessionCount: 1,
+        resources: []
       })
-      toast({ title: "모임 개설 완료" }); setIsDialogOpen(false);
-    } catch (error) { toast({ title: "오류 발생", variant: "destructive" }) }
-    finally { setIsSubmitting(false) }
+      toast({ title: "모임 개설 완료" }); 
+      setIsDialogOpen(false);
+      setTitle(""); setDescription(""); setLocation(""); setSchedule(""); setImageUrl(null);
+    } catch (error) { 
+      toast({ title: "오류 발생", variant: "destructive" }) 
+    } finally { 
+      setIsSubmitting(false) 
+    }
   }
 
   return (
@@ -114,19 +116,86 @@ export default function GatheringsPage() {
               <h1 className="text-3xl md:text-4xl font-black text-[#1E1E23] tracking-tighter">{branding?.gatheringTitle || "모임 인텔리전스"}</h1>
               <p className="text-sm md:text-base font-bold text-[#888]">{branding?.gatheringSubtitle || "대한민국 HR 전문가들의 오프라인/온라인 동행"}</p>
             </div>
-            <div className="hidden md:block">
-              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogTrigger asChild><Button className="naver-button h-14 px-10 rounded-xl shadow-xl gap-3 text-base text-accent"><Plus className="w-5 h-5" /> 신규 모임 만들기</Button></DialogTrigger>
-                <DialogContent className="max-w-4xl bg-white border-none rounded-none p-0 shadow-2xl overflow-hidden max-h-[95vh] flex flex-col">
-                  <DialogHeader className="bg-white border-b border-black/5 p-8 shrink-0 text-left"><DialogTitle className="text-2xl font-black text-accent">새로운 지식 모임 개설</DialogTitle></DialogHeader>
-                  <div className="flex-1 overflow-y-auto"><form onSubmit={handleCreateGathering} className="p-8 md:p-12 space-y-12 pb-32">
-                    <div className="space-y-4"><label className="text-sm font-black text-[#1E1E23]">모임 제목</label><Input value={title} onChange={e => setTitle(e.target.value.slice(0, 50))} required className="h-14 bg-white border-black/10 rounded-xl font-black text-lg" /></div>
-                    <Button type="submit" disabled={isSubmitting} className="w-full h-14 naver-button text-lg shadow-2xl rounded-xl">모임 개설 완료하기</Button>
-                  </form></div>
-                </DialogContent>
-              </Dialog>
-            </div>
+            
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger asChild>
+                <Button className="naver-button h-14 px-10 rounded-xl shadow-xl gap-3 text-base text-accent">
+                  <Plus className="w-5 h-5" /> 신규 모임 만들기
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-3xl bg-white border-none rounded-[2rem] p-0 shadow-3xl overflow-hidden max-h-[90vh] flex flex-col">
+                <DialogHeader className="bg-primary/5 p-8 border-b border-primary/10">
+                  <DialogTitle className="text-2xl font-black text-accent">새로운 지식 모임 개설</DialogTitle>
+                  <p className="text-xs font-bold text-accent/40 mt-1 uppercase tracking-widest">Create New Knowledge Gathering</p>
+                </DialogHeader>
+                
+                <div className="flex-1 overflow-y-auto p-8 md:p-10">
+                  <form onSubmit={handleCreateGathering} className="space-y-8">
+                    <div className="space-y-4">
+                      <label className="text-sm font-black text-accent">대표 이미지</label>
+                      <div onClick={() => fileInputRef.current?.click()} className="relative aspect-video bg-[#F5F6F7] border-2 border-dashed border-accent/10 rounded-2xl flex items-center justify-center cursor-pointer group hover:border-primary transition-all overflow-hidden shadow-inner">
+                        {imageUrl ? <img src={imageUrl} className="w-full h-full object-cover" alt="preview" /> : <div className="text-center"><ImageIcon className="w-10 h-10 text-accent/10 mb-2 mx-auto group-hover:text-primary" /><p className="text-xs font-bold text-accent/20">권장: 16:9 비율 이미지</p></div>}
+                      </div>
+                      <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleImageChange} />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <label className="text-sm font-black text-accent">모임 제목</label>
+                        <Input value={title} onChange={e => setTitle(e.target.value)} required placeholder="과정명을 입력하세요" className="h-12 bg-[#F5F6F7] border-none rounded-xl font-bold" />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-black text-accent">카테고리</label>
+                        <Select onValueChange={setCategory} defaultValue={category}>
+                          <SelectTrigger className="h-12 bg-[#F5F6F7] border-none rounded-xl font-bold"><SelectValue /></SelectTrigger>
+                          <SelectContent className="rounded-xl shadow-2xl">{GATHERING_CATEGORIES.filter(c => c !== "전체").map(c => <SelectItem key={c} value={c} className="font-bold">{c}</SelectItem>)}</SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <label className="text-sm font-black text-accent">모임 방식</label>
+                        <Select onValueChange={(v:any) => setType(v)} defaultValue={type}>
+                          <SelectTrigger className="h-12 bg-[#F5F6F7] border-none rounded-xl font-bold"><SelectValue /></SelectTrigger>
+                          <SelectContent className="rounded-xl shadow-2xl">
+                            <SelectItem value="online" className="font-bold">온라인 모임</SelectItem>
+                            <SelectItem value="offline" className="font-bold">오프라인 모임</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-black text-accent">모집 정원 (명)</label>
+                        <Input type="number" value={capacity} onChange={e => setCapacity(e.target.value)} required className="h-12 bg-[#F5F6F7] border-none rounded-xl font-bold" />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-sm font-black text-accent">상세 일정</label>
+                      <Input value={schedule} onChange={e => setSchedule(e.target.value)} required placeholder="예: 2025.03.01 매주 토요일 오후 2시 (총 4회)" className="h-12 bg-[#F5F6F7] border-none rounded-xl font-bold" />
+                    </div>
+
+                    {type === "offline" && (
+                      <div className="space-y-2">
+                        <label className="text-sm font-black text-accent">모임 장소</label>
+                        <Input value={location} onChange={e => setLocation(e.target.value)} required placeholder="상세 주소를 입력하세요" className="h-12 bg-[#F5F6F7] border-none rounded-xl font-bold" />
+                      </div>
+                    )}
+
+                    <div className="space-y-2">
+                      <label className="text-sm font-black text-accent">상세 설명</label>
+                      <Textarea value={description} onChange={e => setDescription(e.target.value)} required placeholder="모임의 목적, 커리큘럼 등을 상세히 작성해 주세요." className="min-h-[200px] bg-[#F5F6F7] border-none rounded-2xl p-6 font-medium text-sm leading-relaxed resize-none shadow-inner" />
+                    </div>
+
+                    <Button type="submit" disabled={isSubmitting} className="w-full h-16 naver-button text-lg rounded-2xl shadow-2xl mt-4">
+                      {isSubmitting ? "모임 생성 중..." : "모임 개설 완료하기"}
+                    </Button>
+                  </form>
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
+
           <div className="flex flex-col gap-6">
             <div className="relative group">
               <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-6 h-6 text-black/20" />
@@ -139,6 +208,7 @@ export default function GatheringsPage() {
             </div>
           </div>
         </div>
+
         {isLoading ? ( <div className="flex justify-center py-40"><Sparkles className="w-14 h-14 animate-spin text-primary" /></div> ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             {filteredGatherings.map((g) => (
