@@ -164,7 +164,7 @@ export default function ProfilePage() {
                 <Button 
                   onClick={handleSave}
                   disabled={isSaving || usernameStatus === "duplicate" || usernameStatus === "checking"}
-                  className="rounded-2xl bg-[#163300] text-primary font-black gap-2 h-14 px-10 shadow-2xl hover:brightness-110 transition-all"
+                  className="rounded-2xl naver-button text-[#163300] font-black gap-2 h-14 px-10 shadow-2xl hover:brightness-110 transition-all"
                 >
                   {isSaving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
                   수정 완료
@@ -314,7 +314,7 @@ export default function ProfilePage() {
                 <Button 
                   onClick={handleSave}
                   disabled={isSaving || usernameStatus === "duplicate" || usernameStatus === "checking"}
-                  className="w-full h-14 bg-[#163300] text-primary font-black rounded-2xl gap-2 shadow-xl"
+                  className="w-full h-14 naver-button text-[#163300] font-black rounded-2xl gap-2 shadow-xl"
                 >
                   {isSaving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
                   수정 완료 및 저장

@@ -89,7 +89,7 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
     <Card className="naver-card mb-4 md:mb-6 overflow-hidden bg-white border-black/[0.1]">
       <CardContent className="p-0">
         <form onSubmit={handleSubmit}>
-          <div className="p-5 md:p-8 space-y-4 md:space-y-6">
+          <div className="p-6 md:p-8 space-y-4 md:space-y-6">
             {type === "question" && (
               <div className="space-y-4">
                 <div className="flex flex-col md:flex-row md:items-center gap-4">
@@ -123,7 +123,7 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
               placeholder={type === "question" ? "나누고 싶은 HR 인사이트를 자유롭게 적어주세요." : "도움이 되는 따뜻한 답변을 남겨주세요."}
               value={text}
               onChange={(e) => setText(e.target.value)}
-              className="min-h-[100px] md:min-h-[140px] border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 p-0 pl-1 text-[15px] md:text-[16px] leading-relaxed resize-none text-[#404040] placeholder:text-black/30 bg-transparent outline-none"
+              className="min-h-[100px] md:min-h-[140px] border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 p-2 text-[15px] md:text-[16px] leading-relaxed resize-none text-[#404040] placeholder:text-black/30 bg-transparent outline-none"
             />
 
             {showVideoInput && (
