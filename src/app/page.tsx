@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo, useEffect, useDeferredValue, Suspense } from "react"
@@ -86,8 +85,8 @@ function HomePageContent() {
   const configDocRef = useMemoFirebase(() => db ? doc(db, "admin_configuration", "site_settings") : null, [db])
   const { data: config } = useDoc<any>(configDocRef)
 
-  const aldiDocRef = useMemoFirebase(() => db ? doc(db, "admin_configuration", "aldi_knowledge") : null, [db])
-  const { data: aldiConfig } = useDoc<any>(aldiDocRef)
+  const aldiConfigRef = useMemoFirebase(() => db ? doc(db, "admin_configuration", "aldi_knowledge") : null, [db])
+  const { data: aldiConfig } = useDoc<any>(aldiConfigRef)
 
   const questions = useMemo(() => {
     const merged = [...(dbQuestions || [])];
@@ -161,8 +160,8 @@ function HomePageContent() {
     return defaultAds;
   }, [config])
 
-  const answersQuery = useMemoFirebase(() => (!db || !selectedId) ? null : query(collection(db, "questions", selectedId, "answers"), orderBy("createdAt", "desc")), [db, selectedId])
-  const { data: dbAnswers } = useCollection<Answer>(answersQuery)
+  const dbAnswersQuery = useMemoFirebase(() => (!db || !selectedId) ? null : query(collection(db, "questions", selectedId, "answers"), orderBy("createdAt", "desc")), [db, selectedId])
+  const { data: dbAnswers } = useCollection<Answer>(dbAnswersQuery)
   const answers = useMemo(() => dbAnswers?.length ? dbAnswers : (mockData.answers as any[]).filter(a => a.questionId === selectedId), [dbAnswers, selectedId])
 
   const filtered = useMemo(() => {

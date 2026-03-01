@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, Suspense, useRef, useEffect } from "react"
@@ -143,6 +142,21 @@ function AuthContent() {
       router.push("/")
     } catch (error: any) {
       toast({ title: "가입 실패", description: getAuthErrorMessage(error.code), variant: "destructive" })
+    } finally { setIsLoading(false) }
+  }
+
+  const handleFindId = async () => {
+    setIsLoading(true)
+    try {
+      const q = query(collection(db, "users"), where("name", "==", findName), where("phoneNumber", "==", findPhone))
+      const snap = await getDocs(q)
+      if (!snap.empty) {
+        setFoundEmail(snap.docs[0].data().email)
+      } else {
+        toast({ title: "정보 없음", description: "가입된 정보를 찾을 수 없습니다.", variant: "destructive" })
+      }
+    } catch (e) {
+      toast({ title: "오류", description: "조회 중 문제가 발생했습니다.", variant: "destructive" })
     } finally { setIsLoading(false) }
   }
 
