@@ -18,7 +18,7 @@ export function BottomNav() {
 
   if (!isMounted || !isMobile) return null
 
-  // 전문가님이 요청하신 5가지 핵심 메뉴 구성
+  // 전문가님이 요청하신 피드, 모임, 프로그램, 강사, AI 챗봇 구성
   const navItems = [
     { name: "피드", href: "/", icon: MessageSquareQuote },
     { name: "모임", href: "/gatherings", icon: Users },

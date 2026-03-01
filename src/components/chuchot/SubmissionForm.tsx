@@ -96,7 +96,7 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
                     placeholder="제목을 입력하세요"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    className="flex-1 border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 text-lg md:text-xl font-black p-0 h-auto placeholder:text-black/30 text-[#1E1E23] bg-transparent outline-none"
+                    className="flex-1 border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 text-lg md:text-xl font-black p-0 h-auto placeholder:text-black/30 text-[#1E1E23] bg-transparent outline-none px-4"
                   />
                   <div className="w-full md:w-48">
                     <Select value={selectedCategory || ""} onValueChange={setSelectedCategory}>

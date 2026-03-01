@@ -204,7 +204,7 @@ export default function ProfilePage() {
             )}
             
             {isEditing ? (
-              <div className="w-full max-w-sm space-y-3 text-center px-6">
+              <div className="w-full max-sm:px-4 space-y-3 text-center">
                 <Label className="text-[11px] font-black text-[#163300] uppercase tracking-widest">활동 닉네임 (중복불가)</Label>
                 <div className="relative">
                   <Input 

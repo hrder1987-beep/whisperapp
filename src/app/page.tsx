@@ -209,73 +209,35 @@ function HomePageContent() {
 
   return (
     <>
-      <Header onSearch={(q) => setSearchQuery(q)} />
-      <div className="max-w-7xl mx-auto px-4 py-6 md:py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-          <main className={cn("space-y-6 md:space-y-10", deferredSearchQuery ? "lg:col-span-12" : "lg:col-span-8")}>
-            {deferredSearchQuery ? (
-              <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <div className="flex items-center gap-4 border-b border-primary/10 pb-6">
-                  <div className="text-accent"><Search className="w-10 h-10" /></div>
-                  <div>
-                    <h2 className="text-3xl font-black text-primary text-balance">'<span className="text-accent">{deferredSearchQuery}</span>' 통합 검색 결과</h2>
-                    <p className="text-primary/40 font-bold text-balance">Whisper 플랫폼 전체 영역에서 지식을 찾았습니다.</p>
-                  </div>
-                </div>
-                <section className="space-y-6">
-                  <h3 className="text-xl font-black text-primary flex items-center gap-2"><FileText className="w-5 h-5 text-accent" /> 지식 속삭임 ({searchResults?.questions.length})</h3>
-                  <QuestionFeed questions={searchResults?.questions.slice(0, 5) || []} onSelectQuestion={id => setSelectedId(id === selectedId ? null : id)} selectedId={selectedId} answers={answers} onAddAnswer={handleAddAnswer} activeTab="all" onTabChange={() => {}} />
-                </section>
-                <div className="flex justify-center pt-10">
-                  <Button onClick={() => setSearchQuery("")} variant="outline" className="rounded-full px-10 h-14 font-black border-primary/10 text-primary">통합 검색 닫고 전체 피드로 돌아가기</Button>
-                </div>
-              </div>
-            ) : (
-              <>
-                <MainBanner banners={banners} autoSlideDuration={branding?.bannerAutoSlideDuration || 3} />
-                <SubmissionForm type="question" placeholder={branding?.homeTitle ? `${branding.homeTitle}에서 고민을 나눠보세요` : "HR 고민을 속삭여보세요."} onSubmit={handleAddQuestion} />
-                <div className="flex flex-nowrap overflow-x-auto scrollbar-hide gap-x-6 pb-2 border-b border-black/[0.05]">
-                  {[{ id: "all", label: "전체 피드" }, { id: "hrm", label: "인사/총무" }, { id: "hrd", label: "HRD/교육" }, { id: "culture", label: "조직문화" }, { id: "popular", label: "인기" }].map(t => (
-                    <button key={t.id} onClick={() => setActiveTab(t.id as any)} className={cn("pb-3 text-[15px] transition-all border-b-2 whitespace-nowrap shrink-0", activeTab === t.id ? "font-black text-primary border-accent" : "font-bold text-black/60 border-transparent hover:text-black/80")}>{t.label}</button>
-                  ))}
-                </div>
-                <QuestionFeed questions={paginated} onSelectQuestion={id => setSelectedId(id === selectedId ? null : id)} selectedId={selectedId} answers={answers} onAddAnswer={handleAddAnswer} activeTab={activeTab as any} onTabChange={setActiveTab as any} />
-                {totalPages > 1 && (
-                  <div className="flex justify-center items-center gap-2 mt-10">
-                    <Button variant="ghost" disabled={currentPage === 1} onClick={() => setCurrentPage(1)} className="text-accent/70 hover:text-accent"><ChevronsLeft className="w-4" /></Button>
-                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                      const p = Math.max(1, Math.min(totalPages - 4, currentPage - 2)) + i;
-                      if (p > totalPages) return null;
-                      return (
-                        <Button 
-                          key={p} 
-                          onClick={() => setCurrentPage(p)} 
-                          variant={currentPage === p ? "default" : "outline"}
-                          className={cn(
-                            "w-10 h-10 rounded-xl font-black transition-all border-2", 
-                            currentPage === p 
-                              ? "bg-primary text-accent border-primary shadow-md" 
-                              : "bg-white text-accent/70 border-black/5 hover:border-primary/30 hover:text-primary"
-                          )}
-                        >
-                          {p}
-                        </Button>
-                      );
-                    })}
-                    <Button variant="ghost" disabled={currentPage === totalPages} onClick={() => setCurrentPage(totalPages)} className="text-accent/70 hover:text-accent"><ChevronsRight className="w-4" /></Button>
-                  </div>
-                )}
-              </>
-            )}
-          </main>
-          {!deferredSearchQuery && (
-            <aside className="lg:col-span-4 hidden lg:block space-y-8 h-fit self-start">
-              <AldiChat />
-              <PremiumAds ads={premiumAds} />
-              <RankingList questions={questions.slice(0, 5)} onSelectQuestion={id => setSelectedId(id)} />
-            </aside>
-          )}
+      <div className="space-y-6 md:space-y-10">
+        <MainBanner banners={banners} autoSlideDuration={branding?.bannerAutoSlideDuration || 3} />
+        <SubmissionForm type="question" placeholder={branding?.homeTitle ? `${branding.homeTitle}에서 고민을 나눠보세요` : "HR 고민을 속삭여보세요."} onSubmit={handleAddQuestion} />
+        <div className="flex flex-nowrap overflow-x-auto scrollbar-hide gap-x-6 pb-2 border-b border-black/[0.05]">
+          {[{ id: "all", label: "전체 피드" }, { id: "hrm", label: "인사/총무" }, { id: "hrd", label: "HRD/교육" }, { id: "culture", label: "조직문화" }, { id: "popular", label: "인기" }].map(t => (
+            <button key={t.id} onClick={() => setActiveTab(t.id as any)} className={cn("pb-3 text-[15px] transition-all border-b-2 whitespace-nowrap shrink-0", activeTab === t.id ? "font-black text-primary border-accent" : "font-bold text-black/60 border-transparent hover:text-black/80")}>{t.label}</button>
+          ))}
         </div>
+        <QuestionFeed questions={paginated} onSelectQuestion={id => setSelectedId(id === selectedId ? null : id)} selectedId={selectedId} answers={answers} onAddAnswer={handleAddAnswer} activeTab={activeTab as any} onTabChange={setActiveTab as any} />
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center gap-2 mt-10">
+            <Button variant="ghost" disabled={currentPage === 1} onClick={() => setCurrentPage(1)} className="text-accent/70 hover:text-accent"><ChevronsLeft className="w-4" /></Button>
+            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+              const p = Math.max(1, Math.min(totalPages - 4, currentPage - 2)) + i;
+              if (p > totalPages) return null;
+              return (
+                <Button 
+                  key={p} 
+                  onClick={() => setCurrentPage(p)} 
+                  variant={currentPage === p ? "default" : "outline"}
+                  className={cn("w-10 h-10 rounded-xl font-black transition-all border-2", currentPage === p ? "bg-primary text-accent border-primary shadow-md" : "bg-white text-accent/70 border-black/5 hover:border-primary/30 hover:text-primary")}
+                >
+                  {p}
+                </Button>
+              );
+            })}
+            <Button variant="ghost" disabled={currentPage === totalPages} onClick={() => setCurrentPage(totalPages)} className="text-accent/70 hover:text-accent"><ChevronsRight className="w-4" /></Button>
+          </div>
+        )}
       </div>
     </>
   )
@@ -284,9 +246,20 @@ function HomePageContent() {
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-[#F8F9FA]">
-      <Suspense fallback={<div className="flex flex-col items-center justify-center py-40 gap-4"><Sparkles className="w-12 h-12 animate-spin text-accent" /><p className="text-primary/20 font-black animate-pulse">Whisper 인텔리전스 로딩 중...</p></div>}>
-        <HomePageContent />
-      </Suspense>
+      <Header />
+      <div className="max-w-7xl mx-auto px-4 py-6 md:py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+          <main className="lg:col-span-8 space-y-6 md:space-y-10">
+            <Suspense fallback={<div className="flex flex-col items-center justify-center py-40 gap-4"><Sparkles className="w-12 h-12 animate-spin text-accent" /><p className="text-primary/20 font-black animate-pulse">Whisper 인텔리전스 로딩 중...</p></div>}>
+              <HomePageContent />
+            </Suspense>
+          </main>
+          <aside className="lg:col-span-4 hidden lg:block space-y-8 h-fit self-start">
+            <AldiChat />
+            <PremiumAds ads={[]} />
+          </aside>
+        </div>
+      </div>
     </div>
   )
 }
