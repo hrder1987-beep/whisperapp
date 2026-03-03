@@ -65,7 +65,7 @@ function HomePageContent() {
     }
     return [
       { id: "def-1", title: "HR 실무자의 밤:\n인사이트 네트워킹", description: "대한민국 HR 리더들이 한자리에 모여\n현업의 고민과 해결책을 나눕니다.", image: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=1080", badge: "OFFLINE EVENT" },
-      { id: "def-2", title: "2025 채용 시장\n핵심 트렌드 리포트 발간", description: "데이터로 분석한 새로운 채용 패러다임.\n지금 위스퍼에서 독점 공개합니다.", image: "https://images.unsplash.com/photo-1454165833762-01049369290d?q=80&w=1080", badge: "KNOWLEDGE" },
+      { id: "def-2", title: "2025 채용 시장\n핵심 트렌드 리포트 발간", description: "데이터로 분석한 새로운 채용 패러다임.\n지금 위스퍼에서 독점 공개합니다.", image: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=1080", badge: "KNOWLEDGE" },
       { id: "def-3", title: "전문가와 함께하는\n1:1 실무 커리어 코칭", description: "인사 전문가로서의 다음 단계,\n검증된 위스퍼러가 직접 가이드해 드립니다.", image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1080", badge: "WHISPERER CARE" }
     ]
   }, [config])
