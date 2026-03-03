@@ -42,7 +42,7 @@ function HomePageContent() {
   const aldiConfigRef = useMemoFirebase(() => db ? doc(db, "admin_configuration", "aldi_knowledge") : null, [db])
   const { data: aldiConfig } = useDoc<any>(aldiConfigRef)
 
-  // DB 데이터와 Mock 데이터를 병합하여 피드 완벽 복구
+  // DB 데이터와 대량의 Mock 데이터를 병합하여 10페이지 이상의 풍성한 피드 구현
   const questions = useMemo(() => {
     const merged = [...(dbQuestions || [])];
     const existingIds = new Set(merged.map(q => q.id));
