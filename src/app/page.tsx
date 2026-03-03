@@ -42,7 +42,7 @@ function HomePageContent() {
   const aldiConfigRef = useMemoFirebase(() => db ? doc(db, "admin_configuration", "aldi_knowledge") : null, [db])
   const { data: aldiConfig } = useDoc<any>(aldiConfigRef)
 
-  // DB 데이터와 Mock 데이터를 병합하여 피드 복구
+  // DB 데이터와 Mock 데이터를 병합하여 피드 완벽 복구
   const questions = useMemo(() => {
     const merged = [...(dbQuestions || [])];
     const existingIds = new Set(merged.map(q => q.id));
@@ -78,9 +78,9 @@ function HomePageContent() {
 
   const premiumAds = useMemo(() => {
     const defaultAds = [
-      { id: "ad1", title: "HR Tech Conference 2025\n사전 예약 안내", badge: "SPECIAL", webImage: "https://picsum.photos/seed/ad1/800/450", mobileImage: "", link: "#" },
-      { id: "ad2", title: "글로벌 인재 채용을 위한\n올인원 솔루션 '위스퍼'", badge: "SOLUTION", webImage: "https://picsum.photos/seed/ad2/800/450", mobileImage: "", link: "#" },
-      { id: "ad3", title: "차세대 C&B 전문가를 위한\n실무 마스터 클래스", badge: "EDUCATION", webImage: "https://picsum.photos/seed/ad3/800/450", mobileImage: "", link: "#" }
+      { id: "ad1", title: "HR Tech Conference 2025\n사전 예약 안내", badge: "SPECIAL", webImage: "https://images.unsplash.com/photo-1540575861501-7ad05823c95b?q=80&w=800", mobileImage: "", link: "#" },
+      { id: "ad2", title: "글로벌 인재 채용을 위한\n올인원 솔루션 '위스퍼'", badge: "SOLUTION", webImage: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800", mobileImage: "", link: "#" },
+      { id: "ad3", title: "차세대 C&B 전문가를 위한\n실무 마스터 클래스", badge: "EDUCATION", webImage: "https://images.unsplash.com/photo-1454165833762-01049369290d?q=80&w=800", mobileImage: "", link: "#" }
     ]
     if (config?.premiumAdsSettings) {
       try { 

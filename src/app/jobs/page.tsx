@@ -132,7 +132,6 @@ export default function JobsPage() {
               <p className="text-sm md:text-base font-bold text-accent/40">전문성이 검증된 HR 담당자를 위한 커리어 큐레이션</p>
             </div>
 
-            {/* 웹에서만 공고 게시 가능 */}
             <div className="hidden md:block">
               <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogTrigger asChild>
