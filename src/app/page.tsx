@@ -24,7 +24,6 @@ const ITEMS_PER_PAGE = 7
 function HomePageContent() {
   const { user } = useUser()
   const db = useFirestore()
-  const { toast } = useToast()
   const searchParams = useSearchParams()
   
   const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "")
