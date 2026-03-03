@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo, useEffect, useDeferredValue, Suspense } from "react"
@@ -8,7 +9,7 @@ import { QuestionFeed } from "@/components/chuchot/QuestionFeed"
 import { RankingList } from "@/components/chuchot/RankingList"
 import { AldiChat } from "@/components/chuchot/ShuChat"
 import { PremiumAds } from "@/components/chuchot/PremiumAds"
-import { Question, Answer, TrainingProgram, Instructor, JobListing, PremiumAd, SiteBranding } from "@/lib/types"
+import { Question, Answer, PremiumAd, SiteBranding } from "@/lib/types"
 import { Button } from "@/components/ui/button"
 import { Sparkles, ChevronsLeft, ChevronsRight } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
@@ -20,44 +21,6 @@ import mockData from "@/lib/mock-data.json"
 import { useSearchParams } from "next/navigation"
 
 const ITEMS_PER_PAGE = 7
-
-const generateMocks = () => {
-  const list: Question[] = [];
-  const mockAnswerIds = new Set((mockData.answers as any[]).map(a => a.questionId));
-  
-  const HRM_TOPICS = [
-    { title: "포괄임금제 도입 시 필수 항목", text: "연장/야간/휴일수당을 계약서에 어떻게 명시해야 리스크가 없을까요?" },
-    { title: "1년 미만 사원 연차 발생 기준", text: "매달 개근 시 1일과 1년 시점 15개가 합산되는 과정이 궁금합니다." }
-  ];
-  const HRD_TOPICS = [
-    { title: "타운홀 미팅 익명 질문의 효과", text: "익명 툴 사용 시 공격적인 질문에 대한 대처 방안이 있을까요?" },
-    { title: "신입사원 온보딩 소속감 강화 활동", text: "조기 퇴사를 막기 위한 우리 회사만의 특별한 루틴을 추천해주세요." }
-  ];
-  const EXPERT_NICKNAMES = ["인사마스터", "노무의신", "컬처디렉터", "HRBP"];
-
-  for (let i = 1; i <= 200; i++) {
-    const isHrm = i <= 100;
-    const topics = isHrm ? HRM_TOPICS : HRD_TOPICS;
-    const topic = topics[(i - 1) % topics.length];
-    const id = isHrm ? `hr-q${i}` : `cul-q${i - 100}`;
-    
-    list.push({
-      id,
-      title: topic.title,
-      text: topic.text,
-      nickname: EXPERT_NICKNAMES[i % EXPERT_NICKNAMES.length],
-      userId: `mock-user-${i}`,
-      userRole: "member",
-      viewCount: 100 + i,
-      answerCount: mockAnswerIds.has(id) ? 1 : 0,
-      createdAt: 1714521600000 - (i * 3600000),
-      category: isHrm ? "인사전략/HRM" : (i % 2 === 0 ? "조직문화/EVP" : "HRD/교육")
-    });
-  }
-  return list;
-};
-
-const MOCK_QUESTIONS = generateMocks();
 
 function HomePageContent() {
   const { user } = useUser()
@@ -84,7 +47,7 @@ function HomePageContent() {
   const questions = useMemo(() => {
     const merged = [...(dbQuestions || [])];
     const existingIds = new Set(merged.map(q => q.id));
-    MOCK_QUESTIONS.forEach(mq => { if (!existingIds.has(mq.id)) merged.push(mq); });
+    (mockData.questions as Question[]).forEach(mq => { if (!existingIds.has(mq.id)) merged.push(mq); });
     return merged.sort((a, b) => b.createdAt - a.createdAt);
   }, [dbQuestions])
 
@@ -103,27 +66,9 @@ function HomePageContent() {
       } catch (e) { }
     }
     return [
-      { 
-        id: "def-1", 
-        title: "HR 실무자의 밤:\n인사이트 네트워킹", 
-        description: "대한민국 HR 리더들이 한자리에 모여\n현업의 고민과 해결책을 나눕니다.", 
-        image: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=1080", 
-        badge: "OFFLINE EVENT" 
-      },
-      { 
-        id: "def-2", 
-        title: "2025 채용 시장\n핵심 트렌드 리포트 발간", 
-        description: "데이터로 분석한 새로운 채용 패러다임.\n지금 위스퍼에서 독점 공개합니다.", 
-        image: "https://images.unsplash.com/photo-1454165833762-01049369290d?q=80&w=1080", 
-        badge: "KNOWLEDGE" 
-      },
-      { 
-        id: "def-3", 
-        title: "전문가와 함께하는\n1:1 실무 커리어 코칭", 
-        description: "인사 전문가로서의 다음 단계,\n검증된 위스퍼러가 직접 가이드해 드립니다.", 
-        image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1080", 
-        badge: "WHISPERER CARE" 
-      }
+      { id: "def-1", title: "HR 실무자의 밤:\n인사이트 네트워킹", description: "대한민국 HR 리더들이 한자리에 모여\n현업의 고민과 해결책을 나눕니다.", image: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=1080", badge: "OFFLINE EVENT" },
+      { id: "def-2", title: "2025 채용 시장\n핵심 트렌드 리포트 발간", description: "데이터로 분석한 새로운 채용 패러다임.\n지금 위스퍼에서 독점 공개합니다.", image: "https://images.unsplash.com/photo-1454165833762-01049369290d?q=80&w=1080", badge: "KNOWLEDGE" },
+      { id: "def-3", title: "전문가와 함께하는\n1:1 실무 커리어 코칭", description: "인사 전문가로서의 다음 단계,\n검증된 위스퍼러가 직접 가이드해 드립니다.", image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1080", badge: "WHISPERER CARE" }
     ]
   }, [config])
 
@@ -163,7 +108,6 @@ function HomePageContent() {
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE)
 
   useEffect(() => { setCurrentPage(1); setSelectedId(null); }, [deferredSearchQuery, activeTab])
-  useEffect(() => { const search = searchParams.get("search"); if (search) setSearchQuery(search) }, [searchParams])
 
   const handleAddQuestion = (nickname: string, title: string, text: string, imageUrl?: string, videoUrl?: string, category?: string, jobRole?: string) => {
     if (!db || !user) return;
@@ -208,22 +152,15 @@ function HomePageContent() {
         
         {totalPages > 1 && (
           <div className="flex justify-center items-center gap-2 mt-10">
-            <Button variant="ghost" disabled={currentPage === 1} onClick={() => setCurrentPage(1)} className="text-accent/70 hover:text-accent"><ChevronsLeft className="w-4" /></Button>
+            <Button variant="ghost" disabled={currentPage === 1} onClick={() => setCurrentPage(1)}><ChevronsLeft className="w-4" /></Button>
             {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
               const p = Math.max(1, Math.min(totalPages - 4, currentPage - 2)) + i;
               if (p > totalPages) return null;
               return (
-                <Button 
-                  key={p} 
-                  onClick={() => setCurrentPage(p)} 
-                  variant={currentPage === p ? "default" : "outline"}
-                  className={cn("w-10 h-10 rounded-xl font-black transition-all border-2", currentPage === p ? "bg-primary text-accent border-primary shadow-md" : "bg-white text-accent/70 border-black/5 hover:border-primary/30 hover:text-primary")}
-                >
-                  {p}
-                </Button>
+                <Button key={p} onClick={() => setCurrentPage(p)} variant={currentPage === p ? "default" : "outline"} className={cn("w-10 h-10 rounded-xl font-black", currentPage === p ? "bg-primary text-accent" : "bg-white")}>{p}</Button>
               );
             })}
-            <Button variant="ghost" disabled={currentPage === totalPages} onClick={() => setCurrentPage(totalPages)} className="text-accent/70 hover:text-accent"><ChevronsRight className="w-4" /></Button>
+            <Button variant="ghost" disabled={currentPage === totalPages} onClick={() => setCurrentPage(totalPages)}><ChevronsRight className="w-4" /></Button>
           </div>
         )}
       </main>
@@ -242,7 +179,7 @@ export default function HomePage() {
     <div className="min-h-screen bg-[#F8F9FA]">
       <Header />
       <div className="max-w-7xl mx-auto px-4 py-6 md:py-12">
-        <Suspense fallback={<div className="flex flex-col items-center justify-center py-40 gap-4"><Sparkles className="w-12 h-12 animate-spin text-accent" /><p className="text-primary/20 font-black animate-pulse">Whisper 인텔리전스 로딩 중...</p></div>}>
+        <Suspense fallback={<div className="flex justify-center py-40"><Sparkles className="w-12 h-12 animate-spin text-accent" /></div>}>
           <HomePageContent />
         </Suspense>
       </div>
