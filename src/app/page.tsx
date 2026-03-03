@@ -45,7 +45,10 @@ function HomePageContent() {
   const questions = useMemo(() => {
     const merged = [...(dbQuestions || [])];
     const existingIds = new Set(merged.map(q => q.id));
-    (mockData.questions as Question[]).forEach(mq => { if (!existingIds.has(mq.id)) merged.push(mq); });
+    // 기존 유실되었던 Mock 데이터 병합 로직 복구
+    (mockData.questions as Question[]).forEach(mq => { 
+      if (!existingIds.has(mq.id)) merged.push(mq); 
+    });
     return merged.sort((a, b) => b.createdAt - a.createdAt);
   }, [dbQuestions])
 
@@ -105,7 +108,10 @@ function HomePageContent() {
   const paginated = useMemo(() => filtered.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE), [filtered, currentPage])
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE)
 
-  useEffect(() => { setCurrentPage(1); setSelectedId(null); }, [deferredSearchQuery, activeTab])
+  useEffect(() => { 
+    setCurrentPage(1); 
+    setSelectedId(null); 
+  }, [deferredSearchQuery, activeTab])
 
   const handleAddQuestion = (nickname: string, title: string, text: string, imageUrl?: string, videoUrl?: string, category?: string, jobRole?: string) => {
     if (!db || !user) return;
