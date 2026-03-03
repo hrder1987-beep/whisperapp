@@ -71,9 +71,9 @@ function HomePageContent() {
 
   const premiumAds = useMemo(() => {
     const defaultAds = [
-      { id: "ad1", title: "HR Tech Conference 2025\n사전 예약 안내", badge: "SPECIAL", webImage: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?q=80&w=400", mobileImage: "", link: "#" },
-      { id: "ad2", title: "글로벌 인재 채용을 위한\n올인원 솔루션 '위스퍼'", badge: "SOLUTION", webImage: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=400", mobileImage: "", link: "#" },
-      { id: "ad3", title: "차세대 C&B 전문가를 위한\n실무 마스터 클래스", badge: "EDUCATION", webImage: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=400", mobileImage: "", link: "#" }
+      { id: "ad1", title: "HR Tech Conference 2025\n사전 예약 안내", badge: "SPECIAL", webImage: "https://picsum.photos/seed/ad1/800/450", mobileImage: "", link: "#" },
+      { id: "ad2", title: "글로벌 인재 채용을 위한\n올인원 솔루션 '위스퍼'", badge: "SOLUTION", webImage: "https://picsum.photos/seed/ad2/800/450", mobileImage: "", link: "#" },
+      { id: "ad3", title: "차세대 C&B 전문가를 위한\n실무 마스터 클래스", badge: "EDUCATION", webImage: "https://picsum.photos/seed/ad3/800/450", mobileImage: "", link: "#" }
     ]
     if (config?.premiumAdsSettings) {
       try { 
@@ -133,6 +133,13 @@ function HomePageContent() {
     updateDocumentNonBlocking(doc(db, "questions", selectedId), { answerCount: increment(1) });
   }
 
+  const handleSelectQuestion = (id: string) => {
+    setSelectedId(id === selectedId ? null : id);
+    if (id !== selectedId && db) {
+      updateDocumentNonBlocking(doc(db, "questions", id), { viewCount: increment(1) });
+    }
+  }
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
       <main className="lg:col-span-8 space-y-6 md:space-y-10">
@@ -145,7 +152,7 @@ function HomePageContent() {
           ))}
         </div>
 
-        <QuestionFeed questions={paginated} onSelectQuestion={id => setSelectedId(id === selectedId ? null : id)} selectedId={selectedId} answers={answers} onAddAnswer={handleAddAnswer} activeTab={activeTab as any} onTabChange={setActiveTab as any} />
+        <QuestionFeed questions={paginated} onSelectQuestion={handleSelectQuestion} selectedId={selectedId} answers={answers} onAddAnswer={handleAddAnswer} activeTab={activeTab as any} onTabChange={setActiveTab as any} />
         
         {totalPages > 1 && (
           <div className="flex justify-center items-center gap-2 mt-10">
@@ -164,7 +171,7 @@ function HomePageContent() {
 
       <aside className="lg:col-span-4 hidden lg:block space-y-8 h-fit sticky top-32">
         <AldiChat />
-        <RankingList questions={[...questions].sort((a,b) => b.viewCount - a.viewCount)} onSelectQuestion={id => setSelectedId(id)} />
+        <RankingList questions={[...questions].sort((a,b) => b.viewCount - a.viewCount)} onSelectQuestion={handleSelectQuestion} />
         <PremiumAds ads={premiumAds} />
       </aside>
     </div>
