@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useRef, useEffect } from "react"
@@ -100,7 +101,7 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
                   />
                   <div className="w-full md:w-48">
                     <Select value={selectedCategory || ""} onValueChange={setSelectedCategory}>
-                      <SelectTrigger className="h-10 bg-primary/5 border-none rounded-sm font-bold text-xs text-primary focus:ring-0">
+                      <SelectTrigger className="h-10 bg-primary/5 border-none rounded-sm font-bold text-xs text-[#163300] focus:ring-0">
                         <SelectValue placeholder="카테고리 선택" />
                       </SelectTrigger>
                       <SelectContent className="bg-white border-black/10 rounded-sm">
@@ -122,7 +123,7 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
               placeholder={type === "question" ? "나누고 싶은 HR 인사이트를 자유롭게 적어주세요." : "도움이 되는 따뜻한 답변을 남겨주세요."}
               value={text}
               onChange={(e) => setText(e.target.value)}
-              className="min-h-[100px] md:min-h-[140px] border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 px-6 py-2 text-[15px] md:text-[16px] leading-relaxed resize-none text-[#404040] placeholder:text-black/30 bg-transparent outline-none"
+              className="min-h-[100px] md:min-h-[140px] border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 px-8 py-4 text-[15px] md:text-[16px] leading-relaxed resize-none text-[#404040] placeholder:text-black/30 bg-transparent outline-none"
             />
 
             {showVideoInput && (
@@ -130,7 +131,7 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
                 <div className="flex items-center gap-3">
                   <Youtube className="w-5 h-5 text-[#FF0000]" />
                   <Input 
-                    placeholder="유튜브 링크를 입력하세요 (예: https://youtu.be/...)"
+                    placeholder="유튜브 링크를 입력하세요"
                     value={videoUrl || ""}
                     onChange={(e) => setVideoUrl(e.target.value)}
                     className="flex-1 bg-white border-black/10 h-10 text-sm font-bold focus-visible:ring-primary/20"
@@ -139,7 +140,6 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
                     <X className="w-4 h-4" />
                   </Button>
                 </div>
-                <p className="text-[10px] font-bold text-primary/40 mt-2 ml-8">* 유튜브 링크를 입력하면 게시글 상세 보기에서 영상을 확인하실 수 있습니다.</p>
               </div>
             )}
 
@@ -148,7 +148,7 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
                 <img src={imageUrl} alt="preview" className="h-32 md:h-40 w-auto object-cover" />
                 <button 
                   type="button" 
-                  className="absolute top-2 right-2 bg-black/60 text-white p-1.5 rounded-full hover:bg-red-500 transition-colors"
+                  className="absolute top-2 right-2 bg-black/60 text-white p-1.5 rounded-full"
                   onClick={() => setImageUrl(undefined)}
                 >
                   <X className="h-3.5 w-3.5" />
@@ -180,7 +180,7 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
             <Button 
               type="submit" 
               disabled={isSubmitting || !text.trim()} 
-              className="naver-button h-9 md:h-10 px-6 md:px-10 text-[13px] md:text-[14px] gap-2 shadow-none whitespace-nowrap"
+              className="naver-button h-9 md:h-10 px-6 md:px-10 text-[13px] md:text-[14px] gap-2 shadow-none text-[#163300]"
             >
               {isSubmitting ? "전송" : type === "question" ? "등록" : "답변"}
               <Send className="w-3.5 h-3.5 md:w-4 md:h-4" />

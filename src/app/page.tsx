@@ -167,7 +167,7 @@ function HomePageContent() {
 
       <aside className="lg:col-span-4 hidden lg:block space-y-8 h-fit sticky top-32">
         <AldiChat />
-        <RankingList questions={questions.sort((a,b) => b.viewCount - a.viewCount)} onSelectQuestion={id => setSelectedId(id)} />
+        <RankingList questions={[...questions].sort((a,b) => b.viewCount - a.viewCount)} onSelectQuestion={id => setSelectedId(id)} />
         <PremiumAds ads={premiumAds} />
       </aside>
     </div>
