@@ -19,7 +19,7 @@ import { collection, query, orderBy, doc, increment } from "firebase/firestore"
 import mockData from "@/lib/mock-data.json"
 import { useSearchParams } from "next/navigation"
 
-const ITEMS_PER_PAGE = 7
+const ITEMS_PER_PAGE = 10
 
 function HomePageContent() {
   const { user } = useUser()
@@ -42,13 +42,16 @@ function HomePageContent() {
   const aldiConfigRef = useMemoFirebase(() => db ? doc(db, "admin_configuration", "aldi_knowledge") : null, [db])
   const { data: aldiConfig } = useDoc<any>(aldiConfigRef)
 
+  // DB 데이터와 Mock 데이터를 병합하여 피드 복구
   const questions = useMemo(() => {
     const merged = [...(dbQuestions || [])];
     const existingIds = new Set(merged.map(q => q.id));
-    // 기존 유실되었던 Mock 데이터 병합 로직 복구
-    (mockData.questions as Question[]).forEach(mq => { 
-      if (!existingIds.has(mq.id)) merged.push(mq); 
-    });
+    
+    if (mockData.questions) {
+      (mockData.questions as Question[]).forEach(mq => { 
+        if (!existingIds.has(mq.id)) merged.push(mq); 
+      });
+    }
     return merged.sort((a, b) => b.createdAt - a.createdAt);
   }, [dbQuestions])
 
@@ -132,9 +135,24 @@ function HomePageContent() {
   const handleAddAnswer = (nickname: string, title: string, text: string, imageUrl?: string, videoUrl?: string, category?: string, jobRole?: string) => {
     if (!db || !selectedId || !user) return;
     const question = questions.find(q => q.id === selectedId);
-    addDocumentNonBlocking(collection(db, "questions", selectedId, "answers"), { questionId: selectedId, text, nickname, userId: user.uid, createdAt: Date.now(), jobTitle: jobRole || null }).then(() => {
+    addDocumentNonBlocking(collection(db, "questions", selectedId, "answers"), { 
+      questionId: selectedId, 
+      text, 
+      nickname, 
+      userId: user.uid, 
+      createdAt: Date.now(), 
+      jobTitle: jobRole || null 
+    }).then(() => {
       if (question && question.userId !== user.uid) {
-        addDocumentNonBlocking(collection(db, "notifications"), { userId: question.userId, type: "new_answer", questionId: selectedId, questionTitle: question.title, senderNickname: nickname, createdAt: Date.now(), isRead: false })
+        addDocumentNonBlocking(collection(db, "notifications"), { 
+          userId: question.userId, 
+          type: "new_answer", 
+          questionId: selectedId, 
+          questionTitle: question.title, 
+          senderNickname: nickname, 
+          createdAt: Date.now(), 
+          isRead: false 
+        })
       }
     });
     updateDocumentNonBlocking(doc(db, "questions", selectedId), { answerCount: increment(1) });
@@ -159,7 +177,15 @@ function HomePageContent() {
           ))}
         </div>
 
-        <QuestionFeed questions={paginated} onSelectQuestion={handleSelectQuestion} selectedId={selectedId} answers={answers} onAddAnswer={handleAddAnswer} activeTab={activeTab as any} onTabChange={setActiveTab as any} />
+        <QuestionFeed 
+          questions={paginated} 
+          onSelectQuestion={handleSelectQuestion} 
+          selectedId={selectedId} 
+          answers={answers} 
+          onAddAnswer={handleAddAnswer} 
+          activeTab={activeTab as any} 
+          onTabChange={setActiveTab as any} 
+        />
         
         {totalPages > 1 && (
           <div className="flex justify-center items-center gap-2 mt-10">

@@ -35,7 +35,7 @@ export function MainBanner({ banners: propBanners, autoSlideDuration = 3 }: Main
       id: 2,
       title: "2025 채용 시장\n핵심 트렌드 리포트 발간",
       description: "데이터로 분석한 새로운 채용 패러다임.\n지금 위스퍼에서 독점 공개합니다.",
-      image: "https://images.unsplash.com/photo-1454165833762-01049369290d?q=80&w=1080",
+      image: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=1080",
       badge: "KNOWLEDGE"
     },
     {
@@ -92,7 +92,7 @@ export function MainBanner({ banners: propBanners, autoSlideDuration = 3 }: Main
                     alt={banner.title} 
                     fill 
                     className="object-cover opacity-40 md:opacity-100"
-                    priority={index === 0} // 첫 번째 이미지는 LCP 최적화를 위해 우선순위 부여
+                    priority={index === 0}
                     data-ai-hint="business event office"
                   />
                 </div>
