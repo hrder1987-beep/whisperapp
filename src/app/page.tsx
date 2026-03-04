@@ -19,7 +19,7 @@ import { collection, query, orderBy, doc, increment } from "firebase/firestore"
 import mockData from "@/lib/mock-data.json"
 import { useSearchParams } from "next/navigation"
 
-const ITEMS_PER_PAGE = 5 // 10페이지 분량을 보여주기 위해 페이지당 5개로 조정
+const ITEMS_PER_PAGE = 5 // 10페이지 이상을 보여주기 위해 페이지당 5개로 유지
 
 function HomePageContent() {
   const { user } = useUser()
@@ -190,7 +190,9 @@ function HomePageContent() {
           <div className="flex justify-center items-center gap-2 mt-10">
             <Button variant="ghost" disabled={currentPage === 1} onClick={() => setCurrentPage(1)}><ChevronsLeft className="w-4" /></Button>
             {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-              const p = Math.max(1, Math.min(totalPages - 4, currentPage - 2)) + i;
+              let p = currentPage - 2 + i;
+              if (currentPage <= 2) p = 1 + i;
+              if (currentPage >= totalPages - 1) p = totalPages - 4 + i;
               if (p <= 0 || p > totalPages) return null;
               return (
                 <Button key={p} onClick={() => setCurrentPage(p)} variant={currentPage === p ? "default" : "outline"} className={cn("w-10 h-10 rounded-xl font-black", currentPage === p ? "bg-primary text-accent" : "bg-white")}>{p}</Button>
