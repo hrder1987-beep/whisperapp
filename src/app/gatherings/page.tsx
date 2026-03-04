@@ -122,12 +122,12 @@ export default function GatheringsPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
                         <label className="text-sm font-black text-[#163300]">모임 제목</label>
-                        <Input value={title} onChange={e => setTitle(e.target.value)} required placeholder="과정명을 입력하세요" className="h-12 bg-[#F5F6F7] border-none rounded-xl font-bold" />
+                        <Input value={title} onChange={e => setTitle(e.target.value)} required placeholder="과정명을 입력하세요" className="h-12 bg-[#F5F6F7] border-none rounded-xl font-bold px-4" />
                       </div>
                       <div className="space-y-2">
                         <label className="text-sm font-black text-[#163300]">카테고리</label>
                         <Select onValueChange={setCategory} defaultValue={category}>
-                          <SelectTrigger className="h-12 bg-[#F5F6F7] border-none rounded-xl font-bold"><SelectValue /></SelectTrigger>
+                          <SelectTrigger className="h-12 bg-[#F5F6F7] border-none rounded-xl font-bold px-4"><SelectValue /></SelectTrigger>
                           <SelectContent className="rounded-xl">{GATHERING_CATEGORIES.filter(c => c !== "전체").map(c => <SelectItem key={c} value={c} className="font-bold">{c}</SelectItem>)}</SelectContent>
                         </Select>
                       </div>
@@ -136,7 +136,7 @@ export default function GatheringsPage() {
                       <div className="space-y-2">
                         <label className="text-sm font-black text-[#163300]">모임 방식</label>
                         <Select onValueChange={(v:any) => setType(v)} defaultValue={type}>
-                          <SelectTrigger className="h-12 bg-[#F5F6F7] border-none rounded-xl font-bold"><SelectValue /></SelectTrigger>
+                          <SelectTrigger className="h-12 bg-[#F5F6F7] border-none rounded-xl font-bold px-4"><SelectValue /></SelectTrigger>
                           <SelectContent className="rounded-xl">
                             <SelectItem value="online" className="font-bold">온라인 모임</SelectItem>
                             <SelectItem value="offline" className="font-bold">오프라인 모임</SelectItem>
@@ -145,24 +145,24 @@ export default function GatheringsPage() {
                       </div>
                       <div className="space-y-2">
                         <label className="text-sm font-black text-[#163300]">모집 정원 (명)</label>
-                        <Input type="number" value={capacity} onChange={e => setCapacity(e.target.value)} required className="h-12 bg-[#F5F6F7] border-none rounded-xl font-bold" />
+                        <Input type="number" value={capacity} onChange={e => setCapacity(e.target.value)} required className="h-12 bg-[#F5F6F7] border-none rounded-xl font-bold px-4" />
                       </div>
                     </div>
                     <div className="space-y-2">
                       <label className="text-sm font-black text-[#163300]">상세 일정</label>
-                      <Input value={schedule} onChange={e => setSchedule(e.target.value)} required placeholder="예: 2025.03.01 매주 토요일 오후 2시" className="h-12 bg-[#F5F6F7] border-none rounded-xl font-bold" />
+                      <Input value={schedule} onChange={e => setSchedule(e.target.value)} required placeholder="예: 2025.03.01 매주 토요일 오후 2시" className="h-12 bg-[#F5F6F7] border-none rounded-xl font-bold px-4" />
                     </div>
                     {type === "offline" && (
                       <div className="space-y-2">
                         <label className="text-sm font-black text-[#163300]">모임 장소</label>
-                        <Input value={location} onChange={e => setLocation(e.target.value)} required placeholder="상세 주소를 입력하세요" className="h-12 bg-[#F5F6F7] border-none rounded-xl font-bold" />
+                        <Input value={location} onChange={e => setLocation(e.target.value)} required placeholder="상세 주소를 입력하세요" className="h-12 bg-[#F5F6F7] border-none rounded-xl font-bold px-4" />
                       </div>
                     )}
                     <div className="space-y-2">
                       <label className="text-sm font-black text-[#163300]">상세 설명</label>
                       <Textarea value={description} onChange={e => setDescription(e.target.value)} required placeholder="모임의 목적, 커리큘럼 등을 작성해 주세요." className="min-h-[150px] bg-[#F5F6F7] border-none rounded-2xl p-6 font-medium text-sm leading-relaxed resize-none shadow-inner" />
                     </div>
-                    <Button type="submit" disabled={isSubmitting} className="w-full h-16 naver-button text-lg rounded-2xl shadow-2xl mt-4 text-[#163300]">{isSubmitting ? "생성 중..." : "모임 개설 완료"}</Button>
+                    <Button type="submit" disabled={isSubmitting} className="w-full h-16 naver-button text-lg rounded-2xl shadow-2xl mt-4 text-[#163300] font-black">{isSubmitting ? "생성 중..." : "모임 개설 완료"}</Button>
                   </form>
                 </div>
               </DialogContent>

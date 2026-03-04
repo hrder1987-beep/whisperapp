@@ -42,7 +42,7 @@ function HomePageContent() {
   const aldiConfigRef = useMemoFirebase(() => db ? doc(db, "admin_configuration", "aldi_knowledge") : null, [db])
   const { data: aldiConfig } = useDoc<any>(aldiConfigRef)
 
-  // DB 데이터와 대량의 Mock 데이터를 병합하여 10페이지 이상의 풍성한 피드 구현
+  // DB 데이터와 대규모 Mock 데이터를 병합하여 10페이지 이상의 풍성한 피드 구현
   const questions = useMemo(() => {
     const merged = [...(dbQuestions || [])];
     const existingIds = new Set(merged.map(q => q.id));
@@ -192,7 +192,7 @@ function HomePageContent() {
             <Button variant="ghost" disabled={currentPage === 1} onClick={() => setCurrentPage(1)}><ChevronsLeft className="w-4" /></Button>
             {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
               const p = Math.max(1, Math.min(totalPages - 4, currentPage - 2)) + i;
-              if (p > totalPages) return null;
+              if (p <= 0 || p > totalPages) return null;
               return (
                 <Button key={p} onClick={() => setCurrentPage(p)} variant={currentPage === p ? "default" : "outline"} className={cn("w-10 h-10 rounded-xl font-black", currentPage === p ? "bg-primary text-accent" : "bg-white")}>{p}</Button>
               );

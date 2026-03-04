@@ -92,12 +92,12 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
           <div className="p-6 md:p-8 space-y-4 md:space-y-6">
             {type === "question" && (
               <div className="space-y-4">
-                <div className="flex flex-col md:flex-row md:items-center gap-4">
+                <div className="flex flex-col md:flex-row md:items-center gap-4 px-4">
                   <Input
                     placeholder="제목을 입력하세요"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    className="flex-1 border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 text-lg md:text-xl font-black p-0 h-auto placeholder:text-black/30 text-[#1E1E23] bg-transparent outline-none px-4"
+                    className="flex-1 border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 text-lg md:text-xl font-black p-0 h-auto placeholder:text-black/30 text-[#1E1E23] bg-transparent outline-none"
                   />
                   <div className="w-full md:w-48">
                     <Select value={selectedCategory || ""} onValueChange={setSelectedCategory}>
@@ -118,16 +118,18 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
               </div>
             )}
             
-            <Textarea
-              ref={textareaRef}
-              placeholder={type === "question" ? "나누고 싶은 HR 인사이트를 자유롭게 적어주세요." : "도움이 되는 따뜻한 답변을 남겨주세요."}
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              className="min-h-[100px] md:min-h-[140px] border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 px-8 py-4 text-[15px] md:text-[16px] leading-relaxed resize-none text-[#404040] placeholder:text-black/30 bg-transparent outline-none"
-            />
+            <div className="px-4">
+              <Textarea
+                ref={textareaRef}
+                placeholder={type === "question" ? "나누고 싶은 HR 인사이트를 자유롭게 적어주세요." : "도움이 되는 따뜻한 답변을 남겨주세요."}
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                className="min-h-[100px] md:min-h-[140px] border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 py-2 text-[15px] md:text-[16px] leading-relaxed resize-none text-[#404040] placeholder:text-black/30 bg-transparent outline-none"
+              />
+            </div>
 
             {showVideoInput && (
-              <div className="bg-primary/5 p-4 rounded-sm border border-primary/10 animate-in fade-in slide-in-from-top-2 duration-300">
+              <div className="bg-primary/5 p-4 rounded-sm border border-primary/10 mx-4 animate-in fade-in slide-in-from-top-2 duration-300">
                 <div className="flex items-center gap-3">
                   <Youtube className="w-5 h-5 text-[#FF0000]" />
                   <Input 
@@ -144,7 +146,7 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
             )}
 
             {imageUrl && (
-              <div className="relative w-fit max-w-full rounded-none overflow-hidden border border-black/5 mt-4">
+              <div className="relative w-fit max-w-full rounded-none overflow-hidden border border-black/5 mt-4 mx-4">
                 <img src={imageUrl} alt="preview" className="h-32 md:h-40 w-auto object-cover" />
                 <button 
                   type="button" 
