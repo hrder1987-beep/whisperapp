@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Send, User, Maximize2, X, Sparkles as SparklesIcon } from "lucide-react"
+import { Send, User, Maximize2, X, RotateCcw, Sparkles as SparklesIcon } from "lucide-react"
 import { chatShu } from "@/ai/flows/chat-shu-flow"
 import { cn } from "@/lib/utils"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
@@ -41,7 +41,6 @@ const DEFAULT_BOT_INFO: Record<BotType, { name: string, sub: string, intro: stri
   }
 }
 
-// 개별 메시지 컴포넌트를 memo로 감싸 리렌더링 최적화
 const ChatMessage = memo(({ msg, activeBot, botIconUrl }: { msg: Message, activeBot: BotType, botIconUrl?: string }) => (
   <div className={cn("flex items-start gap-3 md:gap-4", msg.role === "user" ? "flex-row-reverse" : "flex-row")}>
     <div className="shrink-0">
@@ -63,7 +62,7 @@ const ChatMessage = memo(({ msg, activeBot, botIconUrl }: { msg: Message, active
 ));
 ChatMessage.displayName = "ChatMessage";
 
-function ChatInterface({ messages, input, setInput, isLoading, handleSend, isExpanded = false, onClose, activeBot, onBotChange, botConfig }: any) {
+function ChatInterface({ messages, input, setInput, isLoading, handleSend, isExpanded = false, onClose, activeBot, onBotChange, botConfig, onReset }: any) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const botName = botConfig?.name || DEFAULT_BOT_INFO[activeBot].name
   const botSub = DEFAULT_BOT_INFO[activeBot].sub
@@ -86,9 +85,14 @@ function ChatInterface({ messages, input, setInput, isLoading, handleSend, isExp
               <p className="text-[10px] md:text-[11px] text-primary font-black uppercase tracking-widest">{botSub}</p>
             </div>
           </div>
-          <Button variant="ghost" size="icon" onClick={onClose} className="text-accent/20 hover:text-accent hover:bg-black/5 rounded-full transition-all">
-            {isExpanded ? <X className="w-6 h-6" /> : <Maximize2 className="w-5 h-5" />}
-          </Button>
+          <div className="flex items-center gap-1">
+            <Button variant="ghost" size="icon" onClick={onReset} className="text-accent/20 hover:text-accent hover:bg-black/5 rounded-full transition-all" title="대화 초기화">
+              <RotateCcw className="w-4 h-4" />
+            </Button>
+            <Button variant="ghost" size="icon" onClick={onClose} className="text-accent/20 hover:text-accent hover:bg-black/5 rounded-full transition-all">
+              {isExpanded ? <X className="w-6 h-6" /> : <Maximize2 className="w-5 h-5" />}
+            </Button>
+          </div>
         </div>
         <Tabs value={activeBot} onValueChange={(v) => onBotChange(v as BotType)} className="w-full px-4 md:px-6 pb-4">
           <TabsList className="grid grid-cols-3 bg-accent/[0.03] p-1.5 rounded-2xl h-12 md:h-14">
@@ -181,6 +185,14 @@ export function AldiChat({ forceOpenTrigger, onTriggerClose, hideCard = false }:
     }
   }
 
+  const handleReset = () => {
+    const currentIntro = botConfig?.intro || DEFAULT_BOT_INFO[activeBot].intro
+    setConversations(prev => ({
+      ...prev,
+      [activeBot]: [{ role: "bot", text: currentIntro }]
+    }))
+  }
+
   return (
     <>
       {!hideCard && (
@@ -195,6 +207,7 @@ export function AldiChat({ forceOpenTrigger, onTriggerClose, hideCard = false }:
             onBotChange={setActiveBot} 
             onClose={() => setIsFocused(true)} 
             botConfig={botConfig} 
+            onReset={handleReset}
           />
         </Card>
       )}
@@ -214,6 +227,7 @@ export function AldiChat({ forceOpenTrigger, onTriggerClose, hideCard = false }:
             onBotChange={setActiveBot} 
             onClose={() => setIsFocused(false)} 
             botConfig={botConfig} 
+            onReset={handleReset}
           />
         </DialogContent>
       </Dialog>
