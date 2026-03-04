@@ -19,7 +19,7 @@ import { collection, query, orderBy, doc, increment } from "firebase/firestore"
 import mockData from "@/lib/mock-data.json"
 import { useSearchParams } from "next/navigation"
 
-const ITEMS_PER_PAGE = 10
+const ITEMS_PER_PAGE = 5 // 10페이지 분량을 보여주기 위해 페이지당 5개로 조정
 
 function HomePageContent() {
   const { user } = useUser()
