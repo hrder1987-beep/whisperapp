@@ -89,10 +89,10 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
     <Card className="naver-card mb-4 md:mb-6 overflow-hidden bg-white border-black/[0.1]">
       <CardContent className="p-0">
         <form onSubmit={handleSubmit}>
-          <div className="p-6 md:p-8 space-y-4 md:space-y-6">
+          <div className="p-6 md:p-10 space-y-4 md:space-y-6">
             {type === "question" && (
               <div className="space-y-4">
-                <div className="flex flex-col md:flex-row md:items-center gap-4 px-4">
+                <div className="flex flex-col md:flex-row md:items-center gap-4 px-2">
                   <Input
                     placeholder="제목을 입력하세요"
                     value={title}
@@ -118,7 +118,7 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
               </div>
             )}
             
-            <div className="px-4">
+            <div className="px-2">
               <Textarea
                 ref={textareaRef}
                 placeholder={type === "question" ? "나누고 싶은 HR 인사이트를 자유롭게 적어주세요." : "도움이 되는 따뜻한 답변을 남겨주세요."}
@@ -129,7 +129,7 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
             </div>
 
             {showVideoInput && (
-              <div className="bg-primary/5 p-4 rounded-sm border border-primary/10 mx-4 animate-in fade-in slide-in-from-top-2 duration-300">
+              <div className="bg-primary/5 p-4 rounded-sm border border-primary/10 mx-2 animate-in fade-in slide-in-from-top-2 duration-300">
                 <div className="flex items-center gap-3">
                   <Youtube className="w-5 h-5 text-[#FF0000]" />
                   <Input 
@@ -146,7 +146,7 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
             )}
 
             {imageUrl && (
-              <div className="relative w-fit max-w-full rounded-none overflow-hidden border border-black/5 mt-4 mx-4">
+              <div className="relative w-fit max-w-full rounded-none overflow-hidden border border-black/5 mt-4 mx-2">
                 <img src={imageUrl} alt="preview" className="h-32 md:h-40 w-auto object-cover" />
                 <button 
                   type="button" 
@@ -159,7 +159,7 @@ export function SubmissionForm({ onSubmit, type }: SubmissionFormProps) {
             )}
           </div>
 
-          <div className="bg-[#FBFBFC] px-5 md:px-8 py-3 md:py-4 flex items-center justify-between border-t border-black/[0.06]">
+          <div className="bg-[#FBFBFC] px-5 md:px-10 py-3 md:py-4 flex items-center justify-between border-t border-black/[0.06]">
             <div className="flex items-center gap-1">
               <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={(e) => {
                 const file = e.target.files?.[0];
