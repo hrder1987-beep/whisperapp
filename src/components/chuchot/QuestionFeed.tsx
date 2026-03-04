@@ -110,12 +110,17 @@ export function QuestionFeed({
   }
 
   return (
-    <div className="space-y-4 md:space-y-6">
+    <div className="space-y-6 md:space-y-10">
       {questions.length === 0 ? (
-        <Card className="naver-card p-16 md:p-32 text-center bg-white border-dashed">
-          <div className="flex flex-col items-center gap-4">
-            <AlertCircle className="w-12 h-12 text-accent/10" />
-            <p className="text-accent/30 font-black text-sm md:text-lg">공유된 정보가 아직 없습니다.</p>
+        <Card className="naver-card p-20 md:p-40 text-center bg-white border-dashed border-primary/20">
+          <div className="flex flex-col items-center gap-6">
+            <div className="w-20 h-20 bg-primary/5 rounded-full flex items-center justify-center">
+              <AlertCircle className="w-10 h-10 text-primary/30" />
+            </div>
+            <div className="space-y-2">
+              <p className="text-accent font-black text-xl">공유된 정보가 아직 없습니다.</p>
+              <p className="text-accent/30 font-bold text-sm">전문가님의 첫 속삭임을 기다리고 있어요.</p>
+            </div>
           </div>
         </Card>
       ) : (
@@ -131,57 +136,56 @@ export function QuestionFeed({
               key={q.id} 
               id={`q-${q.id}`}
               className={cn(
-                "naver-card group transition-all duration-500",
-                isExpanded ? "ring-2 ring-primary/30 shadow-2xl" : "hover:shadow-xl active:scale-[0.99]"
+                "naver-card group transition-all duration-700",
+                isExpanded ? "ring-2 ring-primary/40 shadow-3xl translate-y-[-4px]" : "hover:shadow-2xl active:scale-[0.995]"
               )}
               onClick={() => onSelectQuestion(q.id)}
             >
-              <CardContent className="p-6 md:p-10">
-                <div className="flex justify-between items-start mb-6 md:mb-8">
-                  <div className="flex items-center gap-4 md:gap-5">
-                    <AvatarIcon src={q.userProfilePicture} seed={q.nickname} className="w-10 h-10 md:w-14 md:h-14 border-2 border-white shadow-lg" />
+              <CardContent className="p-8 md:p-12">
+                <div className="flex justify-between items-start mb-8 md:mb-10">
+                  <div className="flex items-center gap-5 md:gap-6">
+                    <AvatarIcon src={q.userProfilePicture} seed={q.nickname} className="w-12 h-12 md:w-16 md:h-16 border-4 border-white shadow-2xl" />
                     <div className="flex flex-col">
-                      <div className="flex items-center gap-2 md:gap-3">
-                        <span className="text-[14px] md:text-[17px] font-black text-accent truncate max-w-[120px] md:max-w-none">@{q.nickname}</span>
-                        {/* 닉네임 옆에 세련된 직무 표시 (#직무) */}
-                        {q.jobTitle && <span className="text-[11px] md:text-[13px] font-black text-primary italic bg-primary/5 px-2 py-0.5 rounded-md">#{q.jobTitle}</span>}
-                        {isMentor && <Badge className="naver-badge bg-accent text-primary">Whisperer</Badge>}
+                      <div className="flex items-center gap-3">
+                        <span className="text-[16px] md:text-[19px] font-black text-accent truncate max-w-[140px] md:max-w-none">@{q.nickname}</span>
+                        {q.jobTitle && <span className="text-[11px] md:text-[13px] font-black text-primary italic bg-primary/5 px-2.5 py-1 rounded-lg">#{q.jobTitle}</span>}
+                        {isMentor && <Badge className="naver-badge bg-accent text-primary shadow-lg border-none px-3 h-6">Whisperer</Badge>}
                         {user && !isOwner && (
-                          <button onClick={(e) => { e.stopPropagation(); setMessageTarget({ id: q.userId, nickname: q.nickname }); }} className="text-accent/20 hover:text-accent transition-all p-1.5 bg-accent/5 rounded-full">
+                          <button onClick={(e) => { e.stopPropagation(); setMessageTarget({ id: q.userId, nickname: q.nickname }); }} className="text-accent/20 hover:text-accent hover:bg-accent/5 transition-all p-2 rounded-full">
                             <Mail className="w-4 h-4" />
                           </button>
                         )}
                       </div>
-                      <span className="text-[11px] md:text-[13px] font-bold text-accent/30 flex items-center gap-2 mt-0.5">
+                      <span className="text-[12px] md:text-[14px] font-bold text-accent/30 flex items-center gap-2.5 mt-1">
                         {isMounted ? formatDistanceToNow(q.createdAt, { addSuffix: true, locale: ko }) : '...'}
                         <span className="w-1 h-1 rounded-full bg-accent/10"></span>
                         조회 {q.viewCount.toLocaleString()}
                       </span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-3">
                     {q.category && (
-                      <Badge variant="outline" className="hidden sm:inline-flex text-[11px] font-black border-accent/10 text-accent/40 rounded-lg px-3 py-1">#{q.category}</Badge>
+                      <Badge variant="outline" className="hidden sm:inline-flex text-[11px] font-black border-accent/10 text-accent/40 rounded-xl px-4 py-1.5 h-8 bg-accent/2">#{q.category}</Badge>
                     )}
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                        <button className="text-accent/10 hover:text-accent/40 transition-all p-2 rounded-full hover:bg-accent/5 outline-none">
-                          <MoreHorizontal className="w-5 h-5" />
+                        <button className="text-accent/10 hover:text-accent/40 transition-all p-2.5 rounded-full hover:bg-accent/5 outline-none">
+                          <MoreHorizontal className="w-6 h-6" />
                         </button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="bg-white border-black/5 rounded-2xl shadow-2xl p-2 w-40">
+                      <DropdownMenuContent align="end" className="bg-white border-black/5 rounded-2xl shadow-4xl p-2.5 w-44">
                         {isOwner ? (
                           <>
-                            <DropdownMenuItem onSelect={(e) => { e.preventDefault(); setEditingQuestion(q); setEditTitle(q.title); setEditText(q.text); setEditCategory(q.category || ""); }} className="rounded-xl font-black text-xs gap-3 py-3 cursor-pointer text-accent">
-                              <Edit3 className="w-4 h-4" /> 수정하기
+                            <DropdownMenuItem onSelect={(e) => { e.preventDefault(); setEditingQuestion(q); setEditTitle(q.title); setEditText(q.text); setEditCategory(q.category || ""); }} className="rounded-xl font-black text-sm gap-3 py-3.5 cursor-pointer text-accent focus:bg-primary/10">
+                              <Edit3 className="w-4.5 h-4.5" /> 수정하기
                             </DropdownMenuItem>
-                            <DropdownMenuItem onSelect={(e) => { e.preventDefault(); setTimeout(() => handleDelete(q), 100); }} className="rounded-xl font-black text-xs gap-3 py-3 cursor-pointer text-red-500 hover:text-red-600 hover:bg-red-50">
-                              <Trash2 className="w-4 h-4" /> 삭제하기
+                            <DropdownMenuItem onSelect={(e) => { e.preventDefault(); setTimeout(() => handleDelete(q), 100); }} className="rounded-xl font-black text-sm gap-3 py-3.5 cursor-pointer text-red-500 focus:bg-red-50">
+                              <Trash2 className="w-4.5 h-4.5" /> 삭제하기
                             </DropdownMenuItem>
                           </>
                         ) : (
-                          <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleShare(q); }} className="rounded-xl font-black text-xs gap-3 py-3 cursor-pointer text-accent">
-                            <Share2 className="w-4 h-4" /> 링크 복사
+                          <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleShare(q); }} className="rounded-xl font-black text-sm gap-3 py-3.5 cursor-pointer text-accent focus:bg-primary/10">
+                            <Share2 className="w-4.5 h-4.5" /> 링크 복사
                           </DropdownMenuItem>
                         )}
                       </DropdownMenuContent>
@@ -189,41 +193,41 @@ export function QuestionFeed({
                   </div>
                 </div>
 
-                <div className="space-y-3 md:space-y-5">
-                  <h3 className="text-lg md:text-[22px] font-black leading-tight text-accent group-hover:text-primary transition-colors decoration-primary/30 underline-offset-8 line-clamp-2 md:line-clamp-none">{q.title}</h3>
-                  <p className={cn("text-[15px] md:text-[17px] leading-relaxed text-[#404040] font-medium whitespace-pre-wrap break-words", !isExpanded && "line-clamp-2")}>{q.text}</p>
+                <div className="space-y-4 md:space-y-6">
+                  <h3 className="text-xl md:text-[26px] font-black leading-[1.3] text-accent group-hover:text-primary transition-colors tracking-tight line-clamp-2 md:line-clamp-none">{q.title}</h3>
+                  <p className={cn("text-[16px] md:text-[18px] leading-relaxed text-[#404040] font-medium whitespace-pre-wrap break-words", !isExpanded && "line-clamp-3")}>{q.text}</p>
                   {isExpanded && (
-                    <div className="space-y-6 mt-6 md:mt-10">
-                      {q.imageUrl && <div className="relative w-full rounded-2xl overflow-hidden border border-black/5 bg-[#FBFBFC] shadow-inner"><img src={q.imageUrl} alt="이미지" className="w-full h-auto block" /></div>}
-                      {youtubeId && <div className="relative w-full aspect-video rounded-2xl overflow-hidden border-4 border-white shadow-2xl bg-black"><iframe width="100%" height="100%" src={`https://www.youtube.com/embed/${youtubeId}`} title="YouTube player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe></div>}
+                    <div className="space-y-8 mt-8 md:mt-12">
+                      {q.imageUrl && <div className="relative w-full rounded-3xl overflow-hidden border border-black/5 bg-[#FBFBFC] shadow-2xl"><img src={q.imageUrl} alt="이미지" className="w-full h-auto block" /></div>}
+                      {youtubeId && <div className="relative w-full aspect-video rounded-3xl overflow-hidden border-8 border-white shadow-4xl bg-black"><iframe width="100%" height="100%" src={`https://www.youtube.com/embed/${youtubeId}`} title="YouTube player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe></div>}
                     </div>
                   )}
                 </div>
 
                 {isExpanded && (
-                  <div className="mt-10 md:mt-16 pt-10 md:pt-16 border-t border-black/[0.05]" onClick={(e) => e.stopPropagation()}>
+                  <div className="mt-12 md:mt-20 pt-12 md:pt-20 border-t border-black/[0.06]" onClick={(e) => e.stopPropagation()}>
                     <SubmissionForm type="answer" placeholder="전문가님의 소중한 의견을 보태주세요." onSubmit={onAddAnswer} />
                     <AnswerFeed answers={questionAnswers} isAdminMode={isAdminMode} />
                   </div>
                 )}
               </CardContent>
               {!isExpanded && (
-                <CardFooter className="px-6 md:px-10 py-4 md:py-5 border-t border-primary/10 flex items-center justify-between bg-primary/5 transition-colors">
-                  <div className="flex gap-6 md:gap-10">
-                    <div className="flex items-center gap-2 text-[13px] md:text-[14px] font-black text-accent/60">
-                      <MessageCircle className="w-4 h-4 md:w-5 md:h-5 text-primary" />
+                <CardFooter className="px-8 md:px-12 py-5 md:py-7 border-t border-primary/10 flex items-center justify-between bg-primary/2 transition-colors">
+                  <div className="flex gap-8 md:gap-12">
+                    <div className="flex items-center gap-2.5 text-[14px] md:text-[15px] font-black text-accent/60">
+                      <MessageCircle className="w-5 h-5 md:w-6 md:h-6 text-primary" />
                       <span>답글 {q.answerCount.toLocaleString()}</span>
                     </div>
-                    <button onClick={(e) => { e.stopPropagation(); handleShare(q); }} className="flex items-center gap-2 text-[13px] md:text-[14px] font-black text-accent/60 hover:text-primary transition-all">
-                      <Share2 className="w-4 h-4 md:w-5 md:h-5" />
+                    <button onClick={(e) => { e.stopPropagation(); handleShare(q); }} className="flex items-center gap-2.5 text-[14px] md:text-[15px] font-black text-accent/60 hover:text-primary transition-all">
+                      <Share2 className="w-5 h-5 md:w-6 md:h-6" />
                       공유
                     </button>
                   </div>
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-1.5 text-[11px] font-black text-accent/20 uppercase tracking-widest sm:hidden">
+                  <div className="flex items-center gap-5">
+                    <div className="flex items-center gap-2 text-[12px] font-black text-accent/20 uppercase tracking-widest sm:hidden">
                       #{q.category}
                     </div>
-                    <Bookmark className="w-4 h-4 md:w-5 md:h-5 text-accent/10 hover:text-primary cursor-pointer transition-all hover:scale-110" />
+                    <Bookmark className="w-5 h-5 md:w-6 md:h-6 text-accent/10 hover:text-primary cursor-pointer transition-all hover:scale-115" />
                   </div>
                 </CardFooter>
               )}
@@ -233,29 +237,29 @@ export function QuestionFeed({
       )}
 
       <Dialog open={!!editingQuestion} onOpenChange={(open) => { if(!open) setEditingQuestion(null); }}>
-        <DialogContent className="max-w-2xl bg-white border-none rounded-[3rem] p-0 shadow-3xl overflow-hidden">
+        <DialogContent className="max-w-2xl bg-white border-none rounded-[3rem] p-0 shadow-4xl overflow-hidden">
           <DialogHeader className="bg-primary/5 p-10 border-b border-primary/5">
-            <DialogTitle className="text-2xl font-black text-accent flex items-center gap-4"><Edit3 className="w-7 h-7 text-primary" /> 게시글 수정하기</DialogTitle>
+            <DialogTitle className="text-2xl font-black text-accent flex items-center gap-4"><Edit3 className="w-8 h-8 text-primary" /> 게시글 수정하기</DialogTitle>
           </DialogHeader>
           <div className="p-10 space-y-8">
-            <div className="space-y-5">
-              <div className="flex flex-col md:flex-row gap-5">
-                <Input value={editTitle} onChange={e => setEditTitle(e.target.value)} placeholder="제목을 입력하세요" className="flex-1 h-14 bg-[#F5F6F7] border-none rounded-2xl font-black text-lg px-6" />
-                <div className="w-full md:w-56">
+            <div className="space-y-6">
+              <div className="flex flex-col md:flex-row gap-6">
+                <Input value={editTitle} onChange={e => setEditTitle(e.target.value)} placeholder="제목을 입력하세요" className="flex-1 h-14 bg-[#F5F6F7] border-none rounded-2xl font-black text-xl px-6 shadow-inner" />
+                <div className="w-full md:w-60">
                   <Select value={editCategory} onValueChange={setEditCategory}>
-                    <SelectTrigger className="h-14 bg-accent text-white border-none rounded-2xl font-black text-sm px-6">
+                    <SelectTrigger className="h-14 bg-accent text-white border-none rounded-2xl font-black text-sm px-6 shadow-xl">
                       <SelectValue placeholder="카테고리" />
                     </SelectTrigger>
-                    <SelectContent className="rounded-2xl shadow-2xl">{HR_CATEGORIES.map(cat => <SelectItem key={cat} value={cat} className="rounded-xl py-3 font-bold">{cat}</SelectItem>)}</SelectContent>
+                    <SelectContent className="rounded-2xl shadow-4xl">{HR_CATEGORIES.map(cat => <SelectItem key={cat} value={cat} className="rounded-xl py-4 font-bold">{cat}</SelectItem>)}</SelectContent>
                   </Select>
                 </div>
               </div>
-              <Textarea value={editText} onChange={e => setEditText(e.target.value)} placeholder="내용을 입력하세요" className="min-h-[300px] bg-[#F5F6F7] border-none rounded-3xl p-8 font-medium text-[16px] leading-relaxed resize-none shadow-inner" />
+              <Textarea value={editText} onChange={e => setEditText(e.target.value)} placeholder="내용을 입력하세요" className="min-h-[350px] bg-[#F5F6F7] border-none rounded-[2rem] p-8 font-medium text-[17px] leading-relaxed resize-none shadow-inner" />
             </div>
           </div>
-          <DialogFooter className="bg-[#FBFBFC] p-8 border-t border-black/5 flex flex-row gap-4">
-            <Button variant="ghost" onClick={() => setEditingQuestion(null)} className="flex-1 h-14 rounded-2xl font-black text-accent/40">취소</Button>
-            <Button onClick={handleUpdate} disabled={isUpdating} className="flex-[2] h-14 naver-button rounded-2xl text-lg shadow-xl">{isUpdating ? "저장 중..." : "수정 내용 저장하기"}</Button>
+          <DialogFooter className="bg-[#FBFBFC] p-10 border-t border-black/5 flex flex-row gap-5">
+            <Button variant="ghost" onClick={() => setEditingQuestion(null)} className="flex-1 h-14 rounded-2xl font-black text-accent/40 text-lg">취소</Button>
+            <Button onClick={handleUpdate} disabled={isUpdating} className="flex-[2] h-14 naver-button rounded-2xl text-xl shadow-2xl">{isUpdating ? "저장 중..." : "수정 내용 저장하기"}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

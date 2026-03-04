@@ -70,12 +70,12 @@ export function Header({ onSearch }: HeaderProps) {
 
   return (
     <header className="naver-header shadow-sm">
-      <div className="bg-[#F7FAF2] border-b border-black/[0.03] hidden md:block">
-        <div className="max-w-7xl mx-auto px-4 h-10 flex items-center justify-end gap-6 text-[11px] font-bold text-accent/40">
+      <div className="bg-[#F7FAF2] border-b border-black/[0.02] hidden md:block">
+        <div className="max-w-7xl mx-auto px-4 h-9 flex items-center justify-end gap-6 text-[11px] font-bold text-accent/40">
           {user ? (
             <>
-              <Link href="/profile" className="hover:text-accent transition-colors flex items-center gap-1.5"><UserIcon className="w-3.5 h-3.5" /> 내 정보</Link>
-              <Link href="/my-posts" className="hover:text-accent transition-colors flex items-center gap-1.5"><FileText className="w-3.5 h-3.5" /> 내가 쓴 글</Link>
+              <Link href="/profile" className="hover:text-accent transition-colors flex items-center gap-1.5"><UserIcon className="w-3 h-3" /> 내 정보</Link>
+              <Link href="/my-posts" className="hover:text-accent transition-colors flex items-center gap-1.5"><FileText className="w-3 h-3" /> 내가 쓴 글</Link>
               <button onClick={handleLogout} className="hover:text-red-500 transition-colors">로그아웃</button>
             </>
           ) : (
@@ -136,8 +136,8 @@ export function Header({ onSearch }: HeaderProps) {
             {isAdmin && <Button asChild variant="outline" size="sm" className="border-accent/10 text-accent font-black h-11 px-5 gap-2 rounded-xl hover:bg-primary/10 transition-all"><Link href="/admin"><ShieldCheck className="w-4 h-4" /> 관리 센터</Link></Button>}
             {user && (
               <div className="flex items-center gap-2">
-                <Link href="/notifications"><Button variant="ghost" size="icon" className="relative text-accent/40 hover:text-accent hover:bg-primary/10 h-11 w-11 rounded-xl"><Bell className="w-5.5 h-5.5" />{unreadNotifs && unreadNotifs.length > 0 && (<Badge className="absolute top-1.5 right-1.5 bg-red-500 text-white border-none h-4.5 w-4.5 p-0 flex items-center justify-center text-[9px] rounded-full font-black animate-bounce">{unreadNotifs.length}</Badge>)}</Button></Link>
-                <Link href="/messages"><Button variant="ghost" size="icon" className="relative text-accent/40 hover:text-accent hover:bg-primary/10 h-11 w-11 rounded-xl"><Mail className="w-5.5 h-5.5" />{unreadMessages && unreadMessages.length > 0 && (<Badge className="absolute top-1.5 right-1.5 bg-red-500 text-white border-none h-4.5 w-4.5 p-0 flex items-center justify-center text-[9px] rounded-full font-black animate-bounce">{unreadMessages.length}</Badge>)}</Button></Link>
+                <Link href="/notifications"><Button variant="ghost" size="icon" className="relative text-accent/40 hover:text-accent hover:bg-primary/10 h-11 w-11 rounded-xl"><Bell className="w-5.5 h-5.5" />{unreadNotifs && unreadNotifs.length > 0 && (<Badge className="absolute top-1.5 right-1.5 bg-red-500 text-white border-none h-4 w-4 p-0 flex items-center justify-center text-[8px] rounded-full font-black animate-bounce">{unreadNotifs.length}</Badge>)}</Button></Link>
+                <Link href="/messages"><Button variant="ghost" size="icon" className="relative text-accent/40 hover:text-accent hover:bg-primary/10 h-11 w-11 rounded-xl"><Mail className="w-5.5 h-5.5" />{unreadMessages && unreadMessages.length > 0 && (<Badge className="absolute top-1.5 right-1.5 bg-red-500 text-white border-none h-4 w-4 p-0 flex items-center justify-center text-[8px] rounded-full font-black animate-bounce">{unreadMessages.length}</Badge>)}</Button></Link>
               </div>
             )}
           </div>
@@ -147,7 +147,7 @@ export function Header({ onSearch }: HeaderProps) {
 
       <nav className="border-t border-black/[0.03] hidden md:block bg-white/50">
         <div className="max-w-7xl mx-auto px-4 h-14 flex items-center gap-10">
-          {navLinks.map((link) => (<Link key={link.href} href={link.href} className={cn("text-[15px] font-black transition-all h-full flex items-center border-b-[3px] border-transparent data-[state=active]:border-primary rounded-none h-full px-1 pt-1", pathname === link.href ? "text-accent border-primary" : "text-accent/40 hover:text-accent")}>{link.name}</Link>))}
+          {navLinks.map((link) => (<Link key={link.href} href={link.href} className={cn("text-[15px] font-black transition-all h-full flex items-center border-b-[3px] border-transparent data-[state=active]:border-primary rounded-none px-1 pt-1", pathname === link.href ? "text-accent border-primary" : "text-accent/40 hover:text-accent")}>{link.name}</Link>))}
         </div>
       </nav>
     </header>
