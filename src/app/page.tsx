@@ -1,13 +1,12 @@
-
 "use client"
 
 import { useState, useMemo, useEffect, useDeferredValue, Suspense } from "react"
-import { Header } from "@/components/chuchot/Header"
+import { Header } from "@/components/whisper/Header"
 import { MainBanner, BannerData } from "@/components/chuchot/MainBanner"
 import { SubmissionForm } from "@/components/chuchot/SubmissionForm"
 import { QuestionFeed } from "@/components/chuchot/QuestionFeed"
 import { RankingList } from "@/components/chuchot/RankingList"
-import { AldiChat } from "@/components/chuchot/ShuChat"
+import { WhisperChat } from "@/components/chuchot/WhisperChat"
 import { PremiumAds } from "@/components/chuchot/PremiumAds"
 import { Question, Answer, PremiumAd, SiteBranding } from "@/lib/types"
 import { Button } from "@/components/ui/button"
@@ -19,7 +18,7 @@ import { collection, query, orderBy, doc, increment } from "firebase/firestore"
 import mockData from "@/lib/mock-data.json"
 import { useSearchParams } from "next/navigation"
 
-const ITEMS_PER_PAGE = 5 // 10페이지 이상을 보여주기 위해 페이지당 5개로 유지
+const ITEMS_PER_PAGE = 5 
 
 function HomePageContent() {
   const { user } = useUser()
@@ -39,8 +38,8 @@ function HomePageContent() {
   const configDocRef = useMemoFirebase(() => db ? doc(db, "admin_configuration", "site_settings") : null, [db])
   const { data: config } = useDoc<any>(configDocRef)
 
-  const aldiConfigRef = useMemoFirebase(() => db ? doc(db, "admin_configuration", "aldi_knowledge") : null, [db])
-  const { data: aldiConfig } = useDoc<any>(aldiConfigRef)
+  const whisperConfigRef = useMemoFirebase(() => db ? doc(db, "admin_configuration", "aldi_knowledge") : null, [db])
+  const { data: whisperConfig } = useDoc<any>(whisperConfigRef)
 
   const questions = useMemo(() => {
     const merged = [...(dbQuestions || [])];
@@ -123,7 +122,7 @@ function HomePageContent() {
       jobTitle: jobRole || null 
     }).then(ref => {
       if (ref) {
-        generateAiReply({ title, text, instruction: aldiConfig?.autoReplyInstruction }).then(res => {
+        generateAiReply({ title, text, instruction: whisperConfig?.autoReplyInstruction }).then(res => {
           addDocumentNonBlocking(collection(db, "questions", ref.id, "answers"), { questionId: ref.id, text: res.replyText, nickname: "알디", userId: "ai", createdAt: Date.now(), jobTitle: "공식 AI" });
           updateDocumentNonBlocking(doc(db, "questions", ref.id), { answerCount: 1 });
         });
@@ -204,7 +203,7 @@ function HomePageContent() {
       </main>
 
       <aside className="lg:col-span-4 hidden lg:block space-y-8 h-fit sticky top-32">
-        <AldiChat />
+        <WhisperChat />
         <RankingList questions={[...questions].sort((a,b) => b.viewCount - a.viewCount)} onSelectQuestion={handleSelectQuestion} />
         <PremiumAds ads={premiumAds} />
       </aside>

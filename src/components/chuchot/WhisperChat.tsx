@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useRef, useEffect, memo } from "react"
@@ -10,7 +9,7 @@ import { Send, User, Maximize2, X, RotateCcw, Sparkles as SparklesIcon } from "l
 import { chatWhisper } from "@/ai/flows/chat-whisper-flow"
 import { cn } from "@/lib/utils"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { AvatarIcon } from "./AvatarIcon"
+import { AvatarIcon } from "@/components/whisper/AvatarIcon"
 import { useFirestore, useDoc, useMemoFirebase } from "@/firebase"
 import { doc } from "firebase/firestore"
 import { BotType } from "@/lib/types"

@@ -3,7 +3,7 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 import { FirebaseClientProvider } from "@/firebase/client-provider"
-import { BottomNav } from "@/components/chuchot/BottomNav"
+import { BottomNav } from "@/components/whisper/BottomNav"
 
 const SITE_URL = "https://whisperapp.kr"; 
 

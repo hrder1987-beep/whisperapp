@@ -1,11 +1,10 @@
-
 "use client"
 
 import { usePathname, useRouter } from "next/navigation"
 import { MessageSquareQuote, Award, GraduationCap, Sparkles, Users } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useState, useEffect } from "react"
-import { WhisperChat } from "./WhisperChat"
+import { WhisperChat } from "@/components/chuchot/WhisperChat"
 import { useIsMobile } from "@/hooks/use-mobile"
 
 export function BottomNav() {

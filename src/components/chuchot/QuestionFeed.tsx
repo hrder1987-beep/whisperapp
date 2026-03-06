@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect } from "react"
@@ -8,9 +7,9 @@ import { MessageCircle, Eye, Clock, Bookmark, Trash2, Crown, Mail, Share2, MoreH
 import { formatDistanceToNow } from "date-fns"
 import { ko } from "date-fns/locale"
 import { Button } from "@/components/ui/button"
-import { AvatarIcon } from "./AvatarIcon"
+import { AvatarIcon } from "@/components/whisper/AvatarIcon"
 import { Badge } from "@/components/ui/badge"
-import { AnswerFeed } from "./AnswerFeed"
+import { AnswerFeed } from "@/components/whisper/AnswerFeed"
 import { SubmissionForm } from "./SubmissionForm"
 import { MessageDialog } from "./MessageDialog"
 import { cn } from "@/lib/utils"
