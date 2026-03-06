@@ -100,7 +100,7 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
 
 export const useFirebase = (): FirebaseServicesAndUser => {
   const context = useContext(FirebaseContext);
-  // SSR 환경에서 컨텍스트가 없을 때 에러를 던지지 않고 기본값 반환 (Internal Server Error 방지)
+  // SSR 환경에서 컨텍스트가 없을 때 에러를 던지지 않고 기본값 반환하여 500 에러를 방지합니다.
   if (context === undefined) {
     return {
       firebaseApp: null,
