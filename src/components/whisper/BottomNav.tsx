@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation"
 import { MessageSquareQuote, Award, GraduationCap, Sparkles, Users } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useState, useEffect } from "react"
-import { AldiChat } from "./ShuChat"
+import { WhisperChat } from "./WhisperChat"
 import { useIsMobile } from "@/hooks/use-mobile"
 
 export function BottomNav() {
@@ -71,7 +71,7 @@ export function BottomNav() {
         </div>
       </nav>
 
-      <AldiChat 
+      <WhisperChat 
         forceOpenTrigger={isChatOpen} 
         onTriggerClose={() => setIsChatOpen(false)} 
         hideCard 

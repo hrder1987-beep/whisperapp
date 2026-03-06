@@ -10,23 +10,23 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-const ChatShuInputSchema = z.object({
+const ChatWhisperInputSchema = z.object({
   message: z.string(),
   botType: z.enum(['whisperra', 'aldi', 'dongsan']),
   knowledge: z.string().optional().describe('주입된 방대한 지식 베이스 데이터'),
   persona: z.string().optional().describe('관리자가 설정한 봇의 성격과 지침'),
 });
-export type ChatShuInput = z.infer<typeof ChatShuInputSchema>;
+export type ChatWhisperInput = z.infer<typeof ChatWhisperInputSchema>;
 
-const ChatShuOutputSchema = z.object({
+const ChatWhisperOutputSchema = z.object({
   reply: z.string(),
 });
-export type ChatShuOutput = z.infer<typeof ChatShuOutputSchema>;
+export type ChatWhisperOutput = z.infer<typeof ChatWhisperOutputSchema>;
 
 const prompt = ai.definePrompt({
-  name: 'chatShuPrompt',
-  input: {schema: ChatShuInputSchema},
-  output: {schema: ChatShuOutputSchema},
+  name: 'chatWhisperPrompt',
+  input: {schema: ChatWhisperInputSchema},
+  output: {schema: ChatWhisperOutputSchema},
   prompt: `당신은 HR 전문가 플랫폼 'Whisper'의 전용 AI 인텔리전스 엔진입니다. 
 현재 모드: [{{{botType}}}]
 
@@ -56,11 +56,11 @@ const prompt = ai.definePrompt({
 답변:`,
 });
 
-const chatShuFlow = ai.defineFlow(
+const chatWhisperFlow = ai.defineFlow(
   {
-    name: 'chatShuFlow',
-    inputSchema: ChatShuInputSchema,
-    outputSchema: ChatShuOutputSchema,
+    name: 'chatWhisperFlow',
+    inputSchema: ChatWhisperInputSchema,
+    outputSchema: ChatWhisperOutputSchema,
   },
   async input => {
     // Flash 모델은 수만 라인의 컨텍스트도 수초 내에 처리 가능합니다.
@@ -69,6 +69,6 @@ const chatShuFlow = ai.defineFlow(
   }
 );
 
-export async function chatShu(input: ChatShuInput): Promise<ChatShuOutput> {
-  return chatShuFlow(input);
+export async function chatWhisper(input: ChatWhisperInput): Promise<ChatWhisperOutput> {
+  return chatWhisperFlow(input);
 }

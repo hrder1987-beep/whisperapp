@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Send, User, Maximize2, X, RotateCcw, Sparkles as SparklesIcon } from "lucide-react"
-import { chatShu } from "@/ai/flows/chat-shu-flow"
+import { chatWhisper } from "@/ai/flows/chat-whisper-flow"
 import { cn } from "@/lib/utils"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { AvatarIcon } from "./AvatarIcon"
@@ -134,7 +134,7 @@ function ChatInterface({ messages, input, setInput, isLoading, handleSend, isExp
   )
 }
 
-export function AldiChat({ forceOpenTrigger, onTriggerClose, hideCard = false }: any) {
+export function WhisperChat({ forceOpenTrigger, onTriggerClose, hideCard = false }: any) {
   const db = useFirestore()
   const [activeBot, setActiveBot] = useState<BotType>("whisperra")
   const activeBotConfigRef = useMemoFirebase(() => db ? doc(db, "admin_configuration", `bot_${activeBot}`) : null, [db, activeBot])
@@ -170,7 +170,7 @@ export function AldiChat({ forceOpenTrigger, onTriggerClose, hideCard = false }:
     setInput("")
     setIsLoading(true)
     try {
-      const res = await chatShu({ message: userMsg, botType: currentBot, knowledge: botConfig?.content, persona: botConfig?.persona })
+      const res = await chatWhisper({ message: userMsg, botType: currentBot, knowledge: botConfig?.content, persona: botConfig?.persona })
       setConversations(prev => ({
         ...prev,
         [currentBot]: [...prev[currentBot], { role: "bot", text: res.reply }]
