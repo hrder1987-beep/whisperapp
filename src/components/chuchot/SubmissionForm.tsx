@@ -92,12 +92,12 @@ export function SubmissionForm({ onSubmit, type, placeholder }: SubmissionFormPr
           <div className="p-6 md:p-10 space-y-6 md:space-y-8">
             {type === "question" && (
               <div className="space-y-5">
-                <div className="flex flex-col md:flex-row md:items-center gap-5 px-2">
+                <div className="flex flex-col md:flex-row md:items-center gap-5">
                   <Input
                     placeholder="제목을 입력하세요"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    className="flex-1 border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 text-xl md:text-2xl font-black p-0 h-auto placeholder:text-black/20 text-accent bg-transparent outline-none !pl-5"
+                    className="flex-1 border-none shadow-none focus-visible:ring-0 text-xl md:text-2xl font-black p-0 h-auto placeholder:text-black/20 text-accent bg-transparent outline-none !pl-5"
                   />
                   <div className="w-full md:w-52 shrink-0">
                     <Select value={selectedCategory || ""} onValueChange={setSelectedCategory}>
@@ -118,13 +118,13 @@ export function SubmissionForm({ onSubmit, type, placeholder }: SubmissionFormPr
               </div>
             )}
             
-            <div className="px-2">
+            <div className="px-0">
               <Textarea
                 ref={textareaRef}
                 placeholder={placeholder || (type === "question" ? "나누고 싶은 HR 인사이트를 자유롭게 적어주세요." : "도움이 되는 따뜻한 답변을 남겨주세요.")}
                 value={text}
                 onChange={(e) => setText(e.target.value)}
-                className="min-h-[120px] md:min-h-[160px] border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 py-2 text-[16px] md:text-[18px] leading-relaxed resize-none text-[#404040] placeholder:text-black/20 bg-transparent outline-none font-medium !pl-5"
+                className="min-h-[120px] md:min-h-[160px] border-none shadow-none focus-visible:ring-0 py-2 text-[16px] md:text-[18px] leading-relaxed resize-none text-[#404040] placeholder:text-black/20 bg-transparent outline-none font-medium !pl-5"
               />
             </div>
 
