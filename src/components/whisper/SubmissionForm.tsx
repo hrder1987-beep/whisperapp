@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useRef, useEffect } from "react"
@@ -26,7 +25,7 @@ interface SubmissionFormProps {
 }
 
 const HR_CATEGORIES = [
-  "인사전략/HRM", "HRD/교육", "조직문화/EVP", "채용/헤드헌팅", "복지/유연근무", "강의/컨설팅", "교육문의", "현업 고민", "기타 정보"
+  "인사전략/HRM", "HRD/교육", "조직문화/EVP", "채용/헤드헌팅", "복지/유연근무", "강의/컨설팅", "교육문의", "연회장문의", "현업 고민", "기타 정보"
 ]
 
 export function SubmissionForm({ onSubmit, type, placeholder }: SubmissionFormProps) {
@@ -97,7 +96,7 @@ export function SubmissionForm({ onSubmit, type, placeholder }: SubmissionFormPr
                       placeholder="주제나 고민의 제목을 입력하세요"
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
-                      className="border-none shadow-none focus-visible:ring-0 text-base md:text-lg font-black p-0 h-auto placeholder:text-[#163300]/10 text-[#163300] bg-transparent outline-none !px-0"
+                      className="border-none shadow-none focus-visible:ring-0 text-base md:text-lg font-black h-auto placeholder:text-[#163300]/10 text-[#163300] bg-transparent outline-none px-0 pl-1"
                     />
                   </div>
                   <div className="w-full md:w-40 shrink-0">
@@ -125,7 +124,7 @@ export function SubmissionForm({ onSubmit, type, placeholder }: SubmissionFormPr
                 placeholder={placeholder || (type === "question" ? "전문가님의 인사이트를 자유롭게 펼쳐주세요." : "도움이 되는 지혜를 보태주세요.")}
                 value={text}
                 onChange={(e) => setText(e.target.value)}
-                className="min-h-[80px] md:min-h-[100px] border-none shadow-none focus-visible:ring-0 py-1 text-sm md:text-base leading-relaxed resize-none text-[#404040] placeholder:text-[#163300]/10 bg-transparent outline-none font-medium !px-0"
+                className="min-h-[80px] md:min-h-[100px] border-none shadow-none focus-visible:ring-0 py-1 text-sm md:text-base leading-relaxed resize-none text-[#404040] placeholder:text-[#163300]/10 bg-transparent outline-none font-medium px-0 pl-1"
               />
             </div>
 

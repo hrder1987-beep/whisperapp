@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo, useEffect, useDeferredValue, Suspense } from "react"
@@ -68,11 +67,7 @@ function HomePageContent() {
         if (parsed.length > 0) return parsed;
       } catch (e) { }
     }
-    return [
-      { id: "def-1", title: "대한민국 HR 전문가를 위한\n품격 있는 지식 허브, 위스퍼", description: "실무 사례부터 최신 트렌드 리포트까지\n검증된 인사이트를 한곳에서 확인하세요.", image: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=1080", badge: "WHISPER IDENTITY" },
-      { id: "def-2", title: "동료 전문가들과 함께하는\n실시간 고민 상담 커뮤니티", description: "안전한 속삭임 공간에서 현업의 어려움을 나누고\n함께 해결책을 찾아가는 집단지성의 힘.", image: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=1080", badge: "COMMUNITY" },
-      { id: "def-3", title: "나의 커리어 성장을 위한\n최적의 솔루션과 강사 정보", description: "위스퍼가 엄선한 프리미엄 교육 과정과\n검증된 전문 강사 라인업을 만나보세요.", image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1080", badge: "CAREER GROWTH" }
-    ]
+    return []
   }, [config])
 
   const premiumAds = useMemo(() => {
@@ -166,13 +161,13 @@ function HomePageContent() {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-      <main className="lg:col-span-8 space-y-6 md:space-y-10">
+      <main className="lg:col-span-8 space-y-6 md:space-y-8">
         <MainBanner banners={banners} autoSlideDuration={branding?.bannerAutoSlideDuration || 3} />
         <SubmissionForm type="question" placeholder={branding?.homeTitle ? `${branding.homeTitle}에서 고민을 나눠보세요` : "HR 고민을 속삭여보세요."} onSubmit={handleAddQuestion} />
         
         <div className="flex flex-nowrap overflow-x-auto scrollbar-hide gap-x-6 pb-2 border-b border-black/[0.05]">
           {[{ id: "all", label: "전체 피드" }, { id: "hrm", label: "인사/총무" }, { id: "hrd", label: "HRD/교육" }, { id: "culture", label: "조직문화" }, { id: "popular", label: "인기" }].map(t => (
-            <button key={t.id} onClick={() => setActiveTab(t.id as any)} className={cn("pb-3 text-[15px] transition-all border-b-2 whitespace-nowrap shrink-0", activeTab === t.id ? "font-black text-primary border-accent" : "font-bold text-black/60 border-transparent hover:text-black/80")}>{t.label}</button>
+            <button key={t.id} onClick={() => setActiveTab(t.id as any)} className={cn("pb-3 text-[15px] transition-all border-b-2 whitespace-nowrap shrink-0", activeTab === t.id ? "font-black text-primary border-accent" : "font-bold text-accent/40 border-transparent hover:text-accent/60")}>{t.label}</button>
           ))}
         </div>
 
@@ -195,7 +190,7 @@ function HomePageContent() {
               if (currentPage >= totalPages - 1) p = totalPages - 4 + i;
               if (p <= 0 || p > totalPages) return null;
               return (
-                <Button key={p} onClick={() => setCurrentPage(p)} variant={currentPage === p ? "default" : "outline"} className={cn("w-10 h-10 rounded-xl font-black", currentPage === p ? "bg-primary text-accent" : "bg-white")}>{p}</Button>
+                <Button key={p} onClick={() => setCurrentPage(p)} variant={currentPage === p ? "default" : "outline"} className={cn("w-9 h-9 rounded-xl font-black text-xs", currentPage === p ? "bg-primary text-accent" : "bg-white")}>{p}</Button>
               );
             })}
             <Button variant="ghost" disabled={currentPage === totalPages} onClick={() => setCurrentPage(totalPages)}><ChevronsRight className="w-4" /></Button>
@@ -203,7 +198,7 @@ function HomePageContent() {
         )}
       </main>
 
-      <aside className="lg:col-span-4 hidden lg:block space-y-8 h-fit">
+      <aside className="lg:col-span-4 hidden lg:block space-y-8 h-fit relative">
         <WhisperChat />
         <RankingList questions={[...questions].sort((a,b) => b.viewCount - a.viewCount)} onSelectQuestion={handleSelectQuestion} />
         <PremiumAds ads={premiumAds} />
@@ -216,7 +211,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-[#F8F9FA]">
       <Header />
-      <div className="max-w-7xl mx-auto px-4 py-6 md:py-12">
+      <div className="max-w-7xl mx-auto px-4 py-6 md:py-10">
         <Suspense fallback={<div className="flex justify-center py-40"><Sparkles className="w-12 h-12 animate-spin text-accent" /></div>}>
           <HomePageContent />
         </Suspense>

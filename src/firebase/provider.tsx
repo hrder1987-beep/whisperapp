@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { DependencyList, createContext, useContext, ReactNode, useMemo, useState, useEffect } from 'react';
@@ -100,7 +99,7 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
 };
 
 export const useFirebase = (): FirebaseServicesAndUser => {
-  // CRITICAL: 서버 환경 체크
+  // CRITICAL: 서버 환경 체크 (Internal Server Error 방지)
   if (typeof window === 'undefined') {
     return {
       firebaseApp: null,
@@ -113,7 +112,7 @@ export const useFirebase = (): FirebaseServicesAndUser => {
   }
 
   const context = useContext(FirebaseContext);
-  // 컨텍스트가 없는 경우 에러를 던지는 대신 안전한 초기값 반환 (SSR 대응)
+  // 컨텍스트가 없는 경우 에러를 던지는 대신 안전한 초기값 반환
   if (!context) {
     return {
       firebaseApp: null,
