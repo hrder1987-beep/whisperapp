@@ -96,10 +96,10 @@ export function SubmissionForm({ onSubmit, type, placeholder }: SubmissionFormPr
                       placeholder="주제나 고민의 제목을 입력하세요"
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
-                      className="border-none shadow-none focus-visible:ring-0 text-xl md:text-3xl font-black p-0 h-auto placeholder:text-[#163300]/10 text-[#163300] bg-transparent outline-none !px-6"
+                      className="border-none shadow-none focus-visible:ring-0 text-xl md:text-3xl font-black p-0 h-auto placeholder:text-[#163300]/10 text-[#163300] bg-transparent outline-none !px-0"
                     />
                   </div>
-                  <div className="w-full md:w-64 shrink-0 px-6">
+                  <div className="w-full md:w-64 shrink-0">
                     <Select value={selectedCategory || ""} onValueChange={setSelectedCategory}>
                       <SelectTrigger className="h-14 bg-primary/15 border-none rounded-2xl font-black text-sm text-[#163300] focus:ring-4 focus:ring-primary/5 px-6 shadow-inner">
                         <SelectValue placeholder="카테고리 선택" />
@@ -114,11 +114,11 @@ export function SubmissionForm({ onSubmit, type, placeholder }: SubmissionFormPr
                     </Select>
                   </div>
                 </div>
-                <div className="h-px bg-black/[0.03] mx-6"></div>
+                <div className="h-px bg-black/[0.03]"></div>
               </div>
             )}
             
-            <div className="px-6 relative">
+            <div className="relative">
               <Textarea
                 ref={textareaRef}
                 placeholder={placeholder || (type === "question" ? "전문가님의 인사이트를 자유롭게 펼쳐주세요." : "도움이 되는 따뜻한 지혜를 보태주세요.")}
@@ -129,7 +129,7 @@ export function SubmissionForm({ onSubmit, type, placeholder }: SubmissionFormPr
             </div>
 
             {showVideoInput && (
-              <div className="mx-6 bg-primary/10 p-6 rounded-3xl border border-primary/10 animate-in fade-in slide-in-from-top-4 duration-500">
+              <div className="bg-primary/10 p-6 rounded-3xl border border-primary/10 animate-in fade-in slide-in-from-top-4 duration-500">
                 <div className="flex items-center gap-5">
                   <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center shadow-sm">
                     <Youtube className="w-6 h-6 text-[#FF0000]" />
@@ -138,7 +138,7 @@ export function SubmissionForm({ onSubmit, type, placeholder }: SubmissionFormPr
                     placeholder="유튜브 영상 주소를 복사해서 붙여넣으세요"
                     value={videoUrl || ""}
                     onChange={(e) => setVideoUrl(e.target.value)}
-                    className="flex-1 bg-white border-none h-12 text-sm font-bold rounded-xl px-6 shadow-inner !px-6"
+                    className="flex-1 bg-white border-none h-12 text-sm font-bold rounded-xl px-6 shadow-inner"
                   />
                   <Button type="button" variant="ghost" size="icon" onClick={() => { setVideoUrl(undefined); setShowVideoInput(false); }} className="h-12 w-12 text-accent/20 hover:text-red-500 hover:bg-red-50 rounded-full">
                     <X className="w-6 h-6" />
@@ -148,7 +148,7 @@ export function SubmissionForm({ onSubmit, type, placeholder }: SubmissionFormPr
             )}
 
             {imageUrl && (
-              <div className="mx-6 relative w-fit max-w-full rounded-[2rem] overflow-hidden border-4 border-white shadow-2xl group animate-in zoom-in-95 duration-500">
+              <div className="relative w-fit max-w-full rounded-[2rem] overflow-hidden border-4 border-white shadow-2xl group animate-in zoom-in-95 duration-500">
                 <img src={imageUrl} alt="preview" className="max-h-[300px] md:max-h-[450px] w-auto object-cover" />
                 <button 
                   type="button" 

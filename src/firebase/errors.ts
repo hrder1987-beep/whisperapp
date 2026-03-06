@@ -1,5 +1,6 @@
 'use client';
 import { getAuth, type User } from 'firebase/auth';
+import { getApps } from 'firebase/app';
 
 type SecurityRuleContext = {
   path: string;
@@ -68,24 +69,20 @@ function buildAuthObject(currentUser: User | null): FirebaseAuthObject | null {
 
 /**
  * Builds the complete, simulated request object for the error message.
- * Safe for SSR.
+ * Robust check for SSR and initialized apps.
  */
 function buildRequestObject(context: SecurityRuleContext): SecurityRuleRequest {
   let authObject: FirebaseAuthObject | null = null;
   
-  // 클라이언트 사이드에서만 Auth 객체 생성 시도
-  if (typeof window !== 'undefined') {
+  // CRITICAL: Safe check for SSR environment and initialized Firebase apps
+  if (typeof window !== 'undefined' && getApps().length > 0) {
     try {
-      // Firebase가 초기화된 상태인지 확인 후 Auth 접근
       const firebaseAuth = getAuth();
-      if (firebaseAuth) {
-        const currentUser = firebaseAuth.currentUser;
-        if (currentUser) {
-          authObject = buildAuthObject(currentUser);
-        }
+      if (firebaseAuth && firebaseAuth.currentUser) {
+        authObject = buildAuthObject(firebaseAuth.currentUser);
       }
-    } catch {
-      // Auth 서비스가 초기화되지 않았거나 서버 환경일 경우 무시
+    } catch (e) {
+      // Ignore errors during initialization or SSR
     }
   }
 

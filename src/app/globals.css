@@ -59,12 +59,13 @@ p, span, label, h1, h2, h3, h4, h5, h6 {
   @apply bg-primary text-[#163300] font-black rounded-2xl hover:brightness-95 transition-all shadow-xl active:scale-[0.97] disabled:opacity-50;
 }
 
-/* 입력창 텍스트 짤림 원천 해결: 왼쪽 패딩 강제 주입 */
+/* 입력창 첫 글자 짤림 원천 해결: 내부 패딩 강제 주입 및 폰트 안정화 */
 input, textarea {
   padding-left: 1.5rem !important;
   padding-right: 1.5rem !important;
   outline: none !important;
   box-shadow: none !important;
+  @apply transition-all duration-300;
 }
 
 input:focus, textarea:focus {
