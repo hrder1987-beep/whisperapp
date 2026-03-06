@@ -1,3 +1,4 @@
+
 "use client"
 
 import { Logo } from "./Logo"
@@ -65,27 +66,10 @@ export function Header({ onSearch }: HeaderProps) {
     { name: "채용 정보", href: "/jobs" },
   ]
 
-  if (!isMounted) return <header className="naver-header h-16 md:h-24" />
+  if (!isMounted) return <header className="naver-header h-16 md:h-[88px]" />
 
   return (
     <header className="naver-header shadow-[0_4px_30px_rgba(0,0,0,0.02)] border-none">
-      <div className="bg-[#F7FAF2]/50 border-b border-black/[0.01] hidden md:block">
-        <div className="max-w-7xl mx-auto px-6 h-10 flex items-center justify-end gap-8 text-[11px] font-black text-accent/30 uppercase tracking-widest">
-          {user ? (
-            <>
-              <Link href="/profile" className="hover:text-accent transition-all flex items-center gap-2"><UserIcon className="w-3 h-3" /> My Profile</Link>
-              <Link href="/my-posts" className="hover:text-accent transition-all flex items-center gap-2"><FileText className="w-3 h-3" /> My Activity</Link>
-              <button onClick={handleLogout} className="hover:text-red-500 transition-all font-black">Sign Out</button>
-            </>
-          ) : (
-            <>
-              <Link href="/auth?mode=login" className="hover:text-accent transition-all">Member Login</Link>
-              <Link href="/auth?mode=signup" className="hover:text-accent transition-all">Registration</Link>
-            </>
-          )}
-        </div>
-      </div>
-
       <div className="max-w-7xl mx-auto px-4 md:px-6 h-16 md:h-[88px] flex items-center justify-between gap-4">
         <div className="flex items-center gap-3 md:gap-10">
           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
@@ -140,7 +124,10 @@ export function Header({ onSearch }: HeaderProps) {
             )}
           </div>
           {!user ? (
-            <Link href="/auth?mode=login"><Button className="naver-button h-11 px-10 hidden md:block shadow-2xl text-sm transition-transform hover:scale-105">로그인</Button></Link>
+            <div className="flex items-center gap-3">
+              <Link href="/auth?mode=login"><Button className="naver-button h-11 px-8 hidden md:block shadow-2xl text-sm transition-transform hover:scale-105">로그인</Button></Link>
+              <Link href="/auth?mode=signup"><Button variant="outline" className="border-accent/10 text-accent font-black h-11 px-8 hidden md:block rounded-xl hover:bg-primary/5 transition-transform hover:scale-105">회원가입</Button></Link>
+            </div>
           ) : (
             <Link href="/profile" className="hidden md:block">
               <div className="w-11 h-11 rounded-xl bg-primary/10 border-2 border-white shadow-xl flex items-center justify-center overflow-hidden hover:scale-110 transition-all">

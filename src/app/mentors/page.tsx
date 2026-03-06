@@ -63,7 +63,7 @@ export default function MentorsPage() {
   return (
     <div className="min-h-screen bg-[#F5F6F7]">
       <Header />
-      <main className="max-w-7xl mx-auto px-4 py-8 md:py-16">
+      <main className="max-w-7xl mx-auto px-4 py-8 md:py-16 pb-24">
         <div className="flex flex-col gap-8 mb-16">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="space-y-1">
@@ -79,7 +79,7 @@ export default function MentorsPage() {
             </div>
             <div className="flex flex-wrap gap-2 md:gap-3 py-2">
               {MENTOR_CATEGORIES.map((cat) => (
-                <button key={cat} onClick={() => setSelectedCategory(cat)} className={cn("px-8 py-3.5 rounded-full text-sm font-black transition-all border-2 whitespace-nowrap", selectedCategory === cat ? "bg-primary text-accent border-primary shadow-lg" : "bg-white text-black/30 border-black/5 hover:border-primary/30")}>{cat}</button>
+                <button key={cat} onClick={() => setSelectedCategory(cat)} className={cn("px-8 py-3.5 rounded-full text-sm font-black transition-all border-2 whitespace-nowrap shrink-0", selectedCategory === cat ? "bg-primary text-accent border-primary shadow-lg" : "bg-white text-black/60 border-black/5 hover:border-primary/30")}>{cat}</button>
               ))}
             </div>
           </div>

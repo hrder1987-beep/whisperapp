@@ -59,12 +59,8 @@ p, span, label, h1, h2, h3, h4, h5, h6 {
   @apply bg-primary text-[#163300] font-black rounded-xl hover:brightness-95 transition-all shadow-lg active:scale-[0.97] disabled:opacity-50;
 }
 
-/* 입력창 첫 글자 짤림 방지: 강력한 여백 주입 */
+/* 입력창 스타일 최적화 */
 input, textarea {
-  padding-left: 1.25rem !important;
-  padding-right: 1.25rem !important;
-  outline: none !important;
-  box-shadow: none !important;
   @apply transition-all duration-300;
 }
 

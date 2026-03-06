@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo, useEffect, useDeferredValue, Suspense } from "react"
@@ -68,9 +69,9 @@ function HomePageContent() {
       } catch (e) { }
     }
     return [
-      { id: "def-1", title: "HR 실무자의 밤:\n인사이트 네트워킹", description: "대한민국 HR 리더들이 한자리에 모여\n현업의 고민과 해결책을 나눕니다.", image: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=1080", badge: "OFFLINE EVENT" },
-      { id: "def-2", title: "2025 채용 시장\n핵심 트렌드 리포트 발간", description: "데이터로 분석한 새로운 채용 패러다임.\n지금 위스퍼에서 독점 공개합니다.", image: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=1080", badge: "KNOWLEDGE" },
-      { id: "def-3", title: "전문가와 함께하는\n1:1 실무 커리어 코칭", description: "인사 전문가로서의 다음 단계,\n검증된 위스퍼러가 직접 가이드해 드립니다.", image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1080", badge: "WHISPERER CARE" }
+      { id: "def-1", title: "대한민국 HR 전문가를 위한\n품격 있는 지식 허브, 위스퍼", description: "실무 사례부터 최신 트렌드 리포트까지\n검증된 인사이트를 한곳에서 확인하세요.", image: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=1080", badge: "WHISPER IDENTITY" },
+      { id: "def-2", title: "동료 전문가들과 함께하는\n실시간 고민 상담 커뮤니티", description: "안전한 속삭임 공간에서 현업의 어려움을 나누고\n함께 해결책을 찾아가는 집단지성의 힘.", image: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=1080", badge: "COMMUNITY" },
+      { id: "def-3", title: "나의 커리어 성장을 위한\n최적의 솔루션과 강사 정보", description: "위스퍼가 엄선한 프리미엄 교육 과정과\n검증된 전문 강사 라인업을 만나보세요.", image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1080", badge: "CAREER GROWTH" }
     ]
   }, [config])
 
@@ -202,7 +203,7 @@ function HomePageContent() {
         )}
       </main>
 
-      <aside className="lg:col-span-4 hidden lg:block space-y-8 h-fit sticky top-32">
+      <aside className="lg:col-span-4 hidden lg:block space-y-8 h-fit">
         <WhisperChat />
         <RankingList questions={[...questions].sort((a,b) => b.viewCount - a.viewCount)} onSelectQuestion={handleSelectQuestion} />
         <PremiumAds ads={premiumAds} />
