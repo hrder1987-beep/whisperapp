@@ -53,7 +53,7 @@ export function SubmissionForm({ onSubmit, type, placeholder }: SubmissionFormPr
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto"
-      textareaRef.current.style.height = `${Math.max(120, textareaRef.current.scrollHeight)}px`
+      textareaRef.current.style.height = `${Math.max(100, textareaRef.current.scrollHeight)}px`
     }
   }, [text])
 
@@ -84,29 +84,29 @@ export function SubmissionForm({ onSubmit, type, placeholder }: SubmissionFormPr
   }
 
   return (
-    <Card className="naver-card mb-10 overflow-hidden bg-white shadow-2xl border-none">
+    <Card className="naver-card mb-8 overflow-hidden bg-white shadow-xl border-none">
       <CardContent className="p-0">
         <form onSubmit={handleSubmit}>
-          <div className="p-8 md:p-12 space-y-8">
+          <div className="p-6 md:p-8 space-y-6">
             {type === "question" && (
-              <div className="space-y-6">
-                <div className="flex flex-col md:flex-row md:items-center gap-6">
+              <div className="space-y-4">
+                <div className="flex flex-col md:flex-row md:items-center gap-4">
                   <div className="flex-1 relative">
                     <Input
                       placeholder="주제나 고민의 제목을 입력하세요"
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
-                      className="border-none shadow-none focus-visible:ring-0 text-xl md:text-3xl font-black p-0 h-auto placeholder:text-[#163300]/10 text-[#163300] bg-transparent outline-none !px-0"
+                      className="border-none shadow-none focus-visible:ring-0 text-lg md:text-xl font-black p-0 h-auto placeholder:text-[#163300]/10 text-[#163300] bg-transparent outline-none !px-0"
                     />
                   </div>
-                  <div className="w-full md:w-64 shrink-0">
+                  <div className="w-full md:w-48 shrink-0">
                     <Select value={selectedCategory || ""} onValueChange={setSelectedCategory}>
-                      <SelectTrigger className="h-14 bg-primary/15 border-none rounded-2xl font-black text-sm text-[#163300] focus:ring-4 focus:ring-primary/5 px-6 shadow-inner">
-                        <SelectValue placeholder="카테고리 선택" />
+                      <SelectTrigger className="h-11 bg-primary/15 border-none rounded-xl font-black text-xs text-[#163300] focus:ring-4 focus:ring-primary/5 px-4 shadow-inner">
+                        <SelectValue placeholder="카테고리" />
                       </SelectTrigger>
-                      <SelectContent className="bg-white border-black/5 rounded-3xl shadow-4xl p-2">
+                      <SelectContent className="bg-white border-black/5 rounded-2xl shadow-4xl p-1">
                         {HR_CATEGORIES.map((cat) => (
-                          <SelectItem key={cat} value={cat} className="text-sm font-bold py-4 focus:bg-primary focus:text-[#163300] transition-all cursor-pointer rounded-2xl px-6">
+                          <SelectItem key={cat} value={cat} className="text-xs font-bold py-3 focus:bg-primary focus:text-[#163300] transition-all cursor-pointer rounded-xl px-4">
                             {cat}
                           </SelectItem>
                         ))}
@@ -124,45 +124,45 @@ export function SubmissionForm({ onSubmit, type, placeholder }: SubmissionFormPr
                 placeholder={placeholder || (type === "question" ? "전문가님의 인사이트를 자유롭게 펼쳐주세요." : "도움이 되는 따뜻한 지혜를 보태주세요.")}
                 value={text}
                 onChange={(e) => setText(e.target.value)}
-                className="min-h-[160px] md:min-h-[220px] border-none shadow-none focus-visible:ring-0 py-2 text-[17px] md:text-[20px] leading-relaxed resize-none text-[#404040] placeholder:text-[#163300]/10 bg-transparent outline-none font-medium !px-0"
+                className="min-h-[120px] md:min-h-[150px] border-none shadow-none focus-visible:ring-0 py-1 text-base md:text-lg leading-relaxed resize-none text-[#404040] placeholder:text-[#163300]/10 bg-transparent outline-none font-medium !px-0"
               />
             </div>
 
             {showVideoInput && (
-              <div className="bg-primary/10 p-6 rounded-3xl border border-primary/10 animate-in fade-in slide-in-from-top-4 duration-500">
-                <div className="flex items-center gap-5">
-                  <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center shadow-sm">
-                    <Youtube className="w-6 h-6 text-[#FF0000]" />
+              <div className="bg-primary/10 p-4 rounded-2xl border border-primary/10 animate-in fade-in slide-in-from-top-4 duration-500">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm">
+                    <Youtube className="w-5 h-5 text-[#FF0000]" />
                   </div>
                   <Input 
-                    placeholder="유튜브 영상 주소를 복사해서 붙여넣으세요"
+                    placeholder="유튜브 주소 붙여넣기"
                     value={videoUrl || ""}
                     onChange={(e) => setVideoUrl(e.target.value)}
-                    className="flex-1 bg-white border-none h-12 text-sm font-bold rounded-xl px-6 shadow-inner"
+                    className="flex-1 bg-white border-none h-10 text-xs font-bold rounded-lg px-4 shadow-inner"
                   />
-                  <Button type="button" variant="ghost" size="icon" onClick={() => { setVideoUrl(undefined); setShowVideoInput(false); }} className="h-12 w-12 text-accent/20 hover:text-red-500 hover:bg-red-50 rounded-full">
-                    <X className="w-6 h-6" />
+                  <Button type="button" variant="ghost" size="icon" onClick={() => { setVideoUrl(undefined); setShowVideoInput(false); }} className="h-10 w-10 text-accent/20 hover:text-red-500 hover:bg-red-50 rounded-full">
+                    <X className="w-5 h-5" />
                   </Button>
                 </div>
               </div>
             )}
 
             {imageUrl && (
-              <div className="relative w-fit max-w-full rounded-[2rem] overflow-hidden border-4 border-white shadow-2xl group animate-in zoom-in-95 duration-500">
-                <img src={imageUrl} alt="preview" className="max-h-[300px] md:max-h-[450px] w-auto object-cover" />
+              <div className="relative w-fit max-w-full rounded-2xl overflow-hidden border-2 border-white shadow-xl group animate-in zoom-in-95 duration-500">
+                <img src={imageUrl} alt="preview" className="max-h-[250px] md:max-h-[350px] w-auto object-cover" />
                 <button 
                   type="button" 
-                  className="absolute top-4 right-4 bg-black/60 backdrop-blur-md text-white p-2.5 rounded-full opacity-0 group-hover:opacity-100 transition-all hover:scale-110"
+                  className="absolute top-3 right-3 bg-black/60 backdrop-blur-md text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-all hover:scale-110"
                   onClick={() => setImageUrl(undefined)}
                 >
-                  <X className="w-5 h-5" />
+                  <X className="w-4 h-4" />
                 </button>
               </div>
             )}
           </div>
 
-          <div className="bg-[#FBFBFC] px-8 md:px-12 py-6 md:py-10 flex items-center justify-between border-t border-black/[0.03]">
-            <div className="flex items-center gap-4">
+          <div className="bg-[#FBFBFC] px-6 md:px-8 py-4 md:py-6 flex items-center justify-between border-t border-black/[0.03]">
+            <div className="flex items-center gap-3">
               <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={(e) => {
                 const file = e.target.files?.[0];
                 if (file) {
@@ -171,23 +171,23 @@ export function SubmissionForm({ onSubmit, type, placeholder }: SubmissionFormPr
                   reader.readAsDataURL(file);
                 }
               }} />
-              <Button type="button" variant="ghost" size="sm" className="h-12 text-accent/50 gap-2.5 hover:text-[#163300] hover:bg-primary/15 font-black px-6 rounded-2xl transition-all" onClick={() => fileInputRef.current?.click()}>
-                <ImageIcon className="w-5.5 h-5.5" />
-                <span className="text-[15px] hidden sm:inline">사진 추가</span>
+              <Button type="button" variant="ghost" size="sm" className="h-10 text-accent/50 gap-2 hover:text-[#163300] hover:bg-primary/15 font-black px-4 rounded-xl transition-all" onClick={() => fileInputRef.current?.click()}>
+                <ImageIcon className="w-4.5 h-4.5" />
+                <span className="text-[13px] hidden sm:inline">사진 추가</span>
               </Button>
-              <Button type="button" variant="ghost" size="sm" className="h-12 text-accent/50 gap-2.5 hover:text-[#163300] hover:bg-primary/15 font-black px-6 rounded-2xl transition-all" onClick={() => setShowVideoInput(!showVideoInput)}>
-                <Video className="w-5.5 h-5.5" />
-                <span className="text-[15px] hidden sm:inline">동영상</span>
+              <Button type="button" variant="ghost" size="sm" className="h-10 text-accent/50 gap-2 hover:text-[#163300] hover:bg-primary/15 font-black px-4 rounded-xl transition-all" onClick={() => setShowVideoInput(!showVideoInput)}>
+                <Video className="w-4.5 h-4.5" />
+                <span className="text-[13px] hidden sm:inline">동영상</span>
               </Button>
             </div>
             
             <Button 
               type="submit" 
               disabled={isSubmitting || !text.trim()} 
-              className="naver-button h-14 md:h-18 px-12 md:px-20 text-lg md:text-xl gap-4 shadow-2xl hover:scale-[1.03] transition-all"
+              className="naver-button h-11 md:h-12 px-8 md:px-12 text-sm md:text-base gap-3 shadow-xl hover:scale-[1.03] transition-all"
             >
               {isSubmitting ? "전송 중..." : type === "question" ? "속삭임 등록" : "지혜 더하기"}
-              <Send className="w-5 h-5 md:w-6 md:h-6" />
+              <Send className="w-4 h-4 md:w-5 md:h-5" />
             </Button>
           </div>
         </form>

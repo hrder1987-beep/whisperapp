@@ -59,38 +59,38 @@ export function MainBanner({ banners: propBanners, autoSlideDuration = 3 }: Main
   }, [api, autoSlideDuration])
 
   return (
-    <div className="w-full mb-8 md:mb-12 relative group/carousel">
-      <Carousel setApi={setApi} className="w-full overflow-hidden rounded-[2.5rem] md:rounded-[3.5rem] shadow-[0_20px_50px_-12px_rgba(0,0,0,0.15)] border border-black/[0.03]" opts={{ loop: true }}>
+    <div className="w-full mb-8 relative group/carousel">
+      <Carousel setApi={setApi} className="w-full overflow-hidden rounded-[2rem] md:rounded-[3rem] shadow-2xl border border-black/[0.03]" opts={{ loop: true }}>
         <CarouselContent>
           {banners.map((banner, index) => (
             <CarouselItem key={banner.id}>
-              <div className="relative h-[300px] md:h-[480px] w-full overflow-hidden bg-white">
-                <div className="absolute inset-0 flex flex-col justify-center px-8 md:px-24 z-20">
-                  <Badge className="naver-badge w-fit mb-4 md:mb-7 bg-primary text-accent shadow-xl border-none px-5 py-1.5 text-[10px] md:text-[11px] font-black tracking-widest">
+              <div className="relative h-[250px] md:h-[380px] w-full overflow-hidden bg-white">
+                <div className="absolute inset-0 flex flex-col justify-center px-8 md:px-20 z-20">
+                  <Badge className="naver-badge w-fit mb-3 md:mb-5 bg-primary text-accent shadow-lg border-none px-4 py-1 text-[9px] md:text-[10px] font-black tracking-widest">
                     {banner.badge}
                   </Badge>
                   
-                  <h1 className="text-2xl md:text-5xl font-black text-accent mb-4 md:mb-6 leading-[1.2] tracking-tight whitespace-pre-line drop-shadow-[0_2px_2px_rgba(255,255,255,0.8)]">
+                  <h1 className="text-xl md:text-3xl font-black text-accent mb-3 md:mb-4 leading-[1.2] tracking-tight whitespace-pre-line drop-shadow-sm">
                     {banner.title}
                   </h1>
                   
-                  <p className="text-[14px] md:text-[19px] text-accent/80 font-bold max-w-[280px] md:max-w-xl whitespace-pre-line leading-relaxed line-clamp-2 md:line-clamp-none mb-2">
+                  <p className="text-[12px] md:text-[16px] text-accent/80 font-bold max-w-[250px] md:max-w-lg whitespace-pre-line leading-relaxed line-clamp-2 mb-1">
                     {banner.description}
                   </p>
 
-                  <button className="mt-6 md:mt-10 flex items-center gap-2 text-[12px] md:text-[16px] font-black text-accent hover:text-primary transition-all group/btn w-fit">
+                  <button className="mt-4 md:mt-6 flex items-center gap-2 text-[11px] md:text-[14px] font-black text-accent hover:text-primary transition-all group/btn w-fit">
                     <span className="border-b-2 border-accent group-hover/btn:border-primary pb-0.5">상세보기</span>
-                    <ChevronRight className="w-4 h-4 md:w-5 md:h-5 group-hover/btn:translate-x-1 transition-transform" />
+                    <ChevronRight className="w-3.5 h-3.5 md:w-4 md:h-4 group-hover/btn:translate-x-1 transition-transform" />
                   </button>
                 </div>
                 
-                <div className="absolute top-0 right-0 w-full md:w-[65%] h-full">
+                <div className="absolute top-0 right-0 w-full md:w-[60%] h-full">
                   <div className="absolute inset-0 bg-gradient-to-r from-white via-white/95 md:via-white/80 to-transparent z-10"></div>
                   <Image 
                     src={banner.image || "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=1080"} 
                     alt={banner.title} 
                     fill 
-                    className="object-cover opacity-50 md:opacity-100 transition-transform duration-[10000ms] group-hover/carousel:scale-110"
+                    className="object-cover opacity-50 md:opacity-100 transition-transform duration-1000 group-hover/carousel:scale-105"
                     priority={index === 0}
                     data-ai-hint="business office"
                   />
@@ -100,9 +100,9 @@ export function MainBanner({ banners: propBanners, autoSlideDuration = 3 }: Main
           ))}
         </CarouselContent>
         
-        <div className="absolute bottom-8 right-8 md:bottom-12 md:right-16 flex gap-3 z-30 opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-500">
-          <CarouselPrevious className="relative inset-0 bg-white/90 backdrop-blur-md border border-black/5 text-accent hover:bg-primary h-10 w-10 md:h-14 md:w-14 rounded-full translate-x-0 translate-y-0 shadow-2xl transition-all" />
-          <CarouselNext className="relative inset-0 bg-white/90 backdrop-blur-md border border-black/5 text-accent hover:bg-primary h-10 w-10 md:h-14 md:w-14 rounded-full translate-x-0 translate-y-0 shadow-2xl transition-all" />
+        <div className="absolute bottom-6 right-6 md:bottom-10 md:right-12 flex gap-2 z-30 opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-500">
+          <CarouselPrevious className="relative inset-0 bg-white/90 backdrop-blur-md border border-black/5 text-accent hover:bg-primary h-8 w-8 md:h-12 md:w-12 rounded-full translate-x-0 translate-y-0 shadow-xl transition-all" />
+          <CarouselNext className="relative inset-0 bg-white/90 backdrop-blur-md border border-black/5 text-accent hover:bg-primary h-8 w-8 md:h-12 md:w-12 rounded-full translate-x-0 translate-y-0 shadow-xl transition-all" />
         </div>
       </Carousel>
     </div>
