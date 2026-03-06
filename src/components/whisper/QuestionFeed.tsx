@@ -1,9 +1,10 @@
+
 "use client"
 
 import { useState, useEffect } from "react"
 import { Question, Answer } from "@/lib/types"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
-import { MessageCircle, Eye, Clock, Bookmark, Trash2, Crown, Mail, Share2, MoreHorizontal, Edit3, AlertCircle, Sparkles } from "lucide-react"
+import { MessageCircle, Eye, Bookmark, Trash2, Mail, Share2, MoreHorizontal, Edit3, AlertCircle, Sparkles } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 import { ko } from "date-fns/locale"
 import { Button } from "@/components/ui/button"
@@ -109,16 +110,16 @@ export function QuestionFeed({
   }
 
   return (
-    <div className="space-y-6 md:space-y-8">
+    <div className="space-y-4 md:space-y-6">
       {questions.length === 0 ? (
-        <Card className="naver-card p-12 md:p-24 text-center bg-white border-none shadow-xl">
-          <div className="flex flex-col items-center gap-6">
-            <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
-              <AlertCircle className="w-8 h-8 text-primary" />
+        <Card className="naver-card p-12 md:p-16 text-center bg-white border-none shadow-xl">
+          <div className="flex flex-col items-center gap-4">
+            <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+              <AlertCircle className="w-6 h-6 text-primary" />
             </div>
-            <div className="space-y-2">
-              <p className="text-accent font-black text-xl tracking-tighter">공유된 속삭임이 없습니다.</p>
-              <p className="text-accent/30 font-bold text-xs">전문가님의 소중한 고민과 지식을 먼저 나눠보세요.</p>
+            <div className="space-y-1">
+              <p className="text-accent font-black text-lg tracking-tighter">공유된 속삭임이 없습니다.</p>
+              <p className="text-accent/30 font-bold text-[11px]">전문가님의 소중한 고민과 지식을 먼저 나눠보세요.</p>
             </div>
           </div>
         </Card>
@@ -136,55 +137,55 @@ export function QuestionFeed({
               id={`q-${q.id}`}
               className={cn(
                 "naver-card group transition-all duration-500 border-none",
-                isExpanded ? "ring-4 ring-primary/20 shadow-3xl translate-y-[-4px]" : "hover:shadow-2xl active:scale-[0.99]"
+                isExpanded ? "ring-4 ring-primary/20 shadow-3xl translate-y-[-2px]" : "hover:shadow-2xl active:scale-[0.995]"
               )}
               onClick={() => onSelectQuestion(q.id)}
             >
-              <CardContent className={cn("p-6 md:p-10", isExpanded && "md:p-12")}>
-                <div className="flex justify-between items-start mb-8 md:mb-10">
-                  <div className="flex items-center gap-4 md:gap-6">
-                    <AvatarIcon src={q.userProfilePicture} seed={q.nickname} className="w-12 h-12 md:w-16 md:h-16 border-4 border-white shadow-xl" />
+              <CardContent className={cn("p-5 md:p-8", isExpanded && "md:p-10")}>
+                <div className="flex justify-between items-start mb-6 md:mb-8">
+                  <div className="flex items-center gap-3 md:gap-4">
+                    <AvatarIcon src={q.userProfilePicture} seed={q.nickname} className="w-10 h-10 md:w-12 md:h-12 border-2 border-white shadow-lg" />
                     <div className="flex flex-col">
-                      <div className="flex items-center gap-2 md:gap-3">
-                        <span className="text-base md:text-lg font-black text-accent tracking-tight">@{q.nickname}</span>
-                        {q.jobTitle && <span className="text-[10px] md:text-[12px] font-black text-primary italic bg-primary/10 px-2.5 py-1 rounded-xl">#{q.jobTitle}</span>}
-                        {isMentor && <Badge className="bg-accent text-primary shadow-lg border-none px-3 h-6 text-[9px] font-black">WHISPERER</Badge>}
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm md:text-base font-black text-accent tracking-tight">@{q.nickname}</span>
+                        {q.jobTitle && <span className="text-[9px] md:text-[10px] font-black text-primary italic bg-primary/10 px-2 py-0.5 rounded-lg">#{q.jobTitle}</span>}
+                        {isMentor && <Badge className="bg-accent text-primary shadow-lg border-none px-2 h-5 text-[8px] font-black">WHISPERER</Badge>}
                         {user && !isOwner && (
-                          <button onClick={(e) => { e.stopPropagation(); setMessageTarget({ id: q.userId, nickname: q.nickname }); }} className="text-accent/15 hover:text-accent hover:bg-accent/5 transition-all p-2 rounded-full">
-                            <Mail className="w-4 h-4" />
+                          <button onClick={(e) => { e.stopPropagation(); setMessageTarget({ id: q.userId, nickname: q.nickname }); }} className="text-accent/15 hover:text-accent hover:bg-accent/5 transition-all p-1.5 rounded-full">
+                            <Mail className="w-3.5 h-3.5" />
                           </button>
                         )}
                       </div>
-                      <span className="text-[11px] md:text-[13px] font-bold text-accent/30 flex items-center gap-2 mt-1.5">
+                      <span className="text-[10px] md:text-[11px] font-bold text-accent/30 flex items-center gap-1.5 mt-1">
                         {isMounted ? formatDistanceToNow(q.createdAt, { addSuffix: true, locale: ko }) : '...'}
-                        <span className="w-1 h-1 rounded-full bg-accent/10"></span>
-                        <Eye className="w-3.5 h-3.5 opacity-50" /> {q.viewCount.toLocaleString()} Views
+                        <span className="w-0.5 h-0.5 rounded-full bg-accent/10"></span>
+                        <Eye className="w-3 h-3 opacity-50" /> {q.viewCount.toLocaleString()}
                       </span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2">
                     {q.category && (
-                      <Badge variant="outline" className="hidden sm:inline-flex text-[10px] font-black border-accent/5 text-accent/30 rounded-xl px-4 py-1.5 h-8 bg-accent/2 tracking-tighter">#{q.category}</Badge>
+                      <Badge variant="outline" className="hidden sm:inline-flex text-[9px] font-black border-accent/5 text-accent/30 rounded-lg px-2.5 py-1 h-6 bg-accent/2 tracking-tighter">#{q.category}</Badge>
                     )}
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                        <button className="text-accent/15 hover:text-accent/50 transition-all p-2 rounded-full hover:bg-accent/5 outline-none">
-                          <MoreHorizontal className="w-6 h-6" />
+                        <button className="text-accent/15 hover:text-accent/50 transition-all p-1.5 rounded-full hover:bg-accent/5 outline-none">
+                          <MoreHorizontal className="w-5 h-5" />
                         </button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="bg-white border-black/5 rounded-2xl shadow-3xl p-2 w-48">
+                      <DropdownMenuContent align="end" className="bg-white border-black/5 rounded-xl shadow-3xl p-1.5 w-40">
                         {isOwner ? (
                           <>
-                            <DropdownMenuItem onSelect={(e) => { e.preventDefault(); setEditingQuestion(q); setEditTitle(q.title); setEditText(q.text); setEditCategory(q.category || ""); }} className="rounded-xl font-black text-sm gap-3 py-3 cursor-pointer text-accent focus:bg-primary/10">
-                              <Edit3 className="w-4 h-4" /> 수정하기
+                            <DropdownMenuItem onSelect={(e) => { e.preventDefault(); setEditingQuestion(q); setEditTitle(q.title); setEditText(q.text); setEditCategory(q.category || ""); }} className="rounded-lg font-black text-xs gap-2.5 py-2.5 cursor-pointer text-accent">
+                              <Edit3 className="w-3.5 h-3.5" /> 수정하기
                             </DropdownMenuItem>
-                            <DropdownMenuItem onSelect={(e) => { e.preventDefault(); setTimeout(() => handleDelete(q), 100); }} className="rounded-xl font-black text-sm gap-3 py-3 cursor-pointer text-red-500 focus:bg-red-50">
-                              <Trash2 className="w-4 h-4" /> 삭제하기
+                            <DropdownMenuItem onSelect={(e) => { e.preventDefault(); setTimeout(() => handleDelete(q), 100); }} className="rounded-lg font-black text-xs gap-2.5 py-2.5 cursor-pointer text-red-500">
+                              <Trash2 className="w-3.5 h-3.5" /> 삭제하기
                             </DropdownMenuItem>
                           </>
                         ) : (
-                          <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleShare(q); }} className="rounded-xl font-black text-sm gap-3 py-3 cursor-pointer text-accent focus:bg-primary/10">
-                            <Share2 className="w-4 h-4" /> 링크 복사
+                          <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleShare(q); }} className="rounded-lg font-black text-xs gap-2.5 py-2.5 cursor-pointer text-accent">
+                            <Share2 className="w-3.5 h-3.5" /> 링크 복사
                           </DropdownMenuItem>
                         )}
                       </DropdownMenuContent>
@@ -192,42 +193,37 @@ export function QuestionFeed({
                   </div>
                 </div>
 
-                <div className="space-y-4 md:space-y-6">
-                  <h3 className="text-lg md:text-2xl font-black leading-[1.3] text-accent tracking-tight line-clamp-2 md:line-clamp-none group-hover:text-primary transition-colors">{q.title}</h3>
-                  <p className={cn("text-sm md:text-base leading-relaxed text-[#404040] font-medium whitespace-pre-wrap break-words", !isExpanded && "line-clamp-3")}>{q.text}</p>
+                <div className="space-y-3 md:space-y-4">
+                  <h3 className="text-base md:text-xl font-black leading-[1.3] text-accent tracking-tight line-clamp-2 md:line-clamp-none group-hover:text-primary transition-colors">{q.title}</h3>
+                  <p className={cn("text-xs md:text-sm leading-relaxed text-[#404040] font-medium whitespace-pre-wrap break-words", !isExpanded && "line-clamp-2")}>{q.text}</p>
                   {isExpanded && (
-                    <div className="space-y-8 mt-8 md:mt-12 animate-in slide-in-from-bottom-4 duration-700">
-                      {q.imageUrl && <div className="relative w-full rounded-2xl overflow-hidden border-4 border-white shadow-2xl bg-[#FBFBFC]"><img src={q.imageUrl} alt="attached" className="w-full h-auto block" /></div>}
-                      {youtubeId && <div className="relative w-full aspect-video rounded-2xl overflow-hidden border-4 border-white shadow-2xl bg-black"><iframe width="100%" height="100%" src={`https://www.youtube.com/embed/${youtubeId}`} title="video" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe></div>}
+                    <div className="space-y-6 mt-6 md:mt-8 animate-in slide-in-from-bottom-2 duration-500">
+                      {q.imageUrl && <div className="relative w-full rounded-xl overflow-hidden border-4 border-white shadow-xl bg-[#FBFBFC]"><img src={q.imageUrl} alt="attached" className="w-full h-auto block" /></div>}
+                      {youtubeId && <div className="relative w-full aspect-video rounded-xl overflow-hidden border-4 border-white shadow-xl bg-black"><iframe width="100%" height="100%" src={`https://www.youtube.com/embed/${youtubeId}`} title="video" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe></div>}
                     </div>
                   )}
                 </div>
 
                 {isExpanded && (
-                  <div className="mt-12 md:mt-20 pt-12 md:pt-20 border-t border-black/[0.05]" onClick={(e) => e.stopPropagation()}>
+                  <div className="mt-8 md:mt-12 pt-8 md:mt-12 border-t border-black/[0.05]" onClick={(e) => e.stopPropagation()}>
                     <SubmissionForm type="answer" placeholder="도움이 되는 지혜를 남겨주세요." onSubmit={onAddAnswer} />
                     <AnswerFeed answers={questionAnswers} isAdminMode={isAdminMode} />
                   </div>
                 )}
               </CardContent>
               {!isExpanded && (
-                <CardFooter className="px-6 md:px-10 py-4 md:py-6 border-t border-primary/5 flex items-center justify-between bg-primary/[0.02]">
-                  <div className="flex gap-8 md:gap-12">
-                    <div className="flex items-center gap-2 text-xs md:text-sm font-black text-accent/60">
-                      <MessageCircle className="w-5 h-5 text-primary" />
+                <CardFooter className="px-5 md:px-8 py-3 md:py-4 border-t border-primary/5 flex items-center justify-between bg-primary/[0.01]">
+                  <div className="flex gap-6 md:gap-8">
+                    <div className="flex items-center gap-1.5 text-[11px] md:text-xs font-black text-accent/60">
+                      <MessageCircle className="w-4 h-4 text-primary" />
                       <span>답변 {q.answerCount.toLocaleString()}</span>
                     </div>
-                    <button onClick={(e) => { e.stopPropagation(); handleShare(q); }} className="flex items-center gap-2 text-xs md:text-sm font-black text-accent/60 hover:text-accent transition-all group/share">
-                      <Share2 className="w-5 h-5 group-hover/share:scale-110 transition-transform" />
-                      공유하기
+                    <button onClick={(e) => { e.stopPropagation(); handleShare(q); }} className="flex items-center gap-1.5 text-[11px] md:text-xs font-black text-accent/60 hover:text-accent transition-all group/share">
+                      <Share2 className="w-4 h-4" />
+                      공유
                     </button>
                   </div>
-                  <div className="flex items-center gap-6">
-                    <div className="flex items-center gap-2 text-[10px] font-black text-accent/10 uppercase tracking-widest sm:hidden">
-                      #{q.category}
-                    </div>
-                    <Bookmark className="w-5 h-5 md:w-6 md:h-6 text-accent/15 hover:text-primary cursor-pointer transition-all hover:scale-110" />
-                  </div>
+                  <Bookmark className="w-4.5 h-4.5 text-accent/10 hover:text-primary cursor-pointer transition-all" />
                 </CardFooter>
               )}
             </Card>
@@ -236,29 +232,29 @@ export function QuestionFeed({
       )}
 
       <Dialog open={!!editingQuestion} onOpenChange={(open) => { if(!open) setEditingQuestion(null); }}>
-        <DialogContent className="max-w-2xl bg-white border-none rounded-[2.5rem] p-0 shadow-4xl overflow-hidden">
-          <DialogHeader className="bg-primary/5 p-8 border-b border-primary/10">
-            <DialogTitle className="text-2xl font-black text-accent flex items-center gap-4"><Sparkles className="w-8 h-8 text-primary" /> 게시글 수정</DialogTitle>
+        <DialogContent className="max-w-xl bg-white border-none rounded-[2rem] p-0 shadow-4xl overflow-hidden">
+          <DialogHeader className="bg-primary/5 p-6 border-b border-primary/10">
+            <DialogTitle className="text-xl font-black text-accent flex items-center gap-3"><Sparkles className="w-6 h-6 text-primary" /> 게시글 수정</DialogTitle>
           </DialogHeader>
-          <div className="p-8 space-y-8">
-            <div className="space-y-6">
-              <div className="flex flex-col md:flex-row gap-4">
-                <Input value={editTitle} onChange={e => setEditTitle(e.target.value)} placeholder="제목" className="flex-1 h-14 bg-[#F5F6F7] border-none rounded-xl font-black text-xl px-6 shadow-inner !px-6" />
-                <div className="w-full md:w-48">
+          <div className="p-6 space-y-6">
+            <div className="space-y-4">
+              <div className="flex flex-col md:flex-row gap-3">
+                <Input value={editTitle} onChange={e => setEditTitle(e.target.value)} placeholder="제목" className="flex-1 h-12 bg-[#F5F6F7] border-none rounded-lg font-black text-lg px-4 shadow-inner !px-4" />
+                <div className="w-full md:w-40">
                   <Select value={editCategory} onValueChange={setEditCategory}>
-                    <SelectTrigger className="h-14 bg-accent text-white border-none rounded-xl font-black text-sm px-6">
+                    <SelectTrigger className="h-12 bg-accent text-white border-none rounded-lg font-black text-xs px-4">
                       <SelectValue placeholder="카테고리" />
                     </SelectTrigger>
-                    <SelectContent className="rounded-2xl shadow-4xl border-none p-2">{HR_CATEGORIES.map(cat => <SelectItem key={cat} value={cat} className="rounded-xl py-3 font-bold px-6">{cat}</SelectItem>)}</SelectContent>
+                    <SelectContent className="rounded-xl shadow-4xl border-none p-1.5">{HR_CATEGORIES.map(cat => <SelectItem key={cat} value={cat} className="rounded-lg py-2 font-bold px-4">{cat}</SelectItem>)}</SelectContent>
                   </Select>
                 </div>
               </div>
-              <Textarea value={editText} onChange={e => setEditText(e.target.value)} placeholder="내용" className="min-h-[300px] bg-[#F5F6F7] border-none rounded-2xl p-8 font-medium text-lg leading-relaxed resize-none shadow-inner" />
+              <Textarea value={editText} onChange={e => setEditText(e.target.value)} placeholder="내용" className="min-h-[250px] bg-[#F5F6F7] border-none rounded-xl p-6 font-medium text-base leading-relaxed resize-none shadow-inner" />
             </div>
           </div>
-          <DialogFooter className="bg-[#FBFBFC] p-8 border-t border-black/5 flex flex-row gap-4">
-            <Button variant="ghost" onClick={() => setEditingQuestion(null)} className="flex-1 h-14 rounded-2xl font-black text-accent/40 hover:bg-transparent">취소</Button>
-            <Button onClick={handleUpdate} disabled={isUpdating} className="flex-[2] h-14 naver-button rounded-2xl text-xl shadow-2xl">{isUpdating ? "처리 중..." : "수정 완료"}</Button>
+          <DialogFooter className="bg-[#FBFBFC] p-6 border-t border-black/5 flex flex-row gap-3">
+            <Button variant="ghost" onClick={() => setEditingQuestion(null)} className="flex-1 h-12 rounded-xl font-black text-accent/40">취소</Button>
+            <Button onClick={handleUpdate} disabled={isUpdating} className="flex-[2] h-12 naver-button rounded-xl text-lg shadow-2xl">{isUpdating ? "처리 중..." : "수정 완료"}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

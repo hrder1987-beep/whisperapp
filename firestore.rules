@@ -25,23 +25,20 @@ service cloud.firestore {
     }
 
     // 사용자 프로필: [보안 극대화] 
-    // 개인정보 보호를 위해 본인과 관리자 외에는 절대 접근(get)하거나 목록(list)을 볼 수 없습니다.
     match /users/{userId} {
       allow get: if isOwner(userId) || isAdmin();
       allow list: if isAdmin(); 
-      // 회원가입 시 권한 조작 방지 (스스로 admin/mentor 부여 불가)
       allow create: if isOwner(userId) && request.resource.data.role == 'member';
       allow update: if isOwner(userId) || isAdmin();
       allow delete: if isAdmin();
     }
 
-    // 질문 및 답변: 공개 커뮤니티 성격에 맞춰 읽기는 허용하되, 쓰기는 본인/관리자만
+    // 질문 및 답변: 조회수(viewCount) 및 답변수(answerCount)는 비로그인 사용자도 업데이트 허용
     match /questions/{questionId} {
       allow read: if true; 
       allow create: if isSignedIn();
       
-      // 조회수(viewCount) 및 답변수(answerCount) 증가는 모든 사용자(비로그인 포함)에게 허용
-      // 그 외 필드 수정은 작성자 본인 또는 관리자만 가능
+      // 핵심 수정: 업데이트 시 viewCount나 answerCount만 건드리는 경우 무조건 허용
       allow update: if (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['viewCount', 'answerCount'])) || 
                      (isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin()));
       
@@ -54,11 +51,10 @@ service cloud.firestore {
       }
     }
 
-    // 모임 (Gatherings): 신청 정보에 이메일 등 민감 정보가 포함되므로 철저히 격리
+    // 모임 (Gatherings): 참여자 수(participantCount) 업데이트 유연화
     match /gatherings/{gatheringId} {
       allow read: if true; 
       allow create: if isSignedIn();
-      // 참여자 수(participantCount) 업데이트는 시스템적인 처리를 위해 확장 허용
       allow update: if (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['participantCount', 'status'])) || 
                      (isSignedIn() && (resource.data.creatorId == request.auth.uid || isAdmin()));
       allow delete: if isSignedIn() && (resource.data.creatorId == request.auth.uid || isAdmin());
@@ -76,19 +72,9 @@ service cloud.firestore {
         );
         allow delete: if isAdmin();
       }
-
-      match /attendance/{atId} {
-        allow read: if isSignedIn() && (
-          resource.data.userId == request.auth.uid || 
-          get(/databases/$(database)/documents/gatherings/$(gatheringId)).data.creatorId == request.auth.uid ||
-          isAdmin()
-        );
-        allow create, update: if isSignedIn() && (request.resource.data.userId == request.auth.uid);
-        allow delete: if isAdmin();
-      }
     }
 
-    // 1:1 개인 쪽지: 송신자와 수신자 외에는 그 누구도(심지어 멘토도) 볼 수 없음
+    // 1:1 개인 쪽지
     match /messages/{messageId} {
       allow read: if isSignedIn() && (
         resource.data.senderId == request.auth.uid || 
@@ -103,14 +89,14 @@ service cloud.firestore {
       );
     }
 
-    // 알림: 본인 소식만 확인 가능
+    // 알림
     match /notifications/{notifId} {
       allow read: if isSignedIn() && resource.data.userId == request.auth.uid;
       allow create: if isSignedIn();
       allow update, delete: if isSignedIn() && resource.data.userId == request.auth.uid;
     }
 
-    // 전문가/강사/채용 정보: 공개 콘텐츠
+    // 기타 공개 콘텐츠
     match /instructors/{id} { allow read: if true; allow write: if isSignedIn(); }
     match /mentors/{id} { allow read: if true; allow write: if isSignedIn(); }
     match /trainingPrograms/{id} { allow read: if true; allow write: if isSignedIn(); }
