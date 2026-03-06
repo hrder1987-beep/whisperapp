@@ -5,26 +5,26 @@
 
 @layer base {
   :root {
-    --background: 88 30% 98.5%; /* 더 밝고 깨끗한 배경 */
+    --background: 88 30% 98.5%;
     --foreground: 222 47% 11%;
     --card: 0 0% 100%;
     --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
-    --primary: 88 63% 81%; /* Whisper Signature Green */
-    --primary-foreground: 120 100% 10%; /* 가독성 높은 딥 그린 */
+    --primary: 88 63% 81%;
+    --primary-foreground: 120 100% 10%;
     --secondary: 88 30% 96%;
     --secondary-foreground: 222 47% 11%;
     --muted: 88 20% 96%;
     --muted-foreground: 215 16% 47%;
-    --accent: 120 100% 10%; /* 딥 포레스트 그린 */
+    --accent: 120 100% 10%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
     --border: 88 20% 92%;
     --input: 88 20% 92%;
     --ring: 88 63% 81%;
-    --radius: 1.5rem; /* 더 부드러운 라운딩 */
+    --radius: 1.5rem;
   }
 }
 
@@ -39,12 +39,11 @@
   }
 }
 
-/* 텍스트 가독성 강화 */
 p, span, label, h1, h2, h3, h4, h5, h6 {
   @apply text-[#163300];
 }
 
-/* Whisper Premium Components */
+/* 정밀 UI 컴포넌트 스타일링 */
 .naver-header {
   @apply bg-white/95 backdrop-blur-2xl border-b border-black/[0.03] sticky top-0 z-50;
 }
@@ -54,7 +53,7 @@ p, span, label, h1, h2, h3, h4, h5, h6 {
 }
 
 .naver-card {
-  @apply bg-white border border-black/[0.04] shadow-sm hover:shadow-[0_20px_50px_rgba(0,0,0,0.05)] hover:border-primary/30 transition-all duration-500 rounded-[2.5rem] overflow-hidden;
+  @apply bg-white border border-black/[0.04] shadow-sm hover:shadow-[0_30px_60px_rgba(0,0,0,0.06)] hover:border-primary/40 transition-all duration-500 rounded-[2.5rem] overflow-hidden;
 }
 
 .naver-button {
@@ -73,7 +72,6 @@ p, span, label, h1, h2, h3, h4, h5, h6 {
   background: linear-gradient(135deg, #CDECB1 0%, #B8E094 100%);
 }
 
-/* Scrollbar Hide */
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
@@ -82,7 +80,6 @@ p, span, label, h1, h2, h3, h4, h5, h6 {
   scrollbar-width: none;
 }
 
-/* Mobile Safe Areas */
 .pb-safe {
   padding-bottom: env(safe-area-inset-bottom);
 }
@@ -90,4 +87,10 @@ p, span, label, h1, h2, h3, h4, h5, h6 {
 input:focus, textarea:focus {
   outline: none !important;
   box-shadow: none !important;
+}
+
+/* 입력창 커서 및 텍스트 짤림 방지 전역 패딩 */
+input, textarea {
+  padding-left: 1rem !important;
+  padding-right: 1rem !important;
 }
