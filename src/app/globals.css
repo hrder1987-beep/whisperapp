@@ -44,22 +44,22 @@ p, span, label, h1, h2, h3, h4, h5, h6 {
 
 /* UI 정밀 보정 클래스 */
 .naver-header {
-  @apply bg-white/90 backdrop-blur-2xl border-b border-black/[0.03] sticky top-0 z-50;
+  @apply bg-white/95 backdrop-blur-2xl border-b border-black/[0.02] sticky top-0 z-50;
 }
 
 .naver-search-bar {
-  @apply border-2 border-primary bg-white rounded-2xl flex items-center px-4 transition-all focus-within:shadow-[0_8px_30px_rgb(205,236,177,0.3)] focus-within:border-primary outline-none;
+  @apply border-2 border-primary bg-white rounded-2xl flex items-center px-4 transition-all focus-within:shadow-[0_8px_30px_rgb(205,236,177,0.4)] focus-within:border-primary outline-none;
 }
 
 .naver-card {
-  @apply bg-white border border-black/[0.04] shadow-[0_4px_20px_-3px_rgba(0,0,0,0.05),0_10px_30px_-2px_rgba(0,0,0,0.03)] hover:shadow-[0_40px_80px_-12px_rgba(0,0,0,0.12)] hover:border-primary/40 transition-all duration-700 rounded-[2.5rem] overflow-hidden;
+  @apply bg-white border border-black/[0.03] shadow-[0_4px_20px_-3px_rgba(0,0,0,0.04),0_10px_30px_-2px_rgba(0,0,0,0.02)] hover:shadow-[0_40px_80px_-12px_rgba(0,0,0,0.12)] hover:border-primary/40 transition-all duration-700 rounded-[2.5rem] overflow-hidden;
 }
 
 .naver-button {
   @apply bg-primary text-[#163300] font-black rounded-2xl hover:brightness-95 transition-all shadow-xl active:scale-[0.97] disabled:opacity-50;
 }
 
-/* 입력창 텍스트 짤림 원천 해결: 패딩 강제 주입 */
+/* 입력창 텍스트 짤림 원천 해결: 왼쪽 패딩 강제 주입 */
 input, textarea {
   padding-left: 1.5rem !important;
   padding-right: 1.5rem !important;
@@ -87,11 +87,6 @@ input:focus, textarea:focus {
   padding-bottom: env(safe-area-inset-bottom);
 }
 
-.shadow-premium {
-  box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.08), 0 4px 15px -2px rgba(0, 0, 0, 0.04);
-}
-
-/* 다중 레이어 섀도우로 입체감 강화 */
 .shadow-3xl {
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.12), 0 10px 20px -5px rgba(0, 0, 0, 0.05);
 }

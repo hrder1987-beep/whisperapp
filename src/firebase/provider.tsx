@@ -100,10 +100,17 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
 
 export const useFirebase = (): FirebaseServicesAndUser => {
   const context = useContext(FirebaseContext);
+  // SSR 환경에서 컨텍스트가 없을 때 에러를 던지지 않고 기본값 반환 (Internal Server Error 방지)
   if (context === undefined) {
-    throw new Error('useFirebase must be used within a FirebaseProvider.');
+    return {
+      firebaseApp: null,
+      firestore: null,
+      auth: null,
+      user: null,
+      isUserLoading: false,
+      userError: null,
+    };
   }
-  // SSR 안전성을 위해 Throw 대신 context 자체를 반환 (컴포넌트에서 null 체크 유도)
   return {
     firebaseApp: context.firebaseApp,
     firestore: context.firestore,
