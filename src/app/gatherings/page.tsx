@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo, useRef } from "react"
@@ -72,6 +71,14 @@ export default function GatheringsPage() {
     const file = e.target.files?.[0]; if (file) { const reader = new FileReader(); reader.onloadend = () => setImageUrl(reader.result as string); reader.readAsDataURL(file); }
   }
 
+  const handleOpenDialog = (open: boolean) => {
+    if (open && !user) {
+      toast({ title: "로그인 필요", description: "모임을 개설하려면 로그인이 필요합니다.", variant: "destructive" })
+      return
+    }
+    setIsDialogOpen(open)
+  }
+
   const handleCreateGathering = async (e: React.FormEvent) => {
     e.preventDefault(); 
     if (!user) { router.push("/auth?mode=login"); return; }
@@ -102,7 +109,7 @@ export default function GatheringsPage() {
               <p className="text-sm md:text-base font-bold text-[#888]">{branding?.gatheringSubtitle || "대한민국 HR 전문가들의 오프라인/온라인 동행"}</p>
             </div>
             
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <Dialog open={isDialogOpen} onOpenChange={handleOpenDialog}>
               <DialogTrigger asChild>
                 <Button className="naver-button h-14 px-10 rounded-xl shadow-xl gap-3 text-base text-[#163300]"><Plus className="w-5 h-5" /> 신규 모임 만들기</Button>
               </DialogTrigger>

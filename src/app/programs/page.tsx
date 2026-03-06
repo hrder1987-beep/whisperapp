@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo, useRef } from "react"
@@ -118,6 +117,14 @@ export default function ProgramsPage() {
     return matchesSearch && matchesCategory
   })
 
+  const handleOpenDialog = (open: boolean) => {
+    if (open && !user) {
+      toast({ title: "로그인 필요", description: "정보를 등록하려면 로그인이 필요합니다.", variant: "destructive" })
+      return
+    }
+    setIsDialogOpen(open)
+  }
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string | null) => void) => {
     const file = e.target.files?.[0]
     if (file) {
@@ -176,7 +183,7 @@ export default function ProgramsPage() {
 
             {/* 웹에서만 등록 가능 */}
             <div className="hidden md:block">
-              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <Dialog open={isDialogOpen} onOpenChange={handleOpenDialog}>
                 <DialogTrigger asChild>
                   <Button className="naver-button h-14 px-10 rounded-xl shadow-xl transition-all gap-3 text-base">
                     <Plus className="w-5 h-5" />

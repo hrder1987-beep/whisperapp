@@ -57,12 +57,18 @@ export function SubmissionForm({ onSubmit, type, placeholder }: SubmissionFormPr
     }
   }, [text])
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleInteraction = () => {
     if (!user) {
       toast({ title: "로그인 필요", description: "지식을 나누려면 로그인이 필요합니다.", variant: "destructive" })
-      return
+      return false
     }
+    return true
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!handleInteraction()) return
+
     if (type === "question" && (!title.trim() || !selectedCategory)) {
       toast({ title: "입력 오류", description: "제목과 카테고리를 선택해 주세요.", variant: "destructive" })
       return
@@ -86,7 +92,7 @@ export function SubmissionForm({ onSubmit, type, placeholder }: SubmissionFormPr
   return (
     <Card className="naver-card mb-6 overflow-hidden bg-white shadow-xl border-none">
       <CardContent className="p-0">
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} onClick={() => !user && handleInteraction()}>
           <div className="p-5 md:p-6 space-y-4">
             {type === "question" && (
               <div className="space-y-3">
@@ -96,11 +102,12 @@ export function SubmissionForm({ onSubmit, type, placeholder }: SubmissionFormPr
                       placeholder="주제나 고민의 제목을 입력하세요"
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
+                      readOnly={!user}
                       className="border-none shadow-none focus-visible:ring-0 text-base md:text-lg font-black h-auto placeholder:text-[#163300]/10 text-[#163300] bg-transparent outline-none px-0 pl-1"
                     />
                   </div>
                   <div className="w-full md:w-40 shrink-0">
-                    <Select value={selectedCategory || ""} onValueChange={setSelectedCategory}>
+                    <Select value={selectedCategory || ""} onValueChange={(val) => user && setSelectedCategory(val)}>
                       <SelectTrigger className="h-9 bg-primary/15 border-none rounded-lg font-black text-[11px] text-[#163300] px-3 shadow-inner">
                         <SelectValue placeholder="카테고리" />
                       </SelectTrigger>
@@ -124,6 +131,7 @@ export function SubmissionForm({ onSubmit, type, placeholder }: SubmissionFormPr
                 placeholder={placeholder || (type === "question" ? "전문가님의 인사이트를 자유롭게 펼쳐주세요." : "도움이 되는 지혜를 보태주세요.")}
                 value={text}
                 onChange={(e) => setText(e.target.value)}
+                readOnly={!user}
                 className="min-h-[80px] md:min-h-[100px] border-none shadow-none focus-visible:ring-0 py-1 text-sm md:text-base leading-relaxed resize-none text-[#404040] placeholder:text-[#163300]/10 bg-transparent outline-none font-medium px-0 pl-1"
               />
             </div>
@@ -138,7 +146,7 @@ export function SubmissionForm({ onSubmit, type, placeholder }: SubmissionFormPr
                     onChange={(e) => setVideoUrl(e.target.value)}
                     className="flex-1 bg-white border-none h-8 text-[11px] font-bold rounded-lg px-3 shadow-inner"
                   />
-                  <Button type="button" variant="ghost" size="icon" onClick={() => { setVideoUrl(undefined); setShowVideoInput(false); }} className="h-8 w-8 text-accent/20 hover:text-red-500 rounded-full">
+                  <Button type="button" variant="ghost" size="icon" onClick={() => { setVideoUrl(undefined); setShowVideoInput(false); }} className="h-8 w-8 text-accent/20 hover:text-red-50 rounded-full">
                     <X className="w-4 h-4" />
                   </Button>
                 </div>
@@ -169,11 +177,11 @@ export function SubmissionForm({ onSubmit, type, placeholder }: SubmissionFormPr
                   reader.readAsDataURL(file);
                 }
               }} />
-              <Button type="button" variant="ghost" size="sm" className="h-9 text-accent/40 gap-1.5 hover:text-[#163300] hover:bg-primary/15 font-black px-3 rounded-lg" onClick={() => fileInputRef.current?.click()}>
+              <Button type="button" variant="ghost" size="sm" className="h-9 text-accent/40 gap-1.5 hover:text-[#163300] hover:bg-primary/15 font-black px-3 rounded-lg" onClick={() => user ? fileInputRef.current?.click() : handleInteraction()}>
                 <ImageIcon className="w-4 h-4" />
                 <span className="text-[11px] hidden sm:inline">사진</span>
               </Button>
-              <Button type="button" variant="ghost" size="sm" className="h-9 text-accent/40 gap-1.5 hover:text-[#163300] hover:bg-primary/15 font-black px-3 rounded-lg" onClick={() => setShowVideoInput(!showVideoInput)}>
+              <Button type="button" variant="ghost" size="sm" className="h-9 text-accent/40 gap-1.5 hover:text-[#163300] hover:bg-primary/15 font-black px-3 rounded-lg" onClick={() => user ? setShowVideoInput(!showVideoInput) : handleInteraction()}>
                 <Video className="w-4 h-4" />
                 <span className="text-[11px] hidden sm:inline">영상</span>
               </Button>

@@ -84,15 +84,17 @@ export function MainBanner({ banners: propBanners, autoSlideDuration = 3 }: Main
                   </button>
                 </div>
                 
-                <div className="absolute top-0 right-0 w-full md:w-[60%] h-full">
-                  <div className="absolute inset-0 bg-gradient-to-r from-white via-white/90 md:via-white/70 to-transparent z-10"></div>
-                  <Image 
-                    src={banner.image || "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=1080"} 
-                    alt={banner.title} 
-                    fill 
-                    className="object-cover opacity-30 md:opacity-100 transition-none"
-                    priority={index === 0}
-                  />
+                <div className="absolute top-0 right-0 w-full h-full">
+                  <div className="absolute inset-0 bg-gradient-to-r from-white via-white/80 to-transparent z-10"></div>
+                  <div className="absolute right-0 top-0 w-full md:w-[70%] h-full">
+                    <Image 
+                      src={banner.image || "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=1080"} 
+                      alt={banner.title} 
+                      fill 
+                      className="object-cover opacity-40 md:opacity-100 transition-none"
+                      priority={index === 0}
+                    />
+                  </div>
                 </div>
               </div>
             </CarouselItem>
