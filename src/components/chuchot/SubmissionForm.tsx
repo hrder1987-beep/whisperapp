@@ -97,11 +97,11 @@ export function SubmissionForm({ onSubmit, type, placeholder }: SubmissionFormPr
                     placeholder="제목을 입력하세요"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    className="flex-1 border-none shadow-none focus-visible:ring-0 text-xl md:text-2xl font-black p-0 h-auto placeholder:text-black/20 text-accent bg-transparent outline-none !pl-5"
+                    className="flex-1 border-none shadow-none focus-visible:ring-0 text-xl md:text-2xl font-black p-0 h-auto placeholder:text-black/20 text-accent bg-transparent outline-none !px-6"
                   />
                   <div className="w-full md:w-52 shrink-0">
                     <Select value={selectedCategory || ""} onValueChange={setSelectedCategory}>
-                      <SelectTrigger className="h-11 bg-primary/10 border-none rounded-xl font-black text-[13px] text-accent focus:ring-0 px-5 shadow-inner">
+                      <SelectTrigger className="h-12 bg-primary/10 border-none rounded-xl font-black text-[13px] text-accent focus:ring-0 px-6 shadow-inner">
                         <SelectValue placeholder="카테고리 선택" />
                       </SelectTrigger>
                       <SelectContent className="bg-white border-black/10 rounded-2xl shadow-3xl">
@@ -124,12 +124,12 @@ export function SubmissionForm({ onSubmit, type, placeholder }: SubmissionFormPr
                 placeholder={placeholder || (type === "question" ? "나누고 싶은 HR 인사이트를 자유롭게 적어주세요." : "도움이 되는 따뜻한 답변을 남겨주세요.")}
                 value={text}
                 onChange={(e) => setText(e.target.value)}
-                className="min-h-[120px] md:min-h-[160px] border-none shadow-none focus-visible:ring-0 py-2 text-[16px] md:text-[18px] leading-relaxed resize-none text-[#404040] placeholder:text-black/20 bg-transparent outline-none font-medium !pl-5"
+                className="min-h-[120px] md:min-h-[160px] border-none shadow-none focus-visible:ring-0 py-2 text-[16px] md:text-[18px] leading-relaxed resize-none text-[#404040] placeholder:text-black/20 bg-transparent outline-none font-medium !px-6"
               />
             </div>
 
             {showVideoInput && (
-              <div className="bg-primary/5 p-5 rounded-2xl border border-primary/10 mx-4 animate-in fade-in slide-in-from-top-2 duration-300">
+              <div className="bg-primary/5 p-5 rounded-2xl border border-primary/10 mx-6 animate-in fade-in slide-in-from-top-2 duration-300">
                 <div className="flex items-center gap-4">
                   <Youtube className="w-6 h-6 text-[#FF0000]" />
                   <Input 
@@ -146,7 +146,7 @@ export function SubmissionForm({ onSubmit, type, placeholder }: SubmissionFormPr
             )}
 
             {imageUrl && (
-              <div className="relative w-fit max-w-full rounded-2xl overflow-hidden border border-black/5 mt-4 mx-4 shadow-lg group">
+              <div className="relative w-fit max-w-full rounded-2xl overflow-hidden border border-black/5 mt-4 mx-6 shadow-lg group">
                 <img src={imageUrl} alt="preview" className="h-40 md:h-56 w-auto object-cover" />
                 <button 
                   type="button" 
