@@ -2,7 +2,7 @@
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
-import { QuestionFeed } from "@/components/chuchot/QuestionFeed"
+import { QuestionFeed } from "@/components/whisper/QuestionFeed"
 import { Question, Answer } from "@/lib/types"
 import { useFirestore, useCollection, useDoc, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking, useUser } from "@/firebase"
 import { collection, query, orderBy, doc, increment } from "firebase/firestore"
@@ -74,7 +74,7 @@ export function QuestionViewClient({ id }: { id: string }) {
       <div className="text-center py-40 bg-white rounded-[3rem] border border-dashed border-primary/10">
         <p className="text-primary/20 font-black text-xl">존재하지 않거나 삭제된 게시글입니다.</p>
         <Link href="/">
-          <Button className="mt-6 bg-primary text-accent font-black rounded-xl">홈으로 돌아가기</Button>
+          <Button className="mt-6 naver-button h-12 px-8">홈으로 돌아가기</Button>
         </Link>
       </div>
     )

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, Suspense, useRef, useEffect } from "react"
-import { Header } from "@/components/chuchot/Header"
+import { Header } from "@/components/whisper/Header"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"

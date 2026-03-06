@@ -2,7 +2,7 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { Header } from "@/components/chuchot/Header"
+import { Header } from "@/components/whisper/Header"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -13,8 +13,8 @@ import { PrivateMessage } from "@/lib/types"
 import { Mail, Send, Inbox, Clock, CheckCircle2 } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 import { ko } from "date-fns/locale"
-import { AvatarIcon } from "@/components/chuchot/AvatarIcon"
-import { MessageDialog } from "@/components/chuchot/MessageDialog"
+import { AvatarIcon } from "@/components/whisper/AvatarIcon"
+import { MessageDialog } from "@/components/whisper/MessageDialog"
 import { cn } from "@/lib/utils"
 
 export default function MessagesPage() {

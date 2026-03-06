@@ -2,7 +2,7 @@
 "use client"
 
 import { useState, useMemo, use, useEffect } from "react"
-import { Header } from "@/components/chuchot/Header"
+import { Header } from "@/components/whisper/Header"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"

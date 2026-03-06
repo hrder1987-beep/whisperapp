@@ -1,3 +1,4 @@
+
 "use client"
 
 import { User } from 'lucide-react'
@@ -5,7 +6,7 @@ import { cn } from "@/lib/utils"
 
 interface AvatarIconProps {
   src?: string | null
-  avatarUrl?: string | null // 호환성을 위해 유지
+  avatarUrl?: string | null
   seed?: string
   avatarId?: string
   className?: string
@@ -14,7 +15,6 @@ interface AvatarIconProps {
 export function AvatarIcon({ src, avatarUrl, seed, avatarId, className }: AvatarIconProps) {
   const displaySrc = src || avatarUrl
   
-  // 랜덤 배경색 생성을 위한 시드 처리
   const getBgColor = () => {
     const string = seed || avatarId || "default"
     let hash = 0

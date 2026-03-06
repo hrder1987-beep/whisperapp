@@ -1,3 +1,4 @@
+
 'use client';
 
 import { firebaseConfig } from '@/firebase/config';
@@ -6,19 +7,24 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore'
 
 /**
- * 전역 Firebase 앱 초기화 및 SDK 인스턴스 반환 로직을 분리하여
- * 순환 참조를 방지하고 초기화 안정성을 확보합니다.
+ * 전역 Firebase 앱 초기화 로직
+ * 서버 사이드 프리렌더링 시 발생할 수 있는 오류를 방지하기 위해 window 체크를 추가합니다.
  */
 export function initializeFirebase() {
+  if (typeof window === 'undefined') {
+    return {
+      firebaseApp: null as any,
+      auth: null as any,
+      firestore: null as any
+    };
+  }
+
   if (!getApps().length) {
     let firebaseApp;
     try {
-      // Firebase App Hosting 환경 변수를 통한 자동 초기화 시도
-      firebaseApp = initializeApp();
+      firebaseApp = initializeApp(firebaseConfig);
     } catch (e) {
-      if (process.env.NODE_ENV === "production") {
-        console.warn('Automatic initialization failed. Falling back to firebase config object.', e);
-      }
+      console.warn('Firebase initialization failed.', e);
       firebaseApp = initializeApp(firebaseConfig);
     }
     return getSdks(firebaseApp);

@@ -2,8 +2,8 @@
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
-import { Header } from "@/components/chuchot/Header"
-import { QuestionFeed } from "@/components/chuchot/QuestionFeed"
+import { Header } from "@/components/whisper/Header"
+import { QuestionFeed } from "@/components/whisper/QuestionFeed"
 import { Question, Answer } from "@/lib/types"
 import { useUser, useFirestore, useCollection, useMemoFirebase, updateDocumentNonBlocking } from "@/firebase"
 import { collection, query, where, orderBy, doc, increment } from "firebase/firestore"

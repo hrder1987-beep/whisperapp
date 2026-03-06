@@ -2,7 +2,7 @@
 "use client"
 
 import { useState, useMemo, useRef } from "react"
-import { Header } from "@/components/chuchot/Header"
+import { Header } from "@/components/whisper/Header"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -19,7 +19,7 @@ import Image from "next/image"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
-import { MessageDialog } from "@/components/chuchot/MessageDialog"
+import { MessageDialog } from "@/components/whisper/MessageDialog"
 
 const PROGRAM_CATEGORIES = [
   { id: "all", name: "전체" },

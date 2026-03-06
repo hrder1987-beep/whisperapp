@@ -4,7 +4,7 @@
 import { useMemo, useEffect, useState } from "react"
 import { useUser, useFirestore, useCollection, useMemoFirebase, updateDocumentNonBlocking } from "@/firebase"
 import { collection, query, where, doc } from "firebase/firestore"
-import { Header } from "@/components/chuchot/Header"
+import { Header } from "@/components/whisper/Header"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { AppNotification } from "@/lib/types"

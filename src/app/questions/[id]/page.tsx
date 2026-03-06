@@ -1,6 +1,6 @@
 
 import { Metadata, ResolvingMetadata } from 'next'
-import { Header } from "@/components/chuchot/Header"
+import { Header } from "@/components/whisper/Header"
 import { QuestionViewClient } from "./client-view"
 
 type Props = {
