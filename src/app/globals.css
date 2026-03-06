@@ -84,13 +84,14 @@ p, span, label, h1, h2, h3, h4, h5, h6 {
   padding-bottom: env(safe-area-inset-bottom);
 }
 
-input:focus, textarea:focus {
+/* 텍스트 짤림 방지를 위한 전역 입력창 여백 강제 적용 */
+input, textarea {
+  padding-left: 1.25rem !important;
+  padding-right: 1.25rem !important;
   outline: none !important;
   box-shadow: none !important;
 }
 
-/* 입력창 커서 및 텍스트 짤림 방지 전역 패딩 */
-input, textarea {
-  padding-left: 1rem !important;
-  padding-right: 1rem !important;
+input:focus, textarea:focus {
+  @apply ring-2 ring-primary/20;
 }

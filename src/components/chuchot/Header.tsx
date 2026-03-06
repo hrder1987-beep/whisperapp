@@ -71,7 +71,7 @@ export function Header({ onSearch }: HeaderProps) {
   return (
     <header className="naver-header shadow-sm">
       <div className="bg-[#F7FAF2] border-b border-black/[0.02] hidden md:block">
-        <div className="max-w-7xl mx-auto px-4 h-9 flex items-center justify-end gap-6 text-[11px] font-bold text-accent/40">
+        <div className="max-w-7xl mx-auto px-4 h-10 flex items-center justify-end gap-6 text-[11px] font-bold text-accent/40">
           {user ? (
             <>
               <Link href="/profile" className="hover:text-accent transition-colors flex items-center gap-1.5"><UserIcon className="w-3 h-3" /> 내 정보</Link>
@@ -119,10 +119,10 @@ export function Header({ onSearch }: HeaderProps) {
         </div>
 
         <div className="hidden md:flex flex-1 max-w-2xl">
-          <div className="naver-search-bar w-full h-14 shadow-sm">
+          <div className="naver-search-bar w-full h-14 shadow-md">
             <Input 
-              placeholder="검색어를 입력해 주세요" 
-              className="border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 text-[16px] font-black h-full placeholder:text-accent/20 bg-transparent px-4 outline-none" 
+              placeholder="HR 지식과 사례를 검색하세요" 
+              className="border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 text-[16px] font-black h-full placeholder:text-accent/20 bg-transparent px-2 outline-none" 
               value={searchQuery} 
               onChange={(e) => setSearchQuery(e.target.value)} 
               onKeyDown={handleKeyDown} 

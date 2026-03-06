@@ -61,21 +61,21 @@ export function MainBanner({ banners: propBanners, autoSlideDuration = 3 }: Main
 
   return (
     <div className="w-full mb-8 md:mb-12 relative group/carousel">
-      <Carousel setApi={setApi} className="w-full overflow-hidden rounded-[2.5rem] md:rounded-[3rem] shadow-2xl border border-black/[0.03]" opts={{ loop: true }}>
+      <Carousel setApi={setApi} className="w-full overflow-hidden rounded-[2rem] md:rounded-[3rem] shadow-2xl border border-black/[0.03]" opts={{ loop: true }}>
         <CarouselContent>
           {banners.map((banner, index) => (
             <CarouselItem key={banner.id}>
-              <div className="relative h-[280px] md:h-[420px] w-full overflow-hidden bg-white">
+              <div className="relative h-[280px] md:h-[450px] w-full overflow-hidden bg-white">
                 <div className="absolute inset-0 flex flex-col justify-center px-8 md:px-24 z-20">
                   <Badge className="naver-badge w-fit mb-4 md:mb-7 bg-primary text-accent shadow-xl border-none px-5 py-1.5 text-[10px] md:text-[11px] font-black tracking-widest">
                     {banner.badge}
                   </Badge>
                   
-                  <h1 className="text-2xl md:text-5xl font-black text-accent mb-4 md:mb-6 leading-[1.2] tracking-tight whitespace-pre-line drop-shadow-sm">
+                  <h1 className="text-2xl md:text-5xl font-black text-accent mb-4 md:mb-6 leading-[1.2] tracking-tight whitespace-pre-line drop-shadow-md">
                     {banner.title}
                   </h1>
                   
-                  <p className="text-[12px] md:text-[18px] text-accent/60 font-bold max-w-[260px] md:max-w-xl whitespace-pre-line leading-relaxed line-clamp-2 md:line-clamp-none mb-2">
+                  <p className="text-[13px] md:text-[18px] text-accent/70 font-bold max-w-[260px] md:max-w-xl whitespace-pre-line leading-relaxed line-clamp-2 md:line-clamp-none mb-2 drop-shadow-sm">
                     {banner.description}
                   </p>
 
@@ -85,13 +85,13 @@ export function MainBanner({ banners: propBanners, autoSlideDuration = 3 }: Main
                   </button>
                 </div>
                 
-                <div className="absolute top-0 right-0 w-full md:w-[55%] h-full">
-                  <div className="absolute inset-0 bg-gradient-to-r from-white via-white/90 md:via-white/95 to-transparent z-10"></div>
+                <div className="absolute top-0 right-0 w-full md:w-[60%] h-full">
+                  <div className="absolute inset-0 bg-gradient-to-r from-white via-white/95 md:via-white/90 to-transparent z-10"></div>
                   <Image 
                     src={banner.image || "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=1080"} 
                     alt={banner.title} 
                     fill 
-                    className="object-cover opacity-40 md:opacity-100 transition-transform duration-[5000ms] group-hover/carousel:scale-110"
+                    className="object-cover opacity-40 md:opacity-100 transition-transform duration-[8000ms] group-hover/carousel:scale-110"
                     priority={index === 0}
                     data-ai-hint="business office"
                   />
