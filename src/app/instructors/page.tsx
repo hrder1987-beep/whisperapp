@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo, useRef } from "react"
@@ -97,6 +96,15 @@ export default function InstructorsPage() {
     return matchesSearch && matchesCategory
   })
 
+  const handleOpenDialog = (open: boolean) => {
+    if (open && !user) {
+      toast({ title: "로그인 필요", description: "강사 등록을 위해 로그인이 필요합니다.", variant: "destructive" }); 
+      router.push("/auth?mode=login"); 
+      return; 
+    }
+    setIsDialogOpen(open)
+  }
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string | null) => void) => {
     const file = e.target.files?.[0]
     if (file) {
@@ -145,9 +153,8 @@ export default function InstructorsPage() {
               <p className="text-sm md:text-base font-bold text-[#888]">분야별 최고의 전문 강사진 프로필 및 섭외 정보</p>
             </div>
 
-            {/* 웹에서만 강사 등록 가능 */}
             <div className="hidden md:block">
-              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <Dialog open={isDialogOpen} onOpenChange={handleOpenDialog}>
                 <DialogTrigger asChild>
                   <Button className="naver-button h-14 px-10 rounded-xl shadow-xl transition-all gap-3 text-base">
                     <Plus className="w-5 h-5" />

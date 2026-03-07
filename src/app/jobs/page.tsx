@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo, useRef } from "react"
@@ -101,6 +100,15 @@ export default function JobsPage() {
     return matchesSearch && matchesCategory
   })
 
+  const handleOpenDialog = (open: boolean) => {
+    if (open && !user) {
+      toast({ title: "로그인 필요", description: "공고 등록을 위해 로그인이 필요합니다.", variant: "destructive" }); 
+      router.push("/auth?mode=login"); 
+      return; 
+    }
+    setIsDialogOpen(open)
+  }
+
   const handleAddJob = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!user) { 
@@ -133,7 +141,7 @@ export default function JobsPage() {
             </div>
 
             <div className="hidden md:block">
-              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <Dialog open={isDialogOpen} onOpenChange={handleOpenDialog}>
                 <DialogTrigger asChild>
                   <Button className="naver-button h-12 px-8 rounded-none shadow-sm transition-all gap-2 text-sm text-accent">
                     <Plus className="w-4 h-4" />

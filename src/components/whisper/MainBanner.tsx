@@ -60,11 +60,11 @@ export function MainBanner({ banners: propBanners, autoSlideDuration = 3 }: Main
 
   return (
     <div className="w-full mb-6 relative group/carousel">
-      <Carousel setApi={setApi} className="w-full overflow-hidden rounded-[2.5rem] shadow-xl border border-black/[0.03]" opts={{ loop: true }}>
-        <CarouselContent>
+      <Carousel setApi={setApi} className="w-full overflow-hidden rounded-[2.5rem] shadow-xl border border-black/[0.03] bg-white" opts={{ loop: true }}>
+        <CarouselContent className="ml-0">
           {banners.map((banner, index) => (
-            <CarouselItem key={banner.id}>
-              <div className="relative h-[200px] md:h-[320px] w-full overflow-hidden bg-white">
+            <CarouselItem key={banner.id} className="pl-0">
+              <div className="relative h-[200px] md:h-[320px] w-full overflow-hidden">
                 <div className="absolute inset-0 flex flex-col justify-center px-8 md:px-16 z-20">
                   <Badge className="w-fit mb-3 md:mb-4 bg-primary text-accent shadow-sm border-none px-3 py-0.5 text-[9px] font-black tracking-widest">
                     {banner.badge}
@@ -85,8 +85,8 @@ export function MainBanner({ banners: propBanners, autoSlideDuration = 3 }: Main
                 </div>
                 
                 <div className="absolute top-0 right-0 w-full h-full">
-                  <div className="absolute inset-0 bg-gradient-to-r from-white via-white/80 to-transparent z-10"></div>
-                  <div className="absolute right-0 top-0 w-full md:w-[70%] h-full">
+                  <div className="absolute inset-0 bg-gradient-to-r from-white via-white/95 to-transparent z-10"></div>
+                  <div className="absolute right-0 top-0 w-full md:w-[75%] h-full">
                     <Image 
                       src={banner.image || "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=1080"} 
                       alt={banner.title} 

@@ -74,6 +74,7 @@ export default function GatheringsPage() {
   const handleOpenDialog = (open: boolean) => {
     if (open && !user) {
       toast({ title: "로그인 필요", description: "모임을 개설하려면 로그인이 필요합니다.", variant: "destructive" })
+      router.push("/auth?mode=login")
       return
     }
     setIsDialogOpen(open)

@@ -121,7 +121,7 @@ export function Header({ onSearch }: HeaderProps) {
           <div className="hidden md:flex items-center gap-3">
             {user && (
               <div className="flex items-center gap-1.5 mr-2">
-                <Link href="/my-posts"><Button variant="ghost" size="icon" title="내가 쓴 속삭임" className="text-accent/40 hover:text-accent hover:bg-primary/10 h-10 w-10 rounded-xl transition-all"><FileText className="w-5 h-5" /></Button></Link>
+                <Link href="/my-posts"><Button variant="ghost" size="icon" title="내 속삭임" className="text-accent/40 hover:text-accent hover:bg-primary/10 h-10 w-10 rounded-xl transition-all"><FileText className="w-5 h-5" /></Button></Link>
                 <Link href="/notifications"><Button variant="ghost" size="icon" className="relative text-accent/40 hover:text-accent hover:bg-primary/10 h-10 w-10 rounded-xl transition-all"><Bell className="w-5 h-5" />{unreadNotifs && unreadNotifs.length > 0 && (<Badge className="absolute -top-1 -right-1 bg-red-500 text-white border-none h-4 w-4 p-0 flex items-center justify-center text-[8px] rounded-full font-black shadow-md">{unreadNotifs.length}</Badge>)}</Button></Link>
                 <Link href="/messages"><Button variant="ghost" size="icon" className="relative text-accent/40 hover:text-accent hover:bg-primary/10 h-10 w-10 rounded-xl transition-all"><Mail className="w-5 h-5" />{unreadMessages && unreadMessages.length > 0 && (<Badge className="absolute -top-1 -right-1 bg-red-500 text-white border-none h-4 w-4 p-0 flex items-center justify-center text-[8px] rounded-full font-black shadow-md">{unreadMessages.length}</Badge>)}</Button></Link>
               </div>

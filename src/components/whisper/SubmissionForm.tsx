@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast"
 import { containsProfanity } from "@/lib/utils"
 import { useUser, useDoc, useMemoFirebase, useFirestore } from "@/firebase"
 import { doc } from "firebase/firestore"
+import { useRouter } from "next/navigation"
 import {
   Select,
   SelectContent,
@@ -31,6 +32,7 @@ const HR_CATEGORIES = [
 export function SubmissionForm({ onSubmit, type, placeholder }: SubmissionFormProps) {
   const { user } = useUser()
   const db = useFirestore()
+  const router = useRouter()
   
   const userDocRef = useMemoFirebase(() => (user && db) ? doc(db, "users", user.uid) : null, [user, db])
   const { data: profile } = useDoc<any>(userDocRef)
@@ -57,9 +59,12 @@ export function SubmissionForm({ onSubmit, type, placeholder }: SubmissionFormPr
     }
   }, [text])
 
-  const handleInteraction = () => {
+  const handleInteraction = (e?: React.MouseEvent) => {
     if (!user) {
+      e?.preventDefault();
+      e?.stopPropagation();
       toast({ title: "로그인 필요", description: "지식을 나누려면 로그인이 필요합니다.", variant: "destructive" })
+      router.push("/auth?mode=login")
       return false
     }
     return true
@@ -107,7 +112,7 @@ export function SubmissionForm({ onSubmit, type, placeholder }: SubmissionFormPr
                     />
                   </div>
                   <div className="w-full md:w-40 shrink-0">
-                    <Select value={selectedCategory || ""} onValueChange={(val) => user && setSelectedCategory(val)}>
+                    <Select value={selectedCategory || ""} onValueChange={(val) => user ? setSelectedCategory(val) : handleInteraction()}>
                       <SelectTrigger className="h-9 bg-primary/15 border-none rounded-lg font-black text-[11px] text-[#163300] px-3 shadow-inner">
                         <SelectValue placeholder="카테고리" />
                       </SelectTrigger>

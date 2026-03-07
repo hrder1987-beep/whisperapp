@@ -120,18 +120,10 @@ export default function ProgramsPage() {
   const handleOpenDialog = (open: boolean) => {
     if (open && !user) {
       toast({ title: "로그인 필요", description: "정보를 등록하려면 로그인이 필요합니다.", variant: "destructive" })
+      router.push("/auth?mode=login")
       return
     }
     setIsDialogOpen(open)
-  }
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string | null) => void) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      const reader = new FileReader()
-      reader.onloadend = () => setter(reader.result as string)
-      reader.readAsDataURL(file)
-    }
   }
 
   const handleAddProgram = async (e: React.FormEvent) => {
@@ -181,7 +173,6 @@ export default function ProgramsPage() {
               <p className="text-sm md:text-base font-bold text-[#888]">전문가가 엄선한 프리미엄 교육 프로그램과 HR IT 솔루션</p>
             </div>
 
-            {/* 웹에서만 등록 가능 */}
             <div className="hidden md:block">
               <Dialog open={isDialogOpen} onOpenChange={handleOpenDialog}>
                 <DialogTrigger asChild>
@@ -390,7 +381,11 @@ export default function ProgramsPage() {
                   <div className="mt-auto grid grid-cols-2 gap-3">
                     <Button onClick={() => setSelectedProgram(p)} variant="ghost" className="h-12 rounded-xl bg-[#F5F6F7] hover:bg-black/5 text-black/40 font-black text-xs">상세 보기</Button>
                     <Button onClick={() => {
-                      if (!user) { toast({ title: "로그인 필요", description: "문의를 위해 로그인이 필요합니다.", variant: "destructive" }); return; }
+                      if (!user) { 
+                        toast({ title: "로그인 필요", description: "문의를 위해 로그인이 필요합니다.", variant: "destructive" }); 
+                        router.push("/auth?mode=login");
+                        return; 
+                      }
                       setMessageTarget({ id: p.userId, nickname: p.instructorName })
                     }} className="h-12 rounded-xl naver-button text-xs gap-2 shadow-lg transition-transform hover:scale-[1.02]">
                       <MessageSquare className="w-4 h-4" /> 도입/상담 문의
@@ -502,7 +497,11 @@ export default function ProgramsPage() {
             </div>
             <div className="p-8 bg-[#F5F6F7] border-t border-black/5 flex justify-end gap-4">
               <Button onClick={() => {
-                if (!user) { toast({ title: "로그인 필요", description: "문의를 위해 로그인이 필요합니다.", variant: "destructive" }); return; }
+                if (!user) { 
+                  toast({ title: "로그인 필요", description: "문의를 위해 로그인이 필요합니다.", variant: "destructive" }); 
+                  router.push("/auth?mode=login");
+                  return; 
+                }
                 setMessageTarget({ id: selectedProgram.userId, nickname: selectedProgram.instructorName })
               }} className="h-14 px-10 rounded-xl naver-button text-base gap-3 shadow-xl hover:scale-105 transition-all">
                 <MessageSquare className="w-5 h-5" /> 도입/상담 신청
