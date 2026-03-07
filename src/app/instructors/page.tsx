@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo, useRef } from "react"
@@ -105,15 +106,6 @@ export default function InstructorsPage() {
     setIsDialogOpen(open)
   }
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string | null) => void) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      const reader = new FileReader()
-      reader.onloadend = () => setter(reader.result as string)
-      reader.readAsDataURL(file)
-    }
-  }
-
   const handleAddInstructor = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!user) { toast({ title: "로그인 필요", description: "강사 등록을 위해 로그인이 필요합니다.", variant: "destructive" }); router.push("/auth?mode=login"); return; }
@@ -145,7 +137,7 @@ export default function InstructorsPage() {
   return (
     <div className="min-h-screen bg-[#F5F6F7]">
       <Header />
-      <main className="max-w-7xl mx-auto px-4 py-8 md:py-16">
+      <main className="max-w-7xl mx-auto px-4 py-8 md:py-16 pb-24">
         <div className="flex flex-col gap-8 mb-16">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="space-y-1">
@@ -266,7 +258,9 @@ export default function InstructorsPage() {
                 className="h-16 pl-16 pr-8 bg-white border-2 border-primary rounded-2xl shadow-lg focus-visible:ring-0 text-lg font-black placeholder:text-black/10"
               />
             </div>
-            <div className="flex flex-wrap gap-2 md:gap-3 py-2">
+            
+            {/* Desktop Categories */}
+            <div className="hidden md:flex flex-wrap gap-2 md:gap-3 py-2">
               {INSTRUCTOR_CATEGORIES.map((cat) => (
                 <button
                   key={cat}
@@ -281,6 +275,23 @@ export default function InstructorsPage() {
                   {cat}
                 </button>
               ))}
+            </div>
+
+            {/* Mobile Categories - Dropdown Style */}
+            <div className="md:hidden">
+              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                <SelectTrigger className="w-full h-14 bg-white border-2 border-black/5 rounded-2xl font-black text-accent px-6">
+                  <div className="flex items-center gap-2">
+                    <span className="text-primary">전문분야:</span>
+                    <SelectValue />
+                  </div>
+                </SelectTrigger>
+                <SelectContent className="rounded-2xl shadow-3xl border-none p-2">
+                  {INSTRUCTOR_CATEGORIES.map((cat) => (
+                    <SelectItem key={cat} value={cat} className="rounded-xl py-3 font-bold">{cat}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </div>

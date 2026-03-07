@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo, useRef } from "react"
@@ -132,7 +133,7 @@ export default function JobsPage() {
   return (
     <div className="min-h-screen bg-[#F8F9FA]">
       <Header />
-      <main className="max-w-5xl mx-auto px-4 py-10 md:py-16">
+      <main className="max-w-5xl mx-auto px-4 py-10 md:py-16 pb-24">
         <div className="flex flex-col gap-10 mb-12">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div className="space-y-2">
@@ -204,7 +205,9 @@ export default function JobsPage() {
                 className="h-14 pl-14 pr-6 bg-white border-2 border-primary rounded-none shadow-sm focus-visible:ring-0 text-base font-bold placeholder:text-black/10"
               />
             </div>
-            <div className="flex flex-wrap gap-2 py-1">
+            
+            {/* Desktop Categories */}
+            <div className="hidden md:flex flex-wrap gap-2 py-1">
               {JOB_CATEGORIES.map((cat) => (
                 <button
                   key={cat}
@@ -219,6 +222,23 @@ export default function JobsPage() {
                   {cat}
                 </button>
               ))}
+            </div>
+
+            {/* Mobile Categories - Dropdown Style */}
+            <div className="md:hidden">
+              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                <SelectTrigger className="w-full h-14 bg-white border-2 border-black/5 rounded-none font-black text-accent px-6">
+                  <div className="flex items-center gap-2">
+                    <span className="text-primary">직무:</span>
+                    <SelectValue />
+                  </div>
+                </SelectTrigger>
+                <SelectContent className="rounded-none shadow-3xl border-none p-2">
+                  {JOB_CATEGORIES.map((cat) => (
+                    <SelectItem key={cat} value={cat} className="rounded-none py-3 font-bold">{cat}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </div>

@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useUser, useFirestore, useCollection, useMemoFirebase, useDoc } from "@/firebase"
 import { collection, query, addDoc, where, doc } from "firebase/firestore"
 import { Instructor, Question, SiteBranding } from "@/lib/types"
@@ -60,6 +61,15 @@ export default function MentorsPage() {
     return matchesSearch && matchesCategory
   })
 
+  const handleMentorApplyClick = () => {
+    if (!user) {
+      toast({ title: "로그인 필요", description: "자격 신청을 하려면 로그인이 필요합니다.", variant: "destructive" })
+      router.push("/auth?mode=login")
+      return
+    }
+    setIsDialogOpen(true)
+  }
+
   return (
     <div className="min-h-screen bg-[#F5F6F7]">
       <Header />
@@ -70,17 +80,36 @@ export default function MentorsPage() {
               <h1 className="text-3xl md:text-4xl font-black text-[#1E1E23] tracking-tighter">{branding?.mentorTitle || "위스퍼러 (Whisperer)"}</h1>
               <p className="text-sm md:text-base font-bold text-[#888]">{branding?.mentorSubtitle || "대한민국 최고의 실무 전문가들과의 1:1 인사이트 연결"}</p>
             </div>
-            <Button onClick={() => setIsDialogOpen(true)} className="naver-button h-14 px-10 rounded-xl shadow-xl gap-3 text-base text-accent"><Plus className="w-5 h-5" /> 위스퍼러 자격 신청</Button>
+            <Button onClick={handleMentorApplyClick} className="naver-button h-14 px-10 rounded-xl shadow-xl gap-3 text-base text-accent"><Plus className="w-5 h-5" /> 위스퍼러 자격 신청</Button>
           </div>
           <div className="flex flex-col gap-6">
             <div className="relative group">
               <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-6 h-6 text-black/20" />
               <Input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="전문가 성함, 기업명, 주요 전문 분야로 검색해 보세요" className="h-16 pl-16 pr-8 bg-white border-2 border-primary rounded-2xl shadow-lg focus-visible:ring-0 text-lg font-black" />
             </div>
-            <div className="flex flex-wrap gap-2 md:gap-3 py-2">
+            
+            {/* Desktop Categories */}
+            <div className="hidden md:flex flex-wrap gap-2 md:gap-3 py-2">
               {MENTOR_CATEGORIES.map((cat) => (
                 <button key={cat} onClick={() => setSelectedCategory(cat)} className={cn("px-8 py-3.5 rounded-full text-sm font-black transition-all border-2 whitespace-nowrap shrink-0", selectedCategory === cat ? "bg-primary text-accent border-primary shadow-lg" : "bg-white text-black/60 border-black/5 hover:border-primary/30")}>{cat}</button>
               ))}
+            </div>
+
+            {/* Mobile Categories - Dropdown Style */}
+            <div className="md:hidden">
+              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                <SelectTrigger className="w-full h-14 bg-white border-2 border-black/5 rounded-2xl font-black text-accent px-6">
+                  <div className="flex items-center gap-2">
+                    <span className="text-primary">전문분야:</span>
+                    <SelectValue />
+                  </div>
+                </SelectTrigger>
+                <SelectContent className="rounded-2xl shadow-3xl border-none p-2">
+                  {MENTOR_CATEGORIES.map((cat) => (
+                    <SelectItem key={cat} value={cat} className="rounded-xl py-3 font-bold">{cat}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </div>
@@ -93,7 +122,14 @@ export default function MentorsPage() {
                   <h3 className="text-2xl font-black text-accent mb-1">{m.name} 전문가</h3>
                   <p className="text-black/40 text-xs font-bold mb-4">{m.company} · {m.jobTitle}</p>
                   <Badge variant="outline" className="mb-8 border-primary/20 text-primary font-black text-[11px] px-5 py-1 rounded-full">#{m.specialty}</Badge>
-                  <Button onClick={() => setMessageTarget({ id: m.userId, nickname: m.name })} className="w-full h-12 rounded-xl naver-button text-accent font-black text-sm shadow-lg">1:1 인사이트 문의</Button>
+                  <Button onClick={() => {
+                    if(!user) {
+                      toast({ title: "로그인 필요", description: "문의를 위해 로그인이 필요합니다.", variant: "destructive" })
+                      router.push("/auth?mode=login")
+                      return
+                    }
+                    setMessageTarget({ id: m.userId, nickname: m.name })
+                  }} className="w-full h-12 rounded-xl naver-button text-accent font-black text-sm shadow-lg">1:1 인사이트 문의</Button>
                 </CardContent>
               </Card>
             ))}
