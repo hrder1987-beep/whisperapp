@@ -10,12 +10,11 @@ import { Progress } from "@/components/ui/progress"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Input } from "@/components/ui/input"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { useUser, useFirestore, useDoc, useCollection, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking } from "@/firebase"
-import { doc, collection, query, where, deleteDoc } from "firebase/firestore"
+import { doc, collection, query, where } from "firebase/firestore"
 import { Gathering, GatheringApplication, GatheringAttendance } from "@/lib/types"
-import { Users, Calendar, MapPin, Globe, Sparkles, FileText, Check, X, ArrowLeft, ShieldCheck, Download, Trash2, Clock, Info, CheckCircle2, MessageSquare, ClipboardList } from "lucide-react"
+import { Users, Calendar, MapPin, Globe, Sparkles, FileText, Check, X, ArrowLeft, ShieldCheck, Download, Clock, Info, CheckCircle2, ClipboardList } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { formatDistanceToNow } from "date-fns"
 import { ko } from "date-fns/locale"
@@ -44,23 +43,30 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
     return MOCK_GATHERINGS.find(g => g.id === id);
   }, [dbGathering, id]);
 
-  const appsQuery = useMemoFirebase(() => (db && user) ? query(collection(db, "gatherings", id, "applications")) : null, [db, id, user])
+  const isCreator = useMemo(() => user && gathering && user.uid === gathering.creatorId, [user, gathering]);
+
+  // 보안 오류 방지: 일반 사용자는 자신의 신청서만, 개설자는 전체를 조회하도록 쿼리 분리
+  const appsQuery = useMemoFirebase(() => {
+    if (!db || !user || !id) return null;
+    if (isCreator) return query(collection(db, "gatherings", id, "applications"));
+    return query(collection(db, "gatherings", id, "applications"), where("userId", "==", user.uid));
+  }, [db, id, user, isCreator]);
+
   const { data: applications } = useCollection<GatheringApplication>(appsQuery)
 
   const attendanceQuery = useMemoFirebase(() => (db && user) ? query(collection(db, "gatherings", id, "attendance")) : null, [db, id, user])
   const { data: attendanceList } = useCollection<GatheringAttendance>(attendanceQuery)
 
-  const isCreator = user && gathering && user.uid === gathering.creatorId
-  const myApp = applications?.find(a => a.userId === user?.uid)
+  const myApp = useMemo(() => applications?.find(a => a.userId === user?.uid), [applications, user]);
   const isApproved = myApp?.status === "approved"
 
   const handleApplyClick = () => {
-    if (!user || !gathering) {
+    if (!user) {
       toast({ title: "로그인 필요", description: "참여 신청을 하려면 로그인이 필요합니다.", variant: "destructive" })
       router.push("/auth?mode=login")
       return
     }
-
+    if (!gathering) return;
     if (gathering.questions && gathering.questions.length > 0) {
       setIsSurveyOpen(true)
     } else {
@@ -70,7 +76,6 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
 
   const handleApply = async () => {
     if (!user || !gathering || !db) return
-
     if (gathering.participantCount >= gathering.capacity) {
       toast({ title: "정원 초과", description: "이미 모집 정원이 마감되었습니다.", variant: "destructive" })
       return
@@ -117,7 +122,7 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
     updateDocumentNonBlocking(doc(db, "gatherings", id, "applications", app.id), { status: "approved" })
     
     if (!id.startsWith('sample-')) {
-      updateDocumentNonBlocking(gatheringRef!, { participantCount: gathering.participantCount + 1 })
+      updateDocumentNonBlocking(doc(db, "gatherings", id), { participantCount: (gathering.participantCount || 0) + 1 })
     }
     
     addDocumentNonBlocking(collection(db, "notifications"), {
@@ -141,7 +146,6 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
 
   const handleSubmitAttendance = (sessionId: number, status: 'attending' | 'absent') => {
     if (!db || !user || !isApproved) return
-    
     const existing = attendanceList?.find(a => a.userId === user.uid && a.sessionId === sessionId)
     
     if (existing) {
@@ -159,11 +163,7 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
         submittedAt: Date.now()
       })
     }
-    
-    toast({ 
-      title: status === 'attending' ? "참석 확인" : "불참 확인", 
-      description: `${sessionId}회차 참석 여부가 제출되었습니다.` 
-    })
+    toast({ title: status === 'attending' ? "참석 확인" : "불참 확인", description: `${sessionId}회차 참석 여부가 제출되었습니다.` })
   }
 
   if (isGatheringLoading) {
@@ -364,11 +364,11 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
                             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                               <div className="flex items-center gap-4">
                                 <div className="w-12 h-12 bg-[#1E1E23] text-[#03C75A] flex items-center justify-center font-black text-lg">
-                                  {app.userName.substring(0, 1)}
+                                  {(app.userName || "익").substring(0, 1)}
                                 </div>
                                 <div>
                                   <p className="font-black text-[#1E1E23] text-lg">@{app.userName}</p>
-                                  <p className="text-[10px] font-bold text-black/30 flex items-center gap-1.5 uppercase tracking-widest"><Clock className="w-3 h-3" /> {formatDistanceToNow(app.appliedAt, { addSuffix: true, locale: ko })}</p>
+                                  <p className="text-[10px] font-bold text-black/30 flex items-center gap-1.5 uppercase tracking-widest"><Clock className="w-3 h-3" /> {formatDistanceToNow(app.appliedAt || Date.now(), { addSuffix: true, locale: ko })}</p>
                                 </div>
                               </div>
                               
@@ -440,9 +440,9 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
                 <div className="space-y-4">
                   <div className="flex items-center justify-between px-1">
                     <span className="text-[10px] font-black text-black/30 uppercase tracking-[0.2em]">모집 현황</span>
-                    <span className="text-sm font-black text-[#03C75A]">{gathering.participantCount} / {gathering.capacity} 명</span>
+                    <span className="text-sm font-black text-[#03C75A]">{gathering.participantCount || 0} / {gathering.capacity || 0} 명</span>
                   </div>
-                  <Progress value={(gathering.participantCount / gathering.capacity) * 100} className="h-2 bg-black/5" />
+                  <Progress value={((gathering.participantCount || 0) / (gathering.capacity || 1)) * 100} className="h-2 bg-black/5" />
                 </div>
               </div>
 
@@ -475,7 +475,7 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
               <div className="pt-8 border-t border-black/5">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 bg-[#1E1E23] text-[#03C75A] flex items-center justify-center font-black text-lg">
-                    {gathering.creatorName.substring(0, 1)}
+                    {(gathering.creatorName || "익").substring(0, 1)}
                   </div>
                   <div>
                     <p className="text-[9px] font-black text-black/30 uppercase tracking-widest">Project Host</p>

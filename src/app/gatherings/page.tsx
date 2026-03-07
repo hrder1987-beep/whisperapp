@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useUser, useFirestore, useCollection, useDoc, useMemoFirebase, addDocumentNonBlocking } from "@/firebase"
 import { collection, query, orderBy, doc } from "firebase/firestore"
 import { Gathering, SiteBranding } from "@/lib/types"
-import { Plus, Search, Sparkles, Image as ImageIcon, ChevronDown } from "lucide-react"
+import { Plus, Search, Sparkles, Image as ImageIcon } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
@@ -82,7 +82,7 @@ export default function GatheringsPage() {
 
   const handleCreateGathering = async (e: React.FormEvent) => {
     e.preventDefault(); 
-    if (!user) { router.push("/auth?mode=login"); return; }
+    if (!user || !db) return;
     
     setIsSubmitting(true)
     try {
@@ -98,7 +98,7 @@ export default function GatheringsPage() {
         location: type === "online" ? "온라인(상세 링크)" : location, 
         schedule,
         startDate: now,
-        endDate: now + (7 * 24 * 60 * 60 * 1000), // 기본 1주일 뒤 종료로 설정
+        endDate: now + (30 * 24 * 60 * 60 * 1000), 
         capacity: parseInt(capacity) || 10, 
         participantCount: 0, 
         status: "recruiting", 
@@ -108,10 +108,10 @@ export default function GatheringsPage() {
         sessionCount: 1, 
         resources: []
       })
-      toast({ title: "모임 개설 완료" }); 
+      toast({ title: "모임 개설 완료", description: "새로운 전문가 모임이 생성되었습니다." }); 
       setIsDialogOpen(false);
       setTitle(""); setDescription(""); setLocation(""); setSchedule(""); setImageUrl(null);
-    } catch (error) { toast({ title: "오류 발생", variant: "destructive" }) }
+    } catch (error) { toast({ title: "오류 발생", description: "모임 생성 중 문제가 발생했습니다.", variant: "destructive" }) }
     finally { setIsSubmitting(false) }
   }
 
@@ -236,7 +236,7 @@ export default function GatheringsPage() {
                   <h3 className="text-xl font-black text-[#1E1E23] group-hover:text-primary transition-colors line-clamp-2 leading-tight mb-4">{g.title}</h3>
                   <div className="mt-auto flex items-center justify-between pt-6 border-t border-black/5">
                     <span className="text-[11px] font-black text-black/30">@{g.creatorName}</span>
-                    <span className="text-[12px] font-black text-primary">{g.participantCount} / {g.capacity} 명</span>
+                    <span className="text-[12px] font-black text-primary">{g.participantCount || 0} / {g.capacity || 0} 명</span>
                   </div>
                 </div>
               </div>
