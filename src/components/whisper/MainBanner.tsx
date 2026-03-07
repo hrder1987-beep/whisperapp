@@ -64,7 +64,7 @@ export function MainBanner({ banners: propBanners, autoSlideDuration = 3 }: Main
         <CarouselContent className="ml-0">
           {banners.map((banner, index) => (
             <CarouselItem key={banner.id} className="pl-0">
-              <div className="relative h-[200px] md:h-[320px] w-full overflow-hidden">
+              <div className="relative h-[200px] md:h-[320px] w-full overflow-hidden bg-white">
                 <div className="absolute inset-0 flex flex-col justify-center px-8 md:px-16 z-20">
                   <Badge className="w-fit mb-3 md:mb-4 bg-primary text-accent shadow-sm border-none px-3 py-0.5 text-[9px] font-black tracking-widest">
                     {banner.badge}

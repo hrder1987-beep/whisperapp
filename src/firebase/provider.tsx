@@ -29,21 +29,6 @@ export interface FirebaseContextState {
   userError: Error | null;
 }
 
-export interface FirebaseServicesAndUser {
-  firebaseApp: FirebaseApp | null;
-  firestore: Firestore | null;
-  auth: Auth | null;
-  user: User | null;
-  isUserLoading: boolean;
-  userError: Error | null;
-}
-
-export interface UserHookResult {
-  user: User | null;
-  isUserLoading: boolean;
-  userError: Error | null;
-}
-
 export const FirebaseContext = createContext<FirebaseContextState | undefined>(undefined);
 
 export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
@@ -98,10 +83,10 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
   );
 };
 
-export const useFirebase = (): FirebaseServicesAndUser => {
-  // CRITICAL: 서버 환경 체크 (Internal Server Error 방지)
+export const useFirebase = (): FirebaseContextState => {
   if (typeof window === 'undefined') {
     return {
+      areServicesAvailable: false,
       firebaseApp: null,
       firestore: null,
       auth: null,
@@ -112,9 +97,9 @@ export const useFirebase = (): FirebaseServicesAndUser => {
   }
 
   const context = useContext(FirebaseContext);
-  // 컨텍스트가 없는 경우 에러를 던지는 대신 안전한 초기값 반환
   if (!context) {
     return {
+      areServicesAvailable: false,
       firebaseApp: null,
       firestore: null,
       auth: null,
@@ -123,14 +108,7 @@ export const useFirebase = (): FirebaseServicesAndUser => {
       userError: null,
     };
   }
-  return {
-    firebaseApp: context.firebaseApp,
-    firestore: context.firestore,
-    auth: context.auth,
-    user: context.user,
-    isUserLoading: context.isUserLoading,
-    userError: context.userError,
-  };
+  return context;
 };
 
 export const useAuth = (): Auth | null => {
@@ -157,7 +135,7 @@ export function useMemoFirebase<T>(factory: () => T, deps: DependencyList): T | 
   return memoized;
 }
 
-export const useUser = (): UserHookResult => {
+export const useUser = () => {
   const { user, isUserLoading, userError } = useFirebase();
   return { user, isUserLoading, userError };
 };

@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useRef, useEffect } from "react"
@@ -109,7 +108,7 @@ export function SubmissionForm({ onSubmit, type, placeholder }: SubmissionFormPr
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
                       readOnly={!user}
-                      className="border-none shadow-none focus-visible:ring-0 text-base md:text-lg font-black h-auto placeholder:text-[#163300]/10 text-[#163300] bg-transparent outline-none px-0 pl-1"
+                      className="border-none shadow-none focus-visible:ring-0 text-base md:text-lg font-black h-auto placeholder:text-[#163300]/10 text-[#163300] bg-transparent outline-none px-0"
                     />
                   </div>
                   <div className="w-full md:w-40 shrink-0">
@@ -138,7 +137,7 @@ export function SubmissionForm({ onSubmit, type, placeholder }: SubmissionFormPr
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 readOnly={!user}
-                className="min-h-[80px] md:min-h-[100px] border-none shadow-none focus-visible:ring-0 py-1 text-sm md:text-base leading-relaxed resize-none text-[#404040] placeholder:text-[#163300]/10 bg-transparent outline-none font-medium px-0 pl-1"
+                className="min-h-[80px] md:min-h-[100px] border-none shadow-none focus-visible:ring-0 py-1 text-sm md:text-base leading-relaxed resize-none text-[#404040] placeholder:text-[#163300]/10 bg-transparent outline-none font-medium px-0"
               />
             </div>
 

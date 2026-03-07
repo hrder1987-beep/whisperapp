@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo } from "react"
@@ -88,14 +87,12 @@ export default function MentorsPage() {
               <Input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="전문가 성함, 기업명, 주요 전문 분야로 검색해 보세요" className="h-16 pl-16 pr-8 bg-white border-2 border-primary rounded-2xl shadow-lg focus-visible:ring-0 text-lg font-black" />
             </div>
             
-            {/* Desktop Categories */}
             <div className="hidden md:flex flex-wrap gap-2 md:gap-3 py-2">
               {MENTOR_CATEGORIES.map((cat) => (
                 <button key={cat} onClick={() => setSelectedCategory(cat)} className={cn("px-8 py-3.5 rounded-full text-sm font-black transition-all border-2 whitespace-nowrap shrink-0", selectedCategory === cat ? "bg-primary text-accent border-primary shadow-lg" : "bg-white text-black/60 border-black/5 hover:border-primary/30")}>{cat}</button>
               ))}
             </div>
 
-            {/* Mobile Categories - Dropdown Style */}
             <div className="md:hidden">
               <Select value={selectedCategory} onValueChange={setSelectedCategory}>
                 <SelectTrigger className="w-full h-14 bg-white border-2 border-black/5 rounded-2xl font-black text-accent px-6">

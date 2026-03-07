@@ -58,9 +58,10 @@ p, span, label, h1, h2, h3, h4, h5, h6 {
   @apply bg-primary text-[#163300] font-black rounded-xl hover:brightness-95 transition-all shadow-lg active:scale-[0.97] disabled:opacity-50;
 }
 
-/* 입력창 스타일 최적화 (글로벌 강제 패딩 제거하여 검색바 아이콘 묻힘 방지) */
+/* 입력창 첫 글자 짤림 방지: 강력한 패딩 적용 */
 input, textarea {
   @apply transition-all duration-300;
+  padding-left: 1.5rem !important;
 }
 
 input:focus, textarea:focus {
