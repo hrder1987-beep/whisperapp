@@ -86,14 +86,30 @@ export default function GatheringsPage() {
     
     setIsSubmitting(true)
     try {
+      const now = Date.now();
       await addDocumentNonBlocking(collection(db, "gatherings"), {
-        title, description, tags: [category], creatorId: user.uid, creatorName: user.displayName || "익명전문가", 
-        type, location: type === "online" ? "온라인(상세 링크)" : location, schedule,
-        capacity: parseInt(capacity), participantCount: 0, status: "recruiting", category, 
-        imageUrl: imageUrl || `https://picsum.photos/seed/${Date.now()}/800/400`, createdAt: Date.now(), 
-        sessionCount: 1, resources: []
+        title, 
+        description, 
+        summary: description.substring(0, 100),
+        tags: [category], 
+        creatorId: user.uid, 
+        creatorName: user.displayName || "익명전문가", 
+        type, 
+        location: type === "online" ? "온라인(상세 링크)" : location, 
+        schedule,
+        startDate: now,
+        endDate: now + (7 * 24 * 60 * 60 * 1000), // 기본 1주일 뒤 종료로 설정
+        capacity: parseInt(capacity) || 10, 
+        participantCount: 0, 
+        status: "recruiting", 
+        category, 
+        imageUrl: imageUrl || `https://picsum.photos/seed/${now}/800/400`, 
+        createdAt: now, 
+        sessionCount: 1, 
+        resources: []
       })
-      toast({ title: "모임 개설 완료" }); setIsDialogOpen(false);
+      toast({ title: "모임 개설 완료" }); 
+      setIsDialogOpen(false);
       setTitle(""); setDescription(""); setLocation(""); setSchedule(""); setImageUrl(null);
     } catch (error) { toast({ title: "오류 발생", variant: "destructive" }) }
     finally { setIsSubmitting(false) }

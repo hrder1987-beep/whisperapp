@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo, use, useEffect } from "react"
@@ -93,7 +92,6 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
         answers: answersArray,
         appliedAt: Date.now()
       }).then(() => {
-        // 개설자에게 알림 발송
         addDocumentNonBlocking(collection(db, "notifications"), {
           userId: gathering.creatorId,
           type: "gathering_applied",
@@ -490,7 +488,6 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
         </div>
       </main>
 
-      {/* 다중 설문 대화상자 */}
       <Dialog open={isSurveyOpen} onOpenChange={setIsSurveyOpen}>
         <DialogContent className="max-w-xl bg-white border-none rounded-none p-0 shadow-2xl overflow-hidden">
           <DialogHeader className="bg-white border-b border-black/5 p-6">
