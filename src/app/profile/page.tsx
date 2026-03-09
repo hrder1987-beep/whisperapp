@@ -2,8 +2,9 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { useUser, useDoc, useMemoFirebase, useFirestore, useCollection, updateDocumentNonBlocking } from "@/firebase"
+import { useUser, useDoc, useMemoFirebase, useFirestore, useAuth, updateDocumentNonBlocking } from "@/firebase"
 import { doc, collection, query, where, getDocs } from "firebase/firestore"
+import { signOut } from "firebase/auth"
 import { Header } from "@/components/whisper/Header"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { AvatarIcon } from "@/components/whisper/AvatarIcon"
@@ -11,15 +12,18 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Building2, User as UserIcon, Phone, Briefcase, Sparkles, Settings, ArrowRight, Edit3, Camera, Save, X, Tag, Info, CheckCircle2, Loader2 } from "lucide-react"
+import { Building2, User as UserIcon, Phone, Briefcase, Sparkles, Settings, ArrowRight, Edit3, Camera, Save, X, Tag, Info, CheckCircle2, Loader2, LogOut } from "lucide-react"
 import Link from "next/link"
 import { useToast } from "@/hooks/use-toast"
+import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 export default function ProfilePage() {
   const { user, isUserLoading } = useUser()
+  const auth = useAuth()
   const db = useFirestore()
   const { toast } = useToast()
+  const router = useRouter()
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const [isEditing, setIsEditing] = useState(false)
@@ -56,6 +60,15 @@ export default function ProfilePage() {
 
     return () => clearTimeout(checkTimeout)
   }, [formData?.username, isEditing, profile?.username, db])
+
+  const handleLogout = () => {
+    if (auth) {
+      signOut(auth).then(() => {
+        toast({ title: "로그아웃 완료", description: "안전하게 로그아웃 되었습니다." })
+        router.push("/")
+      })
+    }
+  }
 
   if (isUserLoading || isProfileLoading) {
     return (
@@ -189,6 +202,18 @@ export default function ProfilePage() {
                 </div>
               ))}
             </div>
+
+            {!isEditing && (
+              <div className="pt-12 flex justify-center">
+                <Button 
+                  onClick={handleLogout}
+                  variant="outline" 
+                  className="border-red-100 text-red-400 font-black h-14 px-10 rounded-2xl hover:bg-red-50 hover:text-red-600 transition-all gap-2"
+                >
+                  <LogOut className="w-5 h-5" /> 위스퍼 플랫폼 로그아웃
+                </Button>
+              </div>
+            )}
 
             {isEditing && (
               <div className="pt-6 md:hidden">

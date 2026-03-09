@@ -4,7 +4,7 @@
 import { Logo } from "./Logo"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Search, User as UserIcon, Menu, Mail, ShieldCheck, FileText, Bell, Sparkles, Settings } from "lucide-react"
+import { Search, User as UserIcon, Menu, Mail, ShieldCheck, FileText, Bell, Sparkles, LogOut } from "lucide-react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useUser, useAuth, useCollection, useMemoFirebase, useFirestore, useDoc } from "@/firebase"
@@ -14,6 +14,13 @@ import { cn } from "@/lib/utils"
 import { useState, KeyboardEvent, useEffect } from "react"
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { Badge } from "@/components/ui/badge"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 interface HeaderProps {
   onSearch?: (query: string) => void
@@ -46,7 +53,13 @@ export function Header({ onSearch }: HeaderProps) {
   const { data: unreadMessages } = useCollection(unreadMessagesQuery)
   const { data: unreadNotifs } = useCollection(unreadNotifQuery)
 
-  const handleLogout = () => { signOut(auth); router.push("/"); }
+  const handleLogout = () => { 
+    if (auth) {
+      signOut(auth).then(() => {
+        router.push("/");
+      });
+    }
+  }
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
@@ -55,7 +68,6 @@ export function Header({ onSearch }: HeaderProps) {
     }
   }
 
-  // 마스터 이메일 또는 Firestore role이 admin인 경우
   const isAdmin = user?.email === 'forum@khrd.co.kr' || profile?.role === 'admin'
 
   const navLinks = [
@@ -100,7 +112,7 @@ export function Header({ onSearch }: HeaderProps) {
                       <Link href="/my-posts" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-bold py-3 text-accent/60 flex items-center gap-3 px-5"><FileText className="w-4 h-4 opacity-30" /> 내가 쓴 속삭임</Link>
                       <Link href="/profile" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-bold py-3 text-accent/60 flex items-center gap-3 px-5"><UserIcon className="w-4 h-4 opacity-30" /> 내 정보</Link>
                       <Link href="/notifications" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-bold py-3 text-accent/60 flex items-center gap-3 px-5"><Bell className="w-4 h-4 opacity-30" /> 알림 센터</Link>
-                      <button onClick={handleLogout} className="text-left text-sm font-black py-3 px-5 text-red-400 mt-4">로그아웃</button>
+                      <button onClick={handleLogout} className="text-left text-sm font-black py-3 px-5 text-red-400 mt-4 flex items-center gap-2"><LogOut className="w-4 h-4" /> 로그아웃</button>
                     </div>
                   ) : (
                     <Link href="/auth?mode=login" onClick={() => setIsMobileMenuOpen(false)} className="text-[16px] font-black py-4 px-5 bg-accent text-white rounded-2xl text-center shadow-lg flex items-center justify-center gap-2 mt-4"><Sparkles className="w-4 h-4" /> 시작하기</Link>
@@ -148,11 +160,34 @@ export function Header({ onSearch }: HeaderProps) {
               <Link href="/auth?mode=signup"><Button variant="outline" className="border-accent/10 text-accent font-black h-10 px-6 hidden md:block rounded-xl hover:bg-primary/10 text-sm">회원가입</Button></Link>
             </div>
           ) : (
-            <Link href="/profile" className="hidden md:block">
-              <div className="w-10 h-10 rounded-xl bg-accent/5 border-2 border-white shadow-md flex items-center justify-center overflow-hidden hover:scale-105 transition-all">
-                <img src={profile?.profilePictureUrl || `https://picsum.photos/seed/${user.uid}/100/100`} className="w-full h-full object-cover" alt="me" />
-              </div>
-            </Link>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <div className="hidden md:flex w-10 h-10 rounded-xl bg-accent/5 border-2 border-white shadow-md items-center justify-center overflow-hidden hover:scale-105 transition-all cursor-pointer">
+                  <img src={profile?.profilePictureUrl || `https://picsum.photos/seed/${user.uid}/100/100`} className="w-full h-full object-cover" alt="me" />
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56 mt-2 bg-white border-none shadow-4xl rounded-2xl p-2 animate-in fade-in zoom-in-95 duration-200">
+                <div className="px-4 py-3 mb-1">
+                  <p className="text-[10px] font-black text-accent/20 uppercase tracking-widest mb-0.5">Logged in as</p>
+                  <p className="text-sm font-black text-accent truncate">@{profile?.username || "전문가"}</p>
+                </div>
+                <DropdownMenuSeparator className="bg-accent/5 mx-2" />
+                <DropdownMenuItem asChild className="rounded-xl py-3 px-4 font-bold text-accent/70 focus:bg-primary/10 focus:text-accent cursor-pointer">
+                  <Link href="/profile" className="flex items-center gap-3">
+                    <UserIcon className="w-4 h-4" /> 마이 프로필
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild className="rounded-xl py-3 px-4 font-bold text-accent/70 focus:bg-primary/10 focus:text-accent cursor-pointer">
+                  <Link href="/my-posts" className="flex items-center gap-3">
+                    <FileText className="w-4 h-4" /> 내가 쓴 속삭임
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator className="bg-accent/5 mx-2" />
+                <DropdownMenuItem onClick={handleLogout} className="rounded-xl py-3 px-4 font-black text-red-500 focus:bg-red-50 focus:text-red-600 cursor-pointer flex items-center gap-3">
+                  <LogOut className="w-4 h-4" /> 로그아웃
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           )}
         </div>
       </div>
