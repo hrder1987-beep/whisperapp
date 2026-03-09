@@ -269,6 +269,9 @@ export default function ProgramsPage() {
       {selectedProgram && (
         <Dialog open={!!selectedProgram} onOpenChange={() => setSelectedProgram(null)}>
           <DialogContent className="max-w-4xl bg-white border-none rounded-[3rem] p-0 shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+            <DialogHeader className="sr-only">
+              <DialogTitle>{selectedProgram.title} 상세 정보</DialogTitle>
+            </DialogHeader>
             <div className="flex-1 overflow-y-auto">
               <div className="p-12 space-y-8">
                 <h2 className="text-3xl md:text-5xl font-black text-accent">{selectedProgram.title}</h2>
@@ -294,7 +297,7 @@ export default function ProgramsPage() {
             <div className="p-8 bg-[#FBFBFC] border-t border-accent/5 flex justify-end gap-4">
               <Button variant="ghost" onClick={() => setSelectedProgram(null)} className="h-14 px-8 rounded-xl font-black text-accent/40">닫기</Button>
               <Button onClick={() => {
-                if (!user) { toast({ title: "로그인 필요", variant: "destructive" }); router.push("/auth?mode=login"); return; }
+                if (!user) { toast({ title: "로그인 필요", description: "문의를 위해 로그인이 필요합니다.", variant: "destructive" }); router.push("/auth?mode=login"); return; }
                 setMessageTarget({ id: selectedProgram.userId, nickname: selectedProgram.instructorName })
               }} className="h-14 px-12 naver-button text-white rounded-xl shadow-xl gap-2 font-black">1:1 상담 신청하기 <MessageSquare className="w-5 h-5" /></Button>
             </div>

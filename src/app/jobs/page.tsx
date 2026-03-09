@@ -94,7 +94,9 @@ export default function JobsPage() {
               <Dialog open={isDialogOpen} onOpenChange={handleOpenDialog}>
                 <DialogTrigger asChild><Button className="naver-button h-12 px-8 rounded-none shadow-sm gap-2 text-sm text-white"><Plus className="w-4 h-4" /> 채용 공고 게시하기</Button></DialogTrigger>
                 <DialogContent className="max-w-2xl bg-white border-none rounded-none p-0 shadow-2xl overflow-hidden">
-                  <DialogHeader className="bg-white border-b border-black/5 p-8 text-left"><DialogTitle className="text-xl font-black text-accent">신규 채용 공고 등록</DialogTitle></DialogHeader>
+                  <DialogHeader className="bg-white border-b border-black/5 p-8 text-left">
+                    <DialogTitle className="text-xl font-black text-accent">신규 채용 공고 등록</DialogTitle>
+                  </DialogHeader>
                   <form onSubmit={handleAddJob} className="p-8 space-y-8">
                     <div className="space-y-6">
                       <div className="space-y-2">
@@ -179,6 +181,9 @@ export default function JobsPage() {
       {viewJob && (
         <Dialog open={!!viewJob} onOpenChange={() => setViewJob(null)}>
           <DialogContent className="max-w-2xl bg-white border-none rounded-none p-0 shadow-4xl overflow-hidden">
+            <DialogHeader className="sr-only">
+              <DialogTitle>{viewJob.title}</DialogTitle>
+            </DialogHeader>
             <div className="bg-primary/5 p-10 flex items-center gap-8 border-b border-accent/5">
               <div className="w-24 h-24 rounded-xl bg-white border border-accent/5 shadow-xl p-2 shrink-0"><img src={viewJob.logoUrl} alt="logo" className="w-full h-full object-contain" /></div>
               <div className="space-y-2">

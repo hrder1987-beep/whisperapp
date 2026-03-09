@@ -185,6 +185,9 @@ export default function InstructorsPage() {
       {viewTarget && (
         <Dialog open={!!viewTarget} onOpenChange={() => setViewTarget(null)}>
           <DialogContent className="max-w-3xl bg-white border-none rounded-[3rem] p-0 shadow-4xl overflow-hidden">
+            <DialogHeader className="sr-only">
+              <DialogTitle>{viewTarget.name} 전문가 프로필</DialogTitle>
+            </DialogHeader>
             <div className="bg-primary/5 p-12 flex flex-col md:flex-row items-center gap-10 border-b border-accent/5">
               <div className="w-48 h-48 rounded-3xl overflow-hidden border-4 border-white shadow-2xl shrink-0"><img src={viewTarget.profilePictureUrl} alt={viewTarget.name} className="w-full h-full object-cover" /></div>
               <div className="text-center md:text-left space-y-4">
