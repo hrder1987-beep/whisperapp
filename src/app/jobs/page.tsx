@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking } from "@/firebase"
 import { collection, query, orderBy } from "firebase/firestore"
 import { JobListing } from "@/lib/types"
-import { MapPin, Plus, Search, Building2, Clock, Calendar, Briefcase, Mail } from "lucide-react"
+import { MapPin, Plus, Search, Building2, Clock, Calendar, Briefcase, Mail, Sparkles } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
