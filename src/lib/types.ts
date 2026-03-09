@@ -201,6 +201,13 @@ export interface SiteBranding {
   jobTitle: string;
   jobSubtitle: string;
   bannerAutoSlideDuration?: number;
+  announcementText?: string;
+  announcementLink?: string;
+  footerCompany?: string;
+  footerAddress?: string;
+  footerEmail?: string;
+  footerPhone?: string;
+  footerCopyright?: string;
 }
 
 export type BotType = 'whisperra' | 'aldi' | 'dongsan';

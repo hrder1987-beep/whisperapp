@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo, useEffect, useDeferredValue, Suspense } from "react"
@@ -10,13 +11,14 @@ import { WhisperChat } from "@/components/whisper/WhisperChat"
 import { PremiumAds } from "@/components/whisper/PremiumAds"
 import { Question, Answer, PremiumAd, SiteBranding } from "@/lib/types"
 import { Button } from "@/components/ui/button"
-import { Sparkles, ChevronsLeft, ChevronsRight } from "lucide-react"
+import { Sparkles, ChevronsLeft, ChevronsRight, Megaphone, ChevronRight } from "lucide-react"
 import { generateAiReply } from "@/ai/flows/generate-ai-reply-flow"
 import { cn } from "@/lib/utils"
 import { useFirestore, useCollection, useDoc, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking, useUser } from "@/firebase"
 import { collection, query, orderBy, doc, increment } from "firebase/firestore"
 import mockData from "@/lib/mock-data.json"
 import { useSearchParams } from "next/navigation"
+import Link from "next/link"
 
 const ITEMS_PER_PAGE = 5 
 
@@ -162,6 +164,17 @@ function HomePageContent() {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
       <main className="lg:col-span-8 space-y-6 md:space-y-8">
+        {branding?.announcementText && (
+          <Link href={branding.announcementLink || "#"} className="block">
+            <div className="bg-primary/10 border border-primary/20 p-4 rounded-2xl flex items-center justify-between group hover:bg-primary/20 transition-all">
+              <div className="flex items-center gap-3">
+                <Megaphone className="w-5 h-5 text-primary animate-bounce" />
+                <span className="text-sm font-black text-accent truncate">{branding.announcementText}</span>
+              </div>
+              <ChevronRight className="w-4 h-4 text-accent/30 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </Link>
+        )}
         <MainBanner banners={banners} autoSlideDuration={branding?.bannerAutoSlideDuration || 3} />
         <SubmissionForm type="question" placeholder={branding?.homeTitle ? `${branding.homeTitle}에서 고민을 나눠보세요` : "HR 고민을 속삭여보세요."} onSubmit={handleAddQuestion} />
         
@@ -196,6 +209,22 @@ function HomePageContent() {
             <Button variant="ghost" disabled={currentPage === totalPages} onClick={() => setCurrentPage(totalPages)}><ChevronsRight className="w-4" /></Button>
           </div>
         )}
+
+        <footer className="mt-20 pt-12 border-t border-black/5 pb-12">
+          <div className="space-y-6">
+            <h2 className="text-xl font-black text-accent">{branding?.footerCompany || "(주)위스퍼 인텔리전스"}</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-bold text-accent/40">
+              <div className="space-y-1">
+                <p>주소: {branding?.footerAddress || "정보가 없습니다."}</p>
+                <p>이메일: {branding?.footerEmail || "contact@whisperapp.kr"}</p>
+              </div>
+              <div className="space-y-1">
+                <p>대표번호: {branding?.footerPhone || "02-1234-5678"}</p>
+                <p>{branding?.footerCopyright || "© 2024 Whisper Intelligence. All rights reserved."}</p>
+              </div>
+            </div>
+          </div>
+        </footer>
       </main>
 
       <aside className="lg:col-span-4 hidden lg:block space-y-8 h-fit relative">

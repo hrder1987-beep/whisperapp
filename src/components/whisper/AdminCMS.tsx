@@ -11,7 +11,7 @@ import { BannerData } from "./MainBanner"
 import { PremiumAd, SiteBranding } from "@/lib/types"
 import { useFirestore, setDocumentNonBlocking } from "@/firebase"
 import { doc } from "firebase/firestore"
-import { Trash2, Plus, Save, RefreshCcw, ExternalLink, ImageIcon, Camera, FileText, Monitor, Globe, Clock } from "lucide-react"
+import { Trash2, Plus, Save, RefreshCcw, ExternalLink, ImageIcon, Camera, FileText, Monitor, Globe, Clock, Megaphone, Info } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
 interface AdminCMSProps {
@@ -35,7 +35,14 @@ export function AdminCMS({ initialBanners, initialPremiumAds, initialBranding, o
     programSubtitle: "전문가가 엄선한 프리미엄 교육 프로그램과 HR IT 솔루션",
     jobTitle: "채용 인텔리전스",
     jobSubtitle: "전문성이 검증된 HR 담당자를 위한 커리어 큐레이션",
-    bannerAutoSlideDuration: 3
+    bannerAutoSlideDuration: 3,
+    announcementText: "",
+    announcementLink: "",
+    footerCompany: "(주)위스퍼 인텔리전스",
+    footerAddress: "서울특별시 강남구 테헤란로 123",
+    footerEmail: "contact@whisperapp.kr",
+    footerPhone: "02-1234-5678",
+    footerCopyright: "© 2024 Whisper Intelligence. All rights reserved."
   })
   
   const [isSaving, setIsSaving] = useState(false)
@@ -105,6 +112,30 @@ export function AdminCMS({ initialBanners, initialPremiumAds, initialBranding, o
     <div className="space-y-12 pb-32">
       <section className="space-y-6">
         <div className="flex items-center gap-3">
+          <div className="p-2 bg-primary/10 rounded-lg text-primary"><Megaphone className="w-5 h-5" /></div>
+          <div>
+            <h3 className="text-xl font-black text-accent">긴급 공지사항 바 (Top Bar)</h3>
+            <p className="text-xs font-bold text-accent/30">홈페이지 최상단에 노출될 중요 메시지와 링크를 설정합니다.</p>
+          </div>
+        </div>
+        <Card className="bg-white border-accent/5 shadow-sm rounded-[2.5rem] overflow-hidden">
+          <CardContent className="p-8 space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-accent/30 uppercase tracking-widest ml-1">공지 텍스트</label>
+                <Input value={branding.announcementText ?? ""} onChange={(e) => handleBrandingChange("announcementText", e.target.value)} placeholder="예: 2025 HR 컨퍼런스 사전 예약 접수 중!" className="bg-accent/5 border-none font-bold h-12 rounded-xl shadow-inner" />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-accent/30 uppercase tracking-widest ml-1">연결 링크 (URL)</label>
+                <Input value={branding.announcementLink ?? ""} onChange={(e) => handleBrandingChange("announcementLink", e.target.value)} placeholder="https://..." className="bg-accent/5 border-none font-medium h-12 rounded-xl shadow-inner" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </section>
+
+      <section className="space-y-6">
+        <div className="flex items-center gap-3">
           <div className="p-2 bg-primary/10 rounded-lg text-primary"><FileText className="w-5 h-5" /></div>
           <div>
             <h3 className="text-xl font-black text-accent">전역 사이트 문구 설정</h3>
@@ -118,36 +149,29 @@ export function AdminCMS({ initialBanners, initialPremiumAds, initialBranding, o
               <div className="space-y-4">
                 <label className="text-[10px] font-black text-accent/30 uppercase tracking-widest ml-1">홈페이지 (HOME)</label>
                 <div className="space-y-2">
-                  <Input value={branding.homeTitle ?? ""} onChange={(e) => handleBrandingChange("homeTitle", e.target.value)} placeholder="메인 타이틀" className="bg-accent/5 border-none font-black h-11 rounded-xl" />
-                  <Input value={branding.homeSubtitle ?? ""} onChange={(e) => handleBrandingChange("homeSubtitle", e.target.value)} placeholder="서브 타이틀" className="bg-accent/5 border-none font-bold text-xs h-11 rounded-xl" />
+                  <Input value={branding.homeTitle ?? ""} onChange={(e) => handleBrandingChange("homeTitle", e.target.value)} placeholder="메인 타이틀" className="bg-accent/5 border-none font-black h-11 rounded-xl shadow-inner" />
+                  <Input value={branding.homeSubtitle ?? ""} onChange={(e) => handleBrandingChange("homeSubtitle", e.target.value)} placeholder="서브 타이틀" className="bg-accent/5 border-none font-bold text-xs h-11 rounded-xl shadow-inner" />
                 </div>
               </div>
               <div className="space-y-4">
                 <label className="text-[10px] font-black text-accent/30 uppercase tracking-widest ml-1">모임 인텔리전스</label>
                 <div className="space-y-2">
-                  <Input value={branding.gatheringTitle ?? ""} onChange={(e) => handleBrandingChange("gatheringTitle", e.target.value)} placeholder="페이지 제목" className="bg-accent/5 border-none font-black h-11 rounded-xl" />
-                  <Input value={branding.gatheringSubtitle ?? ""} onChange={(e) => handleBrandingChange("gatheringSubtitle", e.target.value)} placeholder="페이지 설명" className="bg-accent/5 border-none font-bold text-xs h-11 rounded-xl" />
+                  <Input value={branding.gatheringTitle ?? ""} onChange={(e) => handleBrandingChange("gatheringTitle", e.target.value)} placeholder="페이지 제목" className="bg-accent/5 border-none font-black h-11 rounded-xl shadow-inner" />
+                  <Input value={branding.gatheringSubtitle ?? ""} onChange={(e) => handleBrandingChange("gatheringSubtitle", e.target.value)} placeholder="페이지 설명" className="bg-accent/5 border-none font-bold text-xs h-11 rounded-xl shadow-inner" />
                 </div>
               </div>
               <div className="space-y-4">
                 <label className="text-[10px] font-black text-accent/30 uppercase tracking-widest ml-1">위스퍼러 (멘토)</label>
                 <div className="space-y-2">
-                  <Input value={branding.mentorTitle ?? ""} onChange={(e) => handleBrandingChange("mentorTitle", e.target.value)} placeholder="페이지 제목" className="bg-accent/5 border-none font-black h-11 rounded-xl" />
-                  <Input value={branding.mentorSubtitle ?? ""} onChange={(e) => handleBrandingChange("mentorSubtitle", e.target.value)} placeholder="페이지 설명" className="bg-accent/5 border-none font-bold text-xs h-11 rounded-xl" />
+                  <Input value={branding.mentorTitle ?? ""} onChange={(e) => handleBrandingChange("mentorTitle", e.target.value)} placeholder="페이지 제목" className="bg-accent/5 border-none font-black h-11 rounded-xl shadow-inner" />
+                  <Input value={branding.mentorSubtitle ?? ""} onChange={(e) => handleBrandingChange("mentorSubtitle", e.target.value)} placeholder="페이지 설명" className="bg-accent/5 border-none font-bold text-xs h-11 rounded-xl shadow-inner" />
                 </div>
               </div>
               <div className="space-y-4">
                 <label className="text-[10px] font-black text-accent/30 uppercase tracking-widest ml-1">프로그램/솔루션</label>
                 <div className="space-y-2">
-                  <Input value={branding.programTitle ?? ""} onChange={(e) => handleBrandingChange("programTitle", e.target.value)} placeholder="페이지 제목" className="bg-accent/5 border-none font-black h-11 rounded-xl" />
-                  <Input value={branding.programSubtitle ?? ""} onChange={(e) => handleBrandingChange("programSubtitle", e.target.value)} placeholder="페이지 설명" className="bg-accent/5 border-none font-bold text-xs h-11 rounded-xl" />
-                </div>
-              </div>
-              <div className="space-y-4 md:col-span-2">
-                <label className="text-[10px] font-black text-accent/30 uppercase tracking-widest ml-1">채용 인텔리전스</label>
-                <div className="space-y-2">
-                  <Input value={branding.jobTitle ?? ""} onChange={(e) => handleBrandingChange("jobTitle", e.target.value)} placeholder="페이지 제목" className="bg-accent/5 border-none font-black h-11 rounded-xl" />
-                  <Input value={branding.jobSubtitle ?? ""} onChange={(e) => handleBrandingChange("jobSubtitle", e.target.value)} placeholder="페이지 설명" className="bg-accent/5 border-none font-bold text-xs h-11 rounded-xl" />
+                  <Input value={branding.programTitle ?? ""} onChange={(e) => handleBrandingChange("programTitle", e.target.value)} placeholder="페이지 제목" className="bg-accent/5 border-none font-black h-11 rounded-xl shadow-inner" />
+                  <Input value={branding.programSubtitle ?? ""} onChange={(e) => handleBrandingChange("programSubtitle", e.target.value)} placeholder="페이지 설명" className="bg-accent/5 border-none font-bold text-xs h-11 rounded-xl shadow-inner" />
                 </div>
               </div>
             </div>
@@ -172,7 +196,7 @@ export function AdminCMS({ initialBanners, initialPremiumAds, initialBranding, o
                 type="number" 
                 value={branding.bannerAutoSlideDuration ?? 3} 
                 onChange={(e) => handleBrandingChange("bannerAutoSlideDuration", parseInt(e.target.value) || 0)} 
-                className="w-16 h-8 bg-accent/5 border-none text-center font-black text-sm rounded-lg p-0"
+                className="w-16 h-8 bg-accent/5 border-none text-center font-black text-sm rounded-lg p-0 shadow-inner"
               />
               <span className="text-[10px] font-black text-accent/40">초</span>
             </div>
@@ -195,20 +219,20 @@ export function AdminCMS({ initialBanners, initialPremiumAds, initialBranding, o
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <label className="text-[10px] font-black text-accent/30 uppercase tracking-widest ml-1">배지 문구</label>
-                        <Input value={banner.badge ?? ""} onChange={(e) => handleBannerChange(idx, "badge", e.target.value)} className="bg-accent/5 border-none h-11 rounded-xl font-bold" />
+                        <Input value={banner.badge ?? ""} onChange={(e) => handleBannerChange(idx, "badge", e.target.value)} className="bg-accent/5 border-none h-11 rounded-xl font-bold shadow-inner" />
                       </div>
                       <div className="space-y-2">
                         <label className="text-[10px] font-black text-accent/30 uppercase tracking-widest ml-1">제목</label>
-                        <Input value={banner.title ?? ""} onChange={(e) => handleBannerChange(idx, "title", e.target.value)} className="bg-accent/5 border-none h-11 rounded-xl font-black" />
+                        <Input value={banner.title ?? ""} onChange={(e) => handleBannerChange(idx, "title", e.target.value)} className="bg-accent/5 border-none h-11 rounded-xl font-black shadow-inner" />
                       </div>
                     </div>
                     <div className="space-y-2">
                       <label className="text-[10px] font-black text-accent/30 uppercase tracking-widest ml-1">설명 문구</label>
-                      <Textarea value={banner.description ?? ""} onChange={(e) => handleBannerChange(idx, "description", e.target.value)} className="bg-accent/5 border-none h-20 rounded-xl font-medium resize-none" />
+                      <Textarea value={banner.description ?? ""} onChange={(e) => handleBannerChange(idx, "description", e.target.value)} className="bg-accent/5 border-none h-20 rounded-xl font-medium resize-none shadow-inner" />
                     </div>
                   </div>
                   <div className="lg:w-80 shrink-0 space-y-3 text-center">
-                    <div onClick={() => document.getElementById(`banner-img-${idx}`)?.click()} className="w-full aspect-[2/1] bg-accent/5 rounded-2xl border-2 border-dashed border-accent/10 flex flex-col items-center justify-center cursor-pointer overflow-hidden relative group">
+                    <div onClick={() => document.getElementById(`banner-img-${idx}`)?.click()} className="w-full aspect-[2/1] bg-accent/5 rounded-2xl border-2 border-dashed border-accent/10 flex flex-col items-center justify-center cursor-pointer overflow-hidden relative group shadow-inner">
                       {banner.image ? <img src={banner.image} className="w-full h-full object-cover" alt="preview" /> : <Camera className="w-8 h-8 text-accent/10" />}
                       <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all text-white text-[10px] font-black">이미지 업로드</div>
                     </div>
@@ -224,44 +248,34 @@ export function AdminCMS({ initialBanners, initialPremiumAds, initialBranding, o
 
       <section className="space-y-6">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-primary/10 rounded-lg text-primary"><ImageIcon className="w-5 h-5" /></div>
+          <div className="p-2 bg-primary/10 rounded-lg text-primary"><Info className="w-5 h-5" /></div>
           <div>
-            <h3 className="text-xl font-black text-accent">사이드바 프리미엄 광고</h3>
-            <p className="text-xs font-bold text-accent/30">우측 고정 영역 광고 관리 (권장: 800x450px)</p>
+            <h3 className="text-xl font-black text-accent">푸터 및 비즈니스 정보 (Footer)</h3>
+            <p className="text-xs font-bold text-accent/30">플랫폼 하단에 상시 노출될 정보를 관리합니다.</p>
           </div>
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {premiumAds.map((ad, idx) => (
-            <Card key={ad.id} className="bg-white border-accent/5 shadow-sm rounded-[2rem] overflow-hidden">
-              <CardHeader className="p-6 border-b border-accent/5 bg-accent/[0.02] flex flex-row items-center justify-between">
-                <Badge className="bg-accent text-primary font-black px-3 py-1 rounded-lg">AD #{idx + 1}</Badge>
-                <Button variant="ghost" size="icon" onClick={() => setPremiumAds(premiumAds.filter((_, i) => i !== idx))} className="text-red-400 h-8 w-8"><Trash2 className="w-3.5 h-3.5" /></Button>
-              </CardHeader>
-              <CardContent className="p-6 space-y-6">
-                <div className="space-y-2">
-                  <Input value={ad.badge ?? ""} onChange={(e) => handleAdChange(idx, "badge", e.target.value)} placeholder="배지" className="bg-accent/5 border-none h-10 rounded-xl font-bold" />
-                  <Input value={ad.title ?? ""} onChange={(e) => handleAdChange(idx, "title", e.target.value)} placeholder="광고 제목" className="bg-accent/5 border-none h-10 rounded-xl font-black" />
-                </div>
-                <div className="space-y-2">
-                  <div onClick={() => document.getElementById(`ad-img-${idx}`)?.click()} className="relative aspect-[16/9] bg-accent/5 rounded-xl border-2 border-dashed border-accent/10 flex flex-col items-center justify-center cursor-pointer overflow-hidden group">
-                    {ad.webImage ? <img src={ad.webImage} className="w-full h-full object-cover" alt="preview" /> : <Camera className="w-6 h-6 text-accent/10" />}
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all text-white text-[9px] font-black">이미지 업로드</div>
-                  </div>
-                  <p className="text-[9px] font-black text-accent/20 text-center uppercase tracking-tighter">권장 사이즈: 800 x 450px (16:9)</p>
-                </div>
-                <input type="file" id={`ad-img-${idx}`} className="hidden" accept="image/*" onChange={(e) => handleImageUpload('ad-web', idx, e)} />
-                <div className="relative">
-                  <ExternalLink className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-accent/20" />
-                  <Input value={ad.link ?? ""} onChange={(e) => handleAdChange(idx, "link", e.target.value)} placeholder="연결 URL" className="pl-9 bg-accent/5 border-none h-10 rounded-xl font-medium text-xs" />
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-          <Button variant="outline" onClick={() => setPremiumAds([...premiumAds, { id: Date.now().toString(), title: "신규 광고", badge: "NEW", webImage: "", mobileImage: "", link: "#" }])} className="h-full min-h-[300px] border-dashed border-accent/10 rounded-[2rem] flex flex-col gap-3 font-black text-accent/30 hover:bg-primary/5 hover:text-primary transition-all">
-            <Plus className="w-10 h-10" /> 광고 슬롯 추가
-          </Button>
-        </div>
+        <Card className="bg-white border-accent/5 shadow-sm rounded-[2.5rem] overflow-hidden">
+          <CardContent className="p-8 space-y-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-accent/30 uppercase tracking-widest ml-1">회사/운영주체 명칭</label>
+                <Input value={branding.footerCompany ?? ""} onChange={(e) => handleBrandingChange("footerCompany", e.target.value)} className="bg-accent/5 border-none font-bold h-11 rounded-xl shadow-inner" />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-accent/30 uppercase tracking-widest ml-1">대표 이메일</label>
+                <Input value={branding.footerEmail ?? ""} onChange={(e) => handleBrandingChange("footerEmail", e.target.value)} className="bg-accent/5 border-none font-bold h-11 rounded-xl shadow-inner" />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-accent/30 uppercase tracking-widest ml-1">사업장 주소</label>
+                <Input value={branding.footerAddress ?? ""} onChange={(e) => handleBrandingChange("footerAddress", e.target.value)} className="bg-accent/5 border-none font-bold h-11 rounded-xl shadow-inner" />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-accent/30 uppercase tracking-widest ml-1">카피라이트 문구</label>
+                <Input value={branding.footerCopyright ?? ""} onChange={(e) => handleBrandingChange("footerCopyright", e.target.value)} className="bg-accent/5 border-none font-bold h-11 rounded-xl shadow-inner" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </section>
 
       <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100]">
