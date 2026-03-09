@@ -63,17 +63,7 @@
         "category": { "type": "string" },
         "imageUrl": { "type": "string" },
         "createdAt": { "type": "number" },
-        "resources": { 
-          "type": "array", 
-          "items": { 
-            "type": "object",
-            "properties": {
-              "title": { "type": "string" },
-              "url": { "type": "string" },
-              "type": { "type": "string" }
-            }
-          }
-        }
+        "sessionCount": { "type": "number" }
       },
       "required": ["id", "title", "creatorId", "type", "capacity", "status", "createdAt"]
     },
@@ -92,6 +82,22 @@
         "appliedAt": { "type": "number" }
       },
       "required": ["gatheringId", "userId", "status", "appliedAt"]
+    },
+    "GatheringAttendance": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "GatheringAttendance",
+      "type": "object",
+      "description": "모임 세션별 출석 기록",
+      "properties": {
+        "id": { "type": "string" },
+        "gatheringId": { "type": "string" },
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "sessionId": { "type": "number" },
+        "status": { "type": "string", "enum": ["attending", "absent"] },
+        "submittedAt": { "type": "number" }
+      },
+      "required": ["gatheringId", "userId", "sessionId", "status", "submittedAt"]
     },
     "JobListing": {
       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -139,7 +145,7 @@
       "properties": {
         "id": { "type": "string" },
         "userId": { "type": "string" },
-        "type": { "type": "string", "enum": ["new_answer", "gathering_approved", "gathering_rejected"] },
+        "type": { "type": "string", "enum": ["new_answer", "gathering_approved", "gathering_rejected", "gathering_applied"] },
         "questionId": { "type": "string" },
         "questionTitle": { "type": "string" },
         "senderNickname": { "type": "string" },
@@ -169,6 +175,10 @@
       "schema": { "$ref": "#/entities/GatheringApplication" },
       "description": "모임 개별 신청 목록 (개인정보 보호 적용)"
     },
+    "/gatherings/{gatheringId}/attendance/{attendanceId}": {
+      "schema": { "$ref": "#/entities/GatheringAttendance" },
+      "description": "모임 출석 관리 대장"
+    },
     "/jobs/{jobId}": {
       "schema": { "$ref": "#/entities/JobListing" },
       "description": "HR 채용 정보 데이터베이스"
@@ -181,7 +191,7 @@
       "schema": { "$ref": "#/entities/Notification" },
       "description": "개인 알림 센터"
     },
-    "/admin_configuration/site_settings": {
+    "/admin_configuration/{configId}": {
       "schema": { "type": "object" },
       "description": "관리자 전용 사이트 구성 정보"
     }

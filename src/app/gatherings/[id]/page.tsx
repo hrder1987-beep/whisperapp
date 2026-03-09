@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo, use, useEffect } from "react"
@@ -38,23 +39,33 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
   const gatheringRef = useMemoFirebase(() => db ? doc(db, "gatherings", id) : null, [db, id])
   const { data: dbGathering, isLoading: isGatheringLoading } = useDoc<Gathering>(gatheringRef)
 
+  const userDocRef = useMemoFirebase(() => (user && db) ? doc(db, "users", user.uid) : null, [user, db])
+  const { data: profile } = useDoc<any>(userDocRef)
+
   const gathering = useMemo(() => {
     if (dbGathering) return dbGathering;
     return MOCK_GATHERINGS.find(g => g.id === id);
   }, [dbGathering, id]);
 
   const isCreator = useMemo(() => user && gathering && user.uid === gathering.creatorId, [user, gathering]);
+  const isPlatformAdmin = useMemo(() => user?.email === 'forum@khrd.co.kr' || profile?.role === 'admin', [user, profile]);
 
-  // 보안 오류 방지: 일반 사용자는 자신의 신청서만, 개설자는 전체를 조회하도록 쿼리 분리
+  // 보안 오류 방지: 일반 사용자는 자신의 신청서만, 개설자/관리자는 전체를 조회하도록 쿼리 분리
   const appsQuery = useMemoFirebase(() => {
     if (!db || !user || !id) return null;
-    if (isCreator) return query(collection(db, "gatherings", id, "applications"));
+    if (isCreator || isPlatformAdmin) return query(collection(db, "gatherings", id, "applications"));
     return query(collection(db, "gatherings", id, "applications"), where("userId", "==", user.uid));
-  }, [db, id, user, isCreator]);
+  }, [db, id, user, isCreator, isPlatformAdmin]);
 
   const { data: applications } = useCollection<GatheringApplication>(appsQuery)
 
-  const attendanceQuery = useMemoFirebase(() => (db && user) ? query(collection(db, "gatherings", id, "attendance")) : null, [db, id, user])
+  // 출석 데이터 쿼리도 동일하게 보안 처리: 본인 기록만 혹은 관리자 권한
+  const attendanceQuery = useMemoFirebase(() => {
+    if (!db || !user || !id) return null;
+    if (isCreator || isPlatformAdmin) return query(collection(db, "gatherings", id, "attendance"));
+    return query(collection(db, "gatherings", id, "attendance"), where("userId", "==", user.uid));
+  }, [db, id, user, isCreator, isPlatformAdmin]);
+
   const { data: attendanceList } = useCollection<GatheringAttendance>(attendanceQuery)
 
   const myApp = useMemo(() => applications?.find(a => a.userId === user?.uid), [applications, user]);
@@ -76,7 +87,7 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
 
   const handleApply = async () => {
     if (!user || !gathering || !db) return
-    if (gathering.participantCount >= gathering.capacity) {
+    if (gathering.participantCount >= (gathering.capacity || 0)) {
       toast({ title: "정원 초과", description: "이미 모집 정원이 마감되었습니다.", variant: "destructive" })
       return
     }
@@ -181,7 +192,7 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
   }
 
   const sessionArray = Array.from({ length: gathering.sessionCount || 1 }, (_, i) => i + 1)
-  const isClosed = gathering.status === 'closed' || (gathering.participantCount >= gathering.capacity);
+  const isClosed = gathering.status === 'closed' || (gathering.participantCount >= (gathering.capacity || 0));
 
   return (
     <div className="min-h-screen bg-[#F5F6F7] pb-32">
@@ -219,7 +230,7 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
                 <TabsTrigger value="overview" className="h-full px-8 rounded-none font-black text-sm data-[state=active]:bg-transparent data-[state=active]:text-[#03C75A] data-[state=active]:border-b-4 data-[state=active]:border-[#03C75A]">상세 소개</TabsTrigger>
                 <TabsTrigger value="sessions" className="h-full px-8 rounded-none font-black text-sm data-[state=active]:bg-transparent data-[state=active]:text-[#03C75A] data-[state=active]:border-b-4 data-[state=active]:border-[#03C75A]">프로젝트 회차/출석</TabsTrigger>
                 <TabsTrigger value="lms" className="h-full px-8 rounded-none font-black text-sm data-[state=active]:bg-transparent data-[state=active]:text-[#03C75A] data-[state=active]:border-b-4 data-[state=active]:border-[#03C75A]">참여자 자료실</TabsTrigger>
-                {isCreator && (
+                {(isCreator || isPlatformAdmin) && (
                   <TabsTrigger value="admin" className="h-full px-8 rounded-none font-black text-sm data-[state=active]:bg-transparent data-[state=active]:text-[#03C75A] data-[state=active]:border-b-4 data-[state=active]:border-[#03C75A] gap-2">
                     <ShieldCheck className="w-4 h-4" /> 개설자 관리
                   </TabsTrigger>
@@ -234,7 +245,7 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
                 </TabsContent>
 
                 <TabsContent value="sessions" className="mt-0">
-                  {(isApproved || isCreator) ? (
+                  {(isApproved || isCreator || isPlatformAdmin) ? (
                     <div className="space-y-8">
                       <div className="bg-[#F5F6F7] p-6 border-l-4 border-[#03C75A]">
                         <h4 className="font-black text-[#1E1E23] text-lg mb-1">정기 세션 참석 관리</h4>
@@ -300,7 +311,7 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
                 </TabsContent>
 
                 <TabsContent value="lms" className="mt-0">
-                  {(isApproved || isCreator) ? (
+                  {(isApproved || isCreator || isPlatformAdmin) ? (
                     <div className="space-y-6">
                       <div className="flex items-center justify-between mb-8">
                         <div className="flex items-center gap-4">
@@ -446,7 +457,7 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
                 </div>
               </div>
 
-              {!isCreator && (
+              {!(isCreator || isPlatformAdmin) && (
                 <div className="pt-4">
                   {myApp ? (
                     <div className={cn(
