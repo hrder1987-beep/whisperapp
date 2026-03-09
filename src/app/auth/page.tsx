@@ -173,7 +173,7 @@ function AuthContent() {
 
     setIsLoading(true);
     try {
-      // 명시적으로 한국어 설정
+      // 명시적으로 한국어 설정 (재설정 메일 발송 전)
       auth.languageCode = "ko";
       await sendPasswordResetEmail(auth, resetEmail);
       toast({ 
