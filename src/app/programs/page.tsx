@@ -166,7 +166,6 @@ export default function ProgramsPage() {
                   </DialogHeader>
                   <div className="flex-1 overflow-y-auto p-10">
                     <form onSubmit={handleAddProgram} className="space-y-12">
-                      {/* Form contents same as before but ensured desktop only by outer wrapper */}
                       <Button type="submit" disabled={isSubmitting} className="w-full h-16 naver-button text-lg rounded-xl shadow-2xl">등록 완료</Button>
                     </form>
                   </div>
@@ -177,7 +176,7 @@ export default function ProgramsPage() {
 
           <div className="flex flex-col gap-6">
             <div className="relative group">
-              <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-6 h-6 text-black/20" />
+              <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-6 h-6 text-black/20 z-10" />
               <Input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="과정명, 솔루션명, 제공기관명으로 검색해 보세요" className="h-16 pl-16 pr-8 bg-white border-2 border-primary rounded-2xl shadow-lg text-lg font-black focus-visible:ring-0" />
             </div>
             

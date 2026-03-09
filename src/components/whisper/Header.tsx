@@ -1,4 +1,3 @@
-
 "use client"
 
 import { Logo } from "./Logo"
@@ -126,14 +125,14 @@ export function Header({ onSearch }: HeaderProps) {
 
         <div className="hidden md:flex flex-1 max-w-xl px-10">
           <div className="naver-search-bar w-full h-12 shadow-sm group">
+            <Search className="text-accent/30 group-focus-within:text-accent w-5 h-5 ml-2" />
             <Input 
               placeholder="궁금한 HR 지식과 사례를 검색하세요" 
-              className="border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 text-[15px] font-black h-full placeholder:text-accent/20 bg-transparent px-0 outline-none pl-4" 
+              className="border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 text-[15px] font-black h-full placeholder:text-accent/20 bg-transparent outline-none pl-3" 
               value={searchQuery} 
               onChange={(e) => setSearchQuery(e.target.value)} 
               onKeyDown={handleKeyDown} 
             />
-            <button onClick={() => onSearch?.(searchQuery)} className="text-accent/30 group-focus-within:text-accent hover:scale-110 transition-all px-4"><Search className="w-5 h-5" /></button>
           </div>
         </div>
 

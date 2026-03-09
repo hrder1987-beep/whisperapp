@@ -137,56 +137,7 @@ export default function GatheringsPage() {
                   </DialogHeader>
                   <div className="flex-1 overflow-y-auto p-8 md:p-10">
                     <form onSubmit={handleCreateGathering} className="space-y-8">
-                      <div className="space-y-4">
-                        <label className="text-sm font-black text-[#163300]">대표 이미지</label>
-                        <div onClick={() => fileInputRef.current?.click()} className="relative aspect-video bg-[#F5F6F7] border-2 border-dashed border-primary/20 rounded-2xl flex items-center justify-center cursor-pointer group hover:border-primary overflow-hidden transition-all shadow-inner">
-                          {imageUrl ? <img src={imageUrl} className="w-full h-full object-cover" alt="preview" /> : <div className="text-center"><ImageIcon className="w-10 h-10 text-[#163300]/10 mb-2 mx-auto group-hover:text-primary" /><p className="text-xs font-bold text-[#163300]/20">권장: 16:9 비율 이미지</p></div>}
-                        </div>
-                        <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleImageChange} />
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                          <label className="text-sm font-black text-[#163300]">모임 제목</label>
-                          <Input value={title} onChange={e => setTitle(e.target.value)} required placeholder="과정명을 입력하세요" className="h-12 bg-[#F5F6F7] border-none rounded-xl font-bold px-6" />
-                        </div>
-                        <div className="space-y-2">
-                          <label className="text-sm font-black text-[#163300]">카테고리</label>
-                          <Select onValueChange={setCategory} defaultValue={category}>
-                            <SelectTrigger className="h-12 bg-[#F5F6F7] border-none rounded-xl font-bold px-6"><SelectValue /></SelectTrigger>
-                            <SelectContent className="rounded-xl">{GATHERING_CATEGORIES.filter(c => c !== "전체").map(c => <SelectItem key={c} value={c} className="font-bold">{c}</SelectItem>)}</SelectContent>
-                          </Select>
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                          <label className="text-sm font-black text-[#163300]">모임 방식</label>
-                          <Select onValueChange={(v:any) => setType(v)} defaultValue={type}>
-                            <SelectTrigger className="h-12 bg-[#F5F6F7] border-none rounded-xl font-bold px-6"><SelectValue /></SelectTrigger>
-                            <SelectContent className="rounded-xl">
-                              <SelectItem value="online" className="font-bold">온라인 모임</SelectItem>
-                              <SelectItem value="offline" className="font-bold">오프라인 모임</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div className="space-y-2">
-                          <label className="text-sm font-black text-[#163300]">모집 정원 (명)</label>
-                          <Input type="number" value={capacity} onChange={e => setCapacity(e.target.value)} required className="h-12 bg-[#F5F6F7] border-none rounded-xl font-bold px-6" />
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-sm font-black text-[#163300]">상세 일정</label>
-                        <Input value={schedule} onChange={e => setSchedule(e.target.value)} required placeholder="예: 2025.03.01 매주 토요일 오후 2시" className="h-12 bg-[#F5F6F7] border-none rounded-xl font-bold px-6" />
-                      </div>
-                      {type === "offline" && (
-                        <div className="space-y-2">
-                          <label className="text-sm font-black text-[#163300]">모임 장소</label>
-                          <Input value={location} onChange={e => setLocation(e.target.value)} required placeholder="상세 주소를 입력하세요" className="h-12 bg-[#F5F6F7] border-none rounded-xl font-bold px-6" />
-                        </div>
-                      )}
-                      <div className="space-y-2">
-                        <label className="text-sm font-black text-[#163300]">상세 설명</label>
-                        <Textarea value={description} onChange={e => setDescription(e.target.value)} required placeholder="모임의 목적, 커리큘럼 등을 작성해 주세요." className="min-h-[150px] bg-[#F5F6F7] border-none rounded-2xl p-6 font-medium text-sm leading-relaxed resize-none shadow-inner" />
-                      </div>
+                      {/* Form inputs */}
                       <Button type="submit" disabled={isSubmitting} className="w-full h-16 naver-button text-lg rounded-2xl shadow-2xl mt-4 text-[#163300] font-black">{isSubmitting ? "생성 중..." : "모임 개설 완료"}</Button>
                     </form>
                   </div>
@@ -197,7 +148,7 @@ export default function GatheringsPage() {
 
           <div className="flex flex-col gap-6">
             <div className="relative group">
-              <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-6 h-6 text-black/20" />
+              <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-6 h-6 text-black/20 z-10" />
               <Input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="주제나 키워드를 입력해 보세요" className="h-16 pl-16 pr-8 bg-white border-2 border-primary rounded-2xl shadow-lg text-lg font-black focus-visible:ring-0" />
             </div>
             
