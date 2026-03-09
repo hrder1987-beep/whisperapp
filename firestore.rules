@@ -24,10 +24,10 @@ service cloud.firestore {
       );
     }
 
-    // 사용자 프로필: [보안 극대화] 
+    // 사용자 프로필: 닉네임 중복 체크를 위해 list 권한을 허용합니다.
     match /users/{userId} {
       allow get: if isOwner(userId) || isAdmin();
-      allow list: if isAdmin(); 
+      allow list: if true; 
       allow create: if isOwner(userId) && request.resource.data.role == 'member';
       allow update: if isOwner(userId) || isAdmin();
       allow delete: if isAdmin();
