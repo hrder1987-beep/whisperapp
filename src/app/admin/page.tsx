@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
@@ -5,10 +6,10 @@ import { Header } from "@/components/whisper/Header"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { useUser, useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from "@/firebase"
-import { doc } from "firebase/firestore"
+import { useUser, useFirestore, useDoc, useMemoFirebase } from "@/firebase"
+import { doc, updateDoc } from "firebase/firestore"
 import { useRouter } from "next/navigation"
-import { LayoutDashboard, Users, FileText, Sparkles, Settings, ArrowLeft, ShieldAlert, Key } from "lucide-react"
+import { LayoutDashboard, Users, FileText, Sparkles, Settings, ArrowLeft, ShieldAlert, Key, LogIn } from "lucide-react"
 import { AdminCMS } from "@/components/whisper/AdminCMS"
 import { MemberManager } from "@/components/whisper/admin/MemberManager"
 import { ContentManager } from "@/components/whisper/admin/ContentManager"
@@ -32,6 +33,7 @@ export default function AdminPage() {
   const userDocRef = useMemoFirebase(() => (user && db) ? doc(db, "users", user.uid) : null, [user, db])
   const { data: profile, isLoading: isProfileLoading } = useDoc<any>(userDocRef)
 
+  // 마스터 계정인 경우 인증키 자동 입력 보조
   useEffect(() => {
     if (user?.email === 'forum@khrd.co.kr' && profile && profile.role !== 'admin') {
       setAdminKeyInput("khrd9933-525")
@@ -63,15 +65,22 @@ export default function AdminPage() {
   }, [config])
 
   const handleAdminPromotion = async () => {
-    if (!user || !db) return
-    if (adminKeyInput === "khrd9933-525") {
+    if (!user || !db) {
+      toast({ title: "로그인 필요", description: "먼저 일반 계정으로 로그인해 주세요.", variant: "destructive" })
+      router.push("/auth?mode=login")
+      return
+    }
+
+    if (adminKeyInput.trim() === "khrd9933-525") {
       setIsPromoting(true)
       try {
-        updateDocumentNonBlocking(doc(db, "users", user.uid), { role: "admin" })
+        // 즉각적인 반영을 위해 await updateDoc 사용
+        await updateDoc(doc(db, "users", user.uid), { role: "admin" })
         toast({ title: "관리자 인증 성공", description: "플랫폼 통합 관리자 권한을 획득했습니다." })
         setAdminKeyInput("")
+        // 대시보드 진입을 위해 페이지 새로고침 또는 상태 변경 대기
       } catch (error) {
-        toast({ title: "인증 오류", description: "권한 갱신 중 문제가 발생했습니다.", variant: "destructive" })
+        toast({ title: "인증 오류", description: "권한 갱신 중 문제가 발생했습니다. 관리자에게 문의하세요.", variant: "destructive" })
       } finally { setIsPromoting(false) }
     } else {
       toast({ title: "인증 실패", description: "올바른 마스터 관리자 키가 아닙니다.", variant: "destructive" })
@@ -82,8 +91,10 @@ export default function AdminPage() {
     return <div className="min-h-screen flex items-center justify-center bg-white"><Sparkles className="w-12 h-12 animate-spin text-primary" /></div>
   }
 
+  // 로그인을 안했거나, 로그인은 했으나 관리자 권한이 없는 경우
   if (!user || profile?.role !== 'admin') {
     const isMasterEmail = user?.email === 'forum@khrd.co.kr'
+    
     return (
       <div className="min-h-screen bg-[#FBFBFC] flex flex-col items-center justify-center p-4">
         <div className="bg-white p-10 md:p-16 rounded-[3.5rem] flex flex-col items-center max-w-md w-full text-center shadow-2xl border border-black/[0.03]">
@@ -91,19 +102,41 @@ export default function AdminPage() {
             <ShieldAlert className="w-10 h-10 text-accent" />
           </div>
           <h1 className="text-3xl font-black text-accent mb-3 tracking-tight">관리자 전용 구역</h1>
+          
           <p className="text-sm font-bold text-accent/40 mb-10 leading-relaxed whitespace-pre-line">
-            {isMasterEmail ? "마스터 관리자 계정입니다.\n통합 대시보드 권한을 활성화하세요." : "보안을 위해 관리자만 접근 가능합니다.\n인증 키를 정확히 입력해 주세요."}
+            {!user 
+              ? "통합 관리자 기능을 이용하시려면\n먼저 마스터 계정으로 로그인해 주세요." 
+              : isMasterEmail 
+                ? "마스터 관리자 계정입니다.\n통합 대시보드 권한을 활성화하세요." 
+                : "보안을 위해 관리자만 접근 가능합니다.\n인증 키를 정확히 입력해 주세요."}
           </p>
+
           <div className="w-full space-y-4">
-            {!isMasterEmail && (
-              <div className="relative">
-                <Key className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-accent/20" />
-                <Input type="password" placeholder="ADMIN ACCESS KEY" value={adminKeyInput} onChange={(e) => setAdminKeyInput(e.target.value)} className="h-14 pl-14 bg-[#F5F6F7] border-none rounded-2xl text-center font-black focus:ring-2 focus:ring-primary shadow-inner tracking-widest" onKeyDown={(e) => e.key === 'Enter' && handleAdminPromotion()} />
-              </div>
+            {!user ? (
+              <Button onClick={() => router.push("/auth?mode=login")} className="w-full h-16 naver-button text-lg shadow-xl hover:scale-[1.02] transition-all gap-3">
+                <LogIn className="w-5 h-5" /> 마스터 계정 로그인하기
+              </Button>
+            ) : (
+              <>
+                {!isMasterEmail && (
+                  <div className="relative">
+                    <Key className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-accent/20" />
+                    <Input 
+                      type="password" 
+                      placeholder="ADMIN ACCESS KEY" 
+                      value={adminKeyInput} 
+                      onChange={(e) => setAdminKeyInput(e.target.value)} 
+                      className="h-14 pl-14 bg-[#F5F6F7] border-none rounded-2xl text-center font-black focus:ring-2 focus:ring-primary shadow-inner tracking-widest" 
+                      onKeyDown={(e) => e.key === 'Enter' && handleAdminPromotion()} 
+                    />
+                  </div>
+                )}
+                <Button onClick={handleAdminPromotion} disabled={isPromoting || (!isMasterEmail && !adminKeyInput)} className="w-full h-16 naver-button text-lg shadow-xl hover:scale-[1.02] transition-all">
+                  {isPromoting ? "권한 갱신 중..." : isMasterEmail ? "관리자 권한 즉시 활성화" : "플랫폼 관리 권한 획득"}
+                </Button>
+              </>
             )}
-            <Button onClick={handleAdminPromotion} disabled={isPromoting || (!isMasterEmail && !adminKeyInput)} className="w-full h-16 naver-button text-lg shadow-xl hover:scale-[1.02] transition-all">
-              {isPromoting ? "권한 갱신 중..." : isMasterEmail ? "관리자 권한 즉시 활성화" : "플랫폼 관리 권한 획득"}
-            </Button>
+            
             <Button variant="ghost" onClick={() => router.push("/")} className="w-full text-accent/30 font-black text-xs hover:bg-transparent hover:text-accent mt-4">홈페이지로 돌아가기</Button>
           </div>
         </div>
@@ -111,32 +144,52 @@ export default function AdminPage() {
     )
   }
 
+  // 관리자 권한이 있는 경우 대시보드 출력
   return (
     <div className="min-h-screen bg-[#FBFBFC] pb-32">
       <Header />
       <main className="max-w-7xl mx-auto px-4 py-12 md:py-20">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16 px-2">
           <div className="space-y-2">
-            <div className="flex items-center gap-2 mb-2"><Settings className="w-5 h-5 text-primary" /><span className="text-[11px] font-black text-accent/20 uppercase tracking-[0.3em]">Platform Command Center</span></div>
+            <div className="flex items-center gap-2 mb-2">
+              <Settings className="w-5 h-5 text-primary" />
+              <span className="text-[11px] font-black text-accent/20 uppercase tracking-[0.3em]">Platform Command Center</span>
+            </div>
             <h1 className="text-4xl md:text-5xl font-black text-accent tracking-tighter">통합 관리 센터</h1>
             <p className="text-sm font-bold text-accent/30">플랫폼의 모든 경험과 데이터를 실시간으로 제어합니다.</p>
           </div>
-          <Button onClick={() => router.push("/")} variant="outline" className="border-accent/10 text-accent font-black rounded-2xl gap-3 h-14 px-8 shadow-sm hover:bg-white hover:border-primary/30 transition-all"><ArrowLeft className="w-5 h-5" /> 서비스 페이지 이동</Button>
+          <Button onClick={() => router.push("/")} variant="outline" className="border-accent/10 text-accent font-black rounded-2xl gap-3 h-14 px-8 shadow-sm hover:bg-white hover:border-primary/30 transition-all">
+            <ArrowLeft className="w-5 h-5" /> 서비스 페이지 이동
+          </Button>
         </div>
 
         <Tabs defaultValue="cms" className="space-y-12">
           <div className="sticky top-24 z-40 bg-[#FBFBFC]/80 backdrop-blur-md py-2 -mx-4 px-4">
             <TabsList className="bg-white border border-accent/[0.03] p-1.5 rounded-[2rem] h-16 md:h-20 w-full md:w-fit grid grid-cols-2 md:flex md:gap-3 shadow-xl">
-              <TabsTrigger value="cms" className="rounded-2xl font-black gap-2 data-[state=active]:bg-primary data-[state=active]:text-accent data-[state=active]:shadow-lg px-10 transition-all"><LayoutDashboard className="w-4 h-4" /> 사이트 구성</TabsTrigger>
-              <TabsTrigger value="members" className="rounded-2xl font-black gap-2 data-[state=active]:bg-primary data-[state=active]:text-accent data-[state=active]:shadow-lg px-10 transition-all"><Users className="w-4 h-4" /> 회원 관리</TabsTrigger>
-              <TabsTrigger value="content" className="rounded-2xl font-black gap-2 data-[state=active]:bg-primary data-[state=active]:text-accent data-[state=active]:shadow-lg px-10 transition-all"><FileText className="w-4 h-4" /> 콘텐츠 현황</TabsTrigger>
-              <TabsTrigger value="aldi" className="rounded-2xl font-black gap-2 data-[state=active]:bg-primary data-[state=active]:text-accent data-[state=active]:shadow-lg px-10 transition-all"><Sparkles className="w-4 h-4" /> AI 봇 관리</TabsTrigger>
+              <TabsTrigger value="cms" className="rounded-2xl font-black gap-2 data-[state=active]:bg-primary data-[state=active]:text-accent data-[state=active]:shadow-lg px-10 transition-all">
+                <LayoutDashboard className="w-4 h-4" /> 사이트 구성
+              </TabsTrigger>
+              <TabsTrigger value="members" className="rounded-2xl font-black gap-2 data-[state=active]:bg-primary data-[state=active]:text-accent data-[state=active]:shadow-lg px-10 transition-all">
+                <Users className="w-4 h-4" /> 회원 관리
+              </TabsTrigger>
+              <TabsTrigger value="content" className="rounded-2xl font-black gap-2 data-[state=active]:bg-primary data-[state=active]:text-accent data-[state=active]:shadow-lg px-10 transition-all">
+                <FileText className="w-4 h-4" /> 콘텐츠 현황
+              </TabsTrigger>
+              <TabsTrigger value="aldi" className="rounded-2xl font-black gap-2 data-[state=active]:bg-primary data-[state=active]:text-accent data-[state=active]:shadow-lg px-10 transition-all">
+                <Sparkles className="w-4 h-4" /> AI 봇 관리
+              </TabsTrigger>
             </TabsList>
           </div>
 
           <div className="animate-in fade-in slide-in-from-bottom-6 duration-700">
             <TabsContent value="cms" className="mt-0">
-              <AdminCMS key={isConfigLoading ? 'loading' : 'loaded'} initialBanners={initialBanners} initialPremiumAds={initialPremiumAds} initialBranding={initialBranding} onUpdate={() => router.refresh()} />
+              <AdminCMS 
+                key={isConfigLoading ? 'loading' : 'loaded'} 
+                initialBanners={initialBanners} 
+                initialPremiumAds={initialPremiumAds} 
+                initialBranding={initialBranding} 
+                onUpdate={() => router.refresh()} 
+              />
             </TabsContent>
             <TabsContent value="members" className="mt-0"><MemberManager /></TabsContent>
             <TabsContent value="content" className="mt-0"><ContentManager /></TabsContent>
