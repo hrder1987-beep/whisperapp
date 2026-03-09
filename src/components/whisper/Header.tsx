@@ -1,9 +1,10 @@
+
 "use client"
 
 import { Logo } from "./Logo"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Search, User as UserIcon, Menu, Mail, ShieldCheck, FileText, Bell, Sparkles } from "lucide-react"
+import { Search, User as UserIcon, Menu, Mail, ShieldCheck, FileText, Bell, Sparkles, Settings } from "lucide-react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useUser, useAuth, useCollection, useMemoFirebase, useFirestore, useDoc } from "@/firebase"
@@ -54,6 +55,7 @@ export function Header({ onSearch }: HeaderProps) {
     }
   }
 
+  // 마스터 이메일 또는 Firestore role이 admin인 경우
   const isAdmin = user?.email === 'forum@khrd.co.kr' || profile?.role === 'admin'
 
   const navLinks = [
@@ -82,13 +84,19 @@ export function Header({ onSearch }: HeaderProps) {
               <div className="flex flex-col h-full pt-16 px-6">
                 <Logo className="mb-12 scale-110 origin-left" />
                 <nav className="flex flex-col gap-2">
+                  {isAdmin && (
+                    <Button asChild className="bg-accent text-primary font-black rounded-2xl h-14 mb-6 shadow-xl hover:scale-[1.02] transition-all">
+                      <Link href="/admin" onClick={() => setIsMobileMenuOpen(false)}>
+                        <ShieldCheck className="w-5 h-5 mr-2" /> 플랫폼 관리 센터
+                      </Link>
+                    </Button>
+                  )}
                   {navLinks.map((link) => (
                     <Link key={link.href} href={link.href} onClick={() => setIsMobileMenuOpen(false)} className={cn("text-[16px] font-black py-4 px-5 rounded-2xl transition-all", pathname === link.href ? "bg-accent text-white shadow-md" : "text-accent/60 hover:bg-primary/10")}>{link.name}</Link>
                   ))}
                   <div className="h-px bg-black/[0.04] my-6" />
                   {user ? (
                     <div className="flex flex-col gap-2">
-                      {isAdmin && <Button asChild className="bg-accent text-white font-black rounded-xl h-12 mb-4"><Link href="/admin"><ShieldCheck className="w-4 h-4 mr-2" /> Admin</Link></Button>}
                       <Link href="/my-posts" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-bold py-3 text-accent/60 flex items-center gap-3 px-5"><FileText className="w-4 h-4 opacity-30" /> 내가 쓴 속삭임</Link>
                       <Link href="/profile" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-bold py-3 text-accent/60 flex items-center gap-3 px-5"><UserIcon className="w-4 h-4 opacity-30" /> 내 정보</Link>
                       <Link href="/notifications" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-bold py-3 text-accent/60 flex items-center gap-3 px-5"><Bell className="w-4 h-4 opacity-30" /> 알림 센터</Link>
@@ -121,6 +129,13 @@ export function Header({ onSearch }: HeaderProps) {
           <div className="hidden md:flex items-center gap-3">
             {user && (
               <div className="flex items-center gap-1.5 mr-2">
+                {isAdmin && (
+                  <Link href="/admin">
+                    <Button variant="ghost" size="icon" title="관리자 센터" className="text-primary hover:text-accent hover:bg-primary/20 h-10 w-10 rounded-xl transition-all border border-primary/20 shadow-sm mr-2">
+                      <ShieldCheck className="w-5 h-5" />
+                    </Button>
+                  </Link>
+                )}
                 <Link href="/my-posts"><Button variant="ghost" size="icon" title="내 속삭임" className="text-accent/40 hover:text-accent hover:bg-primary/10 h-10 w-10 rounded-xl transition-all"><FileText className="w-5 h-5" /></Button></Link>
                 <Link href="/notifications"><Button variant="ghost" size="icon" className="relative text-accent/40 hover:text-accent hover:bg-primary/10 h-10 w-10 rounded-xl transition-all"><Bell className="w-5 h-5" />{unreadNotifs && unreadNotifs.length > 0 && (<Badge className="absolute -top-1 -right-1 bg-red-500 text-white border-none h-4 w-4 p-0 flex items-center justify-center text-[8px] rounded-full font-black shadow-md">{unreadNotifs.length}</Badge>)}</Button></Link>
                 <Link href="/messages"><Button variant="ghost" size="icon" className="relative text-accent/40 hover:text-accent hover:bg-primary/10 h-10 w-10 rounded-xl transition-all"><Mail className="w-5 h-5" />{unreadMessages && unreadMessages.length > 0 && (<Badge className="absolute -top-1 -right-1 bg-red-500 text-white border-none h-4 w-4 p-0 flex items-center justify-center text-[8px] rounded-full font-black shadow-md">{unreadMessages.length}</Badge>)}</Button></Link>
