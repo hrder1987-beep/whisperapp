@@ -23,10 +23,14 @@ export function initializeFirebase() {
   try {
     const apps = getApps();
     const firebaseApp = apps.length > 0 ? getApp() : initializeApp(firebaseConfig);
+    const auth = getAuth(firebaseApp);
+    
+    // 이메일 템플릿 및 인증 페이지 언어를 한국어로 전역 설정
+    auth.languageCode = 'ko';
     
     return {
       firebaseApp,
-      auth: getAuth(firebaseApp),
+      auth,
       firestore: getFirestore(firebaseApp)
     };
   } catch (error) {
@@ -42,8 +46,10 @@ export function initializeFirebase() {
 
 export function getSdks(firebaseApp: FirebaseApp) {
   if (!firebaseApp) return { auth: null as any, firestore: null as any };
+  const auth = getAuth(firebaseApp);
+  auth.languageCode = 'ko';
   return {
-    auth: getAuth(firebaseApp),
+    auth,
     firestore: getFirestore(firebaseApp)
   };
 }

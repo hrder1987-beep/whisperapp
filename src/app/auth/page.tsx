@@ -73,7 +73,7 @@ function AuthContent() {
 
   // 닉네임 중복 실시간 체크 (Debounce)
   useEffect(() => {
-    if (activeTab !== "signup" || !username.trim()) {
+    if (activeTab !== "signup" || !username.trim() || !db) {
       setUsernameStatus("idle")
       return
     }
@@ -105,6 +105,7 @@ function AuthContent() {
     e.preventDefault()
     setIsLoading(true)
     try {
+      if (!auth) throw new Error("Auth not initialized")
       await signInWithEmailAndPassword(auth, email, password)
       toast({ title: "환영합니다!", description: "Whisper Intelligence에 로그인했습니다." })
       router.push("/")
@@ -122,6 +123,7 @@ function AuthContent() {
 
     setIsLoading(true)
     try {
+      if (!auth || !db) throw new Error("Services not initialized")
       const userCredential = await createUserWithEmailAndPassword(auth, email, password)
       const newUser = userCredential.user
       await setDoc(doc(db, "users", newUser.uid), {
@@ -147,6 +149,7 @@ function AuthContent() {
   }
 
   const handleFindId = async () => {
+    if (!db) return
     setIsLoading(true)
     try {
       const q = query(collection(db, "users"), where("name", "==", findName), where("phoneNumber", "==", findPhone))
@@ -160,6 +163,31 @@ function AuthContent() {
       toast({ title: "오류", description: "조회 중 문제가 발생했습니다.", variant: "destructive" })
     } finally { setIsLoading(false) }
   }
+
+  const handlePasswordReset = async () => {
+    if (!resetEmail) {
+      toast({ title: "이메일 입력", description: "비밀번호를 재설정할 이메일 주소를 입력해 주세요.", variant: "destructive" });
+      return;
+    }
+    if (!auth) return;
+
+    setIsLoading(true);
+    try {
+      // 명시적으로 한국어 설정
+      auth.languageCode = "ko";
+      await sendPasswordResetEmail(auth, resetEmail);
+      toast({ 
+        title: "메일 발송 완료", 
+        description: "입력하신 이메일로 비밀번호 재설정 링크를 보내드렸습니다. (스팸함도 확인해 주세요)" 
+      });
+      setRecoveryMode(null);
+      setResetEmail("");
+    } catch (error: any) {
+      toast({ title: "발송 실패", description: getAuthErrorMessage(error.code), variant: "destructive" });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="max-w-xl mx-auto px-4 py-12 md:py-24">
@@ -209,7 +237,7 @@ function AuthContent() {
                     <div className="w-28 h-24 md:w-36 md:h-32 rounded-[2rem] md:rounded-[2.5rem] bg-[#F5F6F7] border-2 border-dashed border-[#163300]/10 flex items-center justify-center overflow-hidden transition-all group-hover:border-primary shadow-inner">
                       {profilePicture ? <img src={profilePicture} alt="preview" className="w-full h-full object-cover" /> : <Camera className="w-10 h-10 md:w-14 md:h-14 text-[#163300]/10 group-hover:text-primary transition-colors" />}
                     </div>
-                    {profilePicture && <button type="button" onClick={(e) => { e.stopPropagation(); setProfilePicture(null); }} className="absolute -top-2 -right-2 bg-red-500 text-white p-2 rounded-full shadow-2xl hover:scale-110 transition-transform"><X className="w-4 h-4" /></button>}
+                    {profilePicture && <button type="button" onClick={(e) => { e.stopPropagation(); setProfilePicture(null); }} className="absolute -top-2 -right-2 bg-red-50 text-white p-2 rounded-full shadow-2xl hover:scale-110 transition-transform"><X className="w-4 h-4" /></button>}
                   </div>
                   <span className="text-[10px] md:text-[12px] font-black text-[#163300]/40 mt-4 uppercase tracking-widest text-center">전문가 프로필 사진 (선택)</span>
                   <input type="file" ref={fileInputRef} onChange={handleImageChange} accept="image/*" className="hidden" />
@@ -287,7 +315,7 @@ function AuthContent() {
               <>{foundEmail ? <div className="bg-primary/5 p-8 md:p-12 rounded-[2.5rem] md:rounded-[3rem] text-center space-y-5 shadow-inner border border-primary/10"><p className="text-[10px] md:text-[12px] font-black text-[#163300]/40 uppercase tracking-widest">인증된 아이디입니다</p><p className="text-2xl md:text-3xl font-black text-[#163300] tracking-tight">{foundEmail}</p><Button onClick={() => setRecoveryMode(null)} className="mt-6 md:mt-10 naver-button h-12 md:h-14 px-10 md:px-12 rounded-2xl shadow-xl text-sm md:text-base">로그인하러 가기</Button></div> : <><div className="space-y-3"><Label className="text-[11px] md:text-[12px] font-black text-[#163300]/60 uppercase ml-1">가입자 실명</Label><Input placeholder="이름 입력" value={findName} onChange={(e) => setFindName(e.target.value)} className="bg-[#FBFBFC] border-none h-14 md:h-16 rounded-2xl font-bold px-6 text-[#163300] shadow-inner" /></div><div className="space-y-3"><Label className="text-[11px] md:text-[12px] font-black text-[#163300]/60 uppercase ml-1">휴대전화 번호</Label><Input placeholder="010-0000-0000" value={findPhone} onChange={(e) => setFindPhone(e.target.value)} className="bg-[#FBFBFC] border-none h-14 md:h-16 rounded-2xl font-bold px-6 text-[#163300] shadow-inner" /></div></>}</>
             ) : <div className="space-y-3"><Label className="text-[11px] md:text-[12px] font-black text-[#163300]/60 uppercase ml-1">가입된 이메일 계정</Label><Input placeholder="example@email.com" value={resetEmail} onChange={(e) => setResetEmail(e.target.value)} className="bg-[#FBFBFC] border-none h-14 md:h-16 rounded-2xl font-bold px-6 text-[#163300] shadow-inner" /></div>}
           </div>
-          <DialogFooter>{!foundEmail && <Button onClick={recoveryMode === "id" ? handleFindId : () => { sendPasswordResetEmail(auth, resetEmail); setRecoveryMode(null); }} disabled={isLoading} className="w-full h-16 md:h-18 bg-[#163300] text-primary font-black rounded-[1.5rem] shadow-2xl text-lg md:text-xl hover:brightness-110 transition-all active:scale-[0.97]">{isLoading ? "정보 확인 중..." : recoveryMode === "id" ? "정보 확인하기" : "재설정 링크 발송"}</Button>}</DialogFooter>
+          <DialogFooter>{!foundEmail && <Button onClick={recoveryMode === "id" ? handleFindId : handlePasswordReset} disabled={isLoading} className="w-full h-16 md:h-18 bg-[#163300] text-primary font-black rounded-[1.5rem] shadow-2xl text-lg md:text-xl hover:brightness-110 transition-all active:scale-[0.97]">{isLoading ? "정보 확인 중..." : recoveryMode === "id" ? "정보 확인하기" : "재설정 링크 발송"}</Button>}</DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
