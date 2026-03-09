@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useUser, useFirestore, useCollection, useDoc, useMemoFirebase, addDocumentNonBlocking } from "@/firebase"
 import { collection, query, orderBy, doc } from "firebase/firestore"
 import { Gathering, SiteBranding } from "@/lib/types"
-import { Plus, Search, Sparkles, Image as ImageIcon } from "lucide-react"
+import { Plus, Search, Sparkles, Image as ImageIcon, Users, MapPin, Calendar, Camera } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
@@ -68,7 +68,12 @@ export default function GatheringsPage() {
   }, [gatherings, searchQuery, selectedCategory])
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]; if (file) { const reader = new FileReader(); reader.onloadend = () => setImageUrl(reader.result as string); reader.readAsDataURL(file); }
+    const file = e.target.files?.[0]; 
+    if (file) { 
+      const reader = new FileReader(); 
+      reader.onloadend = () => setImageUrl(reader.result as string); 
+      reader.readAsDataURL(file); 
+    }
   }
 
   const handleOpenDialog = (open: boolean) => {
@@ -129,16 +134,69 @@ export default function GatheringsPage() {
             <div className="hidden md:block">
               <Dialog open={isDialogOpen} onOpenChange={handleOpenDialog}>
                 <DialogTrigger asChild>
-                  <Button className="naver-button h-14 px-10 rounded-xl shadow-xl gap-3 text-base text-[#163300]"><Plus className="w-5 h-5" /> 신규 모임 만들기</Button>
+                  <Button className="naver-button h-14 px-10 rounded-xl shadow-xl gap-3 text-base text-white"><Plus className="w-5 h-5" /> 신규 모임 만들기</Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-3xl bg-white border-none rounded-[2rem] p-0 shadow-3xl overflow-hidden max-h-[90vh] flex flex-col">
                   <DialogHeader className="bg-primary/5 p-8 border-b border-primary/10">
-                    <DialogTitle className="text-2xl font-black text-[#163300] text-left">새로운 지식 모임 개설</DialogTitle>
+                    <DialogTitle className="text-2xl font-black text-accent text-left">새로운 지식 모임 개설</DialogTitle>
                   </DialogHeader>
                   <div className="flex-1 overflow-y-auto p-8 md:p-10">
                     <form onSubmit={handleCreateGathering} className="space-y-8">
-                      {/* Form inputs */}
-                      <Button type="submit" disabled={isSubmitting} className="w-full h-16 naver-button text-lg rounded-2xl shadow-2xl mt-4 text-[#163300] font-black">{isSubmitting ? "생성 중..." : "모임 개설 완료"}</Button>
+                      <div className="space-y-6">
+                        <div className="space-y-2">
+                          <label className="text-xs font-black text-accent/40 uppercase tracking-widest ml-1">모임 주제 (제목)</label>
+                          <Input value={title} onChange={e => setTitle(e.target.value)} placeholder="예: HR 데이터 리터러시 실전 프로젝트 1기" className="h-14 bg-accent/5 border-none rounded-2xl font-black text-lg shadow-inner" required />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div className="space-y-2">
+                            <label className="text-xs font-black text-accent/40 uppercase tracking-widest ml-1">모임 성격</label>
+                            <Select value={category} onValueChange={setCategory}>
+                              <SelectTrigger className="h-14 bg-accent/5 border-none rounded-2xl font-bold">
+                                <SelectValue placeholder="카테고리 선택" />
+                              </SelectTrigger>
+                              <SelectContent className="rounded-2xl shadow-3xl border-none">
+                                {GATHERING_CATEGORIES.filter(c => c !== "전체").map(cat => (
+                                  <SelectItem key={cat} value={cat} className="rounded-xl py-3 font-bold">{cat}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-xs font-black text-accent/40 uppercase tracking-widest ml-1">모집 정원 (명)</label>
+                            <Input type="number" value={capacity} onChange={e => setCapacity(e.target.value)} className="h-14 bg-accent/5 border-none rounded-2xl font-bold shadow-inner" required />
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <label className="text-xs font-black text-accent/40 uppercase tracking-widest ml-1">모임 상세 소개</label>
+                          <Textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="모임의 목적, 커리큘럼, 참여 혜택 등을 상세히 적어주세요." className="min-h-[150px] bg-accent/5 border-none rounded-2xl p-6 font-medium shadow-inner resize-none" required />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div className="space-y-2">
+                            <label className="text-xs font-black text-accent/40 uppercase tracking-widest ml-1">진행 방식</label>
+                            <div className="flex gap-2">
+                              <Button type="button" onClick={() => setType('online')} variant={type === 'online' ? 'default' : 'outline'} className={cn("flex-1 h-14 rounded-2xl font-black", type === 'online' ? "bg-accent text-white" : "border-accent/10")}>온라인</Button>
+                              <Button type="button" onClick={() => setType('offline')} variant={type === 'offline' ? 'default' : 'outline'} className={cn("flex-1 h-14 rounded-2xl font-black", type === 'offline' ? "bg-accent text-white" : "border-accent/10")}>오프라인</Button>
+                            </div>
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-xs font-black text-accent/40 uppercase tracking-widest ml-1">장소 및 상세 일정</label>
+                            <Input value={schedule} onChange={e => setSchedule(e.target.value)} placeholder="예: 매주 목요일 저녁 7시 / 강남역 인근" className="h-14 bg-accent/5 border-none rounded-2xl font-bold shadow-inner" required />
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <label className="text-xs font-black text-accent/40 uppercase tracking-widest ml-1">대표 이미지 (선택)</label>
+                          <div onClick={() => fileInputRef.current?.click()} className="relative aspect-[2/1] bg-accent/5 rounded-2xl border-2 border-dashed border-accent/10 flex flex-col items-center justify-center cursor-pointer overflow-hidden group">
+                            {imageUrl ? <img src={imageUrl} alt="preview" className="w-full h-full object-cover" /> : <Camera className="w-10 h-10 text-accent/10 group-hover:text-primary transition-colors" />}
+                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all text-white text-xs font-black">이미지 변경하기</div>
+                          </div>
+                          <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleImageChange} />
+                        </div>
+                      </div>
+                      <Button type="submit" disabled={isSubmitting} className="w-full h-16 naver-button text-lg rounded-2xl shadow-2xl mt-4 text-white font-black">{isSubmitting ? "생성 중..." : "모임 개설 완료"}</Button>
                     </form>
                   </div>
                 </DialogContent>
@@ -154,7 +212,7 @@ export default function GatheringsPage() {
             
             <div className="hidden md:flex flex-nowrap overflow-x-auto scrollbar-hide gap-2 md:gap-3 py-2">
               {GATHERING_CATEGORIES.map((cat) => (
-                <button key={cat} onClick={() => setSelectedCategory(cat)} className={cn("px-8 py-3.5 rounded-full text-sm font-black transition-all border-2 whitespace-nowrap shrink-0", selectedCategory === cat ? "bg-primary text-[#163300] border-primary shadow-lg" : "bg-white text-black/60 border-black/5 hover:border-primary/30")}>{cat}</button>
+                <button key={cat} onClick={() => setSelectedCategory(cat)} className={cn("px-8 py-3.5 rounded-full text-sm font-black transition-all border-2 whitespace-nowrap shrink-0", selectedCategory === cat ? "bg-primary text-accent border-primary shadow-lg" : "bg-white text-black/60 border-black/5 hover:border-primary/30")}>{cat}</button>
               ))}
             </div>
 

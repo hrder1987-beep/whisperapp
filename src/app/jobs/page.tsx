@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking } from "@/firebase"
 import { collection, query, orderBy } from "firebase/firestore"
 import { JobListing } from "@/lib/types"
-import { MapPin, Plus, Search, Award, Clock, Camera, Sparkles, Building2, Bookmark, Share2 } from "lucide-react"
+import { MapPin, Plus, Search, Building2, Clock, Calendar, Briefcase, Mail } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
@@ -27,7 +27,6 @@ export default function JobsPage() {
   const db = useFirestore()
   const { toast } = useToast()
   const router = useRouter()
-  const fileInputRef = useRef<HTMLInputElement>(null)
   
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("전체")
@@ -93,10 +92,47 @@ export default function JobsPage() {
             </div>
             <div className="hidden md:block">
               <Dialog open={isDialogOpen} onOpenChange={handleOpenDialog}>
-                <DialogTrigger asChild><Button className="naver-button h-12 px-8 rounded-none shadow-sm gap-2 text-sm text-accent"><Plus className="w-4 h-4" /> 채용 공고 게시하기</Button></DialogTrigger>
+                <DialogTrigger asChild><Button className="naver-button h-12 px-8 rounded-none shadow-sm gap-2 text-sm text-white"><Plus className="w-4 h-4" /> 채용 공고 게시하기</Button></DialogTrigger>
                 <DialogContent className="max-w-2xl bg-white border-none rounded-none p-0 shadow-2xl overflow-hidden">
                   <DialogHeader className="bg-white border-b border-black/5 p-8 text-left"><DialogTitle className="text-xl font-black text-accent">신규 채용 공고 등록</DialogTitle></DialogHeader>
-                  <form onSubmit={handleAddJob} className="p-8 space-y-8"><Button type="submit" disabled={isSubmitting} className="w-full h-12 naver-button text-accent text-sm rounded-none shadow-md">작성 완료 및 게시</Button></form>
+                  <form onSubmit={handleAddJob} className="p-8 space-y-8">
+                    <div className="space-y-6">
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black text-accent/30 uppercase tracking-widest ml-1">기업 명칭</label>
+                        <Input value={companyName} onChange={e => setCompanyName(e.target.value)} placeholder="예: (주)위스퍼테크" className="h-12 bg-accent/5 border-none font-bold" required />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black text-accent/30 uppercase tracking-widest ml-1">공고 제목</label>
+                        <Input value={title} onChange={e => setTitle(e.target.value)} placeholder="예: 조직문화 전문가 (경력직) 채용" className="h-12 bg-accent/5 border-none font-black text-lg" required />
+                      </div>
+                      <div className="grid grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-black text-accent/30 uppercase tracking-widest ml-1">직무 카테고리</label>
+                          <Select value={category} onValueChange={setCategory}>
+                            <SelectTrigger className="h-12 bg-accent/5 border-none font-bold"><SelectValue placeholder="선택" /></SelectTrigger>
+                            <SelectContent className="rounded-xl shadow-3xl border-none">
+                              {JOB_CATEGORIES.filter(c => c !== "전체").map(cat => (<SelectItem key={cat} value={cat} className="font-bold">{cat}</SelectItem>))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-black text-accent/30 uppercase tracking-widest ml-1">근무지</label>
+                          <Input value={location} onChange={e => setLocation(e.target.value)} placeholder="예: 서울 강남구" className="h-12 bg-accent/5 border-none font-bold" required />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-black text-accent/30 uppercase tracking-widest ml-1">경력 요건</label>
+                          <Input value={experience} onChange={e => setExperience(e.target.value)} placeholder="예: 3~5년" className="h-12 bg-accent/5 border-none font-bold" required />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-black text-accent/30 uppercase tracking-widest ml-1">접수 마감일</label>
+                          <Input value={deadline} onChange={e => setDeadline(e.target.value)} placeholder="예: 2024-12-31 혹은 채용시" className="h-12 bg-accent/5 border-none font-bold" required />
+                        </div>
+                      </div>
+                    </div>
+                    <Button type="submit" disabled={isSubmitting} className="w-full h-14 naver-button text-white text-base rounded-none shadow-md mt-4">{isSubmitting ? "게시 중..." : "작성 완료 및 게시"}</Button>
+                  </form>
                 </DialogContent>
               </Dialog>
             </div>
@@ -130,11 +166,46 @@ export default function JobsPage() {
               <div className="flex-1 min-w-0">
                 <span className="text-[11px] font-black text-primary uppercase tracking-wider">{job.companyName}</span>
                 <h3 className="text-lg md:text-xl font-black text-accent group-hover:text-primary transition-colors leading-tight mb-3 truncate">{job.title}</h3>
+                <div className="flex flex-wrap gap-4 text-xs font-bold text-accent/30">
+                  <span className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" /> {job.location}</span>
+                  <span className="flex items-center gap-1.5"><Briefcase className="w-3.5 h-3.5" /> {job.experience}</span>
+                  <span className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5" /> ~{job.deadline}</span>
+                </div>
               </div>
             </div>
           ))}
         </div>
       </main>
+      {viewJob && (
+        <Dialog open={!!viewJob} onOpenChange={() => setViewJob(null)}>
+          <DialogContent className="max-w-2xl bg-white border-none rounded-none p-0 shadow-4xl overflow-hidden">
+            <div className="bg-primary/5 p-10 flex items-center gap-8 border-b border-accent/5">
+              <div className="w-24 h-24 rounded-xl bg-white border border-accent/5 shadow-xl p-2 shrink-0"><img src={viewJob.logoUrl} alt="logo" className="w-full h-full object-contain" /></div>
+              <div className="space-y-2">
+                <Badge className="bg-accent text-white border-none font-black px-3 py-1 rounded-sm">#{viewJob.category}</Badge>
+                <h2 className="text-3xl font-black text-accent">{viewJob.title}</h2>
+                <p className="text-accent/40 font-bold text-lg">{viewJob.companyName}</p>
+              </div>
+            </div>
+            <div className="p-10 space-y-8">
+              <div className="grid grid-cols-2 gap-8">
+                <div className="space-y-1"><p className="text-[10px] font-black text-accent/20 uppercase tracking-widest">근무 지역</p><p className="font-bold text-accent">{viewJob.location}</p></div>
+                <div className="space-y-1"><p className="text-[10px] font-black text-accent/20 uppercase tracking-widest">경력 조건</p><p className="font-bold text-accent">{viewJob.experience}</p></div>
+                <div className="space-y-1"><p className="text-[10px] font-black text-accent/20 uppercase tracking-widest">학력 사항</p><p className="font-bold text-accent">{viewJob.education || "대졸 이상"}</p></div>
+                <div className="space-y-1"><p className="text-[10px] font-black text-accent/20 uppercase tracking-widest">접수 마감</p><p className="font-bold text-accent">{viewJob.deadline}</p></div>
+              </div>
+              <div className="h-px bg-accent/5 w-full"></div>
+              <div className="space-y-4">
+                <h4 className="text-xs font-black text-accent/20 uppercase tracking-widest">주요 업무 및 자격 요건</h4>
+                <p className="text-sm leading-relaxed text-accent/70 font-medium">본 공고의 상세 직무 기술서(JD)와 지원 방법은 해당 기업의 채용 페이지 혹은 인사 담당자를 통해 확인해 주시기 바랍니다.</p>
+              </div>
+            </div>
+            <div className="p-8 bg-[#FBFBFC] border-t border-accent/5 flex justify-end gap-4">
+              <Button onClick={() => setViewJob(null)} className="h-12 px-10 naver-button text-white rounded-none shadow-xl font-black">공고 닫기</Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   )
 }

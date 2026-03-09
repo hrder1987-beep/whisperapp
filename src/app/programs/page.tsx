@@ -9,11 +9,10 @@ import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase"
 import { collection, query, orderBy, addDoc } from "firebase/firestore"
 import { TrainingProgram } from "@/lib/types"
-import { Plus, Search, Building2, MessageSquare, Camera, Sparkles, Calendar, CreditCard, Link as LinkIcon, Users, Clock, Globe, Laptop, GraduationCap, Youtube, Video, ImageIcon, X, Type, Bold, Italic, List } from "lucide-react"
+import { Plus, Search, MessageSquare, Camera, Sparkles, Globe, Laptop, Calendar, CreditCard, Link as LinkIcon } from "lucide-react"
 import Image from "next/image"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
@@ -49,24 +48,7 @@ const MOCK_PROGRAMS: (TrainingProgram & { detailImageUrl?: string })[] = [
     cost: "1,200,000원",
     websiteUrl: "https://example.com/hr-analytics",
     targetAudience: "데이터 기반 의사결정이 필요한 3년차 이상 인사담당자",
-    type: 'program',
-    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-  },
-  {
-    id: "sample-s1",
-    title: "Whisper LMS - 올인원 인사관리 플랫폼",
-    description: "임직원 교육 관리부터 성과 평가까지, 중소/중견 기업에 최적화된 클라우드 기반 HR 솔루션입니다. 24시간 실시간 기술 지원 및 커스터마이징을 지원합니다.",
-    instructorName: "위스퍼 테크놀로지",
-    category: "hrtech",
-    startDate: "상시",
-    endDate: "상시",
-    imageUrl: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800",
-    userId: "mock-s1",
-    createdAt: 1714608000000,
-    cost: "월 50,000원 (인당)",
-    websiteUrl: "https://example.com/lms-solution",
-    targetAudience: "체계적인 교육 관리가 필요한 50인 이상 조직",
-    type: 'solution'
+    type: 'program'
   }
 ]
 
@@ -76,7 +58,6 @@ export default function ProgramsPage() {
   const { toast } = useToast()
   const router = useRouter()
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const detailImageInputRef = useRef<HTMLInputElement>(null)
   
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("all")
@@ -90,12 +71,8 @@ export default function ProgramsPage() {
   const [instructorName, setInstructorName] = useState("")
   const [category, setCategory] = useState("")
   const [imageUrl, setImageUrl] = useState<string | null>(null)
-  const [detailImageUrl, setDetailImageUrl] = useState<string | null>(null)
-  const [videoUrl, setVideoUrl] = useState("")
-  const [showVideoInput, setShowVideoInput] = useState(false)
   const [cost, setCost] = useState("")
   const [startDate, setStartDate] = useState("")
-  const [endDate, setEndDate] = useState("")
   const [websiteUrl, setWebsiteUrl] = useState("")
   const [targetAudience, setTargetAudience] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -133,13 +110,12 @@ export default function ProgramsPage() {
       await addDoc(collection(db, "trainingPrograms"), {
         type: contentType, title, description, instructorName, category, 
         imageUrl: imageUrl || `https://picsum.photos/seed/${Date.now()}/800/400`,
-        detailImageUrl: detailImageUrl || null, videoUrl: videoUrl || null,
-        cost, startDate: startDate || "상시", endDate: endDate || "상시", websiteUrl, targetAudience,
+        cost, startDate: startDate || "상시", endDate: "상시", websiteUrl, targetAudience,
         userId: user.uid, createdAt: Date.now()
       })
       toast({ title: "등록 완료" })
       setIsDialogOpen(false)
-      setTitle(""); setDescription(""); setInstructorName(""); setImageUrl(null); setDetailImageUrl(null);
+      setTitle(""); setDescription(""); setInstructorName(""); setImageUrl(null);
     } catch (error) { toast({ title: "오류", variant: "destructive" }) }
     finally { setIsSubmitting(false) }
   }
@@ -158,15 +134,84 @@ export default function ProgramsPage() {
             <div className="hidden md:block">
               <Dialog open={isDialogOpen} onOpenChange={handleOpenDialog}>
                 <DialogTrigger asChild>
-                  <Button className="naver-button h-14 px-10 rounded-xl shadow-xl gap-3 text-base"><Plus className="w-5 h-5" /> 신규 정보 등록</Button>
+                  <Button className="naver-button h-14 px-10 rounded-xl shadow-xl gap-3 text-base text-white"><Plus className="w-5 h-5" /> 신규 정보 등록</Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-4xl bg-white border-none rounded-none p-0 shadow-2xl overflow-hidden max-h-[95vh] flex flex-col">
                   <DialogHeader className="bg-white border-b border-black/5 p-8 shrink-0 text-left">
                     <DialogTitle className="text-2xl font-black text-accent">전문 콘텐츠 등록</DialogTitle>
                   </DialogHeader>
                   <div className="flex-1 overflow-y-auto p-10">
-                    <form onSubmit={handleAddProgram} className="space-y-12">
-                      <Button type="submit" disabled={isSubmitting} className="w-full h-16 naver-button text-lg rounded-xl shadow-2xl">등록 완료</Button>
+                    <form onSubmit={handleAddProgram} className="space-y-8">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="space-y-2">
+                          <label className="text-xs font-black text-accent/40 uppercase tracking-widest ml-1">콘텐츠 종류</label>
+                          <div className="flex gap-2">
+                            <Button type="button" onClick={() => setContentType('program')} variant={contentType === 'program' ? 'default' : 'outline'} className={cn("flex-1 h-12 rounded-xl font-black", contentType === 'program' ? "bg-accent text-white" : "border-accent/10")}>교육 프로그램</Button>
+                            <Button type="button" onClick={() => setContentType('solution')} variant={contentType === 'solution' ? 'default' : 'outline'} className={cn("flex-1 h-12 rounded-xl font-black", contentType === 'solution' ? "bg-accent text-white" : "border-accent/10")}>IT 솔루션</Button>
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-xs font-black text-accent/40 uppercase tracking-widest ml-1">전문 분야 (카테고리)</label>
+                          <Select value={category} onValueChange={setCategory}>
+                            <SelectTrigger className="h-12 bg-accent/5 border-none rounded-xl font-bold">
+                              <SelectValue placeholder="분야 선택" />
+                            </SelectTrigger>
+                            <SelectContent className="rounded-xl shadow-3xl border-none">
+                              {PROGRAM_CATEGORIES.filter(c => c.id !== "all").map(cat => (
+                                <SelectItem key={cat.id} value={cat.id} className="rounded-xl py-3 font-bold">{cat.name}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="text-xs font-black text-accent/40 uppercase tracking-widest ml-1">과정/솔루션 명칭</label>
+                        <Input value={title} onChange={e => setTitle(e.target.value)} placeholder="과정이나 솔루션의 제목을 입력하세요" className="h-14 bg-accent/5 border-none rounded-xl font-black text-lg shadow-inner" required />
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="space-y-2">
+                          <label className="text-xs font-black text-accent/40 uppercase tracking-widest ml-1">제공 기관/강사명</label>
+                          <Input value={instructorName} onChange={e => setInstructorName(e.target.value)} placeholder="회사명 혹은 강사 성함" className="h-12 bg-accent/5 border-none rounded-xl font-bold shadow-inner" required />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-xs font-black text-accent/40 uppercase tracking-widest ml-1">비용 안내</label>
+                          <Input value={cost} onChange={e => setCost(e.target.value)} placeholder="예: 월 50,000원 / 1,200,000원" className="h-12 bg-accent/5 border-none rounded-xl font-bold shadow-inner" />
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="text-xs font-black text-accent/40 uppercase tracking-widest ml-1">상세 내용 소개</label>
+                        <Textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="프로그램 혹은 솔루션의 핵심 기능과 차별점을 소개해주세요." className="min-h-[150px] bg-accent/5 border-none rounded-xl p-6 font-medium shadow-inner resize-none" required />
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="space-y-2">
+                          <label className="text-xs font-black text-accent/40 uppercase tracking-widest ml-1">홈페이지 링크</label>
+                          <div className="relative">
+                            <LinkIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-accent/20" />
+                            <Input value={websiteUrl} onChange={e => setWebsiteUrl(e.target.value)} placeholder="https://..." className="h-12 pl-11 bg-accent/5 border-none rounded-xl font-bold shadow-inner" />
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-xs font-black text-accent/40 uppercase tracking-widest ml-1">권장 대상</label>
+                          <Input value={targetAudience} onChange={e => setTargetAudience(e.target.value)} placeholder="예: 3년차 이상의 인사담당자" className="h-12 bg-accent/5 border-none rounded-xl font-bold shadow-inner" />
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="text-xs font-black text-accent/40 uppercase tracking-widest ml-1">대표 이미지</label>
+                        <div onClick={() => fileInputRef.current?.click()} className="relative aspect-[16/9] bg-accent/5 rounded-xl border-2 border-dashed border-accent/10 flex flex-col items-center justify-center cursor-pointer overflow-hidden group">
+                          {imageUrl ? <img src={imageUrl} alt="preview" className="w-full h-full object-cover" /> : <Camera className="w-10 h-10 text-accent/10 group-hover:text-primary transition-colors" />}
+                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all text-white text-xs font-black">이미지 변경</div>
+                        </div>
+                        <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={(e) => {
+                          const file = e.target.files?.[0]; if (file) { const reader = new FileReader(); reader.onloadend = () => setImageUrl(reader.result as string); reader.readAsDataURL(file); }
+                        }} />
+                      </div>
+
+                      <Button type="submit" disabled={isSubmitting} className="w-full h-16 naver-button text-lg rounded-xl shadow-2xl text-white font-black">{isSubmitting ? "등록 중..." : "콘텐츠 등록 완료"}</Button>
                     </form>
                   </div>
                 </DialogContent>
@@ -213,7 +258,7 @@ export default function ProgramsPage() {
                     <Button onClick={() => {
                       if (!user) { toast({ title: "로그인 필요", description: "문의를 위해 로그인이 필요합니다.", variant: "destructive" }); router.push("/auth?mode=login"); return; }
                       setMessageTarget({ id: p.userId, nickname: p.instructorName })
-                    }} className="h-12 rounded-xl naver-button text-xs gap-2"><MessageSquare className="w-4 h-4" /> 상담 문의</Button>
+                    }} className="h-12 rounded-xl naver-button text-xs gap-2 text-white"><MessageSquare className="w-4 h-4" /> 상담 문의</Button>
                   </div>
                 </CardContent>
               </Card>
@@ -227,8 +272,31 @@ export default function ProgramsPage() {
             <div className="flex-1 overflow-y-auto">
               <div className="p-12 space-y-8">
                 <h2 className="text-3xl md:text-5xl font-black text-accent">{selectedProgram.title}</h2>
+                <div className="flex flex-wrap gap-4">
+                  <Badge className="bg-primary text-accent px-4 py-1.5 rounded-full font-black">#{selectedProgram.category.toUpperCase()}</Badge>
+                  <span className="text-accent/40 font-bold flex items-center gap-2"><Globe className="w-4 h-4" /> {selectedProgram.instructorName}</span>
+                </div>
+                <div className="h-px bg-accent/5 w-full"></div>
                 <p className="text-lg leading-relaxed text-accent/80 whitespace-pre-wrap">{selectedProgram.description}</p>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6">
+                  <div className="bg-[#FBFBFC] p-6 rounded-2xl space-y-2">
+                    <p className="text-[10px] font-black text-accent/30 uppercase tracking-widest">비용 정보</p>
+                    <p className="text-lg font-black text-accent flex items-center gap-2"><CreditCard className="w-5 h-5 text-primary" /> {selectedProgram.cost || "별도 문의"}</p>
+                  </div>
+                  <div className="bg-[#FBFBFC] p-6 rounded-2xl space-y-2">
+                    <p className="text-[10px] font-black text-accent/30 uppercase tracking-widest">진행 일정</p>
+                    <p className="text-lg font-black text-accent flex items-center gap-2"><Calendar className="w-5 h-5 text-primary" /> {selectedProgram.startDate}</p>
+                  </div>
+                </div>
               </div>
+            </div>
+            <div className="p-8 bg-[#FBFBFC] border-t border-accent/5 flex justify-end gap-4">
+              <Button variant="ghost" onClick={() => setSelectedProgram(null)} className="h-14 px-8 rounded-xl font-black text-accent/40">닫기</Button>
+              <Button onClick={() => {
+                if (!user) { toast({ title: "로그인 필요", variant: "destructive" }); router.push("/auth?mode=login"); return; }
+                setMessageTarget({ id: selectedProgram.userId, nickname: selectedProgram.instructorName })
+              }} className="h-14 px-12 naver-button text-white rounded-xl shadow-xl gap-2 font-black">1:1 상담 신청하기 <MessageSquare className="w-5 h-5" /></Button>
             </div>
           </DialogContent>
         </Dialog>

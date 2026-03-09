@@ -12,11 +12,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useUser, useFirestore, useCollection, useMemoFirebase } from "@/firebase"
 import { collection, query, orderBy, addDoc } from "firebase/firestore"
 import { Instructor } from "@/lib/types"
-import { Plus, Search, Camera, FileText, Sparkles, Phone, Mail, Award, Briefcase, Video, ImageIcon, Type, Bold, Italic, List, Youtube, X } from "lucide-react"
+import { Plus, Search, Camera, Sparkles, User, Briefcase, Award } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
-import Image from "next/image"
 
 const INSTRUCTOR_CATEGORIES = ["전체", "인사전략", "채용/리크루팅", "HRD/교육", "평가/보상(C&B)", "조직문화/EVP", "DX/AI", "노무/ER", "리더십/코칭", "비즈니스 스킬", "면접관 교육", "기타"]
 
@@ -93,10 +92,55 @@ export default function InstructorsPage() {
             </div>
             <div className="hidden md:block">
               <Dialog open={isDialogOpen} onOpenChange={handleOpenDialog}>
-                <DialogTrigger asChild><Button className="naver-button h-14 px-10 rounded-xl shadow-xl gap-3 text-base"><Plus className="w-5 h-5" /> 전문 강사 등록</Button></DialogTrigger>
-                <DialogContent className="max-w-4xl bg-white border-none rounded-none p-0 shadow-2xl overflow-hidden max-h-[95vh] flex flex-col">
+                <DialogTrigger asChild><Button className="naver-button h-14 px-10 rounded-xl shadow-xl gap-3 text-base text-white"><Plus className="w-5 h-5" /> 전문 강사 등록</Button></DialogTrigger>
+                <DialogContent className="max-w-2xl bg-white border-none rounded-none p-0 shadow-2xl overflow-hidden max-h-[95vh] flex flex-col">
                   <DialogHeader className="bg-white border-b border-black/5 p-8 shrink-0"><DialogTitle className="text-2xl font-black text-accent">전문 강사 프로필 게시</DialogTitle></DialogHeader>
-                  <div className="flex-1 overflow-y-auto p-10"><form onSubmit={handleAddInstructor} className="space-y-12"><Button type="submit" disabled={isSubmitting} className="w-full h-16 naver-button text-lg rounded-xl shadow-2xl">강사 등록 요청 완료</Button></form></div>
+                  <div className="flex-1 overflow-y-auto p-10">
+                    <form onSubmit={handleAddInstructor} className="space-y-8">
+                      <div className="space-y-6">
+                        <div className="flex flex-col items-center mb-8">
+                          <div onClick={() => fileInputRef.current?.click()} className="w-32 h-32 rounded-full bg-accent/5 border-2 border-dashed border-accent/10 flex items-center justify-center cursor-pointer overflow-hidden group">
+                            {profilePictureUrl ? <img src={profilePictureUrl} alt="preview" className="w-full h-full object-cover" /> : <Camera className="w-8 h-8 text-accent/10 group-hover:text-primary transition-colors" />}
+                          </div>
+                          <p className="text-[10px] font-black text-accent/30 mt-3 uppercase tracking-widest">강사 프로필 사진</p>
+                          <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={(e) => {
+                            const file = e.target.files?.[0]; if (file) { const reader = new FileReader(); reader.onloadend = () => setProfilePictureUrl(reader.result as string); reader.readAsDataURL(file); }
+                          }} />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div className="space-y-2">
+                            <label className="text-xs font-black text-accent/40 uppercase tracking-widest ml-1">강사 성함 (실명)</label>
+                            <Input value={name} onChange={e => setName(e.target.value)} placeholder="실명 입력" className="h-12 bg-accent/5 border-none rounded-xl font-bold" required />
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-xs font-black text-accent/40 uppercase tracking-widest ml-1">주요 전문 분야</label>
+                            <Select value={specialty} onValueChange={setSpecialty}>
+                              <SelectTrigger className="h-12 bg-accent/5 border-none rounded-xl font-bold">
+                                <SelectValue placeholder="분야 선택" />
+                              </SelectTrigger>
+                              <SelectContent className="rounded-xl shadow-3xl border-none">
+                                {INSTRUCTOR_CATEGORIES.filter(c => c !== "전체").map(cat => (
+                                  <SelectItem key={cat} value={cat} className="rounded-xl py-3 font-bold">{cat}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <label className="text-xs font-black text-accent/40 uppercase tracking-widest ml-1">소속 기업 / 센터명</label>
+                          <Input value={company} onChange={e => setCompany(e.target.value)} placeholder="예: 리더십 교육 연구소" className="h-12 bg-accent/5 border-none rounded-xl font-bold" />
+                        </div>
+
+                        <div className="space-y-2">
+                          <label className="text-xs font-black text-accent/40 uppercase tracking-widest ml-1">핵심 약력 및 자기소개</label>
+                          <Textarea value={bio} onChange={e => setBio(e.target.value)} placeholder="대표적인 강의 경력 및 전문가로서의 강점을 요약해주세요." className="min-h-[150px] bg-accent/5 border-none rounded-xl p-6 font-medium shadow-inner resize-none" required />
+                        </div>
+                      </div>
+                      <Button type="submit" disabled={isSubmitting} className="w-full h-16 naver-button text-lg rounded-xl shadow-2xl text-white font-black">{isSubmitting ? "처리 중..." : "강사 등록 요청 완료"}</Button>
+                    </form>
+                  </div>
                 </DialogContent>
               </Dialog>
             </div>
@@ -131,13 +175,36 @@ export default function InstructorsPage() {
                   <div className="w-40 h-40 rounded-full overflow-hidden border-4 border-white shadow-xl mb-8"><img src={i.profilePictureUrl} alt={i.name} className="w-full h-full object-cover" /></div>
                   <h3 className="text-2xl font-black text-accent mb-1">{i.name} 강사</h3>
                   <Badge variant="outline" className="mb-8 border-primary/20 text-primary font-black text-xs px-5 py-1 rounded-full">#{i.specialty}</Badge>
-                  <Button onClick={() => setViewTarget(i)} className="w-full h-12 rounded-xl naver-button text-accent text-sm gap-2">상세 프로필 확인</Button>
+                  <Button onClick={() => setViewTarget(i)} className="w-full h-12 rounded-xl naver-button text-white text-sm gap-2">상세 프로필 확인</Button>
                 </CardContent>
               </Card>
             ))}
           </div>
         )}
       </main>
+      {viewTarget && (
+        <Dialog open={!!viewTarget} onOpenChange={() => setViewTarget(null)}>
+          <DialogContent className="max-w-3xl bg-white border-none rounded-[3rem] p-0 shadow-4xl overflow-hidden">
+            <div className="bg-primary/5 p-12 flex flex-col md:flex-row items-center gap-10 border-b border-accent/5">
+              <div className="w-48 h-48 rounded-3xl overflow-hidden border-4 border-white shadow-2xl shrink-0"><img src={viewTarget.profilePictureUrl} alt={viewTarget.name} className="w-full h-full object-cover" /></div>
+              <div className="text-center md:text-left space-y-4">
+                <div>
+                  <Badge className="bg-accent text-white font-black mb-2 px-4 py-1.5 rounded-full">#{viewTarget.specialty}</Badge>
+                  <h2 className="text-4xl font-black text-accent">{viewTarget.name} 전문가</h2>
+                  <p className="text-accent/40 font-bold text-lg">{viewTarget.company || "전문 강사"}</p>
+                </div>
+              </div>
+            </div>
+            <div className="p-12">
+              <h4 className="text-xs font-black text-accent/20 uppercase tracking-[0.3em] mb-6">Expertise & Background</h4>
+              <p className="text-lg leading-relaxed text-accent/80 font-medium whitespace-pre-wrap">{viewTarget.bio}</p>
+            </div>
+            <div className="p-8 bg-[#FBFBFC] border-t border-accent/5 flex justify-end gap-4">
+              <Button onClick={() => setViewTarget(null)} className="h-14 px-12 naver-button text-white rounded-xl shadow-xl font-black">확인 완료</Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   )
 }
