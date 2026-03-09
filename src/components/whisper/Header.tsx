@@ -68,7 +68,7 @@ export function Header({ onSearch }: HeaderProps) {
   if (!isMounted) return <header className="naver-header h-16 md:h-[88px]" />
 
   return (
-    <header className="naver-header shadow-sm border-none">
+    <header className="naver-header shadow-sm border-none bg-white/98">
       <div className="max-w-7xl mx-auto px-4 md:px-6 h-16 md:h-[88px] flex items-center justify-between gap-4">
         <div className="flex items-center gap-3 md:gap-10">
           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
@@ -83,19 +83,19 @@ export function Header({ onSearch }: HeaderProps) {
                 <Logo className="mb-12 scale-110 origin-left" />
                 <nav className="flex flex-col gap-2">
                   {navLinks.map((link) => (
-                    <Link key={link.href} href={link.href} onClick={() => setIsMobileMenuOpen(false)} className={cn("text-[16px] font-black py-4 px-5 rounded-2xl transition-all", pathname === link.href ? "bg-primary text-accent shadow-md" : "text-accent/60 hover:bg-primary/10")}>{link.name}</Link>
+                    <Link key={link.href} href={link.href} onClick={() => setIsMobileMenuOpen(false)} className={cn("text-[16px] font-black py-4 px-5 rounded-2xl transition-all", pathname === link.href ? "bg-accent text-white shadow-md" : "text-accent/60 hover:bg-primary/10")}>{link.name}</Link>
                   ))}
                   <div className="h-px bg-black/[0.04] my-6" />
                   {user ? (
                     <div className="flex flex-col gap-2">
-                      {isAdmin && <Button asChild className="bg-accent text-primary font-black rounded-xl h-12 mb-4"><Link href="/admin"><ShieldCheck className="w-4 h-4 mr-2" /> Admin</Link></Button>}
+                      {isAdmin && <Button asChild className="bg-accent text-white font-black rounded-xl h-12 mb-4"><Link href="/admin"><ShieldCheck className="w-4 h-4 mr-2" /> Admin</Link></Button>}
                       <Link href="/my-posts" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-bold py-3 text-accent/60 flex items-center gap-3 px-5"><FileText className="w-4 h-4 opacity-30" /> 내가 쓴 속삭임</Link>
                       <Link href="/profile" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-bold py-3 text-accent/60 flex items-center gap-3 px-5"><UserIcon className="w-4 h-4 opacity-30" /> 내 정보</Link>
                       <Link href="/notifications" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-bold py-3 text-accent/60 flex items-center gap-3 px-5"><Bell className="w-4 h-4 opacity-30" /> 알림 센터</Link>
                       <button onClick={handleLogout} className="text-left text-sm font-black py-3 px-5 text-red-400 mt-4">로그아웃</button>
                     </div>
                   ) : (
-                    <Link href="/auth?mode=login" onClick={() => setIsMobileMenuOpen(false)} className="text-[16px] font-black py-4 px-5 bg-accent text-primary rounded-2xl text-center shadow-lg flex items-center justify-center gap-2 mt-4"><Sparkles className="w-4 h-4" /> 시작하기</Link>
+                    <Link href="/auth?mode=login" onClick={() => setIsMobileMenuOpen(false)} className="text-[16px] font-black py-4 px-5 bg-accent text-white rounded-2xl text-center shadow-lg flex items-center justify-center gap-2 mt-4"><Sparkles className="w-4 h-4" /> 시작하기</Link>
                   )}
                 </nav>
               </div>
@@ -108,7 +108,7 @@ export function Header({ onSearch }: HeaderProps) {
           <div className="naver-search-bar w-full h-12 shadow-sm group">
             <Input 
               placeholder="궁금한 HR 지식과 사례를 검색하세요" 
-              className="border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 text-[15px] font-black h-full placeholder:text-accent/10 bg-transparent px-0 outline-none pl-4" 
+              className="border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 text-[15px] font-black h-full placeholder:text-accent/20 bg-transparent px-0 outline-none pl-4" 
               value={searchQuery} 
               onChange={(e) => setSearchQuery(e.target.value)} 
               onKeyDown={handleKeyDown} 
@@ -130,11 +130,11 @@ export function Header({ onSearch }: HeaderProps) {
           {!user ? (
             <div className="flex items-center gap-2">
               <Link href="/auth?mode=login"><Button className="naver-button h-10 px-6 hidden md:block shadow-md text-sm">로그인</Button></Link>
-              <Link href="/auth?mode=signup"><Button variant="outline" className="border-accent/10 text-accent font-black h-10 px-6 hidden md:block rounded-xl hover:bg-primary/5 text-sm">회원가입</Button></Link>
+              <Link href="/auth?mode=signup"><Button variant="outline" className="border-accent/10 text-accent font-black h-10 px-6 hidden md:block rounded-xl hover:bg-primary/10 text-sm">회원가입</Button></Link>
             </div>
           ) : (
             <Link href="/profile" className="hidden md:block">
-              <div className="w-10 h-10 rounded-xl bg-primary/10 border border-white shadow-md flex items-center justify-center overflow-hidden hover:scale-105 transition-all">
+              <div className="w-10 h-10 rounded-xl bg-accent/5 border-2 border-white shadow-md flex items-center justify-center overflow-hidden hover:scale-105 transition-all">
                 <img src={profile?.profilePictureUrl || `https://picsum.photos/seed/${user.uid}/100/100`} className="w-full h-full object-cover" alt="me" />
               </div>
             </Link>
@@ -144,7 +144,18 @@ export function Header({ onSearch }: HeaderProps) {
 
       <nav className="border-t border-black/[0.02] hidden md:block bg-white/30 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-6 h-12 flex items-center gap-10">
-          {navLinks.map((link) => (<Link key={link.href} href={link.href} className={cn("text-[14px] font-black transition-all h-full flex items-center border-b-[2px] border-transparent data-[state=active]:border-primary rounded-none px-1 tracking-tight", pathname === link.href ? "text-accent border-primary" : "text-accent/30 hover:text-accent")}>{link.name}</Link>))}
+          {navLinks.map((link) => (
+            <Link 
+              key={link.href} 
+              href={link.href} 
+              className={cn(
+                "text-[14px] font-black transition-all h-full flex items-center border-b-[3px] border-transparent rounded-none px-1 tracking-tight", 
+                pathname === link.href ? "text-accent border-accent" : "text-accent/40 hover:text-accent"
+              )}
+            >
+              {link.name}
+            </Link>
+          ))}
         </div>
       </nav>
     </header>

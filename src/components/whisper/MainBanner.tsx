@@ -60,38 +60,39 @@ export function MainBanner({ banners: propBanners, autoSlideDuration = 3 }: Main
 
   return (
     <div className="w-full mb-6 relative group/carousel">
-      <Carousel setApi={setApi} className="w-full overflow-hidden rounded-[2.5rem] shadow-xl border border-black/[0.03] bg-white" opts={{ loop: true }}>
+      <Carousel setApi={setApi} className="w-full overflow-hidden rounded-[2.5rem] shadow-2xl border border-black/[0.03] bg-white" opts={{ loop: true }}>
         <CarouselContent className="ml-0">
           {banners.map((banner, index) => (
             <CarouselItem key={banner.id} className="pl-0">
-              <div className="relative h-[200px] md:h-[320px] w-full overflow-hidden bg-white">
+              <div className="relative h-[220px] md:h-[340px] w-full overflow-hidden bg-white">
                 <div className="absolute inset-0 flex flex-col justify-center px-8 md:px-16 z-20">
-                  <Badge className="w-fit mb-3 md:mb-4 bg-primary text-accent shadow-sm border-none px-3 py-0.5 text-[9px] font-black tracking-widest">
+                  <Badge className="w-fit mb-3 md:mb-4 bg-accent text-white shadow-md border-none px-3 py-0.5 text-[9px] font-black tracking-widest uppercase">
                     {banner.badge}
                   </Badge>
                   
-                  <h1 className="text-xl md:text-3xl font-black text-accent mb-2 md:mb-4 leading-[1.2] tracking-tight whitespace-pre-line drop-shadow-sm">
+                  <h1 className="text-xl md:text-3xl font-black text-accent mb-2 md:mb-4 leading-[1.2] tracking-tight whitespace-pre-line">
                     {banner.title}
                   </h1>
                   
-                  <p className="text-[11px] md:text-[14px] text-accent/60 font-bold max-w-[220px] md:max-w-md whitespace-pre-line leading-relaxed line-clamp-2">
+                  <p className="text-[11px] md:text-[14px] text-accent/60 font-bold max-w-[240px] md:max-w-md whitespace-pre-line leading-relaxed line-clamp-2">
                     {banner.description}
                   </p>
 
                   <button className="mt-4 md:mt-6 flex items-center gap-1 text-[11px] font-black text-accent hover:text-primary transition-all group/btn w-fit">
-                    <span className="border-b-2 border-accent/20 group-hover/btn:border-primary pb-0.5">자세히 보기</span>
+                    <span className="border-b-2 border-accent/20 group-hover/btn:border-primary pb-0.5">인사이트 탐색하기</span>
                     <ChevronRight className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform" />
                   </button>
                 </div>
                 
                 <div className="absolute top-0 right-0 w-full h-full">
+                  {/* Navy to White Hybrid Gradient */}
                   <div className="absolute inset-0 bg-gradient-to-r from-white via-white/95 to-transparent z-10"></div>
                   <div className="absolute right-0 top-0 w-full md:w-[75%] h-full">
                     <Image 
-                      src={banner.image || "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=1080"} 
+                      src={banner.image} 
                       alt={banner.title} 
                       fill 
-                      className="object-cover opacity-40 md:opacity-100 transition-none"
+                      className="object-cover opacity-30 md:opacity-100 transition-none grayscale-[0.3] hover:grayscale-0 duration-700"
                       priority={index === 0}
                     />
                   </div>
@@ -102,8 +103,8 @@ export function MainBanner({ banners: propBanners, autoSlideDuration = 3 }: Main
         </CarouselContent>
         
         <div className="absolute bottom-6 right-6 md:bottom-10 md:right-12 flex gap-2 z-30 opacity-0 group-hover/carousel:opacity-100 transition-opacity duration-500">
-          <CarouselPrevious className="relative inset-0 bg-white/80 backdrop-blur-md border border-black/5 text-accent hover:bg-primary h-8 w-8 md:h-10 md:w-10 rounded-full translate-x-0 translate-y-0 shadow-lg" />
-          <CarouselNext className="relative inset-0 bg-white/80 backdrop-blur-md border border-black/5 text-accent hover:bg-primary h-8 w-8 md:h-10 md:w-10 rounded-full translate-x-0 translate-y-0 shadow-lg" />
+          <CarouselPrevious className="relative inset-0 bg-accent/90 text-white border-none h-8 w-8 md:h-10 md:w-10 rounded-full shadow-2xl hover:scale-110 transition-transform" />
+          <CarouselNext className="relative inset-0 bg-accent/90 text-white border-none h-8 w-8 md:h-10 md:w-10 rounded-full shadow-2xl hover:scale-110 transition-transform" />
         </div>
       </Carousel>
     </div>

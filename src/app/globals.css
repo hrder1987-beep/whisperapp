@@ -4,25 +4,27 @@
 
 @layer base {
   :root {
-    --background: 88 30% 98.5%;
+    --background: 210 20% 98%;
     --foreground: 222 47% 11%;
     --card: 0 0% 100%;
     --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
+    /* Primary: Whisper Lime Green */
     --primary: 88 63% 81%;
-    --primary-foreground: 120 100% 10%;
-    --secondary: 88 30% 96%;
+    --primary-foreground: 217 100% 10%;
+    --secondary: 217 30% 96%;
     --secondary-foreground: 222 47% 11%;
-    --muted: 88 20% 96%;
+    --muted: 210 20% 96%;
     --muted-foreground: 215 16% 47%;
-    --accent: 120 100% 10%;
+    /* Accent: Deep Intelligence Navy (Based on User Image) */
+    --accent: 217 100% 17%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-    --border: 88 20% 92%;
-    --input: 88 20% 92%;
-    --ring: 88 63% 81%;
+    --border: 217 20% 92%;
+    --input: 217 20% 92%;
+    --ring: 217 100% 17%;
     --radius: 1.25rem;
   }
 }
@@ -32,14 +34,15 @@
     @apply border-border outline-none !ring-offset-0;
   }
   body {
-    @apply bg-[#FBFBFC] text-[#1E1E23] font-body antialiased;
+    @apply bg-[#F5F7FA] text-[#1E1E23] font-body antialiased;
     -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
   }
 }
 
+/* 텍스트 컬러 기본 설정: 깊은 네이비톤 */
 p, span, label, h1, h2, h3, h4, h5, h6 {
-  @apply text-[#163300];
+  @apply text-[#001F3F];
 }
 
 .naver-header {
@@ -47,29 +50,34 @@ p, span, label, h1, h2, h3, h4, h5, h6 {
 }
 
 .naver-search-bar {
-  @apply border-2 border-primary bg-white rounded-2xl flex items-center px-4 transition-all focus-within:shadow-[0_8px_30px_rgb(205,236,177,0.4)] focus-within:border-primary outline-none;
+  @apply border-2 border-primary bg-white rounded-2xl flex items-center px-4 transition-all focus-within:shadow-[0_8px_30px_rgb(0,43,91,0.1)] focus-within:border-accent outline-none;
 }
 
 .naver-card {
-  @apply bg-white border border-black/[0.03] shadow-[0_4px_20px_-3px_rgba(0,0,0,0.04),0_10px_30px_-2px_rgba(0,0,0,0.02)] hover:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.08)] transition-all duration-500 rounded-[2rem] overflow-hidden;
+  @apply bg-white border border-black/[0.03] shadow-[0_4px_20px_-3px_rgba(0,43,91,0.04),0_10px_30px_-2px_rgba(0,43,91,0.02)] hover:shadow-[0_25px_50px_-12px_rgba(0,43,91,0.08)] transition-all duration-500 rounded-[2rem] overflow-hidden;
 }
 
 .naver-button {
-  @apply bg-primary text-[#163300] font-black rounded-xl hover:brightness-95 transition-all shadow-lg active:scale-[0.97] disabled:opacity-50;
+  @apply bg-accent text-white font-black rounded-xl hover:brightness-110 transition-all shadow-lg active:scale-[0.97] disabled:opacity-50;
 }
 
-/* 입력창 첫 글자 짤림 방지: 강력한 패딩 적용 */
+/* 입력창 여백 설정 */
 input, textarea {
   @apply transition-all duration-300;
-  padding-left: 1.5rem !important;
+  padding-left: 1.25rem !important;
 }
 
 input:focus, textarea:focus {
-  @apply ring-4 ring-primary/10;
+  @apply ring-4 ring-primary/20;
 }
 
+/* 네이비 & 그린 혼합 그라데이션 */
 .gold-gradient {
-  background: linear-gradient(135deg, #CDECB1 0%, #B8E094 100%);
+  background: linear-gradient(135deg, #002B5B 0%, #163300 100%);
+}
+
+.hybrid-gradient {
+  background: linear-gradient(135deg, #CDECB1 0%, #002B5B 100%);
 }
 
 .scrollbar-hide::-webkit-scrollbar {
@@ -81,5 +89,5 @@ input:focus, textarea:focus {
 }
 
 .shadow-3xl {
-  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.1), 0 10px 20px -5px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 20px 40px -12px rgba(0, 43, 91, 0.1), 0 10px 20px -5px rgba(0, 43, 91, 0.04);
 }
