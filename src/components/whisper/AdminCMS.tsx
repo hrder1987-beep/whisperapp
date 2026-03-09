@@ -270,6 +270,10 @@ export function AdminCMS({ initialBanners, initialPremiumAds, initialBranding, o
                 <Input value={branding.footerAddress ?? ""} onChange={(e) => handleBrandingChange("footerAddress", e.target.value)} className="bg-accent/5 border-none font-bold h-11 rounded-xl shadow-inner" />
               </div>
               <div className="space-y-2">
+                <label className="text-[10px] font-black text-accent/30 uppercase tracking-widest ml-1">대표 전화번호</label>
+                <Input value={branding.footerPhone ?? ""} onChange={(e) => handleBrandingChange("footerPhone", e.target.value)} className="bg-accent/5 border-none font-bold h-11 rounded-xl shadow-inner" />
+              </div>
+              <div className="space-y-2">
                 <label className="text-[10px] font-black text-accent/30 uppercase tracking-widest ml-1">카피라이트 문구</label>
                 <Input value={branding.footerCopyright ?? ""} onChange={(e) => handleBrandingChange("footerCopyright", e.target.value)} className="bg-accent/5 border-none font-bold h-11 rounded-xl shadow-inner" />
               </div>
