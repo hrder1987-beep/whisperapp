@@ -294,7 +294,7 @@ function AuthContent() {
                   <Input placeholder="010-0000-0000" value={phone} onChange={(e) => setPhone(e.target.value)} required className="h-14 bg-[#FBFBFC] border-[#163300]/10 rounded-2xl px-6 font-bold text-[#163300] shadow-sm" />
                 </div>
                 
-                <Button type="submit" disabled={isLoading || usernameStatus !== "available"} className="w-full h-16 md:h-18 gold-gradient text-[#163300] font-black rounded-[1.5rem] mt-6 md:mt-10 shadow-3xl text-lg md:text-xl hover:scale-[1.01] transition-all active:scale-[0.97]">
+                <Button type="submit" disabled={isLoading || usernameStatus !== "available"} className="w-full h-16 md:h-18 gold-gradient text-primary font-black rounded-[1.5rem] mt-6 md:mt-10 shadow-3xl text-lg md:text-xl hover:scale-[1.01] transition-all active:scale-[0.97]">
                   {isLoading ? "전문가 등록 처리 중..." : "전문가 등록 완료"}
                   <UserPlus className="w-5 h-5 md:w-6 md:h-6 ml-3" />
                 </Button>

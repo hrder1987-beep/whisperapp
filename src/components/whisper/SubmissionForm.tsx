@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useRef, useEffect } from "react"
@@ -108,12 +109,12 @@ export function SubmissionForm({ onSubmit, type, placeholder }: SubmissionFormPr
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
                       readOnly={!user}
-                      className="border-none shadow-none focus-visible:ring-0 text-base md:text-lg font-black h-auto placeholder:text-[#163300]/10 text-[#163300] bg-transparent outline-none px-0"
+                      className="border-none shadow-none focus-visible:ring-0 text-base md:text-lg font-black h-auto placeholder:text-[#163300]/40 text-[#163300] bg-transparent outline-none px-0"
                     />
                   </div>
                   <div className="w-full md:w-40 shrink-0">
                     <Select value={selectedCategory || ""} onValueChange={(val) => user ? setSelectedCategory(val) : handleInteraction()}>
-                      <SelectTrigger className="h-9 bg-primary/15 border-none rounded-lg font-black text-[11px] text-[#163300] px-3 shadow-inner">
+                      <SelectTrigger className="h-9 bg-primary/25 border-none rounded-lg font-black text-[11px] text-[#163300] px-3 shadow-inner">
                         <SelectValue placeholder="카테고리" />
                       </SelectTrigger>
                       <SelectContent className="bg-white border-black/5 rounded-xl shadow-4xl p-1">
@@ -126,7 +127,7 @@ export function SubmissionForm({ onSubmit, type, placeholder }: SubmissionFormPr
                     </Select>
                   </div>
                 </div>
-                <div className="h-px bg-black/[0.03]"></div>
+                <div className="h-px bg-black/[0.08]"></div>
               </div>
             )}
             
@@ -137,7 +138,7 @@ export function SubmissionForm({ onSubmit, type, placeholder }: SubmissionFormPr
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 readOnly={!user}
-                className="min-h-[80px] md:min-h-[100px] border-none shadow-none focus-visible:ring-0 py-1 text-sm md:text-base leading-relaxed resize-none text-[#404040] placeholder:text-[#163300]/10 bg-transparent outline-none font-medium px-0"
+                className="min-h-[80px] md:min-h-[100px] border-none shadow-none focus-visible:ring-0 py-1 text-sm md:text-base leading-relaxed resize-none text-[#404040] placeholder:text-[#163300]/40 bg-transparent outline-none font-medium px-0"
               />
             </div>
 
