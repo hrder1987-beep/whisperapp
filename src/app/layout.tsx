@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   description: 'HR실무자들의 품격 있는 속삭임. 교육부터 조직문화, 인사전략까지 HR 전문가를 위한 지식 허브 Whisper',
   keywords: ['HR', '인사', '인사담당자', 'HR실무자', '조직문화', '인사전략', '교육', 'HRM', 'HRD', '위스퍼', 'whisper'],
   verification: {
-    google: 'aY-IkLVk5LpUKx6cf7w_xu9jE_Q1Gv_5qYhx4',
+    google: 'vseC0Ud11g8jPYx',
     other: {
       'naver-site-verification': '여기에-네이버-인증-코드를-붙여넣으세요',
     },
@@ -63,7 +63,7 @@ export default function RootLayout({
       <body className="font-body antialiased selection:bg-primary selection:text-primary-foreground bg-[#F8F9FA] touch-pan-y" suppressHydrationWarning>
         <FirebaseClientProvider>
           <div className="relative min-h-screen flex flex-col">
-            <main className="relative z-10 flex-1 pb-24 lg:pb-0">{children}</main>
+            <main className="relative z-10 flex-1 pb-24 lg:pb-0"> {children}</main>
             <BottomNav />
             <Toaster />
           </div>
