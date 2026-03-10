@@ -36,6 +36,7 @@
         "nickname": { "type": "string" },
         "category": { "type": "string" },
         "viewCount": { "type": "number" },
+        "likeCount": { "type": "number" },
         "answerCount": { "type": "number" },
         "createdAt": { "type": "number" },
         "userProfilePicture": { "type": "string" },

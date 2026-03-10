@@ -25,6 +25,7 @@ export interface Question {
   userRole?: UserRole;
   jobTitle?: string; // 작성 당시의 직무 표시용
   viewCount: number;
+  likeCount: number;
   answerCount: number;
   createdAt: number;
   imageUrl?: string;

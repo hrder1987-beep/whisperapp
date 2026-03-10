@@ -4,7 +4,7 @@
 import { useState, useEffect } from "react"
 import { Question, Answer } from "@/lib/types"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
-import { MessageCircle, Eye, Bookmark, Trash2, Mail, Share2, MoreHorizontal, Edit3, AlertCircle, Sparkles } from "lucide-react"
+import { MessageCircle, ThumbsUp, Bookmark, Trash2, Mail, Share2, MoreHorizontal, Edit3, AlertCircle, Sparkles } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 import { ko } from "date-fns/locale"
 import { Button } from "@/components/ui/button"
@@ -15,7 +15,7 @@ import { SubmissionForm } from "./SubmissionForm"
 import { MessageDialog } from "./MessageDialog"
 import { cn } from "@/lib/utils"
 import { useUser, useFirestore, updateDocumentNonBlocking, deleteDocumentNonBlocking } from "@/firebase"
-import { doc } from "firebase/firestore"
+import { doc, increment } from "firebase/firestore"
 import { useToast } from "@/hooks/use-toast"
 import {
   DropdownMenu,
@@ -67,9 +67,16 @@ export function QuestionFeed({
   const [editText, setEditText] = useState("")
   const [editCategory, setEditCategory] = useState("")
   const [isUpdating, setIsUpdating] = useState(false)
+  const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set())
 
   const [isMounted, setIsMounted] = useState(false)
-  useEffect(() => setIsMounted(true), [])
+  useEffect(() => {
+    setIsMounted(true)
+    const savedLikes = localStorage.getItem('whisper_liked_posts')
+    if (savedLikes) {
+      setLikedPosts(new Set(JSON.parse(savedLikes)))
+    }
+  }, [])
 
   const handleShare = async (q: Question) => {
     if (typeof window !== 'undefined') {
@@ -86,6 +93,25 @@ export function QuestionFeed({
       deleteDocumentNonBlocking(doc(db, "questions", q.id));
       toast({ title: "삭제 완료", description: "게시글이 삭제되었습니다." });
     }
+  }
+
+  const handleLike = (e: React.MouseEvent, q: Question) => {
+    e.stopPropagation();
+    if (!db) return;
+    
+    if (likedPosts.has(q.id)) {
+      toast({ title: "이미 지지함", description: "이미 이 속삭임에 힘을 보태주셨습니다." });
+      return;
+    }
+
+    updateDocumentNonBlocking(doc(db, "questions", q.id), { likeCount: increment(1) });
+    
+    const newLikes = new Set(likedPosts);
+    newLikes.add(q.id);
+    setLikedPosts(newLikes);
+    localStorage.setItem('whisper_liked_posts', JSON.stringify(Array.from(newLikes)));
+    
+    toast({ title: "지지 완료!", description: "전문가님의 소중한 따봉이 전달되었습니다." });
   }
 
   const handleUpdate = () => {
@@ -130,6 +156,7 @@ export function QuestionFeed({
           const isMentor = q.userRole === 'mentor'
           const youtubeId = q.videoUrl ? getYoutubeId(q.videoUrl) : null
           const isOwner = user && user.uid === q.userId;
+          const isLiked = likedPosts.has(q.id);
 
           return (
             <Card 
@@ -158,8 +185,6 @@ export function QuestionFeed({
                       </div>
                       <span className="text-[10px] md:text-[11px] font-bold text-accent/30 flex items-center gap-1.5 mt-1">
                         {isMounted ? formatDistanceToNow(q.createdAt, { addSuffix: true, locale: ko }) : '...'}
-                        <span className="w-0.5 h-0.5 rounded-full bg-accent/10"></span>
-                        <Eye className="w-3 h-3 opacity-50" /> {q.viewCount.toLocaleString()}
                       </span>
                     </div>
                   </div>
@@ -214,6 +239,16 @@ export function QuestionFeed({
               {!isExpanded && (
                 <CardFooter className="px-5 md:px-8 py-3 md:py-4 border-t border-primary/5 flex items-center justify-between bg-primary/[0.01]">
                   <div className="flex gap-6 md:gap-8">
+                    <button 
+                      onClick={(e) => handleLike(e, q)}
+                      className={cn(
+                        "flex items-center gap-1.5 text-[11px] md:text-xs font-black transition-all hover:scale-110",
+                        isLiked ? "text-primary" : "text-accent/60 hover:text-primary"
+                      )}
+                    >
+                      <ThumbsUp className={cn("w-4 h-4", isLiked && "fill-primary")} />
+                      <span>{q.likeCount?.toLocaleString() || 0}</span>
+                    </button>
                     <div className="flex items-center gap-1.5 text-[11px] md:text-xs font-black text-accent/60">
                       <MessageCircle className="w-4 h-4 text-primary" />
                       <span>답변 {q.answerCount.toLocaleString()}</span>

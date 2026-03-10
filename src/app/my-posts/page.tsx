@@ -44,9 +44,6 @@ export default function MyPostsPage() {
     if (selectedId === id) setSelectedId(null)
     else {
       setSelectedId(id)
-      if (db) {
-        updateDocumentNonBlocking(doc(db, "questions", id), { viewCount: increment(1) })
-      }
     }
   }
 

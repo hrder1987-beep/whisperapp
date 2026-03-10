@@ -33,13 +33,13 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
-    // 질문 및 답변: 조회수(viewCount) 및 답변수(answerCount)는 비로그인 사용자도 업데이트 허용
+    // 질문 및 답변: 조회수(viewCount), 답변수(answerCount), 좋아요수(likeCount) 업데이트 허용
     match /questions/{questionId} {
       allow read: if true; 
       allow create: if isSignedIn();
       
-      // 업데이트 시 viewCount나 answerCount만 건드리는 경우 무조건 허용
-      allow update: if (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['viewCount', 'answerCount'])) || 
+      // 업데이트 시 조회수, 답변수, 좋아요수만 건드리는 경우 무조건 허용 (비로그인 좋아요 가능)
+      allow update: if (request.resource.data.diff(resource.data).affectedKeys().hasAny(['viewCount', 'answerCount', 'likeCount'])) || 
                      (isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin()));
       
       allow delete: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());

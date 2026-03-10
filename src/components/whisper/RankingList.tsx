@@ -2,7 +2,7 @@
 "use client"
 
 import { Question } from "@/lib/types"
-import { MessageCircle, ChevronRight } from "lucide-react"
+import { ThumbsUp, ChevronRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
 
@@ -17,7 +17,7 @@ export function RankingList({ questions, onSelectQuestion }: RankingListProps) {
   const handleMoreClick = () => {
     toast({
       title: "실시간 지식 랭킹",
-      description: "현재 가장 주목받는 HR 이슈 리포트입니다.",
+      description: "현재 가장 많은 지지를 받는 HR 이슈 리포트입니다.",
     })
   }
 
@@ -54,8 +54,8 @@ export function RankingList({ questions, onSelectQuestion }: RankingListProps) {
             </div>
             
             <div className="flex items-center gap-1.5 text-[11px] font-black text-muted-foreground/30 shrink-0">
-              <MessageCircle className="w-3.5 h-3.5" />
-              {q.answerCount}
+              <ThumbsUp className="w-3.5 h-3.5 text-primary" />
+              {q.likeCount || 0}
             </div>
           </div>
         ))}

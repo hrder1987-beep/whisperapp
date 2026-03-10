@@ -100,7 +100,7 @@ function HomePageContent() {
     if (activeTab === "hrm") res = res.filter(q => q.category === "인사전략/HRM");
     if (activeTab === "hrd") res = res.filter(q => q.category === "HRD/교육");
     if (activeTab === "culture") res = res.filter(q => q.category === "조직문화/EVP");
-    if (activeTab === "popular") res.sort((a, b) => b.viewCount - a.viewCount);
+    if (activeTab === "popular") res.sort((a, b) => (b.likeCount || 0) - (a.likeCount || 0));
     return res
   }, [questions, deferredSearchQuery, activeTab])
 
@@ -116,7 +116,7 @@ function HomePageContent() {
     if (!db || !user) return;
     addDocumentNonBlocking(collection(db, "questions"), {
       title, text, nickname, userId: user.uid, category: category || "기타",
-      viewCount: 0, answerCount: 0, createdAt: Date.now(), imageUrl: imageUrl || null, videoUrl: videoUrl || null,
+      viewCount: 0, likeCount: 0, answerCount: 0, createdAt: Date.now(), imageUrl: imageUrl || null, videoUrl: videoUrl || null,
       jobTitle: jobRole || null 
     }).then(ref => {
       if (ref) {
@@ -156,9 +156,6 @@ function HomePageContent() {
 
   const handleSelectQuestion = (id: string) => {
     setSelectedId(id === selectedId ? null : id);
-    if (id !== selectedId && db) {
-      updateDocumentNonBlocking(doc(db, "questions", id), { viewCount: increment(1) });
-    }
   }
 
   return (
@@ -229,7 +226,7 @@ function HomePageContent() {
 
       <aside className="lg:col-span-4 hidden lg:block space-y-8 h-fit relative">
         <WhisperChat />
-        <RankingList questions={[...questions].sort((a,b) => b.viewCount - a.viewCount)} onSelectQuestion={handleSelectQuestion} />
+        <RankingList questions={[...questions].sort((a,b) => (b.likeCount || 0) - (a.likeCount || 0))} onSelectQuestion={handleSelectQuestion} />
         <PremiumAds ads={premiumAds} />
       </aside>
     </div>

@@ -27,13 +27,6 @@ export function QuestionViewClient({ id }: { id: string }) {
   const { data: answersData } = useCollection<Answer>(answersQuery)
   const answers = answersData || []
 
-  // 조회수 증가 (한 번만)
-  useEffect(() => {
-    if (db && id) {
-      updateDocumentNonBlocking(doc(db, "questions", id), { viewCount: increment(1) })
-    }
-  }, [db, id])
-
   const handleAddAnswer = (nickname: string, title: string, text: string) => {
     if (!db || !id || !user || !question) return
 
