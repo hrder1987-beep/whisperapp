@@ -190,6 +190,12 @@ export interface PremiumAd {
   link: string;
 }
 
+export interface AnnouncementData {
+  id: string | number;
+  text: string;
+  link: string;
+}
+
 export interface SiteBranding {
   homeTitle: string;
   homeSubtitle: string;
@@ -202,8 +208,10 @@ export interface SiteBranding {
   jobTitle: string;
   jobSubtitle: string;
   bannerAutoSlideDuration?: number;
-  announcementText?: string;
-  announcementLink?: string;
+  announcements?: AnnouncementData[];
+  announcementAutoSlideDuration?: number;
+  announcementText?: string; // 하위 호환용
+  announcementLink?: string; // 하위 호환용
   footerCompany?: string;
   footerAddress?: string;
   footerEmail?: string;

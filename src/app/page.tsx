@@ -9,16 +9,16 @@ import { QuestionFeed } from "@/components/whisper/QuestionFeed"
 import { RankingList } from "@/components/whisper/RankingList"
 import { WhisperChat } from "@/components/whisper/WhisperChat"
 import { PremiumAds } from "@/components/whisper/PremiumAds"
+import { AnnouncementBar } from "@/components/whisper/AnnouncementBar"
 import { Question, Answer, PremiumAd, SiteBranding } from "@/lib/types"
 import { Button } from "@/components/ui/button"
-import { Sparkles, ChevronsLeft, ChevronsRight, Megaphone, ChevronRight } from "lucide-react"
+import { Sparkles, ChevronsLeft, ChevronsRight } from "lucide-react"
 import { generateAiReply } from "@/ai/flows/generate-ai-reply-flow"
 import { cn } from "@/lib/utils"
 import { useFirestore, useCollection, useDoc, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking, useUser } from "@/firebase"
 import { collection, query, orderBy, doc, increment } from "firebase/firestore"
 import mockData from "@/lib/mock-data.json"
 import { useSearchParams } from "next/navigation"
-import Link from "next/link"
 
 const ITEMS_PER_PAGE = 5 
 
@@ -158,20 +158,25 @@ function HomePageContent() {
     setSelectedId(id === selectedId ? null : id);
   }
 
+  // 멀티 공지사항 지원을 위한 데이터 가공
+  const announcements = useMemo(() => {
+    if (branding?.announcements && branding.announcements.length > 0) {
+      return branding.announcements;
+    }
+    if (branding?.announcementText) {
+      return [{ id: 'legacy', text: branding.announcementText, link: branding.announcementLink || "#" }];
+    }
+    return [];
+  }, [branding]);
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
       <main className="lg:col-span-8 space-y-6 md:space-y-8">
-        {branding?.announcementText && (
-          <Link href={branding.announcementLink || "#"} className="block">
-            <div className="bg-primary/10 border border-primary/20 p-4 rounded-2xl flex items-center justify-between group hover:bg-primary/20 transition-all">
-              <div className="flex items-center gap-3">
-                <Megaphone className="w-5 h-5 text-primary animate-bounce" />
-                <span className="text-sm font-black text-accent truncate">{branding.announcementText}</span>
-              </div>
-              <ChevronRight className="w-4 h-4 text-accent/30 group-hover:translate-x-1 transition-transform" />
-            </div>
-          </Link>
-        )}
+        <AnnouncementBar 
+          announcements={announcements} 
+          duration={branding?.announcementAutoSlideDuration || 4} 
+        />
+        
         <MainBanner banners={banners} autoSlideDuration={branding?.bannerAutoSlideDuration || 3} />
         <SubmissionForm type="question" placeholder={branding?.homeTitle ? `${branding.homeTitle}에서 고민을 나눠보세요` : "HR 고민을 속삭여보세요."} onSubmit={handleAddQuestion} />
         
