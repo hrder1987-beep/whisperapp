@@ -236,31 +236,30 @@ export function QuestionFeed({
                   </div>
                 )}
               </CardContent>
-              {!isExpanded && (
-                <CardFooter className="px-5 md:px-8 py-3 md:py-4 border-t border-primary/5 flex items-center justify-between bg-primary/[0.01]">
-                  <div className="flex gap-6 md:gap-8">
-                    <button 
-                      onClick={(e) => handleLike(e, q)}
-                      className={cn(
-                        "flex items-center gap-1.5 text-[11px] md:text-xs font-black transition-all hover:scale-110",
-                        isLiked ? "text-primary" : "text-accent/60 hover:text-primary"
-                      )}
-                    >
-                      <ThumbsUp className={cn("w-4 h-4", isLiked && "fill-primary")} />
-                      <span>{q.likeCount?.toLocaleString() || 0}</span>
-                    </button>
-                    <div className="flex items-center gap-1.5 text-[11px] md:text-xs font-black text-accent/60">
-                      <MessageCircle className="w-4 h-4 text-primary" />
-                      <span>답변 {q.answerCount.toLocaleString()}</span>
-                    </div>
-                    <button onClick={(e) => { e.stopPropagation(); handleShare(q); }} className="flex items-center gap-1.5 text-[11px] md:text-xs font-black text-accent/60 hover:text-accent transition-all group/share">
-                      <Share2 className="w-4 h-4" />
-                      공유
-                    </button>
+              
+              <CardFooter className="px-5 md:px-8 py-3 md:py-4 border-t border-primary/5 flex items-center justify-between bg-primary/[0.01]">
+                <div className="flex gap-6 md:gap-8">
+                  <button 
+                    onClick={(e) => handleLike(e, q)}
+                    className={cn(
+                      "flex items-center gap-1.5 text-[11px] md:text-xs font-black transition-all hover:scale-110",
+                      isLiked ? "text-primary" : "text-accent/60 hover:text-primary"
+                    )}
+                  >
+                    <ThumbsUp className={cn("w-4 h-4", isLiked && "fill-primary")} />
+                    <span>{q.likeCount?.toLocaleString() || 0}</span>
+                  </button>
+                  <div className="flex items-center gap-1.5 text-[11px] md:text-xs font-black text-accent/60">
+                    <MessageCircle className="w-4 h-4 text-primary" />
+                    <span>답변 {q.answerCount.toLocaleString()}</span>
                   </div>
-                  <Bookmark className="w-4.5 h-4.5 text-accent/10 hover:text-primary cursor-pointer transition-all" />
-                </CardFooter>
-              )}
+                  <button onClick={(e) => { e.stopPropagation(); handleShare(q); }} className="flex items-center gap-1.5 text-[11px] md:text-xs font-black text-accent/60 hover:text-accent transition-all group/share">
+                    <Share2 className="w-4 h-4" />
+                    공유
+                  </button>
+                </div>
+                <Bookmark className="w-4.5 h-4.5 text-accent/10 hover:text-primary cursor-pointer transition-all" />
+              </CardFooter>
             </Card>
           )
         })
