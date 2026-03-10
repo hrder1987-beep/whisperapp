@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useRef, useEffect } from "react"
@@ -99,12 +98,12 @@ export function SubmissionForm({ onSubmit, type, placeholder }: SubmissionFormPr
   return (
     <Card className={cn(
       "mb-10 overflow-hidden bg-white border-none transition-all duration-500",
-      type === "question" ? "shadow-[0_30px_70px_-10px_rgba(0,43,91,0.2)] ring-1 ring-primary/30 scale-[1.01]" : "shadow-xl"
+      type === "question" ? "shadow-[0_30px_70px_-10px_rgba(0,43,91,0.25)] ring-1 ring-primary/40 scale-[1.01]" : "shadow-xl"
     )}>
       {type === "question" && <div className="h-2 w-full gold-gradient opacity-90"></div>}
       
       <CardContent className="p-0">
-        <form onSubmit={handleSubmit} onClick={() => !user && handleInteraction()}>
+        <form onSubmit={handleSubmit} onClick={() => !user && handleInteraction()} className={cn(type === "question" && "bg-[#FBFBFC]")}>
           <div className="p-6 md:p-10 space-y-6">
             {type === "question" && (
               <div className="space-y-4">
@@ -115,18 +114,18 @@ export function SubmissionForm({ onSubmit, type, placeholder }: SubmissionFormPr
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
                       readOnly={!user}
-                      className="border-none shadow-none focus-visible:ring-0 text-base md:text-xl font-black h-auto placeholder:text-accent/40 text-accent bg-transparent outline-none px-0 tracking-tight"
+                      className="border-none shadow-none focus-visible:ring-0 text-base md:text-xl font-black h-auto placeholder:text-accent/50 text-accent bg-transparent outline-none px-0 tracking-tight"
                     />
                   </div>
-                  <div className="w-full sm:w-40 shrink-0">
+                  <div className="w-full sm:w-44 shrink-0">
                     <Select value={selectedCategory || ""} onValueChange={(val) => user ? setSelectedCategory(val) : handleInteraction()}>
                       <SelectTrigger className={cn(
-                        "h-10 border-none rounded-xl font-black text-[11px] px-4 transition-all shadow-sm",
-                        selectedCategory ? "bg-primary text-accent" : "bg-accent/5 text-accent/50"
+                        "h-11 border-none rounded-xl font-black text-[11px] px-4 transition-all shadow-md",
+                        selectedCategory ? "bg-primary text-accent" : "bg-accent/10 text-accent/60"
                       )}>
                         <div className="flex items-center gap-2">
-                          <Sparkles className={cn("w-3 h-3", selectedCategory ? "text-accent" : "text-accent/30")} />
-                          <SelectValue placeholder="카테고리 선택" />
+                          <Sparkles className={cn("w-3.5 h-3.5", selectedCategory ? "text-accent" : "text-accent/30")} />
+                          <SelectValue placeholder="카테고리 필수 선택" />
                         </div>
                       </SelectTrigger>
                       <SelectContent className="bg-white border-black/5 rounded-2xl shadow-4xl p-2 animate-in fade-in zoom-in-95 duration-200">
@@ -150,12 +149,12 @@ export function SubmissionForm({ onSubmit, type, placeholder }: SubmissionFormPr
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 readOnly={!user}
-                className="min-h-[100px] md:min-h-[120px] border-none shadow-none focus-visible:ring-0 py-2 text-sm md:text-base leading-relaxed resize-none text-[#333] placeholder:text-accent/40 bg-transparent outline-none font-medium px-0"
+                className="min-h-[100px] md:min-h-[120px] border-none shadow-none focus-visible:ring-0 py-2 text-sm md:text-base leading-relaxed resize-none text-[#333] placeholder:text-accent/50 bg-transparent outline-none font-medium px-0"
               />
             </div>
 
             {showVideoInput && (
-              <div className="bg-primary/5 p-4 rounded-2xl border border-primary/10 animate-in slide-in-from-top-2 duration-300">
+              <div className="bg-primary/10 p-4 rounded-2xl border border-primary/20 animate-in slide-in-from-top-2 duration-300">
                 <div className="flex items-center gap-4">
                   <div className="bg-white p-2 rounded-lg shadow-sm"><Youtube className="w-5 h-5 text-[#FF0000]" /></div>
                   <Input 
@@ -197,11 +196,11 @@ export function SubmissionForm({ onSubmit, type, placeholder }: SubmissionFormPr
                   reader.readAsDataURL(file);
                 }
               }} />
-              <Button type="button" variant="ghost" className="h-10 text-accent/50 gap-2 hover:text-accent hover:bg-primary/20 font-black px-3 rounded-xl transition-all" onClick={() => user ? fileInputRef.current?.click() : handleInteraction()}>
+              <Button type="button" variant="ghost" className="h-10 text-accent/60 gap-2 hover:text-accent hover:bg-primary/30 font-black px-3 rounded-xl transition-all" onClick={() => user ? fileInputRef.current?.click() : handleInteraction()}>
                 <ImageIcon className="w-4 h-4" />
                 <span className="text-[12px] hidden sm:inline">사진</span>
               </Button>
-              <Button type="button" variant="ghost" className="h-10 text-accent/50 gap-2 hover:text-accent hover:bg-primary/20 font-black px-3 rounded-xl transition-all" onClick={() => user ? setShowVideoInput(!showVideoInput) : handleInteraction()}>
+              <Button type="button" variant="ghost" className="h-10 text-accent/60 gap-2 hover:text-accent hover:bg-primary/30 font-black px-3 rounded-xl transition-all" onClick={() => user ? setShowVideoInput(!showVideoInput) : handleInteraction()}>
                 <Video className="w-4 h-4" />
                 <span className="text-[12px] hidden sm:inline">영상</span>
               </Button>
@@ -210,10 +209,10 @@ export function SubmissionForm({ onSubmit, type, placeholder }: SubmissionFormPr
             <Button 
               type="submit" 
               disabled={isSubmitting || !text.trim()} 
-              className="naver-button h-11 md:h-12 px-6 md:px-10 text-sm md:text-base gap-3 shadow-2xl hover:scale-[1.03] active:scale-95"
+              className="naver-button h-11 md:h-12 px-6 md:px-10 text-sm md:text-base gap-3 shadow-2xl hover:scale-[1.03] active:scale-95 text-white"
             >
-              <span className="font-black">{isSubmitting ? "전송 중..." : type === "question" ? "지식 속삭임 등록" : "지혜 더하기"}</span>
-              <Send className="w-4 h-4 md:w-5 md:h-5" />
+              <span className="font-black text-white">{isSubmitting ? "전송 중..." : type === "question" ? "지식 속삭임 등록" : "지혜 더하기"}</span>
+              <Send className="w-4 h-4 md:w-5 md:h-5 text-white" />
             </Button>
           </div>
         </form>
