@@ -18,15 +18,13 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: 'Whisper (위스퍼) - HR Intelligence Hub',
   description: 'HR실무자들의 품격 있는 속삭임. 교육부터 조직문화, 인사전략까지 HR 전문가를 위한 지식 허브 Whisper',
-  // --- 추가된 내용 ---
   keywords: ['HR', '인사', '인사담당자', 'HR실무자', '조직문화', '인사전략', '교육', 'HRM', 'HRD', '위스퍼', 'whisper'],
   verification: {
-    google: '여기에-구글-인증-코드를-붙여넣으세요',
+    google: 'aY-IkLVk5LpUKx6cf7w_xu9jE_Q1Gv_5qYhx4',
     other: {
       'naver-site-verification': '여기에-네이버-인증-코드를-붙여넣으세요',
     },
   },
-  // --- 여기까지 ---
   metadataBase: new URL(SITE_URL),
   appleWebApp: {
     capable: true,
