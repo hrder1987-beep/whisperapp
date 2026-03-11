@@ -12,7 +12,7 @@ import { PremiumAds } from "@/components/whisper/PremiumAds"
 import { AnnouncementBar } from "@/components/whisper/AnnouncementBar"
 import { Question, Answer, PremiumAd, SiteBranding } from "@/lib/types"
 import { Button } from "@/components/ui/button"
-import { Sparkles, ChevronsLeft, ChevronsRight } from "lucide-react"
+import { Sparkles, ChevronsLeft, ChevronsRight, Edit3, X } from "lucide-react"
 import { generateAiReply } from "@/ai/flows/generate-ai-reply-flow"
 import { cn } from "@/lib/utils"
 import { useFirestore, useCollection, useDoc, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking, useUser } from "@/firebase"
@@ -33,6 +33,7 @@ function HomePageContent() {
   const [activeTab, setActiveTab] = useState<"all" | "hrm" | "hrd" | "culture" | "popular">("all")
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
+  const [isFormOpen, setIsFormOpen] = useState(false)
 
   const questionsQuery = useMemoFirebase(() => db ? query(collection(db, "questions"), orderBy("createdAt", "desc")) : null, [db])
   const { data: dbQuestions } = useCollection<Question>(questionsQuery)
@@ -126,6 +127,8 @@ function HomePageContent() {
         });
       }
     });
+    // 작성 후 폼 닫기
+    setIsFormOpen(false);
   }
 
   const handleAddAnswer = (nickname: string, title: string, text: string, imageUrl?: string, videoUrl?: string, category?: string, jobRole?: string) => {
@@ -158,7 +161,6 @@ function HomePageContent() {
     setSelectedId(id === selectedId ? null : id);
   }
 
-  // 멀티 공지사항 지원을 위한 데이터 가공 (방어 코드 추가)
   const announcements = useMemo(() => {
     if (branding?.announcements && Array.isArray(branding.announcements) && branding.announcements.length > 0) {
       return branding.announcements;
@@ -178,13 +180,48 @@ function HomePageContent() {
         />
         
         <MainBanner banners={banners} autoSlideDuration={branding?.bannerAutoSlideDuration || 3} />
-        <SubmissionForm type="question" placeholder={branding?.homeTitle ? `${branding.homeTitle}에서 고민을 나눠보세요` : "HR 고민을 속삭여보세요."} onSubmit={handleAddQuestion} />
         
-        <div className="flex flex-nowrap overflow-x-auto scrollbar-hide gap-x-6 pb-2 border-b border-black/[0.05]">
-          {[{ id: "all", label: "전체 피드" }, { id: "hrm", label: "인사/총무" }, { id: "hrd", label: "HRD/교육" }, { id: "culture", label: "조직문화" }, { id: "popular", label: "인기" }].map(t => (
-            <button key={t.id} onClick={() => setActiveTab(t.id as any)} className={cn("pb-3 text-[15px] transition-all border-b-2 whitespace-nowrap shrink-0", activeTab === t.id ? "font-black text-primary border-accent" : "font-bold text-accent/40 border-transparent hover:text-accent/60")}>{t.label}</button>
-          ))}
+        {/* 지식 탭 및 글쓰기 버튼 고정 바 */}
+        <div className="flex items-center justify-between border-b border-black/[0.05] sticky top-16 md:top-[88px] z-30 bg-[#F8F9FA]/95 backdrop-blur-xl pt-4 -mx-2 px-2 transition-all">
+          <div className="flex flex-nowrap overflow-x-auto scrollbar-hide gap-x-6 pb-2">
+            {[{ id: "all", label: "전체 피드" }, { id: "hrm", label: "인사/총무" }, { id: "hrd", label: "HRD/교육" }, { id: "culture", label: "조직문화" }, { id: "popular", label: "인기" }].map(t => (
+              <button 
+                key={t.id} 
+                onClick={() => setActiveTab(t.id as any)} 
+                className={cn(
+                  "pb-3 text-[14px] md:text-[15px] transition-all border-b-2 whitespace-nowrap shrink-0", 
+                  activeTab === t.id ? "font-black text-primary border-accent" : "font-bold text-accent/40 border-transparent hover:text-accent/60"
+                )}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+          
+          <Button 
+            onClick={() => setIsFormOpen(!isFormOpen)}
+            className={cn(
+              "h-10 px-5 md:px-7 rounded-full font-black text-[12px] md:text-sm gap-2 transition-all shrink-0 mb-3 shadow-2xl hover:scale-105 active:scale-95",
+              isFormOpen 
+                ? "bg-accent text-primary ring-2 ring-primary/20" 
+                : "gold-gradient text-primary border-none"
+            )}
+          >
+            {isFormOpen ? <X className="w-4 h-4" /> : <Edit3 className="w-4 h-4" />}
+            <span>{isFormOpen ? "닫기" : "글쓰기"}</span>
+          </Button>
         </div>
+
+        {/* 조건부 노출되는 작성란 */}
+        {isFormOpen && (
+          <div className="animate-in fade-in slide-in-from-top-4 duration-500 mb-8">
+            <SubmissionForm 
+              type="question" 
+              placeholder={branding?.homeTitle ? `${branding.homeTitle}에서 고민을 나눠보세요` : "HR 고민을 속삭여보세요."} 
+              onSubmit={handleAddQuestion} 
+            />
+          </div>
+        )}
 
         <QuestionFeed 
           questions={paginated} 
