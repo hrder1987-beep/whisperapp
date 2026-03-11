@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
   <channel>
-    <title>Whisper</title>
+    <title>Whisper: HR 전문가를 위한 지식 플랫폼</title>
     <link>https://whisperapp.kr</link>
-    <description>당신의 생각을 속삭여주세요.</description>
+    <description>대한민국 최고의 HR 전문가들을 위한 집단지성 플랫폼. 조직문화, 기업교육, 인사전략, 인사총무 등 실무 지식과 고민을 나누세요.</description>
     <language>ko</language>
     <item>
-      <title>Whisper: 당신의 생각을 속삭여주세요</title>
+      <title>Whisper: HR 전문가들의 지식 허브</title>
       <link>https://whisperapp.kr/</link>
-      <description>Whisper에 오신 것을 환영합니다. 당신의 지혜와 경험을 공유하고, 새로운 기회를 발견하세요.</description>
+      <description>Whisper는 조직문화, 기업교육, 인사전략, 인사총무 등 현업의 지혜가 필요한 HR 전문가들을 위한 커뮤니티입니다. 당신의 지혜와 경험을 공유하고, 새로운 기회를 발견하세요.</description>
       <pubDate>Tue, 28 May 2024 00:00:00 GMT</pubDate>
       <guid>https://whisperapp.kr/</guid>
     </item>
