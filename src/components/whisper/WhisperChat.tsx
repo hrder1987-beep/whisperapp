@@ -123,7 +123,7 @@ function ChatInterface({ messages, input, setInput, isLoading, handleSend, isExp
             onChange={(e) => setInput(e.target.value)} 
             onKeyDown={(e) => e.key === 'Enter' && handleSend()} 
             disabled={isLoading} 
-            className="flex-1 border-none bg-[#F5F6F7] focus-visible:ring-primary/20 h-12 md:h-16 text-[12px] md:text-[15px] font-bold md:font-black rounded-xl md:rounded-2xl px-3 md:px-6 placeholder:text-accent/20 shadow-inner min-w-0" 
+            className="flex-1 border-none bg-[#F5F6F7] focus-visible:ring-primary/20 h-12 md:h-16 text-[13px] md:text-[15px] font-bold md:font-black rounded-xl md:rounded-2xl px-2.5 md:px-6 placeholder:text-[3.2vw] sm:placeholder:text-[14px] placeholder:font-black placeholder:text-accent/30 shadow-inner min-w-0" 
           />
           <Button size="icon" onClick={handleSend} disabled={!input.trim() || isLoading} className="naver-button h-12 w-12 md:h-16 md:w-16 shrink-0 shadow-2xl rounded-xl md:rounded-2xl active:scale-95 transition-all">
             <Send className="w-4 h-4 md:w-6 md:h-6" />
@@ -136,7 +136,6 @@ function ChatInterface({ messages, input, setInput, isLoading, handleSend, isExp
 
 export function WhisperChat({ forceOpenTrigger, onTriggerClose, hideCard = false }: any) {
   const db = useFirestore()
-  const [activeBot] = useState<BotType>("whisperra") // Default or handled by tabs
   const [activeBotState, setActiveBotState] = useState<BotType>("whisperra")
   const activeBotConfigRef = useMemoFirebase(() => db ? doc(db, "admin_configuration", `bot_${activeBotState}`) : null, [db, activeBotState])
   const { data: botConfig } = useDoc<any>(activeBotConfigRef)

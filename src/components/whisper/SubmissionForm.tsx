@@ -115,18 +115,18 @@ export function SubmissionForm({ onSubmit, type, placeholder }: SubmissionFormPr
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
                       readOnly={!user}
-                      className="border-none shadow-none focus-visible:ring-0 text-base md:text-xl font-black h-auto placeholder:text-accent/40 text-accent bg-transparent outline-none px-0 tracking-tight"
+                      className="border-none shadow-none focus-visible:ring-0 text-base md:text-xl font-black h-auto placeholder:text-[3.5vw] sm:placeholder:text-[18px] placeholder:font-black placeholder:text-accent/50 text-accent bg-transparent outline-none px-0 tracking-tight"
                     />
                   </div>
-                  <div className="w-full sm:w-40 shrink-0">
+                  <div className="w-full sm:w-44 shrink-0">
                     <Select value={selectedCategory || ""} onValueChange={(val) => user ? setSelectedCategory(val) : handleInteraction()}>
                       <SelectTrigger className={cn(
-                        "h-10 md:h-11 border-none rounded-xl font-black text-[10px] md:text-[11px] px-3 md:px-4 transition-all shadow-sm",
-                        selectedCategory ? "bg-primary text-accent" : "bg-accent/5 text-accent/40"
+                        "h-10 md:h-11 border-none rounded-xl font-black text-[11px] md:text-[12px] px-3 md:px-4 transition-all shadow-sm",
+                        selectedCategory ? "bg-primary text-accent" : "bg-accent/10 text-accent/60"
                       )}>
                         <div className="flex items-center gap-2 truncate">
-                          <Sparkles className={cn("w-3 h-3 md:w-3.5 md:h-3.5 shrink-0", selectedCategory ? "text-accent" : "text-accent/20")} />
-                          <SelectValue placeholder="카테고리 선택" />
+                          <Sparkles className={cn("w-3.5 h-3.5 md:w-4 md:h-4 shrink-0", selectedCategory ? "text-accent" : "text-accent/30")} />
+                          <SelectValue placeholder="카테고리 선택" className="truncate" />
                         </div>
                       </SelectTrigger>
                       <SelectContent className="bg-white border-black/5 rounded-2xl shadow-4xl p-1 animate-in fade-in zoom-in-95 duration-200">
@@ -139,7 +139,7 @@ export function SubmissionForm({ onSubmit, type, placeholder }: SubmissionFormPr
                     </Select>
                   </div>
                 </div>
-                <div className="h-px bg-accent/5"></div>
+                <div className="h-px bg-accent/10"></div>
               </div>
             )}
             
@@ -150,7 +150,7 @@ export function SubmissionForm({ onSubmit, type, placeholder }: SubmissionFormPr
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 readOnly={!user}
-                className="min-h-[80px] md:min-h-[120px] border-none shadow-none focus-visible:ring-0 py-1 text-[14px] md:text-base leading-relaxed resize-none text-[#333] placeholder:text-accent/40 bg-transparent outline-none font-medium px-0 break-words"
+                className="min-h-[80px] md:min-h-[120px] border-none shadow-none focus-visible:ring-0 py-1 text-[14px] md:text-base leading-relaxed resize-none text-[#333] placeholder:text-[3.2vw] sm:placeholder:text-[15px] placeholder:font-bold placeholder:text-accent/50 bg-transparent outline-none font-medium px-0 break-words"
               />
             </div>
 
