@@ -123,7 +123,7 @@ function ChatInterface({ messages, input, setInput, isLoading, handleSend, isExp
             onChange={(e) => setInput(e.target.value)} 
             onKeyDown={(e) => e.key === 'Enter' && handleSend()} 
             disabled={isLoading} 
-            className="flex-1 border-none bg-[#F5F6F7] focus-visible:ring-primary/20 h-12 md:h-16 text-[13px] md:text-[15px] font-black rounded-xl md:rounded-2xl px-4 md:px-6 placeholder:text-accent/20 shadow-inner" 
+            className="flex-1 border-none bg-[#F5F6F7] focus-visible:ring-primary/20 h-12 md:h-16 text-[12px] md:text-[15px] font-bold md:font-black rounded-xl md:rounded-2xl px-3 md:px-6 placeholder:text-accent/20 shadow-inner min-w-0" 
           />
           <Button size="icon" onClick={handleSend} disabled={!input.trim() || isLoading} className="naver-button h-12 w-12 md:h-16 md:w-16 shrink-0 shadow-2xl rounded-xl md:rounded-2xl active:scale-95 transition-all">
             <Send className="w-4 h-4 md:w-6 md:h-6" />
@@ -136,8 +136,9 @@ function ChatInterface({ messages, input, setInput, isLoading, handleSend, isExp
 
 export function WhisperChat({ forceOpenTrigger, onTriggerClose, hideCard = false }: any) {
   const db = useFirestore()
-  const [activeBot, setActiveBot] = useState<BotType>("whisperra")
-  const activeBotConfigRef = useMemoFirebase(() => db ? doc(db, "admin_configuration", `bot_${activeBot}`) : null, [db, activeBot])
+  const [activeBot] = useState<BotType>("whisperra") // Default or handled by tabs
+  const [activeBotState, setActiveBotState] = useState<BotType>("whisperra")
+  const activeBotConfigRef = useMemoFirebase(() => db ? doc(db, "admin_configuration", `bot_${activeBotState}`) : null, [db, activeBotState])
   const { data: botConfig } = useDoc<any>(activeBotConfigRef)
   const [conversations, setConversations] = useState<Record<BotType, Message[]>>({ whisperra: [], aldi: [], dongsan: [] })
   const [input, setInput] = useState("")
@@ -145,12 +146,12 @@ export function WhisperChat({ forceOpenTrigger, onTriggerClose, hideCard = false
   const [isFocused, setIsFocused] = useState(false)
 
   useEffect(() => {
-    const currentIntro = botConfig?.intro || DEFAULT_BOT_INFO[activeBot].intro
+    const currentIntro = botConfig?.intro || DEFAULT_BOT_INFO[activeBotState].intro
     setConversations(prev => ({
       ...prev,
-      [activeBot]: prev[activeBot].length > 0 ? prev[activeBot] : [{ role: "bot", text: currentIntro }]
+      [activeBotState]: prev[activeBotState].length > 0 ? prev[activeBotState] : [{ role: "bot", text: currentIntro }]
     }))
-  }, [botConfig, activeBot])
+  }, [botConfig, activeBotState])
 
   useEffect(() => {
     if (forceOpenTrigger) {
@@ -162,7 +163,7 @@ export function WhisperChat({ forceOpenTrigger, onTriggerClose, hideCard = false
   const handleSend = async () => {
     if (!input.trim() || isLoading) return
     const userMsg = input.trim()
-    const currentBot = activeBot
+    const currentBot = activeBotState
     setConversations(prev => ({
       ...prev,
       [currentBot]: [...prev[currentBot], { role: "user", text: userMsg }]
@@ -186,10 +187,10 @@ export function WhisperChat({ forceOpenTrigger, onTriggerClose, hideCard = false
   }
 
   const handleReset = () => {
-    const currentIntro = botConfig?.intro || DEFAULT_BOT_INFO[activeBot].intro
+    const currentIntro = botConfig?.intro || DEFAULT_BOT_INFO[activeBotState].intro
     setConversations(prev => ({
       ...prev,
-      [activeBot]: [{ role: "bot", text: currentIntro }]
+      [activeBotState]: [{ role: "bot", text: currentIntro }]
     }))
   }
 
@@ -198,13 +199,13 @@ export function WhisperChat({ forceOpenTrigger, onTriggerClose, hideCard = false
       {!hideCard && (
         <Card className="naver-card flex flex-col h-[500px] md:h-[550px] overflow-hidden shadow-2xl border-primary/20 animate-in fade-in slide-in-from-bottom-4 duration-1000">
           <ChatInterface 
-            messages={conversations[activeBot]} 
+            messages={conversations[activeBotState]} 
             input={input} 
             setInput={setInput} 
             isLoading={isLoading} 
             handleSend={handleSend} 
-            activeBot={activeBot} 
-            onBotChange={setActiveBot} 
+            activeBot={activeBotState} 
+            onBotChange={setActiveBotState} 
             onClose={() => setIsFocused(true)} 
             botConfig={botConfig} 
             onReset={handleReset}
@@ -217,14 +218,14 @@ export function WhisperChat({ forceOpenTrigger, onTriggerClose, hideCard = false
             <DialogTitle>AI 전문가 실시간 상담</DialogTitle>
           </DialogHeader>
           <ChatInterface 
-            messages={conversations[activeBot]} 
+            messages={conversations[activeBotState]} 
             input={input} 
             setInput={setInput} 
             isLoading={isLoading} 
             handleSend={handleSend} 
             isExpanded 
-            activeBot={activeBot} 
-            onBotChange={setActiveBot} 
+            activeBot={activeBotState} 
+            onBotChange={setActiveBotState} 
             onClose={() => setIsFocused(false)} 
             botConfig={botConfig} 
             onReset={handleReset}

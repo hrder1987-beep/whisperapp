@@ -42,9 +42,16 @@
   }
 }
 
-/* 전역 텍스트 줄바꿈 방어 */
+/* 전역 텍스트 줄바꿈 방어 - 한글 가독성 중심 */
 p, span, h1, h2, h3, h4, h5, h6 {
-  @apply text-[#001F3F] break-words;
+  @apply text-[#001F3F];
+  overflow-wrap: break-word;
+  word-break: keep-all; /* 단어 단위 줄바꿈으로 한글 가독성 향상 */
+}
+
+/* 긴 영문이나 URL은 예외적으로 강제 줄바꿈 */
+.break-all {
+  word-break: break-all;
 }
 
 /* 버튼 내부의 span은 부모의 text-color를 따르도록 설정 */
@@ -57,7 +64,7 @@ button span {
 }
 
 .naver-search-bar {
-  @apply border-2 border-primary bg-white rounded-2xl flex items-center px-4 transition-all focus-within:shadow-[0_8px_30px_rgb(0,43,91,0.1)] focus-within:border-accent outline-none;
+  @apply border-2 border-primary bg-white rounded-2xl flex items-center px-4 transition-all focus-within:shadow-[0_8px_30px_rgb(0,43,91,0.15)] focus-within:border-accent outline-none;
 }
 
 .naver-card {
