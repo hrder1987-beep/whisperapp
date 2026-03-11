@@ -99,7 +99,7 @@ export function SubmissionForm({ onSubmit, type, placeholder }: SubmissionFormPr
   return (
     <Card className={cn(
       "mb-6 md:mb-10 overflow-hidden bg-white border-none transition-all duration-500",
-      type === "question" ? "shadow-[0_20px_50px_-10px_rgba(0,43,91,0.15)] ring-1 ring-primary/20 scale-[1.005] md:scale-[1.01]" : "shadow-lg"
+      type === "question" ? "shadow-[0_20px_50px_-10px_rgba(0,43,91,0.15)] ring-1 ring-primary/20" : "shadow-lg"
     )}>
       {type === "question" && <div className="h-1.5 md:h-2 w-full gold-gradient opacity-90"></div>}
       

@@ -46,7 +46,7 @@
 p, span, h1, h2, h3, h4, h5, h6 {
   @apply text-[#001F3F];
   overflow-wrap: break-word;
-  word-break: keep-all; /* 단어 단위 줄바꿈으로 한글 가독성 향상 */
+  word-break: keep-all; 
 }
 
 /* 긴 영문이나 URL은 예외적으로 강제 줄바꿈 */
