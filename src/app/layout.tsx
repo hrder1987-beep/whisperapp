@@ -51,7 +51,7 @@ export const metadata: Metadata = {
   },
   // 4. 브라우저 탭 아이콘(파비콘) 설정 추가
   icons: {
-    icon: "/logo.svg", 
+    icon: "/whisper_logo.svg", 
   },
 };
 
