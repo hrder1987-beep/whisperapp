@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -37,12 +38,13 @@
     @apply bg-[#F5F7FA] text-[#1E1E23] font-body antialiased;
     -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
+    overflow-x: hidden;
   }
 }
 
-/* 텍스트 컬러 기본 설정: 버튼 내부의 span 등은 제외하여 가시성 확보 */
-p, label, h1, h2, h3, h4, h5, h6 {
-  @apply text-[#001F3F];
+/* 전역 텍스트 줄바꿈 방어 */
+p, span, h1, h2, h3, h4, h5, h6 {
+  @apply text-[#001F3F] break-words;
 }
 
 /* 버튼 내부의 span은 부모의 text-color를 따르도록 설정 */
@@ -92,4 +94,10 @@ input:focus, textarea:focus {
 
 .shadow-3xl {
   box-shadow: 0 20px 40px -12px rgba(0, 43, 91, 0.1), 0 10px 20px -5px rgba(0, 43, 91, 0.04);
+}
+
+@media (max-width: 640px) {
+  :root {
+    --radius: 1rem;
+  }
 }

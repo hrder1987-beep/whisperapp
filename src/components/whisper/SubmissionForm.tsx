@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useRef, useEffect } from "react"
@@ -97,40 +98,40 @@ export function SubmissionForm({ onSubmit, type, placeholder }: SubmissionFormPr
 
   return (
     <Card className={cn(
-      "mb-10 overflow-hidden bg-white border-none transition-all duration-500",
-      type === "question" ? "shadow-[0_30px_70px_-10px_rgba(0,43,91,0.25)] ring-1 ring-primary/40 scale-[1.01]" : "shadow-xl"
+      "mb-6 md:mb-10 overflow-hidden bg-white border-none transition-all duration-500",
+      type === "question" ? "shadow-[0_20px_50px_-10px_rgba(0,43,91,0.15)] ring-1 ring-primary/20 scale-[1.005] md:scale-[1.01]" : "shadow-lg"
     )}>
-      {type === "question" && <div className="h-2 w-full gold-gradient opacity-90"></div>}
+      {type === "question" && <div className="h-1.5 md:h-2 w-full gold-gradient opacity-90"></div>}
       
       <CardContent className="p-0">
         <form onSubmit={handleSubmit} onClick={() => !user && handleInteraction()} className={cn(type === "question" && "bg-[#FBFBFC]")}>
-          <div className="p-6 md:p-10 space-y-6">
+          <div className="p-5 md:p-10 space-y-5 md:space-y-6">
             {type === "question" && (
               <div className="space-y-4">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                  <div className="flex-1 w-full">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
+                  <div className="flex-1 min-w-0">
                     <Input
-                      placeholder="이곳에 주제나 고민의 제목을 입력하세요"
+                      placeholder="주제나 고민의 제목을 입력하세요"
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
                       readOnly={!user}
-                      className="border-none shadow-none focus-visible:ring-0 text-base md:text-xl font-black h-auto placeholder:text-accent/50 text-accent bg-transparent outline-none px-0 tracking-tight"
+                      className="border-none shadow-none focus-visible:ring-0 text-base md:text-xl font-black h-auto placeholder:text-accent/40 text-accent bg-transparent outline-none px-0 tracking-tight"
                     />
                   </div>
-                  <div className="w-full sm:w-44 shrink-0">
+                  <div className="w-full sm:w-40 shrink-0">
                     <Select value={selectedCategory || ""} onValueChange={(val) => user ? setSelectedCategory(val) : handleInteraction()}>
                       <SelectTrigger className={cn(
-                        "h-11 border-none rounded-xl font-black text-[11px] px-4 transition-all shadow-md",
-                        selectedCategory ? "bg-primary text-accent" : "bg-accent/10 text-accent/60"
+                        "h-10 md:h-11 border-none rounded-xl font-black text-[10px] md:text-[11px] px-3 md:px-4 transition-all shadow-sm",
+                        selectedCategory ? "bg-primary text-accent" : "bg-accent/5 text-accent/40"
                       )}>
-                        <div className="flex items-center gap-2">
-                          <Sparkles className={cn("w-3.5 h-3.5", selectedCategory ? "text-accent" : "text-accent/30")} />
-                          <SelectValue placeholder="카테고리 필수 선택" />
+                        <div className="flex items-center gap-2 truncate">
+                          <Sparkles className={cn("w-3 h-3 md:w-3.5 md:h-3.5 shrink-0", selectedCategory ? "text-accent" : "text-accent/20")} />
+                          <SelectValue placeholder="카테고리 선택" />
                         </div>
                       </SelectTrigger>
-                      <SelectContent className="bg-white border-black/5 rounded-2xl shadow-4xl p-2 animate-in fade-in zoom-in-95 duration-200">
+                      <SelectContent className="bg-white border-black/5 rounded-2xl shadow-4xl p-1 animate-in fade-in zoom-in-95 duration-200">
                         {HR_CATEGORIES.map((cat) => (
-                          <SelectItem key={cat} value={cat} className="text-xs font-bold py-3 focus:bg-primary focus:text-accent transition-all cursor-pointer rounded-xl px-4">
+                          <SelectItem key={cat} value={cat} className="text-[11px] md:text-xs font-bold py-2.5 md:py-3 focus:bg-primary focus:text-accent transition-all cursor-pointer rounded-xl px-3 md:px-4">
                             {cat}
                           </SelectItem>
                         ))}
@@ -138,7 +139,7 @@ export function SubmissionForm({ onSubmit, type, placeholder }: SubmissionFormPr
                     </Select>
                   </div>
                 </div>
-                <div className="h-px bg-accent/10"></div>
+                <div className="h-px bg-accent/5"></div>
               </div>
             )}
             
@@ -149,44 +150,44 @@ export function SubmissionForm({ onSubmit, type, placeholder }: SubmissionFormPr
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 readOnly={!user}
-                className="min-h-[100px] md:min-h-[120px] border-none shadow-none focus-visible:ring-0 py-2 text-sm md:text-base leading-relaxed resize-none text-[#333] placeholder:text-accent/50 bg-transparent outline-none font-medium px-0"
+                className="min-h-[80px] md:min-h-[120px] border-none shadow-none focus-visible:ring-0 py-1 text-[14px] md:text-base leading-relaxed resize-none text-[#333] placeholder:text-accent/40 bg-transparent outline-none font-medium px-0 break-words"
               />
             </div>
 
             {showVideoInput && (
-              <div className="bg-primary/10 p-4 rounded-2xl border border-primary/20 animate-in slide-in-from-top-2 duration-300">
-                <div className="flex items-center gap-4">
-                  <div className="bg-white p-2 rounded-lg shadow-sm"><Youtube className="w-5 h-5 text-[#FF0000]" /></div>
+              <div className="bg-primary/5 p-3 md:p-4 rounded-xl border border-primary/10 animate-in slide-in-from-top-2 duration-300">
+                <div className="flex items-center gap-3">
+                  <div className="bg-white p-1.5 rounded-lg shadow-sm shrink-0"><Youtube className="w-4 h-4 md:w-5 md:h-5 text-[#FF0000]" /></div>
                   <Input 
-                    placeholder="공유하고 싶은 유튜브 영상 주소를 입력하세요"
+                    placeholder="유튜브 주소 입력"
                     value={videoUrl || ""}
                     onChange={(e) => setVideoUrl(e.target.value)}
-                    className="flex-1 bg-white border-none h-10 text-xs font-bold rounded-xl px-4 shadow-inner"
+                    className="flex-1 bg-white border-none h-9 text-[11px] md:text-xs font-bold rounded-lg px-3 shadow-inner"
                   />
-                  <Button type="button" variant="ghost" size="icon" onClick={() => { setVideoUrl(undefined); setShowVideoInput(false); }} className="h-9 w-9 text-accent/20 hover:text-red-500 rounded-full transition-colors">
-                    <X className="w-4 h-4" />
+                  <Button type="button" variant="ghost" size="icon" onClick={() => { setVideoUrl(undefined); setShowVideoInput(false); }} className="h-8 w-8 text-accent/20 hover:text-red-500 rounded-full transition-colors shrink-0">
+                    <X className="w-3.5 h-3.5" />
                   </Button>
                 </div>
               </div>
             )}
 
             {imageUrl && (
-              <div className="relative w-fit max-w-full rounded-2xl overflow-hidden border-4 border-white shadow-2xl group animate-in zoom-in-95 duration-300">
-                <img src={imageUrl} alt="preview" className="max-h-[250px] w-auto object-cover" />
+              <div className="relative w-fit max-w-full rounded-xl overflow-hidden border-2 md:border-4 border-white shadow-xl group animate-in zoom-in-95 duration-300">
+                <img src={imageUrl} alt="preview" className="max-h-[200px] md:max-h-[250px] w-auto object-cover" />
                 <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center">
                   <button 
                     type="button" 
-                    className="bg-red-500 text-white p-3 rounded-full shadow-2xl hover:scale-110 transition-transform"
+                    className="bg-red-500 text-white p-2.5 rounded-full shadow-2xl hover:scale-110 transition-transform"
                     onClick={() => setImageUrl(undefined)}
                   >
-                    <X className="w-5 h-5" />
+                    <X className="w-4 h-4" />
                   </button>
                 </div>
               </div>
             )}
           </div>
 
-          <div className="bg-[#FBFBFC] px-6 md:px-10 py-4 md:py-5 flex items-center justify-between border-t border-accent/5">
+          <div className="bg-[#FBFBFC] px-5 md:px-10 py-3 md:py-5 flex items-center justify-between border-t border-accent/5">
             <div className="flex items-center gap-1 md:gap-2">
               <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={(e) => {
                 const file = e.target.files?.[0];
@@ -196,23 +197,23 @@ export function SubmissionForm({ onSubmit, type, placeholder }: SubmissionFormPr
                   reader.readAsDataURL(file);
                 }
               }} />
-              <Button type="button" variant="ghost" className="h-10 text-accent/60 gap-2 hover:text-accent hover:bg-primary/30 font-black px-3 rounded-xl transition-all" onClick={() => user ? fileInputRef.current?.click() : handleInteraction()}>
-                <ImageIcon className="w-4 h-4" />
-                <span className="text-[12px] hidden sm:inline">사진</span>
+              <Button type="button" variant="ghost" className="h-9 md:h-10 text-accent/50 gap-1.5 hover:text-accent hover:bg-primary/20 font-black px-2 md:px-3 rounded-lg transition-all" onClick={() => user ? fileInputRef.current?.click() : handleInteraction()}>
+                <ImageIcon className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                <span className="text-[11px] md:text-[12px] hidden xs:inline">사진</span>
               </Button>
-              <Button type="button" variant="ghost" className="h-10 text-accent/60 gap-2 hover:text-accent hover:bg-primary/30 font-black px-3 rounded-xl transition-all" onClick={() => user ? setShowVideoInput(!showVideoInput) : handleInteraction()}>
-                <Video className="w-4 h-4" />
-                <span className="text-[12px] hidden sm:inline">영상</span>
+              <Button type="button" variant="ghost" className="h-9 md:h-10 text-accent/50 gap-1.5 hover:text-accent hover:bg-primary/20 font-black px-2 md:px-3 rounded-lg transition-all" onClick={() => user ? setShowVideoInput(!showVideoInput) : handleInteraction()}>
+                <Video className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                <span className="text-[11px] md:text-[12px] hidden xs:inline">영상</span>
               </Button>
             </div>
             
             <Button 
               type="submit" 
               disabled={isSubmitting || !text.trim()} 
-              className="naver-button h-11 md:h-12 px-6 md:px-10 text-sm md:text-base gap-3 shadow-2xl hover:scale-[1.03] active:scale-95 text-white"
+              className="naver-button h-10 md:h-12 px-5 md:px-10 text-[13px] md:text-base gap-2 md:gap-3 shadow-xl hover:scale-[1.02] active:scale-95 text-white"
             >
-              <span className="font-black text-white">{isSubmitting ? "전송 중..." : type === "question" ? "지식 속삭임 등록" : "지혜 더하기"}</span>
-              <Send className="w-4 h-4 md:w-5 md:h-5 text-white" />
+              <span className="font-black text-white">{isSubmitting ? "전송 중" : type === "question" ? "지식 등록" : "지혜 더하기"}</span>
+              <Send className="w-3.5 h-3.5 md:w-5 md:h-5 text-white" />
             </Button>
           </div>
         </form>
