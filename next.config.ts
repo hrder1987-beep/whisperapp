@@ -30,8 +30,7 @@ const nextConfig: NextConfig = {
         pathname: '/**',
       },
     ],
-  },
-  srcDir: 'src',
+  }
 };
 
 export default nextConfig;
