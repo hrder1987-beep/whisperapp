@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   verification: {
     google: 'vseC0Ud11g8jPYx',
     other: {
-      'naver-site-verification': '여기에-네이버-인증-코드를-붙여넣으세요',
+      'naver-site-verification': 'f78eb21d47cdde19ccba5dc39fec6a1de13a3414',
     },
   },
   metadataBase: new URL(SITE_URL),
