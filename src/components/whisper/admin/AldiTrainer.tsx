@@ -93,10 +93,14 @@ export function AldiTrainer() {
           try {
             const data = new Uint8Array(event.target?.result as ArrayBuffer)
             const workbook = XLSX.read(data, { type: 'array' })
-            const csv = XLSX.utils.sheet_to_csv(workbook.Sheets[workbook.SheetNames[0]])
-            setKnowledge(prev => (prev ? prev + "\n\n" : "") + `[엑셀 데이터: ${file.name}]\n` + csv)
-            toast({ title: "엑셀 데이터 추가됨" })
-          } catch (e) { toast({ title: "파일 읽기 실패", variant: "destructive" }) }
+            if (workbook.SheetNames.length > 0) {
+              const csv = XLSX.utils.sheet_to_csv(workbook.Sheets[workbook.SheetNames[0]])
+              setKnowledge(prev => (prev ? prev + "\n\n" : "") + `[엑셀 데이터: ${file.name}]\n` + csv)
+              toast({ title: "엑셀 데이터 추가됨" })
+            }
+          } catch (e) { 
+            toast({ title: "파일 읽기 실패", description: "엑셀 파일 형식을 확인해 주세요.", variant: "destructive" }) 
+          }
         }
         reader.readAsArrayBuffer(file)
       } else {

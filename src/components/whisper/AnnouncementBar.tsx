@@ -1,7 +1,7 @@
 
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { AnnouncementData } from "@/lib/types"
 import { Megaphone, ChevronRight } from "lucide-react"
 import Link from "next/link"
@@ -15,24 +15,32 @@ interface AnnouncementBarProps {
 export function AnnouncementBar({ announcements = [], duration = 4 }: AnnouncementBarProps) {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isVisible, setIsVisible] = useState(true)
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     if (announcements.length <= 1) return
 
     const interval = setInterval(() => {
       setIsVisible(false)
-      setTimeout(() => {
+      // 이전 타임아웃이 있다면 클리어
+      if (timeoutRef.current) clearTimeout(timeoutRef.current)
+      
+      timeoutRef.current = setTimeout(() => {
         setCurrentIndex((prev) => (prev + 1) % announcements.length)
         setIsVisible(true)
       }, 500)
     }, duration * 1000)
 
-    return () => clearInterval(interval)
-  }, [announcements, duration])
+    return () => {
+      clearInterval(interval)
+      if (timeoutRef.current) clearTimeout(timeoutRef.current)
+    }
+  }, [announcements.length, duration])
 
-  if (announcements.length === 0) return null
+  if (!announcements || announcements.length === 0) return null
 
   const current = announcements[currentIndex]
+  if (!current) return null
 
   return (
     <Link href={current.link || "#"} className="block mb-6">

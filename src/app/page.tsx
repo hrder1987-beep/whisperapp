@@ -158,9 +158,9 @@ function HomePageContent() {
     setSelectedId(id === selectedId ? null : id);
   }
 
-  // 멀티 공지사항 지원을 위한 데이터 가공
+  // 멀티 공지사항 지원을 위한 데이터 가공 (방어 코드 추가)
   const announcements = useMemo(() => {
-    if (branding?.announcements && branding.announcements.length > 0) {
+    if (branding?.announcements && Array.isArray(branding.announcements) && branding.announcements.length > 0) {
       return branding.announcements;
     }
     if (branding?.announcementText) {

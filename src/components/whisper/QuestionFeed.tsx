@@ -72,9 +72,13 @@ export function QuestionFeed({
   const [isMounted, setIsMounted] = useState(false)
   useEffect(() => {
     setIsMounted(true)
-    const savedLikes = localStorage.getItem('whisper_liked_posts')
-    if (savedLikes) {
-      setLikedPosts(new Set(JSON.parse(savedLikes)))
+    try {
+      const savedLikes = localStorage.getItem('whisper_liked_posts')
+      if (savedLikes) {
+        setLikedPosts(new Set(JSON.parse(savedLikes)))
+      }
+    } catch (e) {
+      console.warn('Failed to load likes from storage')
     }
   }, [])
 
@@ -109,7 +113,9 @@ export function QuestionFeed({
     const newLikes = new Set(likedPosts);
     newLikes.add(q.id);
     setLikedPosts(newLikes);
-    localStorage.setItem('whisper_liked_posts', JSON.stringify(Array.from(newLikes)));
+    try {
+      localStorage.setItem('whisper_liked_posts', JSON.stringify(Array.from(newLikes)));
+    } catch (e) {}
     
     toast({ title: "지지 완료!", description: "전문가님의 소중한 따봉이 전달되었습니다." });
   }
