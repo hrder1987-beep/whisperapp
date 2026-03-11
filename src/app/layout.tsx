@@ -16,7 +16,8 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
-  title: 'Whisper (위스퍼) - HR Intelligence Hub',
+  // 1. 브라우저 탭 제목 변경
+  title: 'Whisper (위스퍼)',
   description: 'HR실무자들의 품격 있는 속삭임. 교육부터 조직문화, 인사전략까지 HR 전문가를 위한 지식 허브 Whisper',
   keywords: ['HR', '인사', '인사담당자', 'HR실무자', '조직문화', '인사전략', '교육', 'HRM', 'HRD', '위스퍼', 'whisper'],
   verification: {
@@ -38,13 +39,19 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   openGraph: {
-    title: 'Whisper (위스퍼) - HR Intelligence Hub',
+    // 2. 소셜 공유 제목 변경
+    title: 'Whisper (위스퍼)',
     description: 'HR실무자들의 품격 있는 속삭임. 교육부터 조직문화, 인사전략까지 HR 실무자를 위한 지식 허브입니다.',
     url: SITE_URL,
     siteName: 'Whisper',
-    images: [{ url: '/og-image.jpg', width: 1200, height: 630, alt: 'Whisper' }],
+    // 3. 소셜 공유 썸네일 로고로 변경
+    images: [{ url: '/logo.svg', width: 1200, height: 630, alt: 'Whisper' }],
     locale: 'ko_KR',
     type: 'website',
+  },
+  // 4. 브라우저 탭 아이콘(파비콘) 설정 추가
+  icons: {
+    icon: "/logo.svg", 
   },
 };
 
