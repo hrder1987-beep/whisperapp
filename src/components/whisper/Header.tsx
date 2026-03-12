@@ -1,4 +1,3 @@
-
 "use client"
 
 import { Logo } from "./Logo"
@@ -36,7 +35,9 @@ export function Header({ onSearch }: HeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
 
-  useEffect(() => setIsMounted(true), [])
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   const userDocRef = useMemoFirebase(() => (user && db) ? doc(db, "users", user.uid) : null, [user, db])
   const { data: profile } = useDoc<any>(userDocRef)
@@ -79,7 +80,8 @@ export function Header({ onSearch }: HeaderProps) {
     { name: "채용 정보", href: "/jobs" },
   ]
 
-  if (!isMounted) return <header className="naver-header h-16 md:h-[88px]" />
+  // 서버와 클라이언트 초기 하이드레이션 상태를 일치시킵니다.
+  if (!isMounted) return <header className="naver-header h-16 md:h-[88px] border-b border-black/[0.02] bg-white/98" />
 
   return (
     <header className="naver-header shadow-sm border-none bg-white/98">

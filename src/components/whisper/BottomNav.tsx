@@ -14,8 +14,11 @@ export function BottomNav() {
   const [isChatOpen, setIsChatOpen] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
 
-  useEffect(() => setIsMounted(true), [])
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
+  // 하이드레이션 완료 전이나 데스크톱 환경에서는 렌더링하지 않습니다.
   if (!isMounted || !isMobile) return null
 
   const navItems = [
