@@ -16,7 +16,10 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
-  title: 'Whisper (위스퍼)',
+  title: {
+    default: 'Whisper (위스퍼)',
+    template: '%s | Whisper'
+  },
   description: 'HR실무자들의 품격 있는 속삭임. 교육부터 조직문화, 인사전략까지 HR 전문가를 위한 지식 허브 Whisper',
   keywords: ['HR', '인사', '인사담당자', 'HR실무자', '조직문화', '인사전략', '교육', 'HRM', 'HRD', '위스퍼', 'whisper'],
   verification: {
@@ -47,9 +50,13 @@ export const metadata: Metadata = {
     type: 'website',
   },
   icons: {
-    icon: 'favicon.ico?v=3',
-    shortcut: '/favicon-16x16.png?v=3',
-    apple: '/apple-touch-icon.png?v=3',
+    icon: [
+      { url: 'https://picsum.photos/seed/whisper-logo/32/32', sizes: '32x32', type: 'image/png' },
+      { url: 'https://picsum.photos/seed/whisper-logo/16/16', sizes: '16x16', type: 'image/png' }
+    ],
+    apple: [
+      { url: 'https://picsum.photos/seed/whisper-logo/180/180', sizes: '180x180', type: 'image/png' }
+    ],
   },
 };
 

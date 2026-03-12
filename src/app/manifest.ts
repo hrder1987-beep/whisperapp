@@ -1,9 +1,8 @@
-
 import { MetadataRoute } from 'next'
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Whisper - HR Intelligence',
+    name: 'Whisper (위스퍼) - HR Intelligence',
     short_name: 'Whisper',
     description: 'HR 전문가들을 위한 품격 있는 지식 공유 플랫폼',
     start_url: '/',
