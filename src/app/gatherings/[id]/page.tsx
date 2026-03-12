@@ -1,7 +1,7 @@
 
 "use client"
 
-import { useState, useMemo, use, useEffect } from "react"
+import { useState, useMemo, use, useEffect, useRef } from "react"
 import { Header } from "@/components/whisper/Header"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -10,12 +10,14 @@ import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useUser, useFirestore, useDoc, useCollection, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking } from "@/firebase"
-import { doc, collection, query, where } from "firebase/firestore"
+import { doc, collection, query, where, arrayUnion } from "firebase/firestore"
 import { Gathering, GatheringApplication, GatheringAttendance } from "@/lib/types"
-import { Users, Calendar, MapPin, Globe, Sparkles, FileText, Check, X, ArrowLeft, ShieldCheck, Download, Clock, Info, CheckCircle2, ClipboardList } from "lucide-react"
+import { Users, Calendar, MapPin, Globe, Sparkles, FileText, Check, X, ArrowLeft, ShieldCheck, Download, Clock, Info, CheckCircle2, ClipboardList, Plus, FileType, Image as ImageIcon, FileCode } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { formatDistanceToNow } from "date-fns"
 import { ko } from "date-fns/locale"
@@ -30,11 +32,19 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
   const db = useFirestore()
   const { toast } = useToast()
   const router = useRouter()
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const [activeTab, setActiveTab] = useState("overview")
   const [isApplying, setIsSubmitting] = useState(false)
   const [isSurveyOpen, setIsSurveyOpen] = useState(false)
   const [surveyAnswers, setSurveyAnswers] = useState<Record<string, string>>({})
+
+  // 자료 업로드 관련 상태
+  const [isResourceDialogOpen, setIsResourceDialogOpen] = useState(false)
+  const [resourceTitle, setResourceTitle] = useState("")
+  const [resourceSession, setResourceSession] = useState("0")
+  const [resourceFile, setResourceFile] = useState<File | null>(null)
+  const [isResourceSubmitting, setIsResourceSubmitting] = useState(false)
 
   const gatheringRef = useMemoFirebase(() => db ? doc(db, "gatherings", id) : null, [db, id])
   const { data: dbGathering, isLoading: isGatheringLoading } = useDoc<Gathering>(gatheringRef)
@@ -50,7 +60,6 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
   const isCreator = useMemo(() => user && gathering && user.uid === gathering.creatorId, [user, gathering]);
   const isPlatformAdmin = useMemo(() => user?.email === 'forum@khrd.co.kr' || profile?.role === 'admin', [user, profile]);
 
-  // 보안 오류 방지: 일반 사용자는 자신의 신청서만, 개설자/관리자는 전체를 조회하도록 쿼리 분리
   const appsQuery = useMemoFirebase(() => {
     if (!db || !user || !id) return null;
     if (isCreator || isPlatformAdmin) return query(collection(db, "gatherings", id, "applications"));
@@ -59,7 +68,6 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
 
   const { data: applications } = useCollection<GatheringApplication>(appsQuery)
 
-  // 출석 데이터 쿼리도 동일하게 보안 처리: 본인 기록만 혹은 관리자 권한
   const attendanceQuery = useMemoFirebase(() => {
     if (!db || !user || !id) return null;
     if (isCreator || isPlatformAdmin) return query(collection(db, "gatherings", id, "attendance"));
@@ -175,6 +183,51 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
       })
     }
     toast({ title: status === 'attending' ? "참석 확인" : "불참 확인", description: `${sessionId}회차 참석 여부가 제출되었습니다.` })
+  }
+
+  const handleAddResource = async () => {
+    if (!db || !gathering || !resourceTitle.trim()) return;
+    
+    setIsResourceSubmitting(true);
+    try {
+      // 실제 환경에서는 Storage 업로드 후 URL을 받아오지만, 
+      // 프로토타입 환경에서는 파일 정보를 메타데이터로 기록합니다.
+      const fileType = resourceFile?.name.split('.').pop() || 'file';
+      const newResource = {
+        title: resourceTitle,
+        url: "#", // 실제 서비스에서는 Storage URL
+        type: fileType,
+        sessionId: parseInt(resourceSession) || undefined,
+        fileName: resourceFile?.name || "첨부파일",
+        createdAt: Date.now()
+      };
+
+      if (id.startsWith('sample-')) {
+        toast({ title: "샘플 모임 알림", description: "샘플 데이터는 저장이 되지 않지만, UI 시뮬레이션은 완료되었습니다." });
+      } else {
+        await updateDocumentNonBlocking(doc(db, "gatherings", id), {
+          resources: arrayUnion(newResource)
+        });
+        toast({ title: "자료 등록 완료", description: "참여자 자료실에 새로운 지식이 추가되었습니다." });
+      }
+      
+      setIsResourceDialogOpen(false);
+      setResourceTitle("");
+      setResourceSession("0");
+      setResourceFile(null);
+    } catch (e) {
+      toast({ title: "오류", description: "자료 등록 중 문제가 발생했습니다.", variant: "destructive" });
+    } finally {
+      setIsResourceSubmitting(false);
+    }
+  }
+
+  const getFileIcon = (type: string) => {
+    const t = type.toLowerCase();
+    if (['jpg', 'jpeg', 'png', 'gif'].includes(t)) return <ImageIcon className="w-6 h-6 text-blue-500" />;
+    if (['pdf'].includes(t)) return <FileType className="w-6 h-6 text-red-500" />;
+    if (['ppt', 'pptx'].includes(t)) return <FileCode className="w-6 h-6 text-orange-500" />;
+    return <FileText className="w-6 h-6 text-[#03C75A]" />;
   }
 
   if (isGatheringLoading) {
@@ -321,6 +374,11 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
                             <p className="text-xs font-bold text-[#888]">프로젝트 진행에 필요한 서식 및 강의안 모음</p>
                           </div>
                         </div>
+                        {(isCreator || isPlatformAdmin) && (
+                          <Button onClick={() => setIsResourceDialogOpen(true)} className="naver-button h-11 px-6 rounded-none gap-2 text-xs font-black">
+                            <Plus className="w-4 h-4" /> 자료 등록
+                          </Button>
+                        )}
                       </div>
                       
                       {(!gathering.resources || gathering.resources.length === 0) ? (
@@ -332,10 +390,13 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
                           {gathering.resources.map((res, i) => (
                             <div key={i} className="p-6 bg-white border border-black/5 flex items-center justify-between group hover:border-[#03C75A] transition-all">
                               <div className="flex items-center gap-4 min-w-0">
-                                <FileText className="w-6 h-6 text-[#03C75A] shrink-0" />
+                                {getFileIcon(res.type)}
                                 <div className="min-w-0">
                                   <span className="font-bold text-[#1E1E23] text-base truncate block">{res.title}</span>
-                                  {res.sessionId && <Badge className="bg-[#F5F6F7] text-black/40 font-black text-[9px] border-none px-2 h-5 mt-1">{res.sessionId}회차 자료</Badge>}
+                                  <div className="flex items-center gap-2 mt-1">
+                                    {res.sessionId && <Badge className="bg-[#F5F6F7] text-black/40 font-black text-[9px] border-none px-2 h-5">{res.sessionId}회차 자료</Badge>}
+                                    <span className="text-[9px] font-bold text-black/20 uppercase">{res.type} file</span>
+                                  </div>
                                 </div>
                               </div>
                               <Button variant="ghost" size="icon" className="text-black/20 hover:text-[#03C75A] shrink-0"><Download className="w-5 h-5" /></Button>
@@ -545,6 +606,78 @@ export default function GatheringDetailPage({ params }: { params: Promise<{ id: 
               className="flex-[2] h-12 naver-button text-base rounded-none shadow-xl"
             >
               {isApplying ? "신청 중..." : "답변 제출 및 신청완료"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* 자료 등록 다이얼로그 (호스트 전용) */}
+      <Dialog open={isResourceDialogOpen} onOpenChange={setIsResourceDialogOpen}>
+        <DialogContent className="max-w-md bg-white border-none rounded-none p-0 shadow-2xl overflow-hidden">
+          <DialogHeader className="bg-[#1E1E23] p-6">
+            <DialogTitle className="text-xl font-black text-[#03C75A]">참여자 학습 자료 등록</DialogTitle>
+            <p className="text-white/40 text-[10px] font-bold mt-0.5 uppercase tracking-widest">Host Material Registration</p>
+          </DialogHeader>
+          <div className="p-8 space-y-6">
+            <div className="space-y-2">
+              <Label className="text-xs font-black text-black/40 uppercase tracking-widest ml-1">자료 명칭</Label>
+              <Input 
+                value={resourceTitle} 
+                onChange={e => setResourceTitle(e.target.value)} 
+                placeholder="예: 1회차 인사이트 강의안 (PDF)" 
+                className="h-12 bg-[#F5F6F7] border-none rounded-none font-bold" 
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label className="text-xs font-black text-black/40 uppercase tracking-widest ml-1">관련 세션 선택</Label>
+              <Select value={resourceSession} onValueChange={setResourceSession}>
+                <SelectTrigger className="h-12 bg-[#F5F6F7] border-none rounded-none font-bold">
+                  <SelectValue placeholder="세션 선택 (선택 사항)" />
+                </SelectTrigger>
+                <SelectContent className="rounded-none border-none shadow-2xl">
+                  <SelectItem value="0" className="font-bold">공통 자료</SelectItem>
+                  {sessionArray.map(num => (
+                    <SelectItem key={num} value={num.toString()} className="font-bold">{num}회차 자료</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-xs font-black text-black/40 uppercase tracking-widest ml-1">파일 업로드 (이미지/PDF/PPT)</Label>
+              <div 
+                onClick={() => fileInputRef.current?.click()}
+                className="h-32 border-2 border-dashed border-black/5 bg-[#FBFBFC] flex flex-col items-center justify-center cursor-pointer hover:border-[#03C75A]/30 transition-all group"
+              >
+                {resourceFile ? (
+                  <div className="text-center">
+                    <p className="text-sm font-black text-[#03C75A]">{resourceFile.name}</p>
+                    <p className="text-[10px] font-bold text-black/20 mt-1">파일이 선택되었습니다.</p>
+                  </div>
+                ) : (
+                  <>
+                    <Plus className="w-6 h-6 text-black/10 group-hover:text-[#03C75A] transition-colors mb-2" />
+                    <p className="text-[11px] font-black text-black/30">파일을 선택하세요</p>
+                  </>
+                )}
+              </div>
+              <input 
+                type="file" 
+                ref={fileInputRef} 
+                className="hidden" 
+                accept="image/*,.pdf,.ppt,.pptx" 
+                onChange={e => setResourceFile(e.target.files?.[0] || null)} 
+              />
+            </div>
+          </div>
+          <DialogFooter className="p-6 bg-[#FBFBFC] border-t border-black/5">
+            <Button 
+              onClick={handleAddResource} 
+              disabled={isResourceSubmitting || !resourceTitle.trim()} 
+              className="w-full h-12 naver-button text-base rounded-none shadow-xl"
+            >
+              {isResourceSubmitting ? "업로드 중..." : "자료 등록 완료"}
             </Button>
           </DialogFooter>
         </DialogContent>
