@@ -10,9 +10,12 @@ interface FirebaseClientProviderProps {
 
 /**
  * FirebaseClientProvider는 하이드레이션 오류를 방지하기 위해 
- * 서버와 클라이언트의 초기 렌더링 상태를 완벽하게 일치시킵니다.
+ * 브라우저 마운트가 완료된 시점(useEffect) 이후에만 실제 콘텐츠를 렌더링합니다.
+ * 이는 Grammarly와 같은 브라우저 확장 프로그램이 DOM을 변조하여 발생하는
+ * 'Hydration Mismatch' 에러를 원천적으로 차단하는 가장 강력한 방법입니다.
  */
 export function FirebaseClientProvider({ children }: FirebaseClientProviderProps) {
+  const [isMounted, setIsMounted] = useState(false);
   const [services, setServices] = useState<{
     firebaseApp: any;
     auth: any;
@@ -20,21 +23,26 @@ export function FirebaseClientProvider({ children }: FirebaseClientProviderProps
   } | null>(null);
 
   useEffect(() => {
-    // 브라우저 마운트 직후에만 Firebase를 초기화하여 하이드레이션 불일치를 원천 차단합니다.
+    // 1. 브라우저 환경에 진입했음을 표시
+    setIsMounted(true);
+    
+    // 2. Firebase 서비스 초기화
     const initializedServices = initializeFirebase();
     setServices(initializedServices);
   }, []);
 
-  // 서버 및 클라이언트 첫 렌더링 시에는 항상 null 값을 전달하여 트리를 안정화합니다.
-  const app = services?.firebaseApp || null;
-  const auth = services?.auth || null;
-  const db = services?.firestore || null;
+  // 서버 사이드 렌더링 및 클라이언트 첫 하이드레이션 패스에서는 
+  // 아무것도 렌더링하지 않음으로써 서버/클라이언트 간의 HTML 구조를 완벽하게 비웁니다.
+  // 이 방식은 브라우저 확장 프로그램이 주입하는 속성들에 의한 충돌을 완벽히 무시합니다.
+  if (!isMounted) {
+    return null;
+  }
 
   return (
     <FirebaseProvider
-      firebaseApp={app}
-      auth={auth}
-      firestore={db}
+      firebaseApp={services?.firebaseApp || null}
+      auth={services?.auth || null}
+      firestore={services?.firestore || null}
     >
       {children}
     </FirebaseProvider>

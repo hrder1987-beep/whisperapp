@@ -68,7 +68,9 @@ export default function RootLayout({
       <body className="font-body antialiased selection:bg-primary selection:text-primary-foreground bg-[#F8F9FA] touch-pan-y" suppressHydrationWarning>
         <FirebaseClientProvider>
           <div className="relative min-h-screen flex flex-col">
-            <main className="relative z-10 flex-1 pb-24 lg:pb-0">{children}</main>
+            <main className="relative z-10 flex-1 pb-24 lg:pb-0">
+              {children}
+            </main>
             <BottomNav />
             <Toaster />
           </div>
