@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, type ReactNode } from 'react';
@@ -22,16 +21,17 @@ export function FirebaseClientProvider({ children }: FirebaseClientProviderProps
   } | null>(null);
 
   useEffect(() => {
-    // 마운트 직후에만 Firebase를 초기화하여 SSR 결과와 일치시킵니다.
+    // 브라우저 마운트 직후에만 Firebase를 초기화합니다.
+    // 이는 하이드레이션 단계에서 서버의 null 상태와 클라이언트의 상태를 일치시킵니다.
     const initializedServices = initializeFirebase();
     setServices(initializedServices);
     setIsMounted(true);
   }, []);
 
-  // SSR 및 하이드레이션 중에는 null을 전달하여 트리를 안정화합니다.
-  const app = isMounted ? services?.firebaseApp : null;
-  const auth = isMounted ? services?.auth : null;
-  const db = isMounted ? services?.firestore : null;
+  // 마운트 전에는 서버와 동일하게 null 값을 전달하여 트리를 안정화합니다.
+  const app = services?.firebaseApp || null;
+  const auth = services?.auth || null;
+  const db = services?.firestore || null;
 
   return (
     <FirebaseProvider
