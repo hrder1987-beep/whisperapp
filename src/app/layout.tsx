@@ -17,10 +17,10 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: 'Whisper (위스퍼)',
+    default: 'Whisper (위스퍼) - HR Intelligence',
     template: '%s | Whisper'
   },
-  description: 'HR실무자들의 품격 있는 속삭임. 교육부터 조직문화, 인사전략까지 HR 전문가를 위한 지식 허브 Whisper',
+  description: '대한민국 최고 HR 실무자들의 품격 있는 지식 공유 플랫폼. 교육, 조직문화, 인사전략의 깊이 있는 속삭임을 만나보세요.',
   keywords: ['HR', '인사', '인사담당자', 'HR실무자', '조직문화', '인사전략', '교육', 'HRM', 'HRD', '위스퍼', 'whisper'],
   verification: {
     google: 'vseC0Ud11g8jPYx',
@@ -41,13 +41,24 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   openGraph: {
-    title: 'Whisper (위스퍼)',
-    description: 'HR실무자들의 품격 있는 속삭임. 교육부터 조직문화, 인사전략까지 HR 실무자를 위한 지식 허브입니다.',
+    title: 'Whisper (위스퍼) - HR Intelligence Hub',
+    description: '대한민국 최고 HR 전문가들의 지식 허브. 현업의 고민부터 전문 솔루션까지 한곳에서.',
     url: SITE_URL,
     siteName: 'Whisper',
-    images: [{ url: '/logo.svg', width: 1200, height: 630, alt: 'Whisper' }],
+    images: [{ 
+      url: 'https://picsum.photos/seed/whisper-og/1200/630', // 여기에 실제 썸네일 이미지 URL을 넣으시면 됩니다.
+      width: 1200, 
+      height: 630, 
+      alt: 'Whisper - HR Intelligence' 
+    }],
     locale: 'ko_KR',
     type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Whisper (위스퍼) - HR Intelligence',
+    description: '대한민국 최고 HR 전문가들의 품격 있는 지식 속삭임.',
+    images: ['https://picsum.photos/seed/whisper-og/1200/630'],
   },
   icons: {
     icon: [
