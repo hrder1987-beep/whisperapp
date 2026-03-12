@@ -118,12 +118,12 @@ function ChatInterface({ messages, input, setInput, isLoading, handleSend, isExp
       <div className="p-4 md:p-8 bg-white border-t border-black/[0.08] shadow-[0_-4px_20px_rgba(0,0,0,0.03)]">
         <div className="relative flex items-center gap-2 md:gap-3 max-w-full">
           <Input 
-            placeholder="궁금한 내용을 자유롭게 질문해 보세요" 
+            placeholder="" 
             value={input} 
             onChange={(e) => setInput(e.target.value)} 
             onKeyDown={(e) => e.key === 'Enter' && handleSend()} 
             disabled={isLoading} 
-            className="flex-1 border-none bg-[#F5F6F7] focus-visible:ring-primary/20 h-12 md:h-16 text-[13px] md:text-[15px] font-bold md:font-black rounded-xl md:rounded-2xl px-3 md:px-6 placeholder:text-[3vw] sm:placeholder:text-[14px] placeholder:font-black placeholder:text-accent/30 shadow-inner min-w-0" 
+            className="flex-1 border-none bg-[#F5F6F7] focus-visible:ring-primary/20 h-12 md:h-16 text-[13px] md:text-[15px] font-bold md:font-black rounded-xl md:rounded-2xl px-3 md:px-6 shadow-inner min-w-0" 
           />
           <Button size="icon" onClick={handleSend} disabled={!input.trim() || isLoading} className="naver-button h-12 w-12 md:h-16 md:w-16 shrink-0 shadow-2xl rounded-xl md:rounded-2xl active:scale-95 transition-all">
             <Send className="w-4 h-4 md:w-6 md:h-6" />
