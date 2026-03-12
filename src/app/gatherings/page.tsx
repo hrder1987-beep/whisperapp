@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useUser, useFirestore, useCollection, useDoc, useMemoFirebase, addDocumentNonBlocking } from "@/firebase"
 import { collection, query, orderBy, doc } from "firebase/firestore"
 import { Gathering, SiteBranding } from "@/lib/types"
-import { Plus, Search, Sparkles, Image as ImageIcon, Users, MapPin, Calendar, Camera } from "lucide-react"
+import { Plus, Search, Sparkles, Image as ImageIcon, Users, MapPin, Calendar, Camera, Clock, Info } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
@@ -100,7 +100,7 @@ export default function GatheringsPage() {
         creatorId: user.uid, 
         creatorName: user.displayName || "익명전문가", 
         type, 
-        location: type === "online" ? "온라인(상세 링크)" : location, 
+        location: location || (type === "online" ? "온라인(상세 링크 별도 공지)" : "장소 미정"), 
         schedule,
         startDate: now,
         endDate: now + (30 * 24 * 60 * 60 * 1000), 
@@ -141,15 +141,15 @@ export default function GatheringsPage() {
                     <DialogTitle className="text-2xl font-black text-accent text-left">새로운 지식 모임 개설</DialogTitle>
                   </DialogHeader>
                   <div className="flex-1 overflow-y-auto p-8 md:p-10">
-                    <form onSubmit={handleCreateGathering} className="space-y-8">
-                      <div className="space-y-6">
-                        <div className="space-y-2">
+                    <form onSubmit={handleCreateGathering} className="space-y-10">
+                      <div className="space-y-8">
+                        <div className="space-y-3">
                           <label className="text-xs font-black text-accent/40 uppercase tracking-widest ml-1">모임 주제 (제목)</label>
                           <Input value={title} onChange={e => setTitle(e.target.value)} placeholder="예: HR 데이터 리터러시 실전 프로젝트 1기" className="h-14 bg-accent/5 border-none rounded-2xl font-black text-lg shadow-inner" required />
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <div className="space-y-2">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                          <div className="space-y-3">
                             <label className="text-xs font-black text-accent/40 uppercase tracking-widest ml-1">모임 성격</label>
                             <Select value={category} onValueChange={setCategory}>
                               <SelectTrigger className="h-14 bg-accent/5 border-none rounded-2xl font-bold">
@@ -162,41 +162,81 @@ export default function GatheringsPage() {
                               </SelectContent>
                             </Select>
                           </div>
-                          <div className="space-y-2">
+                          <div className="space-y-3">
                             <label className="text-xs font-black text-accent/40 uppercase tracking-widest ml-1">모집 정원 (명)</label>
                             <Input type="number" value={capacity} onChange={e => setCapacity(e.target.value)} className="h-14 bg-accent/5 border-none rounded-2xl font-bold shadow-inner" required />
                           </div>
                         </div>
 
-                        <div className="space-y-2">
+                        <div className="space-y-3">
                           <label className="text-xs font-black text-accent/40 uppercase tracking-widest ml-1">모임 상세 소개</label>
-                          <Textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="모임의 목적, 커리큘럼, 참여 혜택 등을 상세히 적어주세요." className="min-h-[150px] bg-accent/5 border-none rounded-2xl p-6 font-medium shadow-inner resize-none" required />
+                          <div className="relative">
+                            <Textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="모임의 목적, 커리큘럼, 참여 혜택 등을 상세히 적어주세요." className="min-h-[180px] bg-accent/5 border-none rounded-2xl p-6 font-medium shadow-inner resize-none leading-relaxed" required />
+                          </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <div className="space-y-2">
-                            <label className="text-xs font-black text-accent/40 uppercase tracking-widest ml-1">진행 방식</label>
-                            <div className="flex gap-2">
-                              <Button type="button" onClick={() => setType('online')} variant={type === 'online' ? 'default' : 'outline'} className={cn("flex-1 h-14 rounded-2xl font-black", type === 'online' ? "bg-accent text-white" : "border-accent/10")}>온라인</Button>
-                              <Button type="button" onClick={() => setType('offline')} variant={type === 'offline' ? 'default' : 'outline'} className={cn("flex-1 h-14 rounded-2xl font-black", type === 'offline' ? "bg-accent text-white" : "border-accent/10")}>오프라인</Button>
+                        <div className="space-y-6 bg-[#FBFBFC] p-8 rounded-[2rem] border border-accent/5 shadow-sm">
+                          <div className="space-y-3">
+                            <label className="text-xs font-black text-accent/40 uppercase tracking-widest ml-1">진행 방식 및 장소</label>
+                            <div className="flex gap-3 mb-4">
+                              <Button type="button" onClick={() => setType('online')} variant={type === 'online' ? 'default' : 'outline'} className={cn("flex-1 h-14 rounded-2xl font-black gap-2", type === 'online' ? "bg-accent text-white" : "border-accent/10 text-accent/40")}>
+                                <div className={cn("w-2 h-2 rounded-full", type === 'online' ? "bg-primary" : "bg-accent/10")} /> 온라인
+                              </Button>
+                              <Button type="button" onClick={() => setType('offline')} variant={type === 'offline' ? 'default' : 'outline'} className={cn("flex-1 h-14 rounded-2xl font-black gap-2", type === 'offline' ? "bg-accent text-white" : "border-accent/10 text-accent/40")}>
+                                <div className={cn("w-2 h-2 rounded-full", type === 'offline' ? "bg-primary" : "bg-accent/10")} /> 오프라인
+                              </Button>
+                            </div>
+                            <div className="relative">
+                              <MapPin className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-accent/20" />
+                              <Input 
+                                value={location} 
+                                onChange={e => setLocation(e.target.value)} 
+                                placeholder={type === 'online' ? "예: 줌(Zoom) 링크 또는 슬랙 채널 명" : "예: 강남역 인근 공유 오피스 (상세 주소)"} 
+                                className="h-14 pl-14 bg-white border-none rounded-2xl font-bold shadow-sm" 
+                                required 
+                              />
                             </div>
                           </div>
-                          <div className="space-y-2">
-                            <label className="text-xs font-black text-accent/40 uppercase tracking-widest ml-1">장소 및 상세 일정</label>
-                            <Input value={schedule} onChange={e => setSchedule(e.target.value)} placeholder="예: 매주 목요일 저녁 7시 / 강남역 인근" className="h-14 bg-accent/5 border-none rounded-2xl font-bold shadow-inner" required />
+
+                          <div className="space-y-3">
+                            <label className="text-xs font-black text-accent/40 uppercase tracking-widest ml-1">상세 일시 및 시간</label>
+                            <div className="relative">
+                              <Clock className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-accent/20" />
+                              <Input 
+                                value={schedule} 
+                                onChange={e => setSchedule(e.target.value)} 
+                                placeholder="예: 2025년 5월 10일 (토) 오후 2시 ~ 5시" 
+                                className="h-14 pl-14 bg-white border-none rounded-2xl font-bold shadow-sm" 
+                                required 
+                              />
+                            </div>
                           </div>
                         </div>
 
-                        <div className="space-y-2">
-                          <label className="text-xs font-black text-accent/40 uppercase tracking-widest ml-1">대표 이미지 (선택)</label>
-                          <div onClick={() => fileInputRef.current?.click()} className="relative aspect-[2/1] bg-accent/5 rounded-2xl border-2 border-dashed border-accent/10 flex flex-col items-center justify-center cursor-pointer overflow-hidden group">
-                            {imageUrl ? <img src={imageUrl} alt="preview" className="w-full h-full object-cover" /> : <Camera className="w-10 h-10 text-accent/10 group-hover:text-primary transition-colors" />}
-                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all text-white text-xs font-black">이미지 변경하기</div>
+                        <div className="space-y-4">
+                          <div className="flex items-center justify-between px-1">
+                            <label className="text-xs font-black text-accent/40 uppercase tracking-widest">대표 이미지 (선택)</label>
+                            <span className="text-[10px] font-black text-primary flex items-center gap-1.5 bg-primary/10 px-3 py-1 rounded-full"><Info className="w-3 h-3" /> 권장: 1200x600px (2:1 비율)</span>
+                          </div>
+                          <div onClick={() => fileInputRef.current?.click()} className="relative aspect-[2/1] bg-accent/5 rounded-[2rem] border-2 border-dashed border-accent/10 flex flex-col items-center justify-center cursor-pointer overflow-hidden group shadow-inner">
+                            {imageUrl ? (
+                              <>
+                                <img src={imageUrl} alt="preview" className="w-full h-full object-cover" />
+                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all text-white text-xs font-black">이미지 변경하기</div>
+                              </>
+                            ) : (
+                              <div className="flex flex-col items-center gap-3">
+                                <Camera className="w-12 h-12 text-accent/10 group-hover:text-primary transition-all duration-500" />
+                                <p className="text-[11px] font-black text-accent/20 uppercase tracking-widest">클릭하여 이미지 업로드</p>
+                              </div>
+                            )}
                           </div>
                           <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleImageChange} />
                         </div>
                       </div>
-                      <Button type="submit" disabled={isSubmitting} className="w-full h-16 naver-button text-lg rounded-2xl shadow-2xl mt-4 text-white font-black">{isSubmitting ? "생성 중..." : "모임 개설 완료"}</Button>
+                      <Button type="submit" disabled={isSubmitting} className="w-full h-18 naver-button text-lg rounded-[1.5rem] shadow-2xl mt-4 text-white font-black hover:scale-[1.01] transition-all">
+                        {isSubmitting ? "정보 전송 중..." : "모임 개설 완료"}
+                      </Button>
                     </form>
                   </div>
                 </DialogContent>
