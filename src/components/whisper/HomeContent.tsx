@@ -179,8 +179,8 @@ export function HomeContent() {
         
         <MainBanner banners={banners} autoSlideDuration={branding?.bannerAutoSlideDuration || 3} />
         
-        <div className="flex items-center justify-between border-b border-black/[0.05] sticky top-16 md:top-[88px] z-30 bg-[#F8F9FA]/95 backdrop-blur-xl pt-4 -mx-2 px-2 transition-all">
-          <div className="flex flex-nowrap overflow-x-auto scrollbar-hide gap-x-6 pb-2">
+        <div className="flex items-center justify-between border-b border-black/[0.05] sticky top-16 md:top-[88px] z-30 bg-[#F8F9FA]/95 backdrop-blur-xl pt-4 -mx-4 px-4 transition-all">
+          <div className="flex flex-nowrap overflow-x-auto scrollbar-hide gap-x-6 pb-2 flex-1">
             {[{ id: "all", label: "전체 피드" }, { id: "hrm", label: "인사/총무" }, { id: "hrd", label: "HRD/교육" }, { id: "culture", label: "조직문화" }, { id: "popular", label: "인기" }].map(t => (
               <button 
                 key={t.id} 
@@ -198,13 +198,13 @@ export function HomeContent() {
           <Button 
             onClick={() => setIsFormOpen(!isFormOpen)}
             className={cn(
-              "h-10 px-5 md:px-7 rounded-full font-black text-[12px] md:text-sm gap-2 transition-all shrink-0 mb-3 shadow-2xl hover:scale-105 active:scale-95",
+              "h-9 md:h-10 px-4 md:px-7 rounded-full font-black text-[11px] md:text-sm gap-2 transition-all shrink-0 mb-3 shadow-2xl hover:scale-105 active:scale-95 ml-4",
               isFormOpen 
                 ? "bg-accent text-primary ring-2 ring-primary/20" 
                 : "gold-gradient text-primary border-none"
             )}
           >
-            {isFormOpen ? <X className="w-4 h-4" /> : <Edit3 className="w-4 h-4" />}
+            {isFormOpen ? <X className="w-3.5 h-3.5" /> : <Edit3 className="w-3.5 h-3.5" />}
             <span>{isFormOpen ? "닫기" : "글쓰기"}</span>
           </Button>
         </div>
@@ -219,15 +219,17 @@ export function HomeContent() {
           </div>
         )}
 
-        <QuestionFeed 
-          questions={paginated} 
-          onSelectQuestion={handleSelectQuestion} 
-          selectedId={selectedId} 
-          answers={answers} 
-          onAddAnswer={handleAddAnswer} 
-          activeTab={activeTab as any} 
-          onTabChange={setActiveTab as any} 
-        />
+        <div className="px-1 md:px-0">
+          <QuestionFeed 
+            questions={paginated} 
+            onSelectQuestion={handleSelectQuestion} 
+            selectedId={selectedId} 
+            answers={answers} 
+            onAddAnswer={handleAddAnswer} 
+            activeTab={activeTab as any} 
+            onTabChange={setActiveTab as any} 
+          />
+        </div>
         
         {totalPages > 1 && (
           <div className="flex justify-center items-center gap-2 mt-10">
@@ -245,7 +247,7 @@ export function HomeContent() {
           </div>
         )}
 
-        <footer className="mt-20 pt-12 border-t border-black/5 pb-12">
+        <footer className="mt-20 pt-12 border-t border-black/5 pb-12 px-4 md:px-0">
           <div className="space-y-6">
             <h2 className="text-xl font-black text-accent">{branding?.footerCompany || "(주)위스퍼 인텔리전스"}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-bold text-accent/40">

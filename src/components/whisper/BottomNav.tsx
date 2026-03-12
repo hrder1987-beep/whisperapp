@@ -1,3 +1,4 @@
+
 "use client"
 
 import { usePathname, useRouter } from "next/navigation"
@@ -18,7 +19,6 @@ export function BottomNav() {
     setIsMounted(true)
   }, [])
 
-  // 하이드레이션 완료 전이나 데스크톱 환경에서는 렌더링하지 않습니다.
   if (!isMounted || !isMobile) return null
 
   const navItems = [
@@ -65,10 +65,10 @@ export function BottomNav() {
             onClick={() => setIsChatOpen(true)}
             className="flex flex-col items-center justify-center w-full h-full pt-1 transition-all active:scale-90"
           >
-            <div className="relative mb-1.5 bg-primary/20 p-3 rounded-[1.25rem] shadow-inner border border-primary/10">
-              <Sparkles className="w-[24px] h-[24px] text-primary animate-pulse relative z-10" />
+            <div className="relative mb-1.5 bg-red-500 p-3 rounded-[1.25rem] shadow-xl border border-red-400">
+              <Sparkles className="w-[24px] h-[24px] text-white animate-pulse relative z-10" />
             </div>
-            <span className="text-[10px] font-black text-primary uppercase tracking-[0.1em]">AI상담</span>
+            <span className="text-[10px] font-black text-red-600 uppercase tracking-[0.1em]">AI상담</span>
           </button>
         </div>
       </nav>
