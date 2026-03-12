@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, type ReactNode } from 'react';
@@ -10,7 +11,7 @@ interface FirebaseClientProviderProps {
 
 /**
  * FirebaseClientProvider는 Firebase 서비스가 클라이언트에서만 초기화되도록 보장하며,
- * 서버와 클라이언트 간의 하이드레이션 불일치를 방지하기 위해 초기화 시점을 마운트 이후로 지연시킵니다.
+ * 서버와 클라이언트 간의 하이드레이션 불일치 및 라우팅 에러를 방지합니다.
  */
 export function FirebaseClientProvider({ children }: FirebaseClientProviderProps) {
   const [isMounted, setIsMounted] = useState(false);
@@ -21,16 +22,13 @@ export function FirebaseClientProvider({ children }: FirebaseClientProviderProps
   } | null>(null);
 
   useEffect(() => {
-    // 컴포넌트가 클라이언트에 마운트된 직후에만 Firebase를 초기화합니다.
+    // 마운트 직후에만 Firebase를 초기화하여 SSR 결과와 일치시킵니다.
     const initializedServices = initializeFirebase();
     setServices(initializedServices);
     setIsMounted(true);
   }, []);
 
-  /**
-   * SSR 및 클라이언트의 첫 번째 하이드레이션 렌더링 중에는 null을 전달합니다.
-   * 이는 서버에서 생성된 HTML과 클라이언트의 첫 번째 렌더링 결과가 완벽히 일치하도록 보장합니다.
-   */
+  // SSR 및 하이드레이션 중에는 null을 전달하여 트리를 안정화합니다.
   const app = isMounted ? services?.firebaseApp : null;
   const auth = isMounted ? services?.auth : null;
   const db = isMounted ? services?.firestore : null;
