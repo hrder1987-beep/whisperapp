@@ -176,15 +176,17 @@ export function MemberManager() {
                       <TableCell>
                         <Select defaultValue={u.role} onValueChange={(val) => handleRoleChange(u.id, val as UserRole)}>
                           <SelectTrigger className={cn(
-                            "w-28 border-none rounded-xl h-9 font-black text-[10px]",
-                            u.role === 'admin' ? "bg-primary text-white" : u.role === 'mentor' ? "bg-accent text-white" : "bg-accent/5 text-accent/40"
+                            "w-28 border-none rounded-xl h-9 font-black text-[10px] shadow-sm transition-all",
+                            u.role === 'admin' ? "bg-[#CDECB1] text-[#163300]" : 
+                            u.role === 'mentor' ? "bg-[#163300] text-[#CDECB1]" : 
+                            "bg-[#F5F6F7] text-[#163300]/40"
                           )}>
                             <SelectValue />
                           </SelectTrigger>
-                          <SelectContent className="bg-white border-accent/10 rounded-xl">
-                            <SelectItem value="member">일반 회원</SelectItem>
-                            <SelectItem value="mentor">위스퍼러</SelectItem>
-                            <SelectItem value="admin">관리자</SelectItem>
+                          <SelectContent className="bg-white border-accent/10 rounded-xl p-1 shadow-4xl animate-in fade-in zoom-in-95 duration-200">
+                            <SelectItem value="member" className="rounded-lg py-2.5 font-bold text-xs cursor-pointer">일반 회원</SelectItem>
+                            <SelectItem value="mentor" className="rounded-lg py-2.5 font-bold text-xs cursor-pointer">위스퍼러</SelectItem>
+                            <SelectItem value="admin" className="rounded-lg py-2.5 font-bold text-xs cursor-pointer">관리자</SelectItem>
                           </SelectContent>
                         </Select>
                       </TableCell>
