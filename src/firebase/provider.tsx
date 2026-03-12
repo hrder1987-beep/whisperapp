@@ -84,19 +84,9 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
 };
 
 export const useFirebase = (): FirebaseContextState => {
-  if (typeof window === 'undefined') {
-    return {
-      areServicesAvailable: false,
-      firebaseApp: null,
-      firestore: null,
-      auth: null,
-      user: null,
-      isUserLoading: true,
-      userError: null,
-    };
-  }
-
   const context = useContext(FirebaseContext);
+  
+  // 컨텍스트가 없는 경우(서버 렌더링 또는 프로바이더 외부) 기본값 반환
   if (!context) {
     return {
       areServicesAvailable: false,
