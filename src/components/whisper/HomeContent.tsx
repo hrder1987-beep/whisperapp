@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo, useEffect, useDeferredValue } from "react"
@@ -17,16 +16,14 @@ import { cn } from "@/lib/utils"
 import { useFirestore, useCollection, useDoc, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking, useUser } from "@/firebase"
 import { collection, query, orderBy, doc, increment } from "firebase/firestore"
 import mockData from "@/lib/mock-data.json"
-import { useSearchParams } from "next/navigation"
 
-const ITEMS_PER_PAGE = 5 
+const ITEMS_PER_PAGE = 10 
 
-export function HomeContent() {
+export function HomeContent({ searchParams }: { searchParams: any }) {
   const { user } = useUser()
   const db = useFirestore()
-  const searchParams = useSearchParams()
   
-  const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "")
+  const [searchQuery, setSearchQuery] = useState(searchParams?.search || "")
   const deferredSearchQuery = useDeferredValue(searchQuery)
   
   const [activeTab, setActiveTab] = useState<"all" | "hrm" | "hrd" | "culture" | "popular">("all")
@@ -240,14 +237,14 @@ export function HomeContent() {
               if (currentPage >= totalPages - 1) p = totalPages - 4 + i;
               if (p <= 0 || p > totalPages) return null;
               return (
-                <Button key={p} onClick={() => setCurrentPage(p)} variant={currentPage === p ? "default" : "outline"} className={cn("w-9 h-9 rounded-xl font-black text-xs", currentPage === p ? "bg-primary text-accent" : "bg-white")}>{p}</Button>
+                <Button key={p} onClick={() => setCurrentPage(p)} variant={currentPage === p ? "default" : "outline"} className={cn("w-10 h-10 rounded-xl font-black text-xs", currentPage === p ? "bg-primary text-accent border-none shadow-lg" : "bg-white border-black/5")}>{p}</Button>
               );
             })}
             <Button variant="ghost" disabled={currentPage === totalPages} onClick={() => setCurrentPage(totalPages)}><ChevronsRight className="w-4" /></Button>
           </div>
         )}
 
-        <footer className="mt-20 pt-12 border-t border-black/5 pb-12 px-4 md:px-0">
+        <footer className="mt-20 pt-12 border-t border-black/[0.03] pb-12 px-4 md:px-0 opacity-60">
           <div className="space-y-6">
             <h2 className="text-xl font-black text-accent">{branding?.footerCompany || "(주)위스퍼 인텔리전스"}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-bold text-accent/40">
