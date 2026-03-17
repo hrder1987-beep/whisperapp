@@ -5,7 +5,7 @@ import { Sparkles } from "lucide-react"
 
 /**
  * @fileOverview 홈페이지 엔트리 포인트 (Server Component)
- * Next.js 15의 비동기 파라미터 규격을 준수합니다.
+ * Next.js 15의 비동기 파라미터 규격을 준수하며, 웹 컨테이너 환경의 안정성을 위해 동적 렌더링을 강제합니다.
  */
 export const dynamic = 'force-dynamic';
 

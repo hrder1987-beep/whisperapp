@@ -80,7 +80,6 @@ export function Header({ onSearch }: HeaderProps) {
     { name: "채용 정보", href: "/jobs" },
   ]
 
-  // 서버와 클라이언트 초기 하이드레이션 상태를 일치시킵니다.
   if (!isMounted) return <header className="naver-header h-16 md:h-[88px] border-b border-black/[0.02] bg-white/98" />
 
   return (
@@ -131,7 +130,7 @@ export function Header({ onSearch }: HeaderProps) {
             <Search className="text-accent/30 group-focus-within:text-accent w-5 h-5 ml-2" />
             <Input 
               placeholder="궁금한 HR 지식과 사례를 검색하세요" 
-              className="border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 text-[15px] font-black h-full placeholder:text-[3vw] sm:placeholder:text-[14px] placeholder:text-accent/30 bg-transparent outline-none pl-3" 
+              className="border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 text-[15px] font-black h-full placeholder:text-accent/30 bg-transparent outline-none pl-3" 
               value={searchQuery} 
               onChange={(e) => setSearchQuery(e.target.value)} 
               onKeyDown={handleKeyDown} 

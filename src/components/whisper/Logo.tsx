@@ -1,4 +1,3 @@
-
 "use client"
 
 import { cn } from "@/lib/utils"
@@ -10,7 +9,7 @@ interface LogoProps {
 }
 
 export function Logo({ className = "", isLight = false, onClick }: LogoProps) {
-  // 가장 찐한 딥 포레스트 그린 컬러 확정
+  // 위스퍼 고결한 딥 포레스트 그린 컬러 확정 (#163300)
   const logoGreen = isLight ? "text-white" : "text-[#163300]"
   const accentLime = "#CDECB1" 
 
