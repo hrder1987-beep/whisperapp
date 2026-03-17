@@ -4,10 +4,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 9999",
+    "dev": "next dev -p 6000",
     "genkit:dev": "genkit start -- tsx src/ai/dev.ts",
     "genkit:watch": "genkit start -- tsx --watch src/ai/dev.ts",
-    "build": "NODE_ENV=production next build",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit"
@@ -46,7 +46,7 @@
     "genkit": "^1.20.0",
     "lucide-react": "^0.475.0",
     "next": "15.5.9",
-    "nodemailer": "^6.9.13",
+    "nodemailer": "^6.9.16",
     "patch-package": "^8.0.0",
     "react": "^19.2.1",
     "react-day-picker": "^9.11.3",
@@ -60,7 +60,7 @@
   },
   "devDependencies": {
     "@types/node": "^20",
-    "@types/nodemailer": "^6.4.14",
+    "@types/nodemailer": "^6.4.17",
     "@types/react": "^19.2.1",
     "@types/react-dom": "^19.2.1",
     "genkit-cli": "^1.20.0",
