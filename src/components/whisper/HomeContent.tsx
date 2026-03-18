@@ -97,14 +97,12 @@ export function HomeContent({ searchParams }: { searchParams: any }) {
   const { data: dbAnswers } = useCollection<Answer>(dbAnswersQuery)
   const answers = useMemo(() => dbAnswers?.length ? dbAnswers : (mockData.answers as any[]).filter(a => a.questionId === selectedId), [dbAnswers, selectedId])
 
-  const filtered = useMemo(() => {
+  const getFilteredQuestions = () => {
     const baseQuestions = [...questions];
-
     if (deferredSearchQuery) {
       const q = deferredSearchQuery.toLowerCase();
       return baseQuestions.filter(item => (item.title && item.title.toLowerCase().includes(q)) || (item.text && item.text.toLowerCase().includes(q)));
     }
-    
     switch (activeTab) {
       case "hrm":
         return baseQuestions.filter(q => q.category === "인사전략/HRM");
@@ -118,8 +116,9 @@ export function HomeContent({ searchParams }: { searchParams: any }) {
       default:
         return baseQuestions;
     }
-  }, [questions, deferredSearchQuery, activeTab])
+  }
 
+  const filtered = getFilteredQuestions();
   const paginated = useMemo(() => filtered.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE), [filtered, currentPage])
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE)
 
