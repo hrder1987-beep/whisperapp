@@ -64,8 +64,13 @@ export function Header({ onSearch }: HeaderProps) {
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      if (pathname !== '/') router.push(`/?search=${encodeURIComponent(searchQuery)}`)
-      else onSearch?.(searchQuery)
+      const targetUrl = `/?search=${encodeURIComponent(searchQuery)}`
+      if (pathname === '/') {
+        onSearch?.(searchQuery)
+        router.push(targetUrl, { scroll: false })
+      } else {
+        router.push(targetUrl)
+      }
     }
   }
 
@@ -80,135 +85,133 @@ export function Header({ onSearch }: HeaderProps) {
     { name: "채용 정보", href: "/jobs" },
   ]
 
-  if (!isMounted) return <header className="naver-header h-16 md:h-[88px] border-b border-black/[0.02] bg-white/98" />
+  if (!isMounted) return <header className="h-16 md:h-20 bg-white/80 backdrop-blur-md sticky top-0 z-50" />
 
   return (
-    <header className="naver-header shadow-sm border-none bg-white/98">
-      <div className="max-w-7xl mx-auto px-4 md:px-6 h-16 md:h-[88px] flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3 md:gap-10">
-          <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="md:hidden text-accent -ml-2 hover:bg-primary/10 rounded-full transition-all active:scale-90">
-                <Menu className="w-7 h-7" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="bg-white border-none p-0 w-[300px] shadow-4xl">
-              <SheetHeader className="sr-only"><SheetTitle>메뉴</SheetTitle></SheetHeader>
-              <div className="flex flex-col h-full pt-16 px-6">
-                <Logo className="mb-12 scale-110 origin-left" />
-                <nav className="flex flex-col gap-2">
-                  {isAdmin && (
-                    <Button asChild className="bg-accent text-primary font-black rounded-2xl h-14 mb-6 shadow-xl hover:scale-[1.02] transition-all">
-                      <Link href="/admin" onClick={() => setIsMobileMenuOpen(false)}>
-                        <ShieldCheck className="w-5 h-5 mr-2" /> 플랫폼 관리 센터
-                      </Link>
-                    </Button>
-                  )}
-                  {navLinks.map((link) => (
-                    <Link key={link.href} href={link.href} onClick={() => setIsMobileMenuOpen(false)} className={cn("text-[16px] font-black py-4 px-5 rounded-2xl transition-all", pathname === link.href ? "bg-accent text-white shadow-md" : "text-accent/60 hover:bg-primary/10")}>{link.name}</Link>
-                  ))}
-                  <div className="h-px bg-black/[0.04] my-6" />
-                  {user ? (
-                    <div className="flex flex-col gap-2">
-                      <Link href="/my-posts" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-bold py-3 text-accent/60 flex items-center gap-3 px-5"><FileText className="w-4 h-4 opacity-30" /> 내가 쓴 속삭임</Link>
-                      <Link href="/profile" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-bold py-3 text-accent/60 flex items-center gap-3 px-5"><UserIcon className="w-4 h-4 opacity-30" /> 내 정보</Link>
-                      <Link href="/notifications" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-bold py-3 text-accent/60 flex items-center gap-3 px-5"><Bell className="w-4 h-4 opacity-30" /> 알림 센터</Link>
-                      <button onClick={handleLogout} className="text-left text-sm font-black py-3 px-5 text-red-400 mt-4 flex items-center gap-2"><LogOut className="w-4 h-4" /> 로그아웃</button>
-                    </div>
-                  ) : (
-                    <Link href="/auth?mode=login" onClick={() => setIsMobileMenuOpen(false)} className="text-[16px] font-black py-4 px-5 bg-accent text-white rounded-2xl text-center shadow-lg flex items-center justify-center gap-2 mt-4"><Sparkles className="w-4 h-4" /> 시작하기</Link>
-                  )}
-                </nav>
-              </div>
-            </SheetContent>
-          </Sheet>
-          <Link href="/"><Logo className="scale-[0.85] md:scale-110" /></Link>
-        </div>
-
-        <div className="hidden md:flex flex-1 max-w-xl px-10">
-          <div className="naver-search-bar w-full h-12 shadow-sm group">
-            <Search className="text-accent/30 group-focus-within:text-accent w-5 h-5 ml-2" />
-            <Input 
-              placeholder="궁금한 HR 지식과 사례를 검색하세요" 
-              className="border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 text-[15px] font-black h-full placeholder:text-accent/30 bg-transparent outline-none pl-3" 
-              value={searchQuery} 
-              onChange={(e) => setSearchQuery(e.target.value)} 
-              onKeyDown={handleKeyDown} 
-            />
+    <header className="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="flex items-center justify-between h-16 md:h-20">
+          
+          <div className="flex items-center gap-4">
+            <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="md:hidden text-gray-600 -ml-2">
+                  <Menu className="w-6 h-6" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="bg-white border-r-0 p-0 w-[80vw] max-w-[320px] shadow-2xl">
+                 <div className="flex flex-col h-full pt-8 px-4">
+                    <div className="px-4 mb-8"><Logo /></div>
+                    <nav className="flex flex-col gap-1">
+                    {isAdmin && (
+                        <Button asChild className="bg-accent text-primary font-bold rounded-lg h-12 mb-4 shadow-md">
+                        <Link href="/admin" onClick={() => setIsMobileMenuOpen(false)}>
+                            <ShieldCheck className="w-4 h-4 mr-2" /> 관리자 센터
+                        </Link>
+                        </Button>
+                    )}
+                    {navLinks.map((link) => (
+                        <Link key={link.href} href={link.href} onClick={() => setIsMobileMenuOpen(false)} className={cn("text-base font-bold py-3 px-4 rounded-lg transition-colors", pathname === link.href ? "bg-primary/10 text-primary" : "text-gray-600 hover:bg-gray-100")}>{link.name}</Link>
+                    ))}
+                    <div className="h-px bg-gray-200 my-4" />
+                    {user ? (
+                        <div className="flex flex-col gap-1">
+                        <Link href="/my-posts" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-semibold py-3 text-gray-500 flex items-center gap-3 px-4"><FileText className="w-4 h-4 text-gray-400" /> 내가 쓴 글</Link>
+                        <Link href="/profile" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-semibold py-3 text-gray-500 flex items-center gap-3 px-4"><UserIcon className="w-4 h-4 text-gray-400" /> 내 프로필</Link>
+                        <Link href="/notifications" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-semibold py-3 text-gray-500 flex items-center gap-3 px-4"><Bell className="w-4 h-4 text-gray-400" /> 알림</Link>
+                        <button onClick={handleLogout} className="text-left text-sm font-bold py-3 px-4 text-red-500 mt-4 flex items-center gap-3"><LogOut className="w-4 h-4" /> 로그아웃</button>
+                        </div>
+                    ) : (
+                        <Link href="/auth?mode=login" onClick={() => setIsMobileMenuOpen(false)} className="text-base font-bold py-3 px-4 bg-accent text-white rounded-lg text-center shadow-md flex items-center justify-center gap-2 mt-4"><Sparkles className="w-4 h-4" /> 시작하기</Link>
+                    )}
+                    </nav>
+                </div>
+              </SheetContent>
+            </Sheet>
+            <Link href="/"><Logo className="hidden sm:block" /></Link>
           </div>
-        </div>
 
-        <div className="flex items-center gap-2 md:gap-4">
-          <div className="hidden md:flex items-center gap-3">
-            {user && (
-              <div className="flex items-center gap-1.5 mr-2">
-                {isAdmin && (
-                  <Link href="/admin">
-                    <Button variant="ghost" size="icon" title="관리자 센터" className="text-primary hover:text-accent hover:bg-primary/20 h-10 w-10 rounded-xl transition-all border border-primary/20 shadow-sm mr-2">
-                      <ShieldCheck className="w-5 h-5" />
-                    </Button>
-                  </Link>
+          <nav className="hidden md:flex items-center gap-2 lg:gap-3">
+            {navLinks.map((link) => (
+              <Link 
+                key={link.href} 
+                href={link.href} 
+                className={cn(
+                  "py-2 px-4 rounded-lg text-sm transition-colors font-bold", 
+                  pathname === link.href 
+                    ? "bg-accent text-primary shadow-sm" 
+                    : "text-gray-500 hover:bg-gray-100 hover:text-gray-800"
                 )}
-                <Link href="/my-posts"><Button variant="ghost" size="icon" title="내 속삭임" className="text-accent/40 hover:text-accent hover:bg-primary/10 h-10 w-10 rounded-xl transition-all"><FileText className="w-5 h-5" /></Button></Link>
-                <Link href="/notifications"><Button variant="ghost" size="icon" className="relative text-accent/40 hover:text-accent hover:bg-primary/10 h-10 w-10 rounded-xl transition-all"><Bell className="w-5 h-5" />{unreadNotifs && unreadNotifs.length > 0 && (<Badge className="absolute -top-1 -right-1 bg-red-500 text-white border-none h-4 w-4 p-0 flex items-center justify-center text-[8px] rounded-full font-black shadow-md">{unreadNotifs.length}</Badge>)}</Button></Link>
-                <Link href="/messages"><Button variant="ghost" size="icon" className="relative text-accent/40 hover:text-accent hover:bg-primary/10 h-10 w-10 rounded-xl transition-all"><Mail className="w-5 h-5" />{unreadMessages && unreadMessages.length > 0 && (<Badge className="absolute -top-1 -right-1 bg-red-500 text-white border-none h-4 w-4 p-0 flex items-center justify-center text-[8px] rounded-full font-black shadow-md">{unreadMessages.length}</Badge>)}</Button></Link>
+              >
+                {link.name}
+              </Link>
+            ))}
+          </nav>
+
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="relative w-40 sm:w-48 md:w-56 lg:w-64">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 peer-focus:text-gray-700" />
+              <Input 
+                placeholder="검색"
+                className="peer h-10 w-full rounded-lg bg-gray-100 border-transparent pl-9 pr-3 text-sm font-semibold placeholder:text-gray-500 focus:bg-white focus:border-primary/50 shadow-inner"
+                value={searchQuery} 
+                onChange={(e) => setSearchQuery(e.target.value)} 
+                onKeyDown={handleKeyDown} 
+              />
+            </div>
+
+            {!user ? (
+              <div className="hidden md:flex items-center gap-2">
+                <Link href="/auth?mode=login"><Button className="bg-primary text-accent h-10 px-5 text-sm font-bold shadow-sm">로그인</Button></Link>
+                <Link href="/auth?mode=signup"><Button variant="outline" className="border-gray-200 text-gray-700 h-10 px-5 text-sm font-bold">회원가입</Button></Link>
               </div>
+            ) : (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="relative w-9 h-9 md:w-10 md:h-10 rounded-full bg-gray-100 border-2 border-white shadow-sm overflow-hidden hover:ring-2 hover:ring-primary/50 transition-all">
+                    <img src={profile?.profilePictureUrl || `https://api.dicebear.com/8.x/initials/svg?seed=${user.uid}`} className="w-full h-full object-cover" alt="profile" />
+                    {(unreadMessages?.length || 0 + unreadNotifs?.length || 0) > 0 && (
+                       <span className="absolute top-0 right-0 block h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-white" />
+                    )}
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56 mt-2 bg-white border-gray-100 shadow-lg rounded-xl p-1.5">
+                  <div className="px-2.5 py-2 mb-1">
+                    <p className="text-xs font-bold text-gray-400">@{profile?.username || "전문가"}님</p>
+                  </div>
+                  <DropdownMenuSeparator className="bg-gray-100 mx-1.5" />
+                    <DropdownMenuItem asChild className="rounded-lg py-2 px-2.5 font-semibold text-sm text-gray-700 focus:bg-gray-100 cursor-pointer">
+                    <Link href="/profile" className="flex items-center gap-2"><UserIcon className="w-4 h-4" /> 내 프로필</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild className="rounded-lg py-2 px-2.5 font-semibold text-sm text-gray-700 focus:bg-gray-100 cursor-pointer">
+                    <Link href="/my-posts" className="flex items-center gap-2"><FileText className="w-4 h-4" /> 내가 쓴 글</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild className="rounded-lg py-2 px-2.5 font-semibold text-sm text-gray-700 focus:bg-gray-100 cursor-pointer">
+                        <Link href="/notifications" className="flex items-center gap-2 justify-between w-full">
+                            <span><Bell className="w-4 h-4 inline-block mr-2"/>알림</span>
+                            {unreadNotifs && unreadNotifs.length > 0 && <Badge className="bg-primary text-accent h-5 px-1.5 text-xs font-bold rounded-full">{unreadNotifs.length}</Badge>}
+                        </Link>
+                    </DropdownMenuItem>
+                     <DropdownMenuItem asChild className="rounded-lg py-2 px-2.5 font-semibold text-sm text-gray-700 focus:bg-gray-100 cursor-pointer">
+                        <Link href="/messages" className="flex items-center gap-2 justify-between w-full">
+                            <span><Mail className="w-4 h-4 inline-block mr-2"/>메시지</span>
+                            {unreadMessages && unreadMessages.length > 0 && <Badge className="bg-primary text-accent h-5 px-1.5 text-xs font-bold rounded-full">{unreadMessages.length}</Badge>}
+                        </Link>
+                    </DropdownMenuItem>
+                  {isAdmin && <DropdownMenuSeparator className="bg-gray-100 mx-1.5" />}
+                  {isAdmin && <DropdownMenuItem asChild className="rounded-lg py-2 px-2.5 font-semibold text-sm text-gray-700 focus:bg-gray-100 cursor-pointer">
+                    <Link href="/admin" className="flex items-center gap-2"><ShieldCheck className="w-4 h-4" /> 관리자 센터</Link>
+                    </DropdownMenuItem>}
+                  <DropdownMenuSeparator className="bg-gray-100 mx-1.5" />
+                  <DropdownMenuItem onClick={handleLogout} className="rounded-lg py-2 px-2.5 font-semibold text-sm text-red-500 focus:bg-red-50 cursor-pointer flex items-center gap-2">
+                    <LogOut className="w-4 h-4" /> 로그아웃
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             )}
           </div>
-          {!user ? (
-            <div className="flex items-center gap-2">
-              <Link href="/auth?mode=login"><Button className="naver-button h-10 px-6 hidden md:block shadow-md text-sm">로그인</Button></Link>
-              <Link href="/auth?mode=signup"><Button variant="outline" className="border-accent/10 text-accent font-black h-10 px-6 hidden md:block rounded-xl hover:bg-primary/10 text-sm">회원가입</Button></Link>
-            </div>
-          ) : (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <div className="hidden md:flex w-10 h-10 rounded-xl bg-accent/5 border-2 border-white shadow-md items-center justify-center overflow-hidden hover:scale-105 transition-all cursor-pointer">
-                  <img src={profile?.profilePictureUrl || `https://picsum.photos/seed/${user.uid}/100/100`} className="w-full h-full object-cover" alt="me" />
-                </div>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56 mt-2 bg-white border-none shadow-4xl rounded-2xl p-2 animate-in fade-in zoom-in-95 duration-200">
-                <div className="px-4 py-3 mb-1">
-                  <p className="text-[10px] font-black text-accent/20 uppercase tracking-widest mb-0.5">Logged in as</p>
-                  <p className="text-sm font-black text-accent truncate">@{profile?.username || "전문가"}</p>
-                </div>
-                <DropdownMenuSeparator className="bg-accent/5 mx-2" />
-                <DropdownMenuItem asChild className="rounded-xl py-3 px-4 font-bold text-accent/70 focus:bg-primary/10 focus:text-accent cursor-pointer">
-                  <Link href="/profile" className="flex items-center gap-3">
-                    <UserIcon className="w-4 h-4" /> 마이 프로필
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild className="rounded-xl py-3 px-4 font-bold text-accent/70 focus:bg-primary/10 focus:text-accent cursor-pointer">
-                  <Link href="/my-posts" className="flex items-center gap-3">
-                    <FileText className="w-4 h-4" /> 내가 쓴 속삭임
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator className="bg-accent/5 mx-2" />
-                <DropdownMenuItem onClick={handleLogout} className="rounded-xl py-3 px-4 font-black text-red-500 focus:bg-red-50 focus:text-red-600 cursor-pointer flex items-center gap-3">
-                  <LogOut className="w-4 h-4" /> 로그아웃
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
         </div>
       </div>
-
-      <nav className="border-t border-black/[0.02] hidden md:block bg-white/30 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-6 h-12 flex items-center gap-10">
-          {navLinks.map((link) => (
-            <Link 
-              key={link.href} 
-              href={link.href} 
-              className={cn(
-                "text-[14px] font-black transition-all h-full flex items-center border-b-[3px] border-transparent rounded-none px-1 tracking-tight", 
-                pathname === link.href ? "text-accent border-accent" : "text-accent/40 hover:text-accent"
-              )}
-            >
-              {link.name}
-            </Link>
-          ))}
-        </div>
-      </nav>
     </header>
   )
 }

@@ -141,9 +141,9 @@ export function QuestionFeed({
   }
 
   return (
-    <div className="space-y-6 md:space-y-10">
+    <div className="space-y-4">
       {questions.length === 0 ? (
-        <Card className="naver-card p-10 md:p-20 text-center bg-white border-none shadow-xl">
+        <Card className="rounded-2xl p-10 md:p-20 text-center bg-white/50 border-none">
           <div className="flex flex-col items-center gap-6">
             <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center animate-pulse">
               <AlertCircle className="w-8 h-8 text-primary" />
@@ -168,54 +168,56 @@ export function QuestionFeed({
               key={q.id} 
               id={`q-${q.id}`}
               className={cn(
-                "naver-card group transition-all duration-700 border-none",
-                isExpanded ? "ring-[6px] ring-primary/10 shadow-4xl translate-y-[-4px]" : "hover:translate-y-[-2px] hover:shadow-2xl active:scale-[0.99]"
+                "bg-white rounded-2xl shadow-md border-transparent transition-all duration-300 cursor-pointer",
+                isExpanded 
+                  ? "ring-2 ring-primary/50 shadow-xl"
+                  : "hover:shadow-lg hover:-translate-y-1 active:scale-[0.99]"
               )}
               onClick={() => onSelectQuestion(q.id)}
             >
-              <CardContent className={cn("p-6 md:p-12", isExpanded && "md:p-16")}>
-                <div className="flex justify-between items-start mb-6 md:mb-10">
-                  <div className="flex items-center gap-4 md:gap-5 min-w-0 flex-1">
-                    <AvatarIcon src={q.userProfilePicture} seed={q.nickname} className="w-10 h-10 md:w-14 md:h-14 border-4 border-white shadow-xl shrink-0" />
+              <CardContent className="p-5 md:p-6">
+                <div className="flex justify-between items-start mb-4">
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <AvatarIcon src={q.userProfilePicture} seed={q.nickname} className="w-10 h-10 border-2 border-white shadow-sm shrink-0" />
                     <div className="flex flex-col min-w-0">
-                      <div className="flex items-center gap-2 md:gap-3 flex-wrap">
-                        <span className="text-[14px] md:text-lg font-black text-accent tracking-tight truncate max-w-[150px] md:max-w-none">@{q.nickname}</span>
-                        {q.jobTitle && <span className="text-[9px] md:text-[11px] font-black text-primary italic bg-primary/10 px-2 py-0.5 rounded-lg truncate">#{q.jobTitle}</span>}
-                        {isMentor && <Badge className="bg-accent text-primary shadow-lg border-none px-2 h-5 text-[8px] md:text-[9px] font-black uppercase tracking-widest">WHISPERER</Badge>}
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-sm font-bold text-accent truncate">@{q.nickname}</span>
+                        {q.jobTitle && <span className="text-[10px] font-medium text-primary bg-primary/10 px-1.5 py-0.5 rounded-md truncate">#{q.jobTitle}</span>}
+                        {isMentor && <Badge className="bg-accent text-primary shadow-sm border-none px-2 h-5 text-[8px] font-black uppercase tracking-wider">WHISPERER</Badge>}
                         {user && !isOwner && (
-                          <button onClick={(e) => { e.stopPropagation(); setMessageTarget({ id: q.userId, nickname: q.nickname }); }} className="text-accent/10 hover:text-accent hover:bg-accent/5 transition-all p-1.5 rounded-full">
-                            <Mail className="w-4 h-4" />
+                          <button onClick={(e) => { e.stopPropagation(); setMessageTarget({ id: q.userId, nickname: q.nickname }); }} className="text-accent/20 hover:text-accent transition-all p-1 rounded-full">
+                            <Mail className="w-3.5 h-3.5" />
                           </button>
                         )}
                       </div>
-                      <span className="text-[10px] md:text-[12px] font-bold text-accent/30 flex items-center gap-1.5 mt-1">
-                        {isMounted ? formatDistanceToNow(q.createdAt, { addSuffix: true, locale: ko }) : '...'}
+                      <span className="text-xs text-accent/40 mt-0.5">
+                         {isMounted ? formatDistanceToNow(q.createdAt, { addSuffix: true, locale: ko }) : '...'}
                       </span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 shrink-0 ml-2">
+                  <div className="flex items-center gap-1 shrink-0 ml-2">
                     {q.category && (
-                      <Badge variant="outline" className="hidden sm:inline-flex text-[9px] font-black border-accent/5 text-accent/40 rounded-xl px-3 h-7 bg-accent/2 tracking-tighter uppercase">#{q.category}</Badge>
+                      <Badge variant="outline" className="hidden sm:inline-flex text-[10px] font-semibold border-gray-200 text-gray-500 rounded-md px-2 h-6 bg-gray-50 tracking-tight">#{q.category}</Badge>
                     )}
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                        <button className="text-accent/10 hover:text-accent/50 transition-all p-1.5 rounded-full hover:bg-accent/5 outline-none">
-                          <MoreHorizontal className="w-5 h-5" />
+                        <button className="text-gray-400 hover:text-gray-600 transition-all p-1 rounded-full hover:bg-gray-100 outline-none">
+                          <MoreHorizontal className="w-4 h-4" />
                         </button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="bg-white border-black/[0.03] rounded-2xl shadow-4xl p-1.5 w-44 animate-in fade-in zoom-in-95 duration-200">
+                      <DropdownMenuContent align="end" className="bg-white border-gray-100 rounded-xl shadow-lg p-1 w-36 animate-in fade-in zoom-in-95 duration-200">
                         {isOwner ? (
                           <>
-                            <DropdownMenuItem onSelect={(e) => { e.preventDefault(); setEditingQuestion(q); setEditTitle(q.title); setEditText(q.text); setEditCategory(q.category || ""); }} className="rounded-xl font-black text-xs gap-3 py-3 cursor-pointer text-accent focus:bg-primary/10">
-                              <Edit3 className="w-4 h-4" /> 수정하기
+                            <DropdownMenuItem onSelect={(e) => { e.preventDefault(); setEditingQuestion(q); setEditTitle(q.title); setEditText(q.text); setEditCategory(q.category || ""); }} className="rounded-lg font-semibold text-xs gap-2 py-2 px-3 cursor-pointer text-accent focus:bg-gray-100">
+                              <Edit3 className="w-3.5 h-3.5" /> 수정하기
                             </DropdownMenuItem>
-                            <DropdownMenuItem onSelect={(e) => { e.preventDefault(); setTimeout(() => handleDelete(q), 100); }} className="rounded-xl font-black text-xs gap-3 py-3 cursor-pointer text-red-500 focus:bg-red-50">
-                              <Trash2 className="w-4 h-4" /> 삭제하기
+                            <DropdownMenuItem onSelect={(e) => { e.preventDefault(); setTimeout(() => handleDelete(q), 100); }} className="rounded-lg font-semibold text-xs gap-2 py-2 px-3 cursor-pointer text-red-500 focus:bg-red-50">
+                              <Trash2 className="w-3.5 h-3.5" /> 삭제하기
                             </DropdownMenuItem>
                           </>
                         ) : (
-                          <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleShare(q); }} className="rounded-xl font-black text-xs gap-3 py-3 cursor-pointer text-accent focus:bg-primary/10">
-                            <Share2 className="w-4 h-4" /> 링크 복사
+                          <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleShare(q); }} className="rounded-lg font-semibold text-xs gap-2 py-2 px-3 cursor-pointer text-accent focus:bg-gray-100">
+                            <Share2 className="w-3.5 h-3.5" /> 링크 복사
                           </DropdownMenuItem>
                         )}
                       </DropdownMenuContent>
@@ -223,47 +225,52 @@ export function QuestionFeed({
                   </div>
                 </div>
 
-                <div className="space-y-4 md:space-y-6">
-                  <h3 className="text-lg md:text-2xl font-black leading-[1.3] text-accent tracking-tighter break-words group-hover:text-primary transition-colors">{q.title}</h3>
-                  <p className={cn("text-[14px] md:text-[17px] leading-[1.7] text-[#404040] font-medium whitespace-pre-wrap break-words", !isExpanded && "line-clamp-3")}>{q.text}</p>
-                  {isExpanded && (
-                    <div className="space-y-6 md:space-y-8 mt-8 md:mt-12 animate-in slide-in-from-bottom-4 duration-700">
-                      {q.imageUrl && <div className="relative w-full rounded-[2rem] overflow-hidden border-4 md:border-8 border-white shadow-2xl bg-[#FBFBFC]"><img src={q.imageUrl} alt="attached" className="w-full h-auto block" /></div>}
-                      {youtubeId && <div className="relative w-full aspect-video rounded-[2rem] overflow-hidden border-4 md:border-8 border-white shadow-2xl bg-black"><iframe width="100%" height="100%" src={`https://www.youtube.com/embed/${youtubeId}`} title="video" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe></div>}
+                <div className="space-y-2 ml-12 pl-1 border-l-2 border-gray-100/80">
+                    <div className="pl-4 space-y-2">
+                        <h3 className="text-base md:text-lg font-bold leading-snug text-gray-800 tracking-tight break-words group-hover:text-primary transition-colors">{q.title}</h3>
+                        <p className={cn("text-sm leading-relaxed text-gray-600 whitespace-pre-wrap break-words", !isExpanded && "line-clamp-2")}>{q.text}</p>
                     </div>
-                  )}
+                  {
+                    isExpanded && (
+                      <div className="space-y-4 pt-4 animate-in slide-in-from-bottom-2 duration-500">
+                        {q.imageUrl && <div className="relative w-full rounded-lg overflow-hidden border border-gray-100 shadow-sm bg-gray-50"><img src={q.imageUrl} alt="attached" className="w-full h-auto block" /></div>}
+                        {youtubeId && <div className="relative w-full aspect-video rounded-lg overflow-hidden border border-gray-100 shadow-sm bg-black"><iframe width="100%" height="100%" src={`https://www.youtube.com/embed/${youtubeId}`} title="video" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe></div>}
+                      </div>
+                    )
+                  }
                 </div>
 
                 {isExpanded && (
-                  <div className="mt-12 md:mt-20 pt-12 md:pt-16 border-t border-black/[0.05]" onClick={(e) => e.stopPropagation()}>
+                  <div className="mt-6 pt-6 border-t border-gray-100" onClick={(e) => e.stopPropagation()}>
                     <SubmissionForm type="answer" placeholder="도움이 되는 지혜를 남겨주세요." onSubmit={onAddAnswer} />
                     <AnswerFeed answers={questionAnswers} isAdminMode={isAdminMode} />
                   </div>
                 )}
               </CardContent>
               
-              <CardFooter className="px-6 md:px-12 py-4 md:py-6 border-t border-black/[0.02] flex items-center justify-between bg-primary/[0.02]">
-                <div className="flex gap-6 md:gap-10">
+              <CardFooter className="px-5 md:px-6 py-3 border-t border-gray-100 flex items-center justify-between bg-gray-50/50">
+                <div className="flex gap-4">
                   <button 
                     onClick={(e) => handleLike(e, q)}
                     className={cn(
-                      "flex items-center gap-2 text-xs font-black transition-all hover:scale-110",
-                      isLiked ? "text-primary" : "text-accent/30 hover:text-primary"
+                      "flex items-center gap-1.5 text-xs font-bold transition-all hover:scale-105",
+                      isLiked ? "text-primary" : "text-gray-400 hover:text-primary"
                     )}
                   >
-                    <ThumbsUp className={cn("w-4 h-4 md:w-5 md:h-5", isLiked && "fill-primary")} />
+                    <ThumbsUp className={cn("w-4 h-4", isLiked && "fill-primary")} />
                     <span>{q.likeCount?.toLocaleString() || 0}</span>
                   </button>
-                  <div className="flex items-center gap-2 text-xs font-black text-accent/30">
-                    <MessageCircle className="w-4 h-4 md:w-5 md:h-5 text-primary" />
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-gray-400">
+                    <MessageCircle className="w-4 h-4" />
                     <span>답변 {q.answerCount.toLocaleString()}</span>
                   </div>
-                  <button onClick={(e) => { e.stopPropagation(); handleShare(q); }} className="flex items-center gap-2 text-xs font-black text-accent/30 hover:text-accent transition-all">
-                    <Share2 className="w-4 h-4 md:w-5 md:h-5" />
-                    공유
-                  </button>
                 </div>
-                <Bookmark className="w-5 h-5 md:w-6 md:h-6 text-accent/[0.03] hover:text-primary cursor-pointer transition-all" />
+                <div className="flex items-center gap-2">
+                    <button onClick={(e) => { e.stopPropagation(); handleShare(q); }} className="flex items-center gap-1.5 text-xs font-bold text-gray-400 hover:text-gray-800 transition-all">
+                    <Share2 className="w-4 h-4" />
+                    </button>
+                    <Bookmark className="w-4 h-4 text-gray-300 hover:text-yellow-500 cursor-pointer transition-all" />
+                </div>
               </CardFooter>
             </Card>
           )
@@ -271,29 +278,23 @@ export function QuestionFeed({
       )}
 
       <Dialog open={!!editingQuestion} onOpenChange={(open) => { if(!open) setEditingQuestion(null); }}>
-        <DialogContent className="max-w-2xl w-[95vw] bg-white border-none rounded-[3rem] p-0 shadow-4xl overflow-hidden">
-          <DialogHeader className="bg-primary/10 p-8 border-b border-primary/10">
-            <DialogTitle className="text-xl md:text-2xl font-black text-accent flex items-center gap-4"><Sparkles className="w-6 h-6 md:w-8 md:h-8 text-primary" /> 게시글 수정</DialogTitle>
+        <DialogContent className="max-w-2xl w-[95vw] bg-white border-none rounded-2xl p-0 shadow-xl overflow-hidden">
+          <DialogHeader className="bg-gray-50 p-6 border-b border-gray-200">
+            <DialogTitle className="text-lg font-bold text-gray-800 flex items-center gap-3"><Sparkles className="w-5 h-5 text-primary" /> 게시글 수정</DialogTitle>
           </DialogHeader>
-          <div className="p-8 space-y-6">
-            <div className="space-y-5">
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Input value={editTitle} onChange={e => setEditTitle(e.target.value)} placeholder="제목" className="flex-1 h-14 bg-[#F5F6F7] border-none rounded-2xl font-black text-lg px-6 shadow-inner" />
-                <div className="w-full sm:w-48">
-                  <Select value={editCategory} onValueChange={setEditCategory}>
-                    <SelectTrigger className="h-14 bg-accent text-white border-none rounded-2xl font-black text-xs px-6 shadow-xl">
-                      <SelectValue placeholder="카테고리" />
-                    </SelectTrigger>
-                    <SelectContent className="rounded-2xl shadow-4xl border-none p-2">{HR_CATEGORIES.map(cat => <SelectItem key={cat} value={cat} className="rounded-xl py-3 font-bold px-4 text-xs">{cat}</SelectItem>)}</SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <Textarea value={editText} onChange={e => setEditText(e.target.value)} placeholder="내용" className="min-h-[300px] bg-[#F5F6F7] border-none rounded-[2rem] p-8 font-medium text-base md:text-lg leading-relaxed resize-none shadow-inner" />
-            </div>
+          <div className="p-6 space-y-4">
+              <Input value={editTitle} onChange={e => setEditTitle(e.target.value)} placeholder="제목" className="w-full h-12 bg-gray-100 border-transparent rounded-lg font-bold text-base px-4" />
+              <Select value={editCategory} onValueChange={setEditCategory}>
+                <SelectTrigger className="w-full h-12 bg-gray-100 border-transparent rounded-lg font-bold text-xs px-4">
+                  <SelectValue placeholder="카테고리" />
+                </SelectTrigger>
+                <SelectContent className="rounded-lg shadow-lg border-gray-100 p-1">{HR_CATEGORIES.map(cat => <SelectItem key={cat} value={cat} className="rounded-md py-2 font-semibold px-3 text-xs">{cat}</SelectItem>)}</SelectContent>
+              </Select>
+              <Textarea value={editText} onChange={e => setEditText(e.target.value)} placeholder="내용" className="min-h-[250px] bg-gray-100 border-transparent rounded-lg p-4 font-medium text-sm leading-relaxed resize-none" />
           </div>
-          <DialogFooter className="bg-[#FBFBFC] p-8 border-t border-black/5 flex flex-row gap-4">
-            <Button variant="ghost" onClick={() => setEditingQuestion(null)} className="flex-1 h-14 rounded-2xl font-black text-accent/40 text-sm">취소</Button>
-            <Button onClick={handleUpdate} disabled={isUpdating} className="flex-[2] h-14 naver-button rounded-2xl text-lg shadow-2xl">{isUpdating ? "처리 중" : "수정 완료"}</Button>
+          <DialogFooter className="bg-gray-50 p-4 border-t border-gray-200 flex flex-row gap-2">
+            <Button variant="ghost" onClick={() => setEditingQuestion(null)} className="h-12 rounded-lg font-bold text-gray-500 text-sm">취소</Button>
+            <Button onClick={handleUpdate} disabled={isUpdating} className="flex-1 h-12 bg-primary text-accent rounded-lg text-sm font-bold shadow-sm">{isUpdating ? "처리 중" : "수정 완료"}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

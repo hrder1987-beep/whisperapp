@@ -176,15 +176,18 @@ export function HomeContent({ searchParams }: { searchParams: any }) {
         
         <MainBanner banners={banners} autoSlideDuration={branding?.bannerAutoSlideDuration || 3} />
         
-        <div className="flex items-center justify-between border-b border-black/[0.05] sticky top-16 md:top-[88px] z-30 bg-[#F8F9FA]/95 backdrop-blur-xl pt-4 -mx-4 px-4 transition-all">
-          <div className="flex flex-nowrap overflow-x-auto scrollbar-hide gap-x-6 pb-2 flex-1">
-            {[{ id: "all", label: "전체 피드" }, { id: "hrm", label: "인사/총무" }, { id: "hrd", label: "HRD/교육" }, { id: "culture", label: "조직문화" }, { id: "popular", label: "인기" }].map(t => (
+        {/* === [UI/UX 개선] 컨트롤 바 시작 === */}
+        <div className="bg-white rounded-2xl shadow-sm p-1.5 flex items-center justify-between sticky top-4 md:top-6 z-30">
+          <div className="flex items-center gap-x-1 md:gap-x-2 overflow-x-auto scrollbar-hide">
+            {[{ id: "all", label: "전체" }, { id: "hrm", label: "인사/총무" }, { id: "hrd", label: "HRD/교육" }, { id: "culture", label: "조직문화" }, { id: "popular", label: "인기" }].map(t => (
               <button 
                 key={t.id} 
                 onClick={() => setActiveTab(t.id as any)} 
                 className={cn(
-                  "pb-3 text-[14px] md:text-[15px] transition-all border-b-2 whitespace-nowrap shrink-0", 
-                  activeTab === t.id ? "font-black text-primary border-accent" : "font-bold text-accent/40 border-transparent hover:text-accent/60"
+                  "py-2 px-4 rounded-xl text-xs md:text-sm transition-all whitespace-nowrap shrink-0", 
+                  activeTab === t.id 
+                    ? "font-bold bg-accent text-primary shadow" 
+                    : "font-medium text-accent/50 hover:bg-accent/5 hover:text-accent/70"
                 )}
               >
                 {t.label}
@@ -195,16 +198,17 @@ export function HomeContent({ searchParams }: { searchParams: any }) {
           <Button 
             onClick={() => setIsFormOpen(!isFormOpen)}
             className={cn(
-              "h-9 md:h-10 px-4 md:px-7 rounded-full font-black text-[11px] md:text-sm gap-2 transition-all shrink-0 mb-3 shadow-2xl hover:scale-105 active:scale-95 ml-4",
+              "h-9 md:h-10 px-4 rounded-lg font-black text-[11px] md:text-sm gap-2 transition-all shrink-0 ml-2 shadow-sm",
               isFormOpen 
-                ? "bg-accent text-primary ring-2 ring-primary/20" 
-                : "gold-gradient text-primary border-none"
+                ? "bg-gray-300 text-gray-800" 
+                : "bg-primary text-accent"
             )}
           >
             {isFormOpen ? <X className="w-3.5 h-3.5" /> : <Edit3 className="w-3.5 h-3.5" />}
             <span>{isFormOpen ? "닫기" : "글쓰기"}</span>
           </Button>
         </div>
+        {/* === [UI/UX 개선] 컨트롤 바 종료 === */}
 
         {isFormOpen && (
           <div className="animate-in fade-in slide-in-from-top-4 duration-500 mb-8">

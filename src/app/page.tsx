@@ -18,6 +18,7 @@ export default async function HomePage(props: {
   return (
     <div className="min-h-screen bg-[#F8F9FA]">
       <Header />
+      {/* === [수정] 콘텐츠 최대 너비를 원래 값인 7xl(1280px)로 복원 === */}
       <div className="max-w-7xl mx-auto px-4 py-6 md:py-10">
         <Suspense 
           fallback={
