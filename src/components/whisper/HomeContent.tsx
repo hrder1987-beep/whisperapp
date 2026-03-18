@@ -10,7 +10,7 @@ import { PremiumAds } from "@/components/whisper/PremiumAds"
 import { AnnouncementBar } from "@/components/whisper/AnnouncementBar"
 import { Question, Answer, PremiumAd, SiteBranding } from "@/lib/types"
 import { Button } from "@/components/ui/button"
-import { Sparkles, ChevronsLeft, ChevronsRight, Edit3, X } from "lucide-react"
+import { Sparkles, ChevronsLeft, ChevronsRight, Edit3, X, ChevronDown, ListFilter } from "lucide-react"
 import { generateAiReply } from "@/ai/flows/generate-ai-reply-flow"
 import { cn } from "@/lib/utils"
 import { useFirestore, useCollection, useDoc, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking, useUser } from "@/firebase"
@@ -18,6 +18,14 @@ import { collection, query, orderBy, doc, increment } from "firebase/firestore"
 import mockData from "@/lib/mock-data.json"
 
 const ITEMS_PER_PAGE = 10 
+
+const TABS = [
+  { id: "all", label: "전체" }, 
+  { id: "hrm", label: "인사/총무" }, 
+  { id: "hrd", label: "HRD/교육" }, 
+  { id: "culture", label: "조직문화" }, 
+  { id: "popular", label: "인기글" }
+]
 
 export function HomeContent({ searchParams }: { searchParams: any }) {
   const { user } = useUser()
@@ -30,6 +38,7 @@ export function HomeContent({ searchParams }: { searchParams: any }) {
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [isFormOpen, setIsFormOpen] = useState(false)
+  const [isFilterOpen, setIsFilterOpen] = useState(false)
 
   const questionsQuery = useMemoFirebase(() => db ? query(collection(db, "questions"), orderBy("createdAt", "desc")) : null, [db])
   const { data: dbQuestions } = useCollection<Question>(questionsQuery)
@@ -156,6 +165,11 @@ export function HomeContent({ searchParams }: { searchParams: any }) {
     setSelectedId(id === selectedId ? null : id);
   }
 
+  const handleTabClick = (tabId: any) => {
+    setActiveTab(tabId);
+    setIsFilterOpen(false);
+  }
+
   const announcements = useMemo(() => {
     if (branding?.announcements && Array.isArray(branding.announcements) && branding.announcements.length > 0) {
       return branding.announcements;
@@ -167,8 +181,8 @@ export function HomeContent({ searchParams }: { searchParams: any }) {
   }, [branding]);
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-      <div className="lg:col-span-8 space-y-6 md:space-y-8">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-10">
+      <div className="lg:col-span-8 space-y-6">
         <AnnouncementBar 
           announcements={announcements} 
           duration={branding?.announcementAutoSlideDuration || 4} 
@@ -176,47 +190,71 @@ export function HomeContent({ searchParams }: { searchParams: any }) {
         
         <MainBanner banners={banners} autoSlideDuration={branding?.bannerAutoSlideDuration || 3} />
         
-        {/* === [UI/UX 개선] 컨트롤 바 시작 === */}
-        <div className="bg-white rounded-2xl shadow-sm p-1.5 flex items-center justify-between sticky top-4 md:top-6 z-30">
-          <div className="flex items-center gap-x-1 md:gap-x-2 overflow-x-auto scrollbar-hide">
-            {[{ id: "all", label: "전체" }, { id: "hrm", label: "인사/총무" }, { id: "hrd", label: "HRD/교육" }, { id: "culture", label: "조직문화" }, { id: "popular", label: "인기" }].map(t => (
-              <button 
-                key={t.id} 
-                onClick={() => setActiveTab(t.id as any)} 
-                className={cn(
-                  "py-2 px-4 rounded-xl text-xs md:text-sm transition-all whitespace-nowrap shrink-0", 
-                  activeTab === t.id 
-                    ? "font-bold bg-accent text-primary shadow" 
-                    : "font-medium text-accent/50 hover:bg-accent/5 hover:text-accent/70"
-                )}
-              >
-                {t.label}
-              </button>
-            ))}
+        <div className="sticky top-[70px] md:top-[88px] z-30 space-y-1.5">
+           {/* --- Mobile Filter --- */}
+          <div className="md:hidden flex items-center justify-between gap-2 bg-white/80 backdrop-blur-md rounded-xl p-2 shadow-sm border border-black/5">
+              <Button onClick={() => setIsFilterOpen(!isFilterOpen)} variant="ghost" className="flex-1 justify-between font-bold text-gray-700 h-10 px-3">
+                <span>{TABS.find(t => t.id === activeTab)?.label}</span>
+                <ChevronDown className={cn("w-5 h-5 transition-transform", isFilterOpen && "rotate-180")} />
+              </Button>
           </div>
-          
-          <Button 
-            onClick={() => setIsFormOpen(!isFormOpen)}
-            className={cn(
-              "h-9 md:h-10 px-4 rounded-lg font-black text-[11px] md:text-sm gap-2 transition-all shrink-0 ml-2 shadow-sm",
-              isFormOpen 
-                ? "bg-gray-300 text-gray-800" 
-                : "bg-primary text-accent"
-            )}
-          >
-            {isFormOpen ? <X className="w-3.5 h-3.5" /> : <Edit3 className="w-3.5 h-3.5" />}
-            <span>{isFormOpen ? "닫기" : "글쓰기"}</span>
-          </Button>
+
+          {/* --- Desktop Filter --- */}
+          <div className="hidden md:flex items-center justify-between bg-white/80 backdrop-blur-md rounded-xl p-1.5 shadow-sm border border-black/5">
+            <div className="flex items-center gap-x-1 overflow-x-auto scrollbar-hide">
+              {TABS.map(t => (
+                <button 
+                  key={t.id} 
+                  onClick={() => handleTabClick(t.id)} 
+                  className={cn(
+                    "py-2 px-4 rounded-lg text-sm transition-all whitespace-nowrap shrink-0", 
+                    activeTab === t.id 
+                      ? "font-bold bg-accent text-primary shadow" 
+                      : "font-semibold text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+                  )}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {isFilterOpen && (
+              <div className="md:hidden absolute top-full left-0 w-full bg-white/95 backdrop-blur-md rounded-xl shadow-lg border border-black/5 mt-1 p-2 animate-in fade-in zoom-in-95">
+                  {TABS.map(t => (
+                      <button 
+                          key={t.id} 
+                          onClick={() => handleTabClick(t.id)} 
+                          className={cn(
+                              "w-full text-left py-3 px-4 rounded-lg text-base transition-colors", 
+                              activeTab === t.id 
+                                ? "font-bold bg-primary/10 text-primary" 
+                                : "font-semibold text-gray-600 hover:bg-gray-100"
+                          )}
+                      >
+                          {t.label}
+                      </button>
+                  ))}
+              </div>
+          )}
         </div>
-        {/* === [UI/UX 개선] 컨트롤 바 종료 === */}
 
         {isFormOpen && (
-          <div className="animate-in fade-in slide-in-from-top-4 duration-500 mb-8">
-            <SubmissionForm 
-              type="question" 
-              placeholder={branding?.homeTitle ? `${branding.homeTitle}에서 고민을 나눠보세요` : "HR 고민을 속삭여보세요."} 
-              onSubmit={handleAddQuestion} 
-            />
+          <div className="fixed inset-0 bg-black/50 z-40 animate-in fade-in-25" onClick={() => setIsFormOpen(false)}></div>
+        )}
+        {isFormOpen && (
+          <div className="fixed bottom-0 left-0 right-0 z-50 p-4 animate-in slide-in-from-bottom-10 duration-300">
+             <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
+                 <div className="p-4 flex items-center justify-between border-b">
+                    <h3 className="font-bold text-lg">새로운 지식 공유하기</h3>
+                    <Button variant="ghost" size="icon" onClick={() => setIsFormOpen(false)}><X className="w-5 h-5"/></Button>
+                 </div>
+                <SubmissionForm 
+                  type="question" 
+                  placeholder={branding?.homeTitle ? `${branding.homeTitle}에서 고민을 나눠보세요` : "HR 고민을 속삭여보세요."} 
+                  onSubmit={handleAddQuestion} 
+                />
+             </div>
           </div>
         )}
 
@@ -241,35 +279,45 @@ export function HomeContent({ searchParams }: { searchParams: any }) {
               if (currentPage >= totalPages - 1) p = totalPages - 4 + i;
               if (p <= 0 || p > totalPages) return null;
               return (
-                <Button key={p} onClick={() => setCurrentPage(p)} variant={currentPage === p ? "default" : "outline"} className={cn("w-10 h-10 rounded-xl font-black text-xs", currentPage === p ? "bg-primary text-accent border-none shadow-lg" : "bg-white border-black/5")}>{p}</Button>
+                <Button key={p} onClick={() => setCurrentPage(p)} variant={currentPage === p ? "default" : "outline"} className={cn("w-10 h-10 rounded-xl font-bold text-xs", currentPage === p ? "bg-primary text-accent border-none shadow-lg" : "bg-white border-gray-200")}>{p}</Button>
               );
             })}
             <Button variant="ghost" disabled={currentPage === totalPages} onClick={() => setCurrentPage(totalPages)}><ChevronsRight className="w-4" /></Button>
           </div>
         )}
 
-        <footer className="mt-20 pt-12 border-t border-black/[0.03] pb-12 px-4 md:px-0 opacity-60">
-          <div className="space-y-6">
-            <h2 className="text-xl font-black text-accent">{branding?.footerCompany || "(주)위스퍼 인텔리전스"}</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-bold text-accent/40">
-              <div className="space-y-1">
+        <footer className="mt-20 pt-12 border-t border-gray-100 pb-12 px-4 md:px-0 opacity-80">
+          <div className="space-y-4 text-center md:text-left">
+            <h2 className="text-sm font-bold text-gray-500">{branding?.footerCompany || "(주)위스퍼 인텔리전스"}</h2>
+            <div className="text-xs text-gray-400 space-y-1">
                 <p>주소: {branding?.footerAddress || "정보가 없습니다."}</p>
-                <p>이메일: {branding?.footerEmail || "contact@whisperapp.kr"}</p>
-              </div>
-              <div className="space-y-1">
-                <p>대표번호: {branding?.footerPhone || "02-1234-5678"}</p>
-                <p>{branding?.footerCopyright || "© 2024 Whisper Intelligence. All rights reserved."}</p>
-              </div>
+                <p>이메일: {branding?.footerEmail || "contact@whisperapp.kr"} | 대표번호: {branding?.footerPhone || "02-1234-5678"}</p>
+                <p className="pt-2">{branding?.footerCopyright || "© 2024 Whisper Intelligence. All rights reserved."}</p>
             </div>
           </div>
         </footer>
       </div>
 
-      <aside className="lg:col-span-4 hidden lg:block space-y-8 h-fit relative">
+      <aside className="lg:col-span-4 hidden lg:block space-y-8 h-fit sticky top-[88px]">
         <WhisperChat />
         <RankingList questions={[...questions].sort((a,b) => (b.likeCount || 0) - (a.likeCount || 0))} onSelectQuestion={handleSelectQuestion} />
         <PremiumAds ads={premiumAds} />
       </aside>
+      
+      {/* --- Mobile FAB for writing --- */}
+      <div className="fixed bottom-6 right-6 z-40 md:hidden">
+          <Button 
+            onClick={() => setIsFormOpen(!isFormOpen)}
+            className={cn(
+              "h-14 w-14 rounded-2xl font-black text-lg gap-2 transition-all shadow-xl",
+              isFormOpen 
+                ? "bg-gray-300 text-gray-800 scale-95"
+                : "bg-primary text-accent hover:bg-primary/90"
+            )}
+          >
+            {isFormOpen ? <X className="w-6 h-6" /> : <Edit3 className="w-6 h-6" />}
+          </Button>
+      </div>
     </div>
   )
 }
