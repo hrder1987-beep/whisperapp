@@ -92,64 +92,63 @@ export function Header({ onSearch }: HeaderProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-16 md:h-20">
           
-          <div className="flex items-center gap-4">
-            <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="md:hidden text-gray-600 -ml-2">
-                  <Menu className="w-6 h-6" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="left" className="bg-white border-r-0 p-0 w-[80vw] max-w-[320px] shadow-2xl">
-                 <div className="flex flex-col h-full pt-8 px-4">
-                    <div className="px-4 mb-8"><Logo /></div>
-                    <nav className="flex flex-col gap-1">
-                    {isAdmin && (
-                        <Button asChild className="bg-accent text-primary font-bold rounded-lg h-12 mb-4 shadow-md">
-                        <Link href="/admin" onClick={() => setIsMobileMenuOpen(false)}>
-                            <ShieldCheck className="w-4 h-4 mr-2" /> 관리자 센터
-                        </Link>
-                        </Button>
-                    )}
-                    {navLinks.map((link) => (
-                        <Link key={link.href} href={link.href} onClick={() => setIsMobileMenuOpen(false)} className={cn("text-base font-bold py-3 px-4 rounded-lg transition-colors", pathname === link.href ? "bg-primary/10 text-primary" : "text-gray-600 hover:bg-gray-100")}>{link.name}</Link>
-                    ))}
-                    <div className="h-px bg-gray-200 my-4" />
-                    {user ? (
-                        <div className="flex flex-col gap-1">
-                        <Link href="/my-posts" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-semibold py-3 text-gray-500 flex items-center gap-3 px-4"><FileText className="w-4 h-4 text-gray-400" /> 내가 쓴 글</Link>
-                        <Link href="/profile" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-semibold py-3 text-gray-500 flex items-center gap-3 px-4"><UserIcon className="w-4 h-4 text-gray-400" /> 내 프로필</Link>
-                        <Link href="/notifications" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-semibold py-3 text-gray-500 flex items-center gap-3 px-4"><Bell className="w-4 h-4 text-gray-400" /> 알림</Link>
-                        <button onClick={handleLogout} className="text-left text-sm font-bold py-3 px-4 text-red-500 mt-4 flex items-center gap-3"><LogOut className="w-4 h-4" /> 로그아웃</button>
-                        </div>
-                    ) : (
-                        <Link href="/auth?mode=login" onClick={() => setIsMobileMenuOpen(false)} className="text-base font-bold py-3 px-4 bg-accent text-white rounded-lg text-center shadow-md flex items-center justify-center gap-2 mt-4"><Sparkles className="w-4 h-4" /> 시작하기</Link>
-                    )}
-                    </nav>
-                </div>
-              </SheetContent>
+          <div className="flex items-center gap-4 lg:gap-8">
+             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+                <SheetTrigger asChild>
+                    <Button variant="ghost" size="icon" className="md:hidden text-gray-600 -ml-2">
+                    <Menu className="w-6 h-6" />
+                    </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="bg-white border-r-0 p-0 w-[80vw] max-w-[320px] shadow-2xl">
+                    <div className="flex flex-col h-full pt-8 px-4">
+                        <div className="px-4 mb-8"><Logo /></div>
+                        <nav className="flex flex-col gap-1">
+                        {isAdmin && (
+                            <Button asChild className="bg-accent text-primary font-bold rounded-lg h-12 mb-4 shadow-md">
+                            <Link href="/admin" onClick={() => setIsMobileMenuOpen(false)}>
+                                <ShieldCheck className="w-4 h-4 mr-2" /> 관리자 센터
+                            </Link>
+                            </Button>
+                        )}
+                        {navLinks.map((link) => (
+                            <Link key={link.href} href={link.href} onClick={() => setIsMobileMenuOpen(false)} className={cn("text-base font-bold py-3 px-4 rounded-lg transition-colors", pathname === link.href ? "bg-primary/10 text-primary" : "text-gray-600 hover:bg-gray-100")}>{link.name}</Link>
+                        ))}
+                        <div className="h-px bg-gray-200 my-4" />
+                        {user ? (
+                            <div className="flex flex-col gap-1">
+                            <Link href="/my-posts" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-semibold py-3 text-gray-500 flex items-center gap-3 px-4"><FileText className="w-4 h-4 text-gray-400" /> 내가 쓴 글</Link>
+                            <Link href="/profile" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-semibold py-3 text-gray-500 flex items-center gap-3 px-4"><UserIcon className="w-4 h-4 text-gray-400" /> 내 프로필</Link>
+                            <Link href="/notifications" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-semibold py-3 text-gray-500 flex items-center gap-3 px-4"><Bell className="w-4 h-4 text-gray-400" /> 알림</Link>
+                            <button onClick={handleLogout} className="text-left text-sm font-bold py-3 px-4 text-red-500 mt-4 flex items-center gap-3"><LogOut className="w-4 h-4" /> 로그아웃</button>
+                            </div>
+                        ) : (
+                            <Link href="/auth?mode=login" onClick={() => setIsMobileMenuOpen(false)} className="text-base font-bold py-3 px-4 bg-accent text-white rounded-lg text-center shadow-md flex items-center justify-center gap-2 mt-4"><Sparkles className="w-4 h-4" /> 시작하기</Link>
+                        )}
+                        </nav>
+                    </div>
+                </SheetContent>
             </Sheet>
-            <Link href="/"><Logo className="hidden sm:block" /></Link>
+            <Link href="/" className="flex-shrink-0"><Logo /></Link>
+            <nav className="hidden md:flex items-center gap-2 lg:gap-3">
+                {navLinks.map((link) => (
+                <Link 
+                    key={link.href} 
+                    href={link.href} 
+                    className={cn(
+                    "py-2 px-4 rounded-lg text-sm transition-colors font-bold", 
+                    pathname === link.href 
+                        ? "bg-accent text-primary shadow-sm" 
+                        : "text-gray-500 hover:bg-gray-100 hover:text-gray-800"
+                    )}
+                >
+                    {link.name}
+                </Link>
+                ))}
+            </nav>
           </div>
 
-          <nav className="hidden md:flex items-center gap-2 lg:gap-3">
-            {navLinks.map((link) => (
-              <Link 
-                key={link.href} 
-                href={link.href} 
-                className={cn(
-                  "py-2 px-4 rounded-lg text-sm transition-colors font-bold", 
-                  pathname === link.href 
-                    ? "bg-accent text-primary shadow-sm" 
-                    : "text-gray-500 hover:bg-gray-100 hover:text-gray-800"
-                )}
-              >
-                {link.name}
-              </Link>
-            ))}
-          </nav>
-
           <div className="flex items-center gap-2 sm:gap-3">
-            <div className="relative w-40 sm:w-48 md:w-56 lg:w-64">
+            <div className="relative w-40 sm:w-48">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 peer-focus:text-gray-700" />
               <Input 
                 placeholder="검색"
