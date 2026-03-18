@@ -98,16 +98,26 @@ export function HomeContent({ searchParams }: { searchParams: any }) {
   const answers = useMemo(() => dbAnswers?.length ? dbAnswers : (mockData.answers as any[]).filter(a => a.questionId === selectedId), [dbAnswers, selectedId])
 
   const filtered = useMemo(() => {
-    let res = [...questions]
+    const baseQuestions = [...questions];
+
     if (deferredSearchQuery) {
       const q = deferredSearchQuery.toLowerCase();
-      res = res.filter(item => (item.title && item.title.toLowerCase().includes(q)) || (item.text && item.text.toLowerCase().includes(q)));
+      return baseQuestions.filter(item => (item.title && item.title.toLowerCase().includes(q)) || (item.text && item.text.toLowerCase().includes(q)));
     }
-    if (activeTab === "hrm") res = res.filter(q => q.category === "인사전략/HRM");
-    if (activeTab === "hrd") res = res.filter(q => q.category === "HRD/교육");
-    if (activeTab === "culture") res = res.filter(q => q.category === "조직문화/EVP");
-    if (activeTab === "popular") res.sort((a, b) => (b.likeCount || 0) - (a.likeCount || 0));
-    return res
+    
+    switch (activeTab) {
+      case "hrm":
+        return baseQuestions.filter(q => q.category === "인사전략/HRM");
+      case "hrd":
+        return baseQuestions.filter(q => q.category === "HRD/교육");
+      case "culture":
+        return baseQuestions.filter(q => q.category === "조직문화/EVP");
+      case "popular":
+        return [...baseQuestions].sort((a, b) => (b.likeCount || 0) - (a.likeCount || 0));
+      case "all":
+      default:
+        return baseQuestions;
+    }
   }, [questions, deferredSearchQuery, activeTab])
 
   const paginated = useMemo(() => filtered.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE), [filtered, currentPage])
