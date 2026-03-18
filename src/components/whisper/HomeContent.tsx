@@ -268,8 +268,6 @@ export function HomeContent({ searchParams }: { searchParams: any }) {
             selectedId={selectedId} 
             answers={answers} 
             onAddAnswer={handleAddAnswer} 
-            activeTab={activeTab as any} 
-            onTabChange={setActiveTab as any} 
           />
         </div>
         
