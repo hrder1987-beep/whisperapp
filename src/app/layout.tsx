@@ -17,7 +17,7 @@ export const viewport: Viewport = {
 
 /**
  * WHISPER BRAND IDENTITY FAVICON (SVG DATA URI)
- * 딥 그린(#163300) 말풍선과 라이트 라임(#CDECB1) 삼점 디자인
+ * 전문가님의 요청대로 딥 그린(#163300) 말풍선과 라이트 라임(#CDECB1) 삼점 디자인을 적용했습니다.
  */
 const FAVICON_SVG = `data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 13.4876 3.36093 14.891 4 16.1272L3 21L7.8728 20C9.10897 20.6391 10.5124 21 12 21Z' fill='%23163300'/%3E%3Ccircle cx='8' cy='12' r='1.8' fill='%23CDECB1'/%3E%3Ccircle cx='12' cy='12' r='1.8' fill='%23CDECB1'/%3E%3Ccircle cx='16' cy='12' r='1.8' fill='%23CDECB1'/%3E%3C/svg%3E`;
 
