@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useMemo, useDeferredValue } from "react"
+import { useRouter } from "next/navigation"
 import { MainBanner, BannerData } from "@/components/whisper/MainBanner"
 import { SubmissionForm } from "@/components/whisper/SubmissionForm"
 import { QuestionFeed } from "@/components/whisper/QuestionFeed"
@@ -11,7 +12,7 @@ import { AnnouncementBar } from "@/components/whisper/AnnouncementBar"
 import { Question, Answer, PremiumAd, SiteBranding } from "@/lib/types"
 import { Button } from "@/components/ui/button"
 import { Sparkles, ChevronsLeft, ChevronsRight, Pencil, X, ChevronDown, ListFilter, Edit } from "lucide-react"
-import { generateAiReply } from "@/ai/flows/generate-ai-reply-flow"
+import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
 import { useFirestore, useCollection, useDoc, useMemoFirebase, addDocumentNonBlocking, updateDocumentNonBlocking, useUser } from "@/firebase"
 import { collection, query, orderBy, doc, increment } from "firebase/firestore"
@@ -31,9 +32,8 @@ const TABS = [
 export function HomeContent({ searchParams }: { searchParams: any }) {
   const { user } = useUser()
   const db = useFirestore()
-
-  const [searchQuery, setSearchQuery] = useState(searchParams?.search || "")
-  const deferredSearchQuery = useDeferredValue(searchQuery)
+  const router = useRouter()
+  const { toast } = useToast()
 
   const [activeTab, setActiveTab] = useState<"all" | "hrm" | "hrd" | "culture" | "popular">("all")
   const [selectedId, setSelectedId] = useState<string | null>(null)
@@ -45,9 +45,6 @@ export function HomeContent({ searchParams }: { searchParams: any }) {
 
   const configDocRef = useMemoFirebase(() => db ? doc(db, "admin_configuration", "site_settings") : null, [db])
   const { data: config } = useDoc<any>(configDocRef)
-
-  const whisperConfigRef = useMemoFirebase(() => db ? doc(db, "admin_configuration", "aldi_knowledge") : null, [db])
-  const { data: whisperConfig } = useDoc<any>(whisperConfigRef)
 
   const questions = useMemo(() => {
     const merged = [...(dbQuestions || [])]
@@ -62,7 +59,7 @@ export function HomeContent({ searchParams }: { searchParams: any }) {
     return merged.sort((a, b) => b.createdAt - a.createdAt)
   }, [dbQuestions])
   
-  const { currentPage, setCurrentPage, paginatedItems: paginatedQuestions, totalPages } = usePaginatedData(questions, activeTab, deferredSearchQuery);
+  const { currentPage, setCurrentPage, paginatedItems: paginatedQuestions, totalPages } = usePaginatedData(questions, activeTab);
 
   const branding = useMemo(() => {
     if (config?.brandingSettings) {
@@ -82,11 +79,7 @@ export function HomeContent({ searchParams }: { searchParams: any }) {
   }, [config])
 
   const premiumAds = useMemo(() => {
-    const defaultAds = [
-      { id: "ad1", title: "HR Tech Conference 2025\n사전 예약 안내", badge: "SPECIAL", webImage: "https://images.unsplash.com/photo-1540575861501-7ad05823c95b?q=80&w=800", mobileImage: "", link: "#" },
-      { id: "ad2", title: "글로벌 인재 채용을 위한\n올인원 솔루션 '위스퍼'", badge: "SOLUTION", webImage: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800", mobileImage: "", link: "#" },
-      { id: "ad3", title: "차세대 C&B 전문가를 위한\n실무 마스터 클래스", badge: "EDUCATION", webImage: "https://images.unsplash.com/photo-1454165833762-01049369290d?q=80&w=800", mobileImage: "", link: "#" }
-    ]
+    const defaultAds = []
     if (config?.premiumAdsSettings) {
       try {
         const parsed = JSON.parse(config.premiumAdsSettings) as PremiumAd[]
@@ -107,13 +100,6 @@ export function HomeContent({ searchParams }: { searchParams: any }) {
       title, text, nickname, userId: user.uid, category: category || "기타",
       viewCount: 0, likeCount: 0, answerCount: 0, createdAt: Date.now(), imageUrl: imageUrl || null, videoUrl: videoUrl || null,
       jobTitle: jobRole || null
-    }).then(ref => {
-      if (ref) {
-        generateAiReply({ title, text, instruction: whisperConfig?.autoReplyInstruction }).then(res => {
-          addDocumentNonBlocking(collection(db, "questions", ref.id, "answers"), { questionId: ref.id, text: res.replyText, nickname: "알디", userId: "ai", createdAt: Date.now(), jobTitle: "공식 AI" })
-          updateDocumentNonBlocking(doc(db, "questions", ref.id), { answerCount: 1 })
-        })
-      }
     })
   }
 
@@ -121,22 +107,12 @@ export function HomeContent({ searchParams }: { searchParams: any }) {
     if (!db || !selectedId || !user) return
     const question = questions.find(q => q.id === selectedId)
     addDocumentNonBlocking(collection(db, "questions", selectedId, "answers"), {
-      questionId: selectedId,
-      text,
-      nickname,
-      userId: user.uid,
-      createdAt: Date.now(),
-      jobTitle: jobRole || null
+      questionId: selectedId, text, nickname, userId: user.uid, createdAt: Date.now(), jobTitle: jobRole || null
     }).then(() => {
       if (question && question.userId !== user.uid) {
         addDocumentNonBlocking(collection(db, "notifications"), {
-          userId: question.userId,
-          type: "new_answer",
-          questionId: selectedId,
-          questionTitle: question.title,
-          senderNickname: nickname,
-          createdAt: Date.now(),
-          isRead: false
+          userId: question.userId, type: "new_answer", questionId: selectedId,
+          questionTitle: question.title, senderNickname: nickname, createdAt: Date.now(), isRead: false
         })
       }
     })
@@ -152,106 +128,68 @@ export function HomeContent({ searchParams }: { searchParams: any }) {
     setIsFilterOpen(false)
   }
 
+  const handleOpenForm = () => {
+    if (!user) {
+      toast({
+        title: "로그인이 필요한 서비스입니다.",
+        description: "글을 작성하시려면 먼저 로그인해주세요.",
+        variant: "destructive"
+      });
+      router.push("/auth?mode=login");
+    } else {
+      setIsFormOpen(true);
+    }
+  };
+
   const announcements = useMemo(() => {
-    if (branding?.announcements && Array.isArray(branding.announcements) && branding.announcements.length > 0) {
-      return branding.announcements
-    }
-    if (branding?.announcementText) {
-      return [{ id: 'legacy', text: branding.announcementText, link: branding.announcementLink || "#" }]
-    }
+    if (branding?.announcements && Array.isArray(branding.announcements) && branding.announcements.length > 0) return branding.announcements
+    if (branding?.announcementText) return [{ id: 'legacy', text: branding.announcementText, link: branding.announcementLink || "#" }]
     return []
   }, [branding])
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-10">
       <div className="lg:col-span-8 space-y-6">
-        <AnnouncementBar
-          announcements={announcements}
-          duration={branding?.announcementAutoSlideDuration || 4}
-        />
-
+        <AnnouncementBar announcements={announcements} duration={branding?.announcementAutoSlideDuration || 4} />
         <MainBanner banners={banners} autoSlideDuration={branding?.bannerAutoSlideDuration || 3} />
 
         <div className="sticky top-[70px] md:top-[88px] z-30 space-y-1.5">
-          {/* --- Mobile Filter --- */}
           <div className="md:hidden bg-white/80 backdrop-blur-md rounded-xl p-2 shadow-sm border border-black/5">
             <Button onClick={() => setIsFilterOpen(!isFilterOpen)} variant="ghost" className="w-full flex items-center justify-between font-bold text-gray-700 h-10 px-3 text-base">
-              <div className="flex items-center gap-2">
-                <ListFilter className="w-5 h-5 text-gray-500" />
-                <span>{TABS.find(t => t.id === activeTab)?.label}</span>
-              </div>
+              <div className="flex items-center gap-2"><ListFilter className="w-5 h-5 text-gray-500" /><span>{TABS.find(t => t.id === activeTab)?.label}</span></div>
               <ChevronDown className={cn("w-5 h-5 transition-transform", isFilterOpen && "rotate-180")} />
             </Button>
           </div>
-
-          {/* --- Desktop Filter --- */}
           <div className="hidden md:flex items-center justify-between bg-white/80 backdrop-blur-md rounded-xl p-1.5 shadow-sm border border-black/5">
             <div className="flex items-center gap-x-1 overflow-x-auto scrollbar-hide flex-1">
               {TABS.map(t => (
-                <button
-                  key={t.id}
-                  onClick={() => handleTabClick(t.id)}
-                  className={cn(
-                    "py-2 px-4 rounded-lg text-sm transition-all whitespace-nowrap shrink-0",
-                    activeTab === t.id
-                      ? "font-bold bg-accent text-primary shadow"
-                      : "font-semibold text-gray-500 hover:bg-gray-100 hover:text-gray-700"
-                  )}
-                >
-                  {t.label}
-                </button>
+                <button key={t.id} onClick={() => handleTabClick(t.id)} className={cn("py-2 px-4 rounded-lg text-sm transition-all whitespace-nowrap shrink-0", activeTab === t.id ? "font-bold bg-accent text-primary shadow" : "font-semibold text-gray-500 hover:bg-gray-100 hover:text-gray-700")}>{t.label}</button>
               ))}
             </div>
-            <Button onClick={() => setIsFormOpen(true)} className="ml-4 bg-primary text-accent font-bold h-10 px-5 rounded-lg shadow-sm hover:bg-primary/90 flex-shrink-0">
+            <Button onClick={handleOpenForm} className="ml-4 bg-primary text-accent font-bold h-10 px-5 rounded-lg shadow-sm hover:bg-primary/90 flex-shrink-0">
               <Edit className="w-4 h-4 mr-2" />글쓰기
             </Button>
           </div>
-
           {isFilterOpen && (
             <div className="md:hidden absolute top-full left-0 w-full bg-white/95 backdrop-blur-md rounded-xl shadow-lg border border-black/5 mt-1 p-2 animate-in fade-in zoom-in-95">
               {TABS.map(t => (
-                <button
-                  key={t.id}
-                  onClick={() => handleTabClick(t.id)}
-                  className={cn(
-                    "w-full text-left py-3 px-4 rounded-lg text-base transition-colors",
-                    activeTab === t.id
-                      ? "font-bold bg-primary/10 text-primary"
-                      : "font-semibold text-gray-600 hover:bg-gray-100"
-                  )}
-                >
-                  {t.label}
-                </button>
+                <button key={t.id} onClick={() => handleTabClick(t.id)} className={cn("w-full text-left py-3 px-4 rounded-lg text-base transition-colors", activeTab === t.id ? "font-bold bg-primary/10 text-primary" : "font-semibold text-gray-600 hover:bg-gray-100")}>{t.label}</button>
               ))}
             </div>
           )}
         </div>
 
         <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-            <DialogContent className="max-w-2xl w-[95vw] bg-white border-none rounded-2xl p-0 shadow-2xl overflow-hidden animate-in fade-in-90 slide-in-from-bottom-10 sm:slide-in-from-top-10 duration-300">
-                <DialogHeader className="p-6 pb-4">
-                    <DialogTitle className="text-xl font-bold text-gray-800 flex items-center gap-3"><Sparkles className="w-6 h-6 text-primary" /> 새로운 지식 공유</DialogTitle>
-                </DialogHeader>
-                <SubmissionForm
-                    type="question"
-                    placeholder={branding?.homeTitle ? `예) ${branding.homeTitle}에서 최고의 복지는 무엇이었나요?` : "궁금한 점을 더 자세히 알려주세요."}
-                    onSubmit={handleAddQuestion}
-                />
-            </DialogContent>
+          <DialogContent className="max-w-2xl w-[95vw] bg-white border-none rounded-2xl p-0 shadow-2xl overflow-hidden animate-in fade-in-90 slide-in-from-bottom-10 sm:slide-in-from-top-10 duration-300">
+            <DialogHeader className="p-6 pb-4">
+              <DialogTitle className="text-xl font-bold text-gray-800 flex items-center gap-3"><Sparkles className="w-6 h-6 text-primary" /> 새로운 지식 공유</DialogTitle>
+            </DialogHeader>
+            <SubmissionForm type="question" placeholder="내용을 입력하세요." onSubmit={handleAddQuestion} />
+          </DialogContent>
         </Dialog>
 
         <div className="px-1 md:px-0">
-          {isLoadingQuestions ? (
-            <QuestionFeedSkeleton />
-          ) : (
-            <QuestionFeed
-              questions={paginatedQuestions}
-              onSelectQuestion={handleSelectQuestion}
-              selectedId={selectedId}
-              answers={answers}
-              onAddAnswer={handleAddAnswer}
-            />
-          )}
+          {isLoadingQuestions ? <QuestionFeedSkeleton /> : <QuestionFeed questions={paginatedQuestions} onSelectQuestion={handleSelectQuestion} selectedId={selectedId} answers={answers} onAddAnswer={handleAddAnswer} />}
         </div>
 
         {totalPages > 1 && (
@@ -262,9 +200,7 @@ export function HomeContent({ searchParams }: { searchParams: any }) {
               if (currentPage <= 2) p = 1 + i
               if (currentPage >= totalPages - 1) p = totalPages - 4 + i
               if (p <= 0 || p > totalPages) return null
-              return (
-                <Button key={p} onClick={() => setCurrentPage(p)} variant={currentPage === p ? "default" : "outline"} className={cn("w-10 h-10 rounded-xl font-bold text-xs", currentPage === p ? "bg-primary text-accent border-none shadow-lg" : "bg-white border-gray-200")}>{p}</Button>
-              )
+              return <Button key={p} onClick={() => setCurrentPage(p)} variant={currentPage === p ? "default" : "outline"} className={cn("w-10 h-10 rounded-xl font-bold text-xs", currentPage === p ? "bg-primary text-accent border-none shadow-lg" : "bg-white border-gray-200")}>{p}</Button>
             })}
             <Button variant="ghost" disabled={currentPage === totalPages} onClick={() => setCurrentPage(totalPages)}><ChevronsRight className="w-4" /></Button>
           </div>
@@ -288,17 +224,8 @@ export function HomeContent({ searchParams }: { searchParams: any }) {
         <PremiumAds ads={premiumAds} />
       </aside>
 
-      {/* --- Mobile FAB for writing --- */}
       <div className="fixed bottom-24 right-6 z-50 md:hidden">
-        <Button
-          onClick={() => setIsFormOpen(!isFormOpen)}
-          className={cn(
-            "h-14 w-14 rounded-2xl font-black text-lg gap-2 transition-all shadow-xl",
-            isFormOpen
-              ? "bg-gray-300 text-gray-800 scale-95"
-              : "bg-primary text-accent hover:bg-primary/90"
-          )}
-        >
+        <Button onClick={isFormOpen ? () => setIsFormOpen(false) : handleOpenForm} className={cn("h-14 w-14 rounded-2xl font-black text-lg gap-2 transition-all shadow-xl", isFormOpen ? "bg-gray-300 text-gray-800 scale-95" : "bg-primary text-accent hover:bg-primary/90")}>
           {isFormOpen ? <X className="w-6 h-6" /> : <Pencil className="w-6 h-6" />}
         </Button>
       </div>
