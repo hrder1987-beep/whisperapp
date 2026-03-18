@@ -39,8 +39,6 @@ interface QuestionFeedProps {
   selectedId: string | null
   answers: Answer[]
   onAddAnswer: (nickname: string, title: string, text: string, imageUrl?: string, videoUrl?: string, category?: string, jobRole?: string) => void
-  activeTab: "all" | "popular" | "waiting" | "hrd" | "culture" | "hrm"
-  onTabChange: (tab: "all" | "popular" | "waiting" | "hrd" | "culture" | "hrm") => void
   isAdminMode?: boolean
 }
 
