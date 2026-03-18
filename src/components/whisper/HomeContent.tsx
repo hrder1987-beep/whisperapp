@@ -192,9 +192,12 @@ export function HomeContent({ searchParams }: { searchParams: any }) {
         
         <div className="sticky top-[70px] md:top-[88px] z-30 space-y-1.5">
            {/* --- Mobile Filter --- */}
-          <div className="md:hidden flex items-center justify-between gap-2 bg-white/80 backdrop-blur-md rounded-xl p-2 shadow-sm border border-black/5">
-              <Button onClick={() => setIsFilterOpen(!isFilterOpen)} variant="ghost" className="flex-1 justify-between font-bold text-gray-700 h-10 px-3">
-                <span>{TABS.find(t => t.id === activeTab)?.label}</span>
+          <div className="md:hidden bg-white/80 backdrop-blur-md rounded-xl p-2 shadow-sm border border-black/5">
+              <Button onClick={() => setIsFilterOpen(!isFilterOpen)} variant="ghost" className="w-full flex items-center justify-between font-bold text-gray-700 h-10 px-3 text-base">
+                <div className="flex items-center gap-2">
+                  <ListFilter className="w-5 h-5 text-gray-500" />
+                  <span>{TABS.find(t => t.id === activeTab)?.label}</span>
+                </div>
                 <ChevronDown className={cn("w-5 h-5 transition-transform", isFilterOpen && "rotate-180")} />
               </Button>
           </div>
@@ -240,10 +243,10 @@ export function HomeContent({ searchParams }: { searchParams: any }) {
         </div>
 
         {isFormOpen && (
-          <div className="fixed inset-0 bg-black/50 z-40 animate-in fade-in-25" onClick={() => setIsFormOpen(false)}></div>
+          <div className="fixed inset-0 bg-black/50 z-60 animate-in fade-in-25" onClick={() => setIsFormOpen(false)}></div>
         )}
         {isFormOpen && (
-          <div className="fixed bottom-0 left-0 right-0 z-50 p-4 animate-in slide-in-from-bottom-10 duration-300">
+          <div className="fixed bottom-0 left-0 right-0 z-60 p-4 animate-in slide-in-from-bottom-10 duration-300">
              <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
                  <div className="p-4 flex items-center justify-between border-b">
                     <h3 className="font-bold text-lg">새로운 지식 공유하기</h3>
@@ -305,7 +308,7 @@ export function HomeContent({ searchParams }: { searchParams: any }) {
       </aside>
       
       {/* --- Mobile FAB for writing --- */}
-      <div className="fixed bottom-6 right-6 z-40 md:hidden">
+      <div className="fixed bottom-24 right-6 z-50 md:hidden">
           <Button 
             onClick={() => setIsFormOpen(!isFormOpen)}
             className={cn(
