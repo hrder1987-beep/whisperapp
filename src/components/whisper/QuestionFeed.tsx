@@ -64,18 +64,21 @@ export function QuestionFeed({
   const [editText, setEditText] = useState("")
   const [editCategory, setEditCategory] = useState("")
   const [isUpdating, setIsUpdating] = useState(false)
+  
   const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set())
+  const [bookmarkedPosts, setBookmarkedPosts] = useState<Set<string>>(new Set())
 
   const [isMounted, setIsMounted] = useState(false)
   useEffect(() => {
     setIsMounted(true)
     try {
       const savedLikes = localStorage.getItem('whisper_liked_posts')
-      if (savedLikes) {
-        setLikedPosts(new Set(JSON.parse(savedLikes)))
-      }
+      if (savedLikes) setLikedPosts(new Set(JSON.parse(savedLikes)))
+      
+      const savedBookmarks = localStorage.getItem('whisper_bookmarked_posts')
+      if (savedBookmarks) setBookmarkedPosts(new Set(JSON.parse(savedBookmarks)))
     } catch (e) {
-      console.warn('Failed to load likes from storage')
+      console.warn('Failed to load user preferences from storage')
     }
   }, [])
 
@@ -115,6 +118,24 @@ export function QuestionFeed({
     } catch (e) {}
     
     toast({ title: "지지 완료!", description: "전문가님의 소중한 따봉이 전달되었습니다." });
+  }
+
+  const handleBookmark = (e: React.MouseEvent, q: Question) => {
+    e.stopPropagation();
+    const newBookmarks = new Set(bookmarkedPosts);
+    let message = "";
+    if (newBookmarks.has(q.id)) {
+      newBookmarks.delete(q.id);
+      message = "북마크를 해제했습니다.";
+    } else {
+      newBookmarks.add(q.id);
+      message = "나중에 볼 수 있도록 저장했습니다.";
+    }
+    setBookmarkedPosts(newBookmarks);
+    try {
+      localStorage.setItem('whisper_bookmarked_posts', JSON.stringify(Array.from(newBookmarks)));
+    } catch (e) {}
+    toast({ title: "알림", description: message });
   }
 
   const handleUpdate = () => {
@@ -160,6 +181,7 @@ export function QuestionFeed({
           const youtubeId = q.videoUrl ? getYoutubeId(q.videoUrl) : null
           const isOwner = user && user.uid === q.userId;
           const isLiked = likedPosts.has(q.id);
+          const isBookmarked = bookmarkedPosts.has(q.id);
 
           return (
             <Card 
@@ -265,9 +287,11 @@ export function QuestionFeed({
                 </div>
                 <div className="flex items-center gap-2">
                     <button onClick={(e) => { e.stopPropagation(); handleShare(q); }} className="flex items-center gap-1.5 text-xs font-bold text-gray-400 hover:text-gray-800 transition-all">
-                    <Share2 className="w-4 h-4" />
+                      <Share2 className="w-4 h-4" />
                     </button>
-                    <Bookmark className="w-4 h-4 text-gray-300 hover:text-yellow-500 cursor-pointer transition-all" />
+                    <button onClick={(e) => handleBookmark(e, q)} className="flex items-center gap-1.5 text-xs font-bold text-gray-400 hover:text-yellow-500 transition-all">
+                      <Bookmark className={cn("w-4 h-4", isBookmarked ? "text-yellow-400 fill-yellow-400" : "text-gray-300")} />
+                    </button>
                 </div>
               </CardFooter>
             </Card>
